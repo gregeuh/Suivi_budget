@@ -47,9 +47,26 @@
         .btn-add { background: var(--blue); color: white; border: none; padding: 0 20px; height: 40px; border-radius: 20px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
         .btn-add:active { transform: scale(0.95); background: #0062cc; }
 
-        /* 4 ONGLETS */
-        .tab-bar { display: flex; background: var(--card-bg); padding: 6px; border-radius: 14px; margin-bottom: 30px; border: 1px solid var(--border); }
-        .tab-btn { flex: 1; background: none; border: none; color: var(--text-muted); padding: 10px; font-size: 14px; font-weight: 600; border-radius: 10px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        /* 4 ONGLETS AVEC CORRECTION RESPONSIVE MOBILE */
+        .tab-bar { 
+            display: flex; 
+            flex-wrap: nowrap; 
+            overflow-x: auto; 
+            -webkit-overflow-scrolling: touch; 
+            scrollbar-width: none; 
+            background: var(--card-bg); padding: 6px; border-radius: 14px; 
+            margin-bottom: 30px; border: 1px solid var(--border); 
+        }
+        .tab-bar::-webkit-scrollbar { display: none; } 
+        
+        .tab-btn { 
+            flex: 1 0 auto; 
+            white-space: nowrap; 
+            background: none; border: none; color: var(--text-muted); 
+            padding: 10px 15px; font-size: 14px; font-weight: 600; 
+            border-radius: 10px; cursor: pointer; transition: 0.2s; 
+            display: flex; align-items: center; justify-content: center; gap: 8px; 
+        }
         .tab-btn.active { background: var(--input-bg); color: var(--text-main); }
         .tab-icon { font-size: 16px; }
 
@@ -61,6 +78,7 @@
         .bank-card { min-width: 280px; padding: 25px; border-radius: 16px; background: linear-gradient(135deg, #007aff 0%, #0056b3 100%); color: white; position: relative; overflow: hidden; }
         .bank-card::after { content:''; position:absolute; top:-50%; right:-20%; width:150px; height:150px; background:rgba(255,255,255,0.1); border-radius:50%; }
         .bank-card.alt-color { background: linear-gradient(135deg, #1c1c1e 0%, #3a3a3c 100%); border: 1px solid var(--border); }
+        .bank-card.alt-color-2 { background: linear-gradient(135deg, #ff9f0a 0%, #ff453a 100%); border: 1px solid var(--border); }
         .acc-name { font-size: 11px; font-weight: 600; text-transform: uppercase; opacity: 0.9; margin-bottom: 10px; letter-spacing: 0.5px; }
         .acc-val { font-size: 32px; font-weight: 700; }
 
@@ -83,7 +101,7 @@
         .sim-btn { background: var(--blue); color: white; border: none; padding: 0 20px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .sim-btn:active { transform: scale(0.96); }
 
-        /* MODAL D'AJOUT */
+        /* MODAL D'AJOUT RESPONSIVE */
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); padding: 15px; box-sizing: border-box; }
         .modal-content { background-color: var(--card-bg); margin: 2vh auto; padding: 25px; border-radius: 20px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; border: 1px solid var(--border); animation: slideUp 0.3s; box-sizing: border-box; }
         @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -118,9 +136,7 @@
         .tx-delete-btn { position: absolute; right: 0; top: 0; bottom: 0; width: 80px; background: var(--red); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; cursor: pointer; z-index: 1; }
         .tx-item-content { position: relative; z-index: 2; background: var(--card-bg); display: flex; justify-content: space-between; align-items: center; padding: 15px 0; transition: transform 0.2s ease-out; }
         
-        .tag-badge { background: var(--border); color: var(--blue); padding: 4px 8px; border-radius: 6px; font-size: 11px; margin-left: 6px; display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
-        a.tag-badge { text-decoration: none; cursor: pointer; }
-        a.tag-badge:hover { opacity: 0.8; }
+        .tag-badge { background: var(--border); color: var(--blue); padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 6px; }
 
         .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
@@ -148,16 +164,6 @@
         .btn-danger-outline { background: transparent; border: 1px solid var(--red); color: var(--red); width: 100%; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; gap: 8px; transition: 0.2s; }
         .btn-danger-outline:active { background: rgba(255, 69, 58, 0.1); transform: scale(0.98); }
 
-        /* ÉCRAN DE VERROUILLAGE */
-        .pin-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .pin-dots { display: flex; gap: 20px; margin: 30px 0 50px; }
-        .dot { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--text-main); transition: 0.2s; }
-        .dot.filled { background: var(--text-main); }
-        .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .num-btn { width: 70px; height: 70px; border-radius: 50%; background: var(--input-bg); color: var(--text-main); font-size: 28px; border: none; cursor: pointer; transition: 0.1s; display:flex; align-items:center; justify-content:center;}
-        .num-btn:active { background: var(--border); }
-        .bio-btn { margin-top: 30px; background: none; border: none; color: var(--blue); font-size: 16px; cursor: pointer; display: none; }
-
         .section { display: none; }
         .section.active { display: block; }
         input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); cursor: pointer; }
@@ -169,23 +175,12 @@
             .category-item { padding: 10px 2px; }
             .modal-content { padding: 20px 15px; margin: 5vh auto; }
             .close-btn { top: 15px; right: 15px; }
+            .header h1 { font-size: 28px; }
+            .tab-btn { font-size: 13px; padding: 10px 8px; } 
         }
     </style>
 </head>
 <body id="app-body" data-theme="dark">
-
-<div id="pin-screen" class="pin-screen" style="display:none;">
-    <h2 style="font-size:20px; margin-bottom:10px;">Face ID / Code</h2>
-    <div style="font-size:14px; color:var(--text-muted);">Saisissez votre code PIN</div>
-    <div class="pin-dots" id="pin-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-    <div class="numpad">
-        <button class="num-btn" onclick="pressPin(1)">1</button><button class="num-btn" onclick="pressPin(2)">2</button><button class="num-btn" onclick="pressPin(3)">3</button>
-        <button class="num-btn" onclick="pressPin(4)">4</button><button class="num-btn" onclick="pressPin(5)">5</button><button class="num-btn" onclick="pressPin(6)">6</button>
-        <button class="num-btn" onclick="pressPin(7)">7</button><button class="num-btn" onclick="pressPin(8)">8</button><button class="num-btn" onclick="pressPin(9)">9</button>
-        <div></div><button class="num-btn" onclick="pressPin(0)">0</button><button class="num-btn" style="font-size:16px; background:none;" onclick="clearPin()">Effacer</button>
-    </div>
-    <button class="bio-btn" id="btn-use-bio" onclick="tryBiometrics()">Utiliser Face ID / Touch ID</button>
-</div>
 
 <div id="add-modal" class="modal">
     <div class="modal-content">
@@ -368,10 +363,6 @@
                 </select>
             </div>
             <div class="settings-row">
-                <div class="settings-info"><h4>Sécurité (PIN & Face ID)</h4><p>Verrouille l'app au lancement</p></div>
-                <button class="btn-export" id="btn-pin" onclick="setupPin()">Définir</button>
-            </div>
-            <div class="settings-row">
                 <div class="settings-info"><h4>Budget mensuel</h4><p>Cible de dépenses mensuelles</p></div>
                 <input type="number" id="set-budget" class="input-control" style="width:100px; text-align:right" onchange="saveSettings()">
             </div>
@@ -425,15 +416,13 @@
         { id: 'autre', label: 'Autre', icon: '📦', type: 'loisirs' }
     ];
 
-    let expenses = JSON.parse(localStorage.getItem('apple_master_v17') || '[]');
-    let accounts = JSON.parse(localStorage.getItem('apple_acc_v17') || '[{"id":"acc1","name":"Compte Courant","initBalance":2000,"color":""}]');
-    let budget = parseFloat(localStorage.getItem('apple_budget_v17')) || 2000;
-    let savedTheme = localStorage.getItem('apple_theme_v17') || 'auto';
-    let savedPin = localStorage.getItem('apple_pin_v17') || null;
-    let bioEnabled = localStorage.getItem('apple_bio_v17') === 'true';
+    let expenses = JSON.parse(localStorage.getItem('apple_clean_v2') || '[]');
+    let accounts = JSON.parse(localStorage.getItem('apple_clean_acc_v2') || '[{"id":"acc1","name":"Compte Courant","initBalance":2000,"color":""}]');
+    let budget = parseFloat(localStorage.getItem('apple_clean_budget_v2')) || 2000;
+    let savedTheme = localStorage.getItem('apple_clean_theme_v2') || 'auto';
     
     let selectedCat = 'alim'; let currentFilter = 'all'; let calDate = new Date();
-    let currentType = 'expense'; let privacyMode = false; let currentPinInput = "";
+    let currentType = 'expense'; let privacyMode = false;
     let globalRealBalance = 0;
 
     // --- HAPTIQUE ---
@@ -443,70 +432,14 @@
         applyTheme(savedTheme); document.getElementById('set-theme').value = savedTheme;
         document.getElementById('inp-date').valueAsDate = new Date(); document.getElementById('set-budget').value = budget;
         
-        if(savedPin) {
-            document.getElementById('pin-screen').style.display = 'flex';
-            document.getElementById('btn-pin').innerText = "Désactiver";
-            document.getElementById('btn-pin').style.background = "var(--red)"; document.getElementById('btn-pin').style.color = "white";
-            if(bioEnabled) {
-                document.getElementById('btn-use-bio').style.display = 'block';
-                tryBiometrics();
-            }
-        }
         renderCats(); renderFilters(); updateAccountsSelectors(); updateAllViews(); renderSettingsAccounts();
     }
 
     // --- THEMES ---
-    function changeTheme(t) { localStorage.setItem('apple_theme_v17', t); applyTheme(t); }
+    function changeTheme(t) { localStorage.setItem('apple_clean_theme_v2', t); applyTheme(t); }
     function applyTheme(t) {
         if(t === 'auto') document.body.setAttribute('data-theme', window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         else document.body.setAttribute('data-theme', t);
-    }
-
-    // --- SÉCURITÉ ---
-    function pressPin(num) {
-        hapticTap();
-        if(currentPinInput.length < 4) {
-            currentPinInput += num; updatePinDots();
-            if(currentPinInput.length === 4) {
-                setTimeout(() => {
-                    if(currentPinInput === savedPin) document.getElementById('pin-screen').style.display = 'none';
-                    else { alert("Code incorrect"); clearPin(); }
-                }, 200);
-            }
-        }
-    }
-    function clearPin() { hapticTap(); currentPinInput = ""; updatePinDots(); }
-    function updatePinDots() { const dots = document.getElementById('pin-dots').children; for(let i=0; i<4; i++) { if(i < currentPinInput.length) dots[i].classList.add('filled'); else dots[i].classList.remove('filled'); } }
-    
-    async function tryBiometrics() {
-        if(!window.PublicKeyCredential) return;
-        try {
-            const challenge = new Uint8Array(32); window.crypto.getRandomValues(challenge);
-            const assertion = await navigator.credentials.get({ publicKey: { challenge: challenge, timeout: 60000, userVerification: "required" }});
-            if(assertion) document.getElementById('pin-screen').style.display = 'none';
-        } catch(e) { console.log("Biométrie annulée."); }
-    }
-
-    function setupPin() {
-        hapticTap();
-        if(savedPin) {
-            localStorage.removeItem('apple_pin_v17'); localStorage.removeItem('apple_bio_v17');
-            savedPin = null; bioEnabled = false;
-            document.getElementById('btn-pin').innerText = "Définir";
-            document.getElementById('btn-pin').style.background = "var(--input-bg)"; document.getElementById('btn-pin').style.color = "var(--text-main)";
-            alert("Sécurité désactivée");
-        } else {
-            const code = prompt("Entrez un code à 4 chiffres pour protéger l'app :");
-            if(code && code.length === 4 && !isNaN(code)) {
-                localStorage.setItem('apple_pin_v17', code); savedPin = code;
-                if(window.PublicKeyCredential && confirm("Voulez-vous activer Face ID / Touch ID pour cette app ?")) {
-                    localStorage.setItem('apple_bio_v17', 'true'); bioEnabled = true;
-                }
-                document.getElementById('btn-pin').innerText = "Désactiver";
-                document.getElementById('btn-pin').style.background = "var(--red)"; document.getElementById('btn-pin').style.color = "white";
-                alert("Sécurité activée !");
-            }
-        }
     }
 
     // --- AUTO-CATEGORISATION ---
@@ -567,10 +500,10 @@
         if(accounts.length <= 1) return alert("Vous devez garder au moins un compte principal.");
         if(confirm("Supprimer ce compte et les opérations liées ?")) {
             accounts = accounts.filter(a => a.id !== id); expenses = expenses.filter(e => e.accountId !== id);
-            saveAccounts(); localStorage.setItem('apple_master_v17', JSON.stringify(expenses));
+            saveAccounts(); localStorage.setItem('apple_clean_v2', JSON.stringify(expenses));
         }
     }
-    function saveAccounts() { localStorage.setItem('apple_acc_v17', JSON.stringify(accounts)); updateAccountsSelectors(); renderSettingsAccounts(); updateAllViews(); }
+    function saveAccounts() { localStorage.setItem('apple_clean_acc_v2', JSON.stringify(accounts)); updateAccountsSelectors(); renderSettingsAccounts(); updateAllViews(); }
     function renderSettingsAccounts() {
         document.getElementById('settings-accounts-list').innerHTML = accounts.map(a => `<div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid var(--border)"><div><strong style="font-size:14px;">${a.name}</strong><br><small style="color:var(--text-muted)">Initial: ${a.initBalance}€</small></div><button onclick="deleteAccount('${a.id}')" style="background:none; border:none; color:var(--red); cursor:pointer; font-size:18px;">✕</button></div>`).join('');
     }
@@ -597,15 +530,12 @@
         if (freqDays > 0) {
             let curr = new Date(startDate.getTime());
             while (curr <= targetEnd && curr <= endDate) {
-                if (curr >= targetStart && curr.getFullYear() === year && curr.getMonth() === month) {
-                    occurrences.push(curr.getDate());
-                }
+                if (curr >= targetStart && curr.getFullYear() === year && curr.getMonth() === month) occurrences.push(curr.getDate());
                 curr.setDate(curr.getDate() + freqDays);
             }
         } else {
             if (startDate <= targetEnd && targetStart <= endDate) {
-                let d = startDate.getDate();
-                let maxDays = targetEnd.getDate();
+                let d = startDate.getDate(); let maxDays = targetEnd.getDate();
                 if (d > maxDays) d = maxDays;
                 let occDate = new Date(year, month, d);
                 if (occDate >= startDate && occDate <= endDate) occurrences.push(d);
@@ -638,11 +568,7 @@
         let expanded = [];
         expenses.forEach(e => {
             const occs = getOccurrences(e, year, month);
-            occs.forEach(day => {
-                expanded.push({
-                    ...e, originalId: e.id, displayDay: day, displayDateStr: `${String(day).padStart(2,'0')}/${String(month+1).padStart(2,'0')}/${year}`
-                });
-            });
+            occs.forEach(day => { expanded.push({...e, originalId: e.id, displayDay: day, displayDateStr: `${String(day).padStart(2,'0')}/${String(month+1).padStart(2,'0')}/${year}`}); });
         });
         expanded.sort((a,b) => b.displayDay - a.displayDay);
         return expanded;
@@ -658,7 +584,7 @@
 
         const isRecurring = document.getElementById('inp-recurring').checked;
         const urlField = document.getElementById('inp-url').value;
-        
+
         expenses.unshift({
             amount: amt, label: lbl, note: document.getElementById('inp-note').value, url: urlField, date: document.getElementById('inp-date').value, type: currentType,
             cat: currentType === 'expense' ? selectedCat : 'income', accountId: accId, recurring: currentType === 'expense' ? isRecurring : false,
@@ -666,14 +592,14 @@
             endDate: isRecurring ? document.getElementById('inp-rec-end').value : null, id: Date.now()
         });
 
-        localStorage.setItem('apple_master_v17', JSON.stringify(expenses));
+        localStorage.setItem('apple_clean_v2', JSON.stringify(expenses));
         document.getElementById('inp-amount').value = ''; document.getElementById('inp-label').value = ''; document.getElementById('inp-note').value = ''; document.getElementById('inp-url').value = ''; document.getElementById('inp-recurring').checked = false; toggleRecOptions(); closeAddModal(); updateAllViews(); renderTransactions();
     }
 
     function deleteTx(id) {
         hapticTap();
         expenses = expenses.filter(e => e.id !== id);
-        localStorage.setItem('apple_master_v17', JSON.stringify(expenses));
+        localStorage.setItem('apple_clean_v2', JSON.stringify(expenses));
         updateAllViews(); renderTransactions();
     }
 
@@ -840,7 +766,7 @@
     }
 
     // --- REGLAGES ---
-    function saveSettings() { budget = document.getElementById('set-budget').value; localStorage.setItem('apple_budget_v17', budget); updateAllViews(); }
+    function saveSettings() { budget = document.getElementById('set-budget').value; localStorage.setItem('apple_clean_budget_v1', budget); updateAllViews(); }
     function exportPDF() { html2pdf().from(document.getElementById('capture-area')).set({ margin: 10, filename: 'Rapport_Budget.pdf' }).save(); }
     function exportCSV() {
         let csv = "Type,Compte,Date,Libelle,Montant,Categorie,Recurrent,Frequence,Date_Fin,Note,URL\n";
