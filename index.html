@@ -117,11 +117,6 @@
         .upcoming-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
         .upcoming-item:last-child { border-bottom: none; padding-bottom: 0; }
 
-        .sim-box { display: flex; gap: 15px; margin-top: 15px; }
-        .sim-input { flex: 1; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); padding: 14px; border-radius: 12px; font-size: 14px; outline: none; }
-        .sim-btn { background: var(--accent); color: white; border: none; padding: 0 20px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .sim-btn:active { transform: scale(0.96); }
-
         /* MODAL D'AJOUT RESPONSIVE */
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); padding: 15px; box-sizing: border-box; }
         .modal-content { background-color: var(--card-bg); margin: 2vh auto; padding: 25px; border-radius: 20px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; border: 1px solid var(--border); animation: slideUp 0.3s; box-sizing: border-box; }
@@ -146,7 +141,7 @@
         .btn-submit { background-color: var(--accent); color: white; border: none; width: 100%; padding: 18px; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .btn-submit:active { transform: scale(0.98); }
 
-        /* VUE 2: JOURNAL & SWIPE */
+        /* VUE 2: JOURNAL */
         .filter-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 15px; scrollbar-width: none;}
         .filter-bar::-webkit-scrollbar { display: none; }
         .filter-pill { padding: 8px 16px; background: var(--input-bg); border-radius: 50px; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; white-space: nowrap; border: 1px solid transparent; transition: 0.3s;}
@@ -186,7 +181,7 @@
         .proj-title { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: 5px; }
         .proj-val { font-size: 20px; font-weight: 700; color: var(--green); }
 
-        /* VUE 4: PROFIL (EX-REGLAGES) */
+        /* VUE 4: PROFIL */
         .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--border); }
         .settings-row:last-child { border-bottom: none; }
         .btn-export { background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); padding: 10px 16px; border-radius: 10px; font-size: 14px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
@@ -197,7 +192,6 @@
         .color-swatch { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: 0.2s; box-sizing: border-box; }
         .color-swatch.active { border-color: var(--text-main); transform: scale(1.15); }
 
-        /* EN-TÊTE PROFIL */
         .profile-header-card { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
         .profile-avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; }
 
@@ -355,12 +349,12 @@
             </div>
 
             <div class="card">
-                <h2 style="font-size:16px;">🔮 Simulateur : Puis-je me l'offrir ?</h2>
-                <div class="sim-box">
-                    <input type="number" id="sim-price" class="sim-input" placeholder="Prix (ex: 1200)">
-                    <button class="sim-btn" onclick="simulatePurchase()">Vérifier</button>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h2 style="font-size:16px; margin:0;">🎯 Mes Projets & Envies</h2>
+                    <button class="btn-export" onclick="addWishlistItem()" style="padding:6px 12px; font-size:12px;">+ Ajouter</button>
                 </div>
-                <div id="sim-result" class="sim-result" style="display:none; margin-top:15px; font-size:14px; background:var(--input-bg); padding:15px; border-radius:12px;"></div>
+                <div id="wishlist-container">
+                    </div>
             </div>
         </div>
     </div>
@@ -554,6 +548,7 @@
     let displayName = '';
     let expenses = [];
     let accounts = [];
+    let wishlist = []; // <-- NOUVELLE VARIABLE WISH LIST
     let budget = 2000;
     let emergencyGoal = 5000;
     let catBudgets = {};
@@ -568,11 +563,10 @@
     let globalRealBalance = 0;
     let editingTxId = null;
 
-    // ÉCOUTEUR D'AUTHENTIFICATION FIREBASE
     auth.onAuthStateChanged(user => {
         if (user) {
             currentUser = user;
-            document.getElementById('profile-email-display').innerText = user.email; // Met à jour l'email dans le profil
+            document.getElementById('profile-email-display').innerText = user.email; 
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('app-wrapper').style.display = 'block';
             initCloudSync();
@@ -637,6 +631,7 @@
                 displayName = data.displayName || '';
                 expenses = data.expenses || [];
                 accounts = data.accounts || [];
+                wishlist = data.wishlist || []; // Récupère la Wishlist
                 budget = data.budget || 2000;
                 emergencyGoal = data.emergencyGoal || 5000;
                 catBudgets = data.catBudgets || {};
@@ -650,6 +645,7 @@
                 displayName = localStorage.getItem('apple_clean_name_v5') || '';
                 expenses = JSON.parse(localStorage.getItem('apple_clean_v5') || localStorage.getItem('apple_clean_v4') || '[]');
                 accounts = JSON.parse(localStorage.getItem('apple_clean_acc_v5') || localStorage.getItem('apple_clean_acc_v4') || '[{"id":"acc1","name":"COMPTE COURANT","initBalance":2000,"color":""}]');
+                wishlist = [];
                 budget = parseFloat(localStorage.getItem('apple_clean_budget_v5')) || 2000;
                 emergencyGoal = parseFloat(localStorage.getItem('apple_clean_emergency_v5')) || 5000;
                 catBudgets = JSON.parse(localStorage.getItem('apple_clean_catbudgets_v5') || '{}');
@@ -668,6 +664,7 @@
             displayName: displayName,
             expenses: expenses,
             accounts: accounts,
+            wishlist: wishlist, // Sauvegarde la Wishlist
             budget: budget,
             emergencyGoal: emergencyGoal,
             catBudgets: catBudgets,
@@ -677,10 +674,8 @@
     }
 
     function applyAppSettings() {
-        // Applique les données reçues sur l'interface
         document.getElementById('set-displayname').value = displayName;
         
-        // Met à jour le message d'accueil et le profil
         if(displayName) {
             document.getElementById('welcome-title').innerText = `Bonjour ${displayName} !`;
             document.getElementById('profile-name-display').innerText = displayName;
@@ -765,13 +760,13 @@
         document.documentElement.style.setProperty('--accent-light', ACCENT_COLORS[c].light);
         document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
         if(document.getElementById('color-' + c)) document.getElementById('color-' + c).classList.add('active');
-        saveToCloud(); 
+        if (currentUser) saveToCloud(); 
     }
 
     function changeTheme(t) { 
         savedTheme = t; 
         applyTheme(t); 
-        saveToCloud(); 
+        if (currentUser) saveToCloud(); 
     }
 
     function applyTheme(t) {
@@ -1076,6 +1071,65 @@
         saveToCloud(); 
     }
 
+    // --- NOUVEAU: WISH LIST (PROJETS) ---
+    function addWishlistItem() {
+        hapticTap();
+        const name = prompt("Nom du projet/produit (ex: iPhone 17) :");
+        if (!name) return;
+        let priceInput = prompt("Prix en euros (€) :");
+        if (!priceInput) return;
+        priceInput = priceInput.replace(',', '.');
+        const price = parseFloat(priceInput);
+        if (isNaN(price) || price <= 0) return alert("Prix invalide.");
+
+        wishlist.push({ id: Date.now(), name: name, price: price });
+        saveToCloud();
+    }
+
+    function deleteWishlistItem(id) {
+        hapticTap();
+        wishlist = wishlist.filter(w => w.id !== id);
+        saveToCloud();
+    }
+
+    function renderWishlist(epargneMois) {
+        const container = document.getElementById('wishlist-container');
+        if (wishlist.length === 0) {
+            container.innerHTML = "<p style='color:var(--text-muted); font-size:13px; text-align:center; padding:10px 0;'>Aucun projet. Ajoutez un objectif pour voir vos projections !</p>";
+            return;
+        }
+
+        container.innerHTML = wishlist.map(w => {
+            const missing = w.price - globalRealBalance;
+            const progress = Math.min((globalRealBalance / w.price) * 100, 100);
+            let status = "";
+            let barColor = "var(--accent)";
+
+            if (progress >= 100) {
+                status = `<span style="color:var(--green); font-weight:600;">✅ Vous pouvez vous l'offrir !</span>`;
+                barColor = "var(--green)";
+            } else {
+                if (epargneMois > 0) {
+                    const months = Math.ceil(missing / epargneMois);
+                    status = `<span style="color:var(--orange); font-weight:600;">⏳ Accessible dans ~${months} mois</span> (manque ${missing.toFixed(0)}€)`;
+                } else {
+                    status = `<span style="color:var(--red); font-weight:600;">⚠️ Capacité d'épargne insuffisante</span>`;
+                }
+            }
+
+            return `
+            <div style="background:var(--input-bg); padding:15px; border-radius:12px; margin-bottom:10px; position:relative;">
+                <button onclick="deleteWishlistItem(${w.id})" style="position:absolute; top:15px; right:15px; background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:16px;">✕</button>
+                <div style="font-weight:600; font-size:14px; margin-bottom:5px; padding-right:20px;">${escapeHTML(w.name)}</div>
+                <div style="font-size:16px; font-weight:700; margin-bottom:10px;">${w.price.toFixed(2)} €</div>
+                <div class="prog-bar-bg" style="height:6px; margin-bottom:8px;">
+                    <div class="prog-bar-fill" style="width:${progress}%; background:${barColor}"></div>
+                </div>
+                <div style="font-size:12px;">${status}</div>
+            </div>`;
+        }).join('');
+    }
+
     let touchStartX = 0; let swipedElement = null;
     function handleTouchStart(e, element) { touchStartX = e.touches[0].clientX; swipedElement = element; element.style.transition = 'none'; }
     function handleTouchMove(e) {
@@ -1119,9 +1173,12 @@
         const monthInc = currentMonthData.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0);
         const monthExp = currentMonthData.filter(e => e.type === 'expense').reduce((s, e) => s + e.amount, 0);
         
+        // Calcul de l'épargne du mois pour la wishlist
+        const epargneMois = monthInc - monthExp;
+        
         animateValue(document.getElementById('dash-inc'), 0, monthInc, 800, val => "+" + val.toFixed(0) + " €");
         animateValue(document.getElementById('dash-exp'), 0, monthExp, 800, val => "-" + val.toFixed(0) + " €");
-        animateValue(document.getElementById('dash-remaining'), 0, (monthInc - monthExp), 800, val => val.toFixed(0) + " €");
+        animateValue(document.getElementById('dash-remaining'), 0, epargneMois, 800, val => val.toFixed(0) + " €");
         
         if (budget > 0) {
             document.getElementById('prog-label').innerText = monthExp.toFixed(0) + " € / " + budget + " €";
@@ -1148,18 +1205,9 @@
                 return `<div class="upcoming-item"><div><span class="upcoming-date" style="background:var(--input-bg); color:var(--accent); padding:4px 8px; border-radius:6px; font-size:11px; font-weight:700; margin-right:12px;">Le ${e.displayDay}</span><span style="font-weight:600; font-size:14px;">${urlBadge}${safeLabel}</span></div><div class="blur-val" style="font-weight:700;">${e.amount.toFixed(2)} €</div></div>`;
             }).join('');
         }
-    }
 
-    function simulatePurchase() {
-        hapticTap();
-        let priceInput = document.getElementById('sim-price').value;
-        if(priceInput) priceInput = priceInput.replace(',', '.');
-        const price = parseFloat(priceInput); 
-        
-        if (isNaN(price)) return;
-        const res = document.getElementById('sim-result'); res.style.display = 'block';
-        if(price > globalRealBalance) res.innerHTML = `⚠️ <strong>Attention.</strong> Découvert estimé à <span style="color:var(--red)">${(globalRealBalance - price).toFixed(0)}€</span> sur l'ensemble de vos comptes.`;
-        else res.innerHTML = `✅ <strong>C'est possible.</strong> Il vous restera ${(globalRealBalance - price).toFixed(0)}€ au total.`;
+        // Affichage de la wishlist avec la projection basée sur l'épargne du mois
+        renderWishlist(epargneMois);
     }
 
     // --- JOURNAL ---
@@ -1327,7 +1375,7 @@
         localStorage.setItem('apple_clean_emergency_v5', emergencyGoal);
         
         saveToCloud(); 
-        applyAppSettings(); // Pour que le titre change instantanément !
+        applyAppSettings(); 
     }
     
     function exportCSV() {
@@ -1343,8 +1391,7 @@
     
     function clearData() { 
         if(confirm("Effacer toutes les données de façon irréversible sur tous vos appareils ?")) { 
-            expenses = [];
-            accounts = [];
+            expenses = []; accounts = []; wishlist = [];
             saveToCloud(); 
         } 
     }
