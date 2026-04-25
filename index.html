@@ -7,11 +7,11 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Budget Pro">
     
-    <title>Mon Budget Apple Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/11048/11048595.png">
     <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/11048/11048595.png">
+    
+    <title>Mon Budget Apple Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
@@ -769,6 +769,9 @@
         'transp': ['sncf', 'total', 'esso', 'uber', 'taxi', 'ratp', 'essence', 'peage', 'navigo', 'avion', 'train', 'bolt'],
         'loisirs': ['netflix', 'spotify', 'cinema', 'ugc', 'apple', 'psn', 'xbox', 'amazon prime', 'disney', 'salle de sport', 'basic fit', 'fitness park'],
         'logement': ['loyer', 'edf', 'engie', 'eau', 'assurance', 'internet', 'bricolage', 'ikea', 'leroy merlin'],
+        'vetements': ['zara', 'h&m', 'uniqlo', 'nike', 'adidas', 'zalando', 'asos', 'shein', 'boutique', 'vetements', 'mango', 'primark'],
+        'beaute': ['sephora', 'nocibe', 'coiffeur', 'barbier', 'maquillage', 'soin', 'rituals', 'yves rocher'],
+        'cadeaux': ['cadeau', 'anniversaire', 'noel', 'offrir'],
         'resto': ['mcdonalds', 'kfc', 'burger king', 'deliveroo', 'ubereats', 'pizzeria', 'restaurant', 'bar', 'cafe', 'bistro'],
         'tech': ['amazon', 'fnac', 'darty', 'boulanger', 'free', 'orange', 'sfr', 'bouygues', 'ldlc']
     };
@@ -779,6 +782,9 @@
         { id: 'transp', label: 'Transport', icon: '🚗', type: 'vie' },
         { id: 'loisirs', label: 'Loisirs', icon: '🎬', type: 'loisirs' },
         { id: 'logement', label: 'Logement', icon: '🏠', type: 'fixe' },
+        { id: 'vetements', label: 'Vêtements', icon: '👕', type: 'vie' },
+        { id: 'beaute', label: 'Beauté', icon: '🧴', type: 'vie' },
+        { id: 'cadeaux', label: 'Cadeaux', icon: '🎁', type: 'loisirs' },
         { id: 'sante', label: 'Santé', icon: '💊', type: 'vie' },
         { id: 'resto', label: 'Restaurant', icon: '🍽️', type: 'loisirs' },
         { id: 'tech', label: 'Technologie', icon: '💻', type: 'loisirs' },
@@ -1160,13 +1166,11 @@
         }
     }
 
-    // --- NOUVEAU: FONCTION DE NOUVEAU DEPART ---
     function freshStart() {
         if(confirm("Attention : Cela va effacer TOUTES vos transactions passées.\n\nLes soldes actuels de vos comptes seront sauvegardés comme nouveaux soldes de départ. Vos projets et enveloppes seront conservés.\n\nÊtes-vous sûr de vouloir commencer un nouveau mois ?")) {
             hapticTap();
             const nowReal = new Date();
             
-            // 1. Calculer l'argent actuel et l'assigner comme point de départ
             accounts.forEach(acc => {
                 let currentCalcBal = acc.initBalance;
                 expenses.forEach(e => {
@@ -1175,13 +1179,11 @@
                         currentCalcBal += (e.type === 'income' ? 1 : -1) * (e.amount * pastCount);
                     }
                 });
-                acc.initBalance = currentCalcBal; // Fige le solde actuel
+                acc.initBalance = currentCalcBal; 
             });
             
-            // 2. Vider l'historique des dépenses
             expenses = [];
             
-            // 3. Sauvegarder sur le cloud et rafraîchir l'interface
             saveToCloud();
             applyAppSettings();
             
@@ -1370,22 +1372,6 @@
         saveToCloud(); 
     }
 
-    let touchStartX = 0; let swipedElement = null;
-    function handleTouchStart(e, element) { touchStartX = e.touches[0].clientX; swipedElement = element; element.style.transition = 'none'; }
-    function handleTouchMove(e) {
-        if(!swipedElement) return;
-        const diffX = e.touches[0].clientX - touchStartX;
-        if(diffX < 0 && diffX > -80) swipedElement.style.transform = `translateX(${diffX}px)`;
-    }
-    function handleTouchEnd(e) {
-        if(!swipedElement) return;
-        swipedElement.style.transition = 'transform 0.2s ease-out';
-        const diffX = e.changedTouches[0].clientX - touchStartX;
-        if(diffX < -40) { swipedElement.style.transform = `translateX(-80px)`; hapticTap(); } 
-        else { swipedElement.style.transform = `translateX(0px)`; }
-        swipedElement = null;
-    }
-
     function renderWishlist(epargneMois, accBalances) {
         const container = document.getElementById('wishlist-container');
         if (wishlist.length === 0) {
@@ -1520,7 +1506,6 @@
         
         list.innerHTML = filtered.map(e => {
             const isInc = e.type === 'income'; const icon = isInc ? '💰' : CATEGORIES.find(c => c.id === e.cat).icon;
-            
             const safeLabel = escapeHTML(e.label);
             const safeNote = escapeHTML(e.note || '');
             const safeUrl = escapeHTML(e.url || '');
