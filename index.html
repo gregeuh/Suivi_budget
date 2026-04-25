@@ -166,7 +166,7 @@
         .stats-info { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; color: var(--text-muted); }
         .stats-info span:last-child { color: var(--text-main); font-weight: 600; }
 
-        /* ASSISTANT CONSEIL (NOUVEAU) */
+        /* ASSISTANT CONSEIL */
         .advice-box { background: var(--accent-light); border: 1px solid var(--accent); padding: 15px; border-radius: 14px; margin-bottom: 25px; display: flex; gap: 15px; align-items: flex-start; }
         .advice-icon { font-size: 24px; }
         .advice-text { font-size: 14px; line-height: 1.5; color: var(--text-main); }
@@ -216,7 +216,13 @@
             </div>
             <div class="input-group"><label>Montant (€)</label><input type="number" step="0.01" id="inp-amount" class="input-control" placeholder="0.00"></div>
             <div class="input-group"><label>Date</label><input type="date" id="inp-date" class="input-control"></div>
-            <div class="input-group"><label>Libellé</label><input type="text" id="inp-label" class="input-control" placeholder="ex: Salaire, Amazon" oninput="autoCategorize(this.value)"></div>
+            
+            <div class="input-group">
+                <label>Libellé</label>
+                <input type="text" id="inp-label" class="input-control" placeholder="ex: Salaire, Amazon" oninput="autoCategorize(this.value)" list="label-suggestions" autocomplete="off">
+                <datalist id="label-suggestions"></datalist>
+            </div>
+
             <div class="input-group"><label>Note (utilisez #tag)</label><input type="text" id="inp-note" class="input-control" placeholder="ex: #Vacances"></div>
             <div class="input-group"><label>Lien web (URL optionnelle)</label><input type="url" id="inp-url" class="input-control" placeholder="https://..."></div>
         </div>
@@ -407,7 +413,7 @@
             </div>
 
             <div class="settings-row">
-                <div class="settings-info"><h4>Budget mensuel</h4><p>Cible de dépenses mensuelles</p></div>
+                <div class="settings-info"><h4>Budget mensuel</h4><p>Cible de dépenses</p></div>
                 <input type="number" id="set-budget" class="input-control" style="width:100px; text-align:right" onchange="saveSettings()">
             </div>
         </div>
@@ -519,6 +525,8 @@
         document.getElementById('inp-date').valueAsDate = new Date(); document.getElementById('set-budget').value = budget;
         
         updateGlobalMonthLabel();
+        updateSuggestions(); // On initialise la liste des libellés connus
+        
         renderCats(); renderFilters(); updateAccountsSelectors(); updateAllViews(); renderSettingsAccounts();
     }
 
@@ -583,15 +591,37 @@
         reader.readAsText(file);
     }
 
+    // --- AUTO-COMPLÉTION DES LIBELLÉS ---
+    function updateSuggestions() {
+        // Récupère tous les libellés uniques de tes anciennes dépenses
+        const uniqueLabels = [...new Set(expenses.map(e => e.label))];
+        document.getElementById('label-suggestions').innerHTML = uniqueLabels.map(l => `<option value="${l}">`).join('');
+    }
+
+    // --- AUTO-CATEGORISATION INTELLIGENTE ---
     function autoCategorize(text) {
         if(!text) return;
         const lower = text.toLowerCase();
+
+        // 1. Apprentissage Local : Regarde si tu as déjà fait cette dépense avant
+        const pastTx = expenses.find(e => e.label.toLowerCase() === lower && e.type === currentType);
+        if (pastTx) {
+            if (currentType === 'expense') selectCat(pastTx.cat);
+            if (pastTx.url && !document.getElementById('inp-url').value) {
+                document.getElementById('inp-url').value = pastTx.url; // Remet même l'URL si elle existait !
+            }
+            return; // On arrête là, l'app a trouvé la correspondance parfaite
+        }
+
+        // 2. Dictionnaire Statique : Si c'est nouveau, on utilise les mots-clés de base
         for(const [cat, words] of Object.entries(KEYWORDS)) {
             if(words.some(w => lower.includes(w))) {
                 if(currentType === 'expense') selectCat(cat);
                 break;
             }
         }
+        
+        // Coche la case récurrente si c'est un abonnement connu
         if(RECURRING_KEYWORDS.some(w => lower.includes(w))) {
             document.getElementById('inp-recurring').checked = true;
             toggleRecOptions();
@@ -702,6 +732,7 @@
         if(confirm("Supprimer ce compte et les opérations liées ?")) {
             accounts = accounts.filter(a => a.id !== id); expenses = expenses.filter(e => e.accountId !== id);
             saveAccounts(); localStorage.setItem('apple_clean_v4', JSON.stringify(expenses));
+            updateSuggestions();
         }
     }
     
@@ -817,6 +848,10 @@
         }
 
         localStorage.setItem('apple_clean_v4', JSON.stringify(expenses));
+        
+        // Met à jour les suggestions d'autocomplétion
+        updateSuggestions();
+        
         closeAddModal(); updateAllViews(); renderTransactions();
     }
 
@@ -831,6 +866,7 @@
         hapticTap();
         expenses = expenses.filter(e => e.id !== id);
         localStorage.setItem('apple_clean_v4', JSON.stringify(expenses));
+        updateSuggestions(); // Mettre à jour si le dernier libellé unique a été supprimé
         updateAllViews(); renderTransactions();
     }
 
@@ -1004,14 +1040,11 @@
             if(catInfo) types[catInfo.type] += e.amount; catTotals[e.cat] = (catTotals[e.cat] || 0) + e.amount;
         });
 
-        // Calcul des pourcentages pour l'assistant
         const pctFixe = (types.fixe / (budget || 1)) * 100;
         const pctVie = (types.vie / (budget || 1)) * 100;
         const pctLoisirs = (types.loisirs / (budget || 1)) * 100;
 
-        // Mise à jour de l'assistant intelligent
-        let advice = "";
-        let adviceIcon = "💡";
+        let advice = ""; let adviceIcon = "💡";
         
         if (total === 0) {
             advice = "<strong>Bienvenue !</strong> Ajoutez vos premières dépenses pour que je puisse analyser ce mois.";
@@ -1033,7 +1066,6 @@
         document.querySelector('.advice-icon').innerText = adviceIcon;
         document.getElementById('advice-text').innerHTML = advice;
 
-        // Mise à jour visuelle des anneaux
         document.getElementById('ring-fixe').style.strokeDashoffset = 251.2 - (Math.min(types.fixe / (budget*0.5||1), 1) * 251.2);
         document.getElementById('ring-vie').style.strokeDashoffset = 251.2 - (Math.min(types.vie / (budget*0.3||1), 1) * 251.2);
         document.getElementById('ring-loisirs').style.strokeDashoffset = 251.2 - (Math.min(types.loisirs / (budget*0.2||1), 1) * 251.2);
