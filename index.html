@@ -63,7 +63,7 @@
         .tab-btn.active { background: var(--input-bg); color: var(--accent); }
         .tab-icon { font-size: 16px; }
 
-        /* SÉLECTEUR DE MOIS GLOBAL (NOUVEAU) */
+        /* SÉLECTEUR DE MOIS GLOBAL */
         .month-selector {
             display: flex; justify-content: space-between; align-items: center;
             background: var(--card-bg); border-radius: 14px; padding: 10px 15px;
@@ -166,6 +166,11 @@
         .stats-info { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; color: var(--text-muted); }
         .stats-info span:last-child { color: var(--text-main); font-weight: 600; }
 
+        /* ASSISTANT CONSEIL (NOUVEAU) */
+        .advice-box { background: var(--accent-light); border: 1px solid var(--accent); padding: 15px; border-radius: 14px; margin-bottom: 25px; display: flex; gap: 15px; align-items: flex-start; }
+        .advice-icon { font-size: 24px; }
+        .advice-text { font-size: 14px; line-height: 1.5; color: var(--text-main); }
+        
         /* VUE 4: RÉGLAGES */
         .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--border); }
         .settings-row:last-child { border-bottom: none; }
@@ -344,8 +349,16 @@
     </div>
 
     <div id="tab-stats" class="section">
+        
+        <div class="advice-box">
+            <div class="advice-icon">💡</div>
+            <div class="advice-text" id="advice-text">
+                Calcul en cours...
+            </div>
+        </div>
+
         <div class="card">
-            <h2 style="font-size:16px;">Anneaux de Budget (Mois)</h2>
+            <h2 style="font-size:16px; margin-top:0;">Règle d'or (50/30/20)</h2>
             <div class="rings-container">
                 <div class="ring-box">
                     <svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="40"/><circle id="ring-fixe" class="ring-fill" cx="50" cy="50" r="40" stroke="#ff453a" stroke-dasharray="251.2" stroke-dashoffset="251.2"/></svg>
@@ -360,8 +373,10 @@
                     <div class="ring-icon">🎬</div>
                 </div>
             </div>
-            <div style="display:flex; justify-content:space-around; font-size:12px; color:var(--text-muted); font-weight:600;">
-                <span>Fixe</span><span>Vie Quotidienne</span><span>Loisirs</span>
+            <div style="display:flex; justify-content:space-around; font-size:12px; color:var(--text-muted); font-weight:600; text-align:center;">
+                <span style="width:33%">Fixe<br>(Idéal 50%)</span>
+                <span style="width:33%">Quotidien<br>(Idéal 30%)</span>
+                <span style="width:33%">Loisirs<br>(Idéal 20%)</span>
             </div>
         </div>
         <div class="card">
@@ -392,7 +407,7 @@
             </div>
 
             <div class="settings-row">
-                <div class="settings-info"><h4>Budget mensuel</h4><p>Cible de dépenses</p></div>
+                <div class="settings-info"><h4>Budget mensuel</h4><p>Cible de dépenses mensuelles</p></div>
                 <input type="number" id="set-budget" class="input-control" style="width:100px; text-align:right" onchange="saveSettings()">
             </div>
         </div>
@@ -432,7 +447,6 @@
 </div>
 
 <script>
-    // --- DICTIONNAIRE AUTO-CATEGORISATION ---
     const KEYWORDS = {
         'alim': ['leclerc', 'carrefour', 'auchan', 'intermarche', 'lidl', 'courses', 'boulangerie', 'aldi', 'super u'],
         'transp': ['sncf', 'total', 'esso', 'uber', 'taxi', 'ratp', 'essence', 'peage', 'navigo'],
@@ -461,10 +475,7 @@
     let savedColor = localStorage.getItem('apple_clean_color_v1') || 'blue';
     
     let selectedCat = 'alim'; let currentFilter = 'all'; 
-    
-    // NOUVEAU : Date globale pour la navigation dans le temps
     let viewDate = new Date(); 
-    
     let currentType = 'expense'; let privacyMode = false;
     let globalRealBalance = 0;
     let editingTxId = null;
@@ -511,7 +522,6 @@
         renderCats(); renderFilters(); updateAccountsSelectors(); updateAllViews(); renderSettingsAccounts();
     }
 
-    // --- NAVIGATION DANS LE TEMPS ---
     function updateGlobalMonthLabel() {
         const formatter = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' });
         document.getElementById('global-month-label').innerText = formatter.format(viewDate);
@@ -521,8 +531,6 @@
         hapticTap();
         viewDate.setMonth(viewDate.getMonth() + dir);
         updateGlobalMonthLabel();
-        
-        // On met à jour toutes les vues avec ce nouveau mois
         updateAllViews();
         renderTransactions();
         renderStats();
@@ -844,10 +852,7 @@
 
     // --- DASHBOARD ---
     function updateAllViews() {
-        // always use real NOW for actual bank balances
         const nowReal = new Date(); 
-        
-        // use viewDate for the selected month stats
         const tY = viewDate.getFullYear(); 
         const tM = viewDate.getMonth();
         
@@ -882,10 +887,6 @@
             document.getElementById('prog-fill').style.background = monthExp > budget ? 'var(--red)' : 'var(--accent)';
         }
 
-        // Upcoming is relative to real today ONLY if we are viewing the current real month.
-        // If we view past or future, "upcoming" doesn't make much sense in the same way, 
-        // but we can just show all expenses of that viewed month that happen after "day 1" or hide the block.
-        // Better: if viewing a different month, show nothing in "upcoming" to avoid confusion, or show all.
         let upcoming = [];
         if (tY === nowReal.getFullYear() && tM === nowReal.getMonth()) {
             const todayDay = nowReal.getDate();
@@ -991,7 +992,7 @@
         } else details.style.display = 'none';
     }
 
-    // --- STATS ---
+    // --- STATS ET ASSISTANT ---
     function renderStats() {
         const list = document.getElementById('stats-list'); 
         const currentMonthExp = expandExpensesForMonth(viewDate.getFullYear(), viewDate.getMonth()).filter(e => e.type === 'expense');
@@ -1003,6 +1004,36 @@
             if(catInfo) types[catInfo.type] += e.amount; catTotals[e.cat] = (catTotals[e.cat] || 0) + e.amount;
         });
 
+        // Calcul des pourcentages pour l'assistant
+        const pctFixe = (types.fixe / (budget || 1)) * 100;
+        const pctVie = (types.vie / (budget || 1)) * 100;
+        const pctLoisirs = (types.loisirs / (budget || 1)) * 100;
+
+        // Mise à jour de l'assistant intelligent
+        let advice = "";
+        let adviceIcon = "💡";
+        
+        if (total === 0) {
+            advice = "<strong>Bienvenue !</strong> Ajoutez vos premières dépenses pour que je puisse analyser ce mois.";
+            adviceIcon = "👋";
+        } else if (pctFixe > 50) {
+            advice = `<strong>Attention :</strong> Vos charges fixes (<strong>${pctFixe.toFixed(0)}%</strong>) dépassent la recommandation des 50%. Envisagez de renégocier certains contrats.`;
+            adviceIcon = "⚠️";
+        } else if (pctLoisirs > 20) {
+            advice = `<strong>Alerte Plaisir :</strong> Vous avez alloué <strong>${pctLoisirs.toFixed(0)}%</strong> aux loisirs (limite conseillée: 20%). Levez un peu le pied !`;
+            adviceIcon = "🛍️";
+        } else if (pctVie > 30) {
+            advice = `<strong>Quotidien :</strong> Vos dépenses courantes (<strong>${pctVie.toFixed(0)}%</strong>) sont au-dessus des 30% idéaux. Surveillez vos prochains achats.`;
+            adviceIcon = "🛒";
+        } else {
+            advice = `<strong>Félicitations !</strong> Vous respectez parfaitement la règle d'or des 50-30-20. Votre budget est sain.`;
+            adviceIcon = "✅";
+        }
+        
+        document.querySelector('.advice-icon').innerText = adviceIcon;
+        document.getElementById('advice-text').innerHTML = advice;
+
+        // Mise à jour visuelle des anneaux
         document.getElementById('ring-fixe').style.strokeDashoffset = 251.2 - (Math.min(types.fixe / (budget*0.5||1), 1) * 251.2);
         document.getElementById('ring-vie').style.strokeDashoffset = 251.2 - (Math.min(types.vie / (budget*0.3||1), 1) * 251.2);
         document.getElementById('ring-loisirs').style.strokeDashoffset = 251.2 - (Math.min(types.loisirs / (budget*0.2||1), 1) * 251.2);
@@ -1016,7 +1047,7 @@
     }
 
     // --- REGLAGES ---
-    function saveSettings() { budget = document.getElementById('set-budget').value; localStorage.setItem('apple_clean_budget_v4', budget); updateAllViews(); }
+    function saveSettings() { budget = document.getElementById('set-budget').value; localStorage.setItem('apple_clean_budget_v4', budget); updateAllViews(); renderStats(); }
     function exportPDF() { html2pdf().from(document.getElementById('capture-area')).set({ margin: 10, filename: 'Rapport_Budget.pdf' }).save(); }
     function exportCSV() {
         let csv = "Type,Compte,Date,Libelle,Montant,Categorie,Recurrent,Frequence,Date_Fin,Note,URL\n";
