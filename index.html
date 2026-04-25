@@ -24,78 +24,160 @@
     <style>
         /* THEMES ET VARIABLES APPLE-LIKE */
         :root {
-            --accent: #007aff; --accent-light: rgba(0, 122, 255, 0.1);
-            --red: #ff3b30; --red-light: rgba(255, 59, 48, 0.1);
-            --green: #34c759; --green-light: rgba(52, 199, 89, 0.1);
-            --orange: #ff9500; --orange-light: rgba(255, 149, 0, 0.1);
-            --radius-card: 24px; --radius-btn: 16px;
+            --accent: #007aff; 
+            --accent-light: rgba(0, 122, 255, 0.1);
+            --red: #ff3b30; 
+            --red-light: rgba(255, 59, 48, 0.1);
+            --green: #34c759; 
+            --green-light: rgba(52, 199, 89, 0.1);
+            --orange: #ff9500; 
+            --orange-light: rgba(255, 149, 0, 0.1);
+            --radius-card: 24px; 
+            --radius-btn: 16px;
         }
 
         body[data-theme="dark"] {
-            --bg-color: #000000; --card-bg: #1c1c1e; --text-main: #ffffff;
-            --text-muted: #8e8e93; --input-bg: #2c2c2e; --border: transparent;
-            --shadow: none; --glass-bg: rgba(28, 28, 30, 0.75);
+            --bg-color: #000000; 
+            --card-bg: #1c1c1e; 
+            --text-main: #ffffff;
+            --text-muted: #8e8e93; 
+            --input-bg: #2c2c2e; 
+            --border: transparent;
+            --shadow: none; 
+            --glass-bg: rgba(28, 28, 30, 0.75);
         }
 
         body[data-theme="light"] {
-            --bg-color: #f2f2f7; --card-bg: #ffffff; --text-main: #000000;
-            --text-muted: #8e8e93; --input-bg: #e5e5ea; --border: transparent;
-            --shadow: 0 8px 30px rgba(0,0,0,0.04); --glass-bg: rgba(255, 255, 255, 0.85);
+            --bg-color: #f2f2f7; 
+            --card-bg: #ffffff; 
+            --text-main: #000000;
+            --text-muted: #8e8e93; 
+            --input-bg: #e5e5ea; 
+            --border: transparent;
+            --shadow: 0 8px 30px rgba(0,0,0,0.04); 
+            --glass-bg: rgba(255, 255, 255, 0.85);
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Inter', "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color); color: var(--text-main);
-            margin: 0; display: flex; justify-content: center;
-            -webkit-font-smoothing: antialiased; padding-top: env(safe-area-inset-top);
+            background-color: var(--bg-color); 
+            color: var(--text-main);
+            margin: 0; 
+            display: flex; 
+            justify-content: center;
+            -webkit-font-smoothing: antialiased; 
+            padding-top: env(safe-area-inset-top);
         }
 
         /* ECRAN D'AUTHENTIFICATION */
-        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-color); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
-        .auth-box { background: var(--card-bg); padding: 40px; border-radius: var(--radius-card); width: 100%; max-width: 400px; text-align: center; box-shadow: var(--shadow); }
+        #auth-screen { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background-color: var(--bg-color); z-index: 9999; display: flex; 
+            flex-direction: column; justify-content: center; align-items: center; 
+            padding: 20px; box-sizing: border-box; 
+        }
+        .auth-box { 
+            background: var(--card-bg); padding: 40px; border-radius: var(--radius-card); 
+            width: 100%; max-width: 400px; text-align: center; box-shadow: var(--shadow); 
+        }
         .auth-logo { font-size: 56px; margin-bottom: 20px; }
-        .auth-input { width: 100%; padding: 16px; border-radius: var(--radius-btn); border: none; background: var(--input-bg); color: var(--text-main); margin-bottom: 15px; font-size: 16px; outline: none; box-sizing: border-box; }
-        .auth-btn { width: 100%; padding: 18px; border-radius: var(--radius-btn); background: var(--accent); color: white; border: none; font-weight: 600; font-size: 16px; cursor: pointer; margin-bottom: 15px; transition: 0.2s; }
+        .auth-input { 
+            width: 100%; padding: 16px; border-radius: var(--radius-btn); border: none; 
+            background: var(--input-bg); color: var(--text-main); margin-bottom: 15px; 
+            font-size: 16px; outline: none; box-sizing: border-box; 
+        }
+        .auth-btn { 
+            width: 100%; padding: 18px; border-radius: var(--radius-btn); background: var(--accent); 
+            color: white; border: none; font-weight: 600; font-size: 16px; cursor: pointer; 
+            margin-bottom: 15px; transition: 0.2s; 
+        }
         .auth-btn:active { transform: scale(0.97); }
         .auth-link { color: var(--accent); font-size: 14px; cursor: pointer; text-decoration: underline; font-weight: 600;}
         .auth-error { color: var(--red); font-size: 14px; margin-bottom: 15px; font-weight: 500; min-height: 20px; }
 
         /* CONTENEUR PRINCIPAL */
-        .app-wrapper { width: 100%; max-width: 800px; padding: 20px; display: none; box-sizing: border-box; padding-bottom: 120px; }
+        .app-wrapper { 
+            width: 100%; max-width: 800px; padding: 20px; display: none; 
+            box-sizing: border-box; padding-bottom: 120px; 
+        }
         .privacy-active .blur-val { filter: blur(8px); pointer-events: none; transition: 0.2s; }
         
         .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
 
         /* HEADER */
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .header h1 { font-size: 34px; font-weight: 800; letter-spacing: -1px; margin: 0; transition: 0.3s; }
         .header-actions { display: flex; gap: 12px; align-items: center; }
-        .btn-privacy { background: var(--input-bg); color: var(--text-main); border: none; width: 44px; height: 44px; border-radius: 14px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn-privacy { 
+            background: var(--input-bg); color: var(--text-main); border: none; 
+            width: 44px; height: 44px; border-radius: 14px; font-size: 20px; 
+            cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; 
+        }
         .btn-privacy:active { transform: scale(0.95); }
-        .btn-add { background: var(--accent); color: white; border: none; padding: 0 18px; height: 40px; border-radius: 20px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px var(--accent-light); transition: 0.2s; }
+        .btn-add { 
+            background: var(--accent); color: white; border: none; padding: 0 18px; 
+            height: 40px; border-radius: 20px; font-weight: 600; font-size: 15px; 
+            cursor: pointer; display: flex; align-items: center; gap: 8px; 
+            box-shadow: 0 4px 12px var(--accent-light); transition: 0.2s; 
+        }
         .btn-add:active { transform: scale(0.95); opacity: 0.9; }
 
-        /* ONGLETS FLOTTANTS */
-        .tab-bar-container { position: fixed; bottom: 25px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 1000; padding: 0 20px; box-sizing: border-box; pointer-events: none; }
-        .tab-bar { position: relative; pointer-events: auto; display: flex; background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 8px; border-radius: 32px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid rgba(128,128,128,0.15); width: 100%; max-width: 450px; }
-        .tab-active-pill { position: absolute; top: 8px; bottom: 8px; left: 8px; width: calc((100% - 16px) / 4); background: var(--card-bg); border-radius: 24px; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 0; }
-        .tab-btn { position: relative; z-index: 1; flex: 1; background: none; border: none; color: var(--text-muted); padding: 8px 0; border-radius: 20px; cursor: pointer; transition: color 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+        /* ONGLETS FLOTTANTS (Style Pilule) */
+        .tab-bar-container { 
+            position: fixed; bottom: 25px; left: 0; width: 100%; display: flex; 
+            justify-content: center; z-index: 1000; padding: 0 20px; box-sizing: border-box; pointer-events: none; 
+        }
+        .tab-bar { 
+            position: relative; pointer-events: auto; display: flex; background: var(--glass-bg); 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 8px; 
+            border-radius: 32px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); 
+            border: 1px solid rgba(128,128,128,0.15); width: 100%; max-width: 450px; 
+        }
+        .tab-active-pill { 
+            position: absolute; top: 8px; bottom: 8px; left: 8px; 
+            width: calc((100% - 16px) / 4); background: var(--card-bg); border-radius: 24px; 
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 0; 
+        }
+        .tab-btn { 
+            position: relative; z-index: 1; flex: 1; background: none; border: none; 
+            color: var(--text-muted); padding: 8px 0; border-radius: 20px; cursor: pointer; 
+            transition: color 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; 
+        }
         .tab-btn.active { color: var(--accent); }
         .tab-icon { font-size: 22px; transition: transform 0.2s; }
         .tab-btn.active .tab-icon { transform: scale(1.1); }
         .tab-text { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
         /* SÉLECTEUR DE MOIS */
-        .month-selector { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); border-radius: var(--radius-card); padding: 16px 25px; margin-bottom: 25px; box-shadow: var(--shadow); }
-        .month-btn { background: var(--input-bg); color: var(--accent); border: none; width: 44px; height: 44px; border-radius: 16px; font-size: 22px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .month-selector { 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: var(--card-bg); border-radius: var(--radius-card); 
+            padding: 16px 25px; margin-bottom: 25px; box-shadow: var(--shadow); 
+        }
+        .month-btn { 
+            background: var(--input-bg); color: var(--accent); border: none; width: 44px; height: 44px; 
+            border-radius: 16px; font-size: 22px; font-weight: bold; cursor: pointer; 
+            transition: 0.2s; display: flex; align-items: center; justify-content: center; 
+        }
         .month-btn:active { transform: scale(0.9); }
         .month-label { font-size: 18px; font-weight: 800; text-transform: capitalize; color: var(--text-main); letter-spacing: -0.5px;}
 
-        .card { background-color: var(--card-bg); border-radius: var(--radius-card); padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow); }
+        .card { 
+            background-color: var(--card-bg); border-radius: var(--radius-card); 
+            padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow); 
+        }
 
         /* HERO SECTION */
-        .hero-section { position: relative; text-align: center; padding: 45px 20px 35px 20px; overflow: hidden; background: var(--card-bg); border-radius: var(--radius-card); box-shadow: var(--shadow); margin-bottom: 25px; }
+        .hero-section { 
+            position: relative; text-align: center; padding: 45px 20px 35px 20px; 
+            overflow: hidden; background: var(--card-bg); border-radius: var(--radius-card); 
+            box-shadow: var(--shadow); margin-bottom: 25px; 
+        }
         .hero-bg-curve { position: absolute; bottom: -5px; left: 0; width: 100%; height: 75%; z-index: 0; pointer-events: none; }
         .hero-content { position: relative; z-index: 1; }
         .hero-label { font-size: 13px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 10px; }
@@ -106,7 +188,11 @@
         /* GLASSMORPHISM BANK CARDS */
         .accounts-scroll { display: flex; gap: 16px; overflow-x: auto; margin-bottom: 30px; scrollbar-width: none; padding: 10px 0; }
         .accounts-scroll::-webkit-scrollbar { display: none; }
-        .bank-card { min-width: 260px; padding: 24px; border-radius: 24px; color: white; position: relative; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .bank-card { 
+            min-width: 260px; padding: 24px; border-radius: 24px; color: white; 
+            position: relative; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
+            border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
+        }
         .bank-card.blue { background: linear-gradient(135deg, #007aff 0%, #005bb5 100%); }
         .bank-card.purple { background: linear-gradient(135deg, #af52de 0%, #7d33a6 100%); }
         .bank-card.pink { background: linear-gradient(135deg, #ff2d55 0%, #c41e3d 100%); }
@@ -125,8 +211,20 @@
         .upcoming-item:last-child { border-bottom: none; padding-bottom: 0; }
 
         /* TIROIRS D'AJOUT (BOTTOM SHEET) */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); align-items: flex-end; justify-content: center; }
-        .modal-content { background-color: var(--card-bg); width: 100%; max-width: 800px; border-radius: 32px 32px 0 0; padding: 30px 25px max(30px, env(safe-area-inset-bottom)) 25px; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); animation: slideUpSheet 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-sizing: border-box; max-height: 90vh; overflow-y: auto;}
+        .modal { 
+            display: none; position: fixed; z-index: 2000; left: 0; top: 0; 
+            width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); 
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); 
+            align-items: flex-end; justify-content: center; 
+        }
+        .modal-content { 
+            background-color: var(--card-bg); width: 100%; max-width: 800px; 
+            border-radius: 32px 32px 0 0; 
+            padding: 30px 25px max(30px, env(safe-area-inset-bottom)) 25px; 
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.2); 
+            animation: slideUpSheet 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+            box-sizing: border-box; max-height: 90vh; overflow-y: auto;
+        }
         @keyframes slideUpSheet { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .sheet-handle { width: 40px; height: 5px; background: var(--text-muted); border-radius: 3px; margin: 0 auto 20px auto; opacity: 0.3; }
 
@@ -557,6 +655,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // Mode Hors-Ligne
     db.enablePersistence().catch(function(err) {
         console.log("Hors-ligne non disponible : ", err);
     });
@@ -588,6 +687,8 @@
     let globalRealBalance = 0;
     let editingTxId = null;
     let editingWishId = null;
+    
+    window.isSwiping = false; // Sécurité pour les clics tactiles
 
     const DEFAULT_CATEGORIES = [
         { id: 'alim', label: 'Alimentation', icon: '🛒', type: 'vie', isCustom: false },
@@ -653,7 +754,7 @@
     }
 
     // ==========================================
-    // 2. LOGIQUE DE SYNCHRONISATION CLOUD
+    // 2. LOGIQUE DE SYNCHRONISATION
     // ==========================================
     
     function initCloudSync() {
@@ -668,7 +769,6 @@
                 accounts = data.accounts || [];
                 wishlist = data.wishlist || [];
                 
-                // RESTAURATION SÉCURISÉE DES CATEGORIES
                 if (data.categories && data.categories.length > 0) {
                     categories = data.categories;
                 } else {
@@ -770,6 +870,14 @@
         window.requestAnimationFrame(step);
     }
 
+    const ACCENT_COLORS = {
+        'blue': { main: '#007aff', light: 'rgba(0, 122, 255, 0.15)' },
+        'purple': { main: '#af52de', light: 'rgba(175, 82, 222, 0.15)' },
+        'pink': { main: '#ff2d55', light: 'rgba(255, 45, 85, 0.15)' },
+        'green': { main: '#34c759', light: 'rgba(52, 199, 89, 0.15)' },
+        'orange': { main: '#ff9500', light: 'rgba(255, 149, 0, 0.15)' }
+    };
+
     function applyColor(c) {
         savedColor = c;
         document.documentElement.style.setProperty('--accent', ACCENT_COLORS[c].main);
@@ -804,6 +912,7 @@
         viewDate.setMonth(viewDate.getMonth() + dir);
         updateGlobalMonthLabel();
         
+        // Animation
         const area = document.getElementById('app-wrapper');
         area.classList.remove('fade-in');
         void area.offsetWidth;
@@ -882,12 +991,18 @@
         setTimeout(() => document.getElementById('inp-amount').focus(), 300);
     }
 
+    // Protection anti double-clic
+    let lastEditTime = 0;
     function openEditModal(id) {
+        if (Date.now() - lastEditTime < 300) return;
+        lastEditTime = Date.now();
         hapticTap();
-        const tx = expenses.find(e => e.id === id);
+        
+        // Comparaison robuste pour gérer les ID importés en CSV
+        const tx = expenses.find(e => String(e.id) === String(id));
         if (!tx) return;
 
-        editingTxId = id; 
+        editingTxId = tx.id; 
         document.getElementById('modal-title').innerText = "Détails";
         document.getElementById('btn-submit-tx').innerText = "Enregistrer";
         document.getElementById('btn-delete-tx').style.display = 'block';
@@ -970,7 +1085,7 @@
         };
 
         if (editingTxId) {
-            const index = expenses.findIndex(e => e.id === editingTxId);
+            const index = expenses.findIndex(e => String(e.id) === String(editingTxId));
             if (index !== -1) expenses[index] = txData;
         } else {
             expenses.unshift(txData);
@@ -991,7 +1106,7 @@
 
     function deleteTx(id) {
         hapticTap();
-        expenses = expenses.filter(e => e.id !== id);
+        expenses = expenses.filter(e => String(e.id) !== String(id));
         saveToCloud(); 
         updateAllViews();
         if(document.getElementById('tab-tx').classList.contains('active')) renderTransactions();
@@ -1134,7 +1249,7 @@
         editingWishId = id;
         
         if (id) {
-            const item = wishlist.find(w => w.id === id);
+            const item = wishlist.find(w => String(w.id) === String(id));
             if(!item) return;
             document.getElementById('wishlist-modal-title').innerText = "Modifier l'envie";
             document.getElementById('inp-wish-name').value = item.name;
@@ -1175,7 +1290,7 @@
         if (!name || isNaN(price) || price <= 0 || !accountId) return alert("Veuillez saisir un nom, un compte et un prix valide.");
 
         if (editingWishId) {
-            const index = wishlist.findIndex(w => w.id === editingWishId);
+            const index = wishlist.findIndex(w => String(w.id) === String(editingWishId));
             if (index !== -1) {
                 wishlist[index].name = name;
                 wishlist[index].price = price;
@@ -1194,7 +1309,7 @@
     function deleteWishFromModal() {
         if(confirm("Supprimer ce projet de la liste ?")) {
             hapticTap();
-            wishlist = wishlist.filter(w => w.id !== editingWishId);
+            wishlist = wishlist.filter(w => String(w.id) !== String(editingWishId));
             saveToCloud();
             closeWishlistModal();
             updateAllViews();
@@ -1227,7 +1342,7 @@
         
         const target = document.getElementById('tab-' + id);
         target.classList.add('active');
-        void target.offsetWidth; 
+        void target.offsetWidth; // Reflow
         target.classList.add('fade-in');
         
         btn.classList.add('active');
@@ -1247,14 +1362,14 @@
     
     function adjustBalance(accId) {
         hapticTap();
-        const acc = accounts.find(a => a.id === accId);
+        const acc = accounts.find(a => String(a.id) === String(accId));
         if (!acc) return;
         
         const nowReal = new Date();
         let currentCalcBal = acc.initBalance;
         
         expenses.forEach(e => {
-            if(e.accountId === accId) {
+            if(String(e.accountId) === String(accId)) {
                 const pastCount = getPastOccurrencesCount(e, nowReal);
                 currentCalcBal += (e.type === 'income' ? 1 : -1) * (e.amount * pastCount);
             }
@@ -1320,7 +1435,7 @@
     }
 
     // ==========================================
-    // 8. LOGIQUE GLOBALE (MOTEUR DE CALCUL)
+    // 8. LOGIQUE GLOBALE ET SWIPES
     // ==========================================
 
     function getLastWorkingDay(year, month) {
@@ -1411,20 +1526,39 @@
         return expanded;
     }
 
+    // Gestion du TACTILE et du SWIPE
     let touchStartX = 0; let swipedElement = null;
-    function handleTouchStart(e, element) { touchStartX = e.touches[0].clientX; swipedElement = element; element.style.transition = 'none'; }
+    function handleTouchStart(e, element) { 
+        window.isSwiping = false;
+        touchStartX = e.touches[0].clientX; 
+        swipedElement = element; 
+        element.style.transition = 'none'; 
+    }
+    
     function handleTouchMove(e) {
         if(!swipedElement) return;
         const diffX = e.touches[0].clientX - touchStartX;
+        if(Math.abs(diffX) > 10) window.isSwiping = true;
         if(diffX < 0 && diffX > -80) swipedElement.style.transform = `translateX(${diffX}px)`;
     }
-    function handleTouchEnd(e) {
+    
+    function handleTouchEnd(e, id) {
         if(!swipedElement) return;
         swipedElement.style.transition = 'transform 0.2s ease-out';
         const diffX = e.changedTouches[0].clientX - touchStartX;
-        if(diffX < -40) { swipedElement.style.transform = `translateX(-80px)`; hapticTap(); } 
-        else { swipedElement.style.transform = `translateX(0px)`; }
+        
+        if(diffX < -40) { 
+            swipedElement.style.transform = `translateX(-80px)`; 
+            hapticTap(); 
+        } else { 
+            swipedElement.style.transform = `translateX(0px)`; 
+            // Si c'est un tap (très peu de mouvement horizontal) sur mobile, on ouvre la modale
+            if (Math.abs(diffX) < 10 && id) {
+                openEditModal(id);
+            }
+        }
         swipedElement = null;
+        setTimeout(() => { window.isSwiping = false; }, 50);
     }
 
     function formatRelativeDate(dateStr) {
@@ -1481,7 +1615,7 @@
             const linkHtml = safeUrl ? `<a href="${safeUrl}" target="_blank" class="tag-badge" style="text-decoration:none; margin-left:8px;" onclick="event.stopPropagation()">🔗 Lien</a>` : '';
 
             return `
-            <div class="card" style="padding:20px; cursor:pointer;" onclick="openWishlistModal(${w.id})">
+            <div class="card" style="padding:20px; cursor:pointer;" onclick="openWishlistModal('${escapeHTML(w.id)}')">
                 <div style="font-weight:800; font-size:18px; margin-bottom:6px; letter-spacing:-0.5px;">${escapeHTML(w.name)} ${linkHtml}</div>
                 <div style="font-size:28px; font-weight:800; letter-spacing:-1px; margin-bottom:15px;">${w.price.toFixed(0)} €</div>
                 <div class="prog-bar-bg" style="height:10px; margin-bottom:12px;"><div class="prog-bar-fill" style="width:${prog}%; background:${barColor}"></div></div>
@@ -1609,10 +1743,11 @@
             }
             const urlBadge = safeUrl ? `<a href="${safeUrl}" target="_blank" class="tag-badge" style="text-decoration:none; margin-left:6px;" onclick="event.stopPropagation()">🔗</a>` : '';
 
+            // Note : L'appel direct via onclick garantit que les ordinateurs peuvent cliquer. Le touchend gère le mobile.
             html += `
             <div class="tx-swipe-container">
-                <div class="tx-delete-btn" onclick="deleteTx(${e.originalId})">Suppr.</div>
-                <div class="tx-item-content" onclick="openEditModal(${e.originalId})" ontouchstart="handleTouchStart(event, this)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">
+                <div class="tx-delete-btn" onclick="deleteTx('${e.originalId}')">Suppr.</div>
+                <div class="tx-item-content" onclick="if(!window.isSwiping) openEditModal('${e.originalId}')" ontouchstart="handleTouchStart(event, this)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event, '${e.originalId}')">
                     <div style="display:flex; align-items:center;">
                         <div class="tx-icon-box">${icon}</div>
                         <div>
@@ -1658,7 +1793,7 @@
                 if(dE.length > 0) {
                     document.getElementById('cal-details-list').innerHTML = dE.map(e => {
                         const icon = e.type === 'income' ? '💰' : (categories.find(c => c.id === e.cat) || {}).icon || '📦';
-                        return `<div class="tx-item" onclick="openEditModal(${e.originalId})"><span style="display:flex; align-items:center; gap:12px;"><div class="tx-icon-box" style="width:40px; height:40px; border-radius:12px; margin:0;">${icon}</div> <b>${escapeHTML(e.label)}</b></span><span class="blur-val" style="font-weight:800; font-size:16px; color:${e.type==='income'?'var(--green)':'var(--text-main)'}">${e.type==='income'?'+':'-'}${e.amount.toFixed(2)} €</span></div>`;
+                        return `<div class="tx-item" onclick="openEditModal('${e.originalId}')"><span style="display:flex; align-items:center; gap:12px;"><div class="tx-icon-box" style="width:40px; height:40px; border-radius:12px; margin:0;">${icon}</div> <b>${escapeHTML(e.label)}</b></span><span class="blur-val" style="font-weight:800; font-size:16px; color:${e.type==='income'?'var(--green)':'var(--text-main)'}">${e.type==='income'?'+':'-'}${e.amount.toFixed(2)} €</span></div>`;
                     }).join('');
                 } else {
                     document.getElementById('cal-details-list').innerHTML = '<div style="color:var(--text-muted); font-size:14px; padding:10px 0;">Rien ce jour.</div>';
@@ -1835,7 +1970,7 @@
 
     function editAccount(id) {
         hapticTap();
-        const acc = accounts.find(a => a.id === id); if (!acc) return;
+        const acc = accounts.find(a => String(a.id) === String(id)); if (!acc) return;
         const bal = parseFloat(prompt(`Nouveau solde initial pour ${acc.name} (€) :\n(Ajustez plutôt depuis le dashboard pour la vraie vie)`, acc.initBalance).replace(',', '.'));
         if (!isNaN(bal)) { acc.initBalance = bal; saveToCloud(); applyAppSettings(); }
     }
@@ -1844,8 +1979,8 @@
         hapticTap();
         if(accounts.length <= 1) return alert("1 compte min.");
         if(confirm("Supprimer ce compte et ses opérations ?")) {
-            accounts = accounts.filter(a => a.id !== id);
-            expenses = expenses.filter(e => e.accountId !== id);
+            accounts = accounts.filter(a => String(a.id) !== String(id));
+            expenses = expenses.filter(e => String(e.accountId) !== String(id));
             saveToCloud();
             applyAppSettings();
         }
@@ -1881,8 +2016,8 @@
     function deleteCategory(id) {
         hapticTap();
         if (confirm("Supprimer ? Les op. seront en 'Autre'.")) {
-            categories = categories.filter(c => c.id !== id);
-            expenses.forEach(e => { if (e.cat === id) e.cat = 'autre'; });
+            categories = categories.filter(c => String(c.id) !== String(id));
+            expenses.forEach(e => { if (String(e.cat) === String(id)) e.cat = 'autre'; });
             saveToCloud();
             applyAppSettings();
         }
@@ -1941,8 +2076,8 @@
         expenses.forEach(e => {
             const safeLabel = escapeHTML(e.label).replace(/,/g, ' ');
             const safeNote = escapeHTML(e.note).replace(/,/g, ' ');
-            const accName = escapeHTML(accounts.find(a=>a.id===e.accountId)?.name || 'N/A');
-            const catObj = categories.find(c=>c.id===e.cat) || {label: e.cat};
+            const accName = escapeHTML(accounts.find(a=>String(a.id)===String(e.accountId))?.name || 'N/A');
+            const catObj = categories.find(c=>String(c.id)===String(e.cat)) || {label: e.cat};
             csv += `${e.type},${accName},${e.date},${safeLabel},${e.amount},${catObj.label},${e.recurring?'Oui':'Non'},${e.frequency||''},${e.endDate||''},${safeNote},${escapeHTML(e.url||'')}\n`;
         });
         const a = document.createElement('a');
