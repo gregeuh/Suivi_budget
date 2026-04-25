@@ -369,7 +369,7 @@
             
             <div class="card">
                 <div class="prog-header">
-                    <span>Progression du budget (Mois affiché)</span>
+                    <span>Marge de dépense (Objectif : <span id="dash-goal-text">0</span>€ restants)</span>
                     <span id="prog-label" style="color:var(--text-muted); font-weight:500;" class="blur-val">0 € / 0 €</span>
                 </div>
                 <div class="prog-bar-bg"><div class="prog-bar-fill" id="prog-fill"></div></div>
@@ -455,6 +455,7 @@
 
         <div class="card">
             <h2 style="font-size:16px; margin-top:0;">Règle d'or (50/30/20)</h2>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:15px;">Analyse basée sur vos revenus du mois.</p>
             <div class="rings-container">
                 <div class="ring-box">
                     <svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="40"/><circle id="ring-fixe" class="ring-fill" cx="50" cy="50" r="40" stroke="#ff453a" stroke-dasharray="251.2" stroke-dashoffset="251.2"/></svg>
@@ -501,7 +502,7 @@
         </div>
 
         <div class="card">
-            <h2 style="font-size:16px;">Budget Global & Style</h2>
+            <h2 style="font-size:16px;">Épargne & Style</h2>
             <div class="settings-row">
                 <div class="settings-info"><h4>Thème visuel</h4><p>S'adapte à votre système</p></div>
                 <select class="input-control" style="width:130px; font-weight:600;" onchange="changeTheme(this.value)" id="set-theme">
@@ -521,12 +522,12 @@
             </div>
 
             <div class="settings-row">
-                <div class="settings-info"><h4>Budget mensuel global</h4><p>Cible totale</p></div>
-                <input type="number" id="set-budget" class="input-control" style="width:100px; text-align:right" onchange="saveSettingsLocally()">
+                <div class="settings-info"><h4>Objectif d'épargne mensuel</h4><p>Solde cible en fin de mois</p></div>
+                <input type="number" id="set-savings-goal" class="input-control" style="width:100px; text-align:right" onchange="saveSettingsLocally()" placeholder="ex: 500">
             </div>
             
             <div class="settings-row">
-                <div class="settings-info"><h4>Fonds d'Urgence</h4><p>Objectif d'épargne sécurité</p></div>
+                <div class="settings-info"><h4>Fonds d'Urgence</h4><p>Objectif d'épargne sécurité totale</p></div>
                 <input type="number" id="set-emergency" class="input-control" style="width:100px; text-align:right" onchange="saveSettingsLocally()" placeholder="ex: 5000">
             </div>
         </div>
@@ -598,7 +599,7 @@
     let expenses = [];
     let accounts = [];
     let wishlist = [];
-    let budget = 2000;
+    let savingsGoal = 500; // Remplaçant de 'budget'
     let emergencyGoal = 5000;
     let catBudgets = {};
     let savedTheme = 'auto';
@@ -681,7 +682,8 @@
                 expenses = data.expenses || [];
                 accounts = data.accounts || [];
                 wishlist = data.wishlist || [];
-                budget = data.budget || 2000;
+                // On récupère l'ancienne variable 'budget' si 'savingsGoal' n'existe pas encore
+                savingsGoal = data.savingsGoal !== undefined ? data.savingsGoal : (data.budget || 500);
                 emergencyGoal = data.emergencyGoal || 5000;
                 catBudgets = data.catBudgets || {};
                 savedTheme = data.theme || 'auto';
@@ -695,7 +697,7 @@
                 expenses = JSON.parse(localStorage.getItem('apple_clean_v5') || localStorage.getItem('apple_clean_v4') || '[]');
                 accounts = JSON.parse(localStorage.getItem('apple_clean_acc_v5') || localStorage.getItem('apple_clean_acc_v4') || '[{"id":"acc1","name":"COMPTE COURANT","initBalance":2000,"color":""}]');
                 wishlist = [];
-                budget = parseFloat(localStorage.getItem('apple_clean_budget_v5')) || 2000;
+                savingsGoal = parseFloat(localStorage.getItem('apple_clean_savings_v5') || localStorage.getItem('apple_clean_budget_v5')) || 500;
                 emergencyGoal = parseFloat(localStorage.getItem('apple_clean_emergency_v5')) || 5000;
                 catBudgets = JSON.parse(localStorage.getItem('apple_clean_catbudgets_v5') || '{}');
                 savedTheme = localStorage.getItem('apple_clean_theme_v5') || 'auto';
@@ -714,7 +716,7 @@
             expenses: expenses,
             accounts: accounts,
             wishlist: wishlist,
-            budget: budget,
+            savingsGoal: savingsGoal,
             emergencyGoal: emergencyGoal,
             catBudgets: catBudgets,
             theme: savedTheme,
@@ -735,7 +737,7 @@
 
         applyTheme(savedTheme); document.getElementById('set-theme').value = savedTheme;
         applyColor(savedColor);
-        document.getElementById('set-budget').value = budget;
+        document.getElementById('set-savings-goal').value = savingsGoal;
         document.getElementById('set-emergency').value = emergencyGoal;
         
         updateGlobalMonthLabel();
@@ -1400,7 +1402,7 @@
         }).join('');
     }
 
-    // --- DASHBOARD ---
+    // --- DASHBOARD (NOUVELLE LOGIQUE D'ÉPARGNE) ---
     function updateAllViews() {
         const nowReal = new Date(); 
         const tY = viewDate.getFullYear(); 
@@ -1414,7 +1416,6 @@
             accBalances[e.accountId] += (e.type === 'income' ? 1 : -1) * (e.amount * pastCount);
         });
 
-        // NOUVEAUTÉ : Bouton "Ajuster" sur chaque carte
         document.getElementById('accounts-container').innerHTML = accounts.map(a => {
             globalRealBalance += accBalances[a.id];
             return `
@@ -1441,11 +1442,14 @@
         animateValue(document.getElementById('dash-exp'), 0, monthExp, 800, val => "-" + val.toFixed(0) + " €");
         animateValue(document.getElementById('dash-remaining'), 0, epargneMois, 800, val => val.toFixed(0) + " €");
         
-        if (budget > 0) {
-            document.getElementById('prog-label').innerText = monthExp.toFixed(0) + " € / " + budget + " €";
-            document.getElementById('prog-fill').style.width = Math.min((monthExp/budget)*100, 100) + "%";
-            document.getElementById('prog-fill').style.background = monthExp > budget ? 'var(--red)' : 'var(--accent)';
-        }
+        // NOUVELLE LOGIQUE : MARGE DE DÉPENSES SÉCURISÉE
+        document.getElementById('dash-goal-text').innerText = savingsGoal.toFixed(0);
+        const safeLimit = Math.max(0, monthInc - savingsGoal);
+        document.getElementById('prog-label').innerText = monthExp.toFixed(0) + " € / " + safeLimit.toFixed(0) + " €";
+        
+        let pct = safeLimit > 0 ? (monthExp / safeLimit) * 100 : (monthExp > 0 ? 100 : 0);
+        document.getElementById('prog-fill').style.width = Math.min(pct, 100) + "%";
+        document.getElementById('prog-fill').style.background = pct >= 100 ? 'var(--red)' : (pct > 80 ? 'var(--orange)' : 'var(--accent)');
 
         let upcoming = [];
         if (tY === nowReal.getFullYear() && tM === nowReal.getMonth()) {
@@ -1549,7 +1553,7 @@
         } else details.style.display = 'none';
     }
 
-    // --- STATISTIQUES ET NOUVEAU RADAR ---
+    // --- STATISTIQUES ET RADAR ---
     function renderSubRadar() {
         const list = document.getElementById('sub-radar-list');
         const subs = expenses.filter(e => e.recurring === true && e.type === 'expense');
@@ -1628,28 +1632,33 @@
             document.getElementById('emergency-fill').style.width = "0%";
         }
 
-        const pctFixe = (types.fixe / (budget || 1)) * 100;
-        const pctVie = (types.vie / (budget || 1)) * 100;
-        const pctLoisirs = (types.loisirs / (budget || 1)) * 100;
+        // NOUVELLE LOGIQUE 50/30/20 BASÉE SUR LES REVENUS RÉELS
+        const baseCalc = monthInc > 0 ? monthInc : 1; // Pour éviter la division par zéro
+        
+        const pctFixe = (types.fixe / baseCalc) * 100;
+        const pctVie = (types.vie / baseCalc) * 100;
+        const pctLoisirs = (types.loisirs / baseCalc) * 100;
 
         let advice = ""; let adviceIcon = "💡";
-        if (total === 0) {
-            advice = "<strong>Bienvenue !</strong> Ajoutez vos premières dépenses pour que je puisse analyser ce mois."; adviceIcon = "👋";
+        if (monthInc === 0 && total === 0) {
+            advice = "<strong>Bienvenue !</strong> Ajoutez vos revenus du mois pour activer l'analyse 50/30/20."; adviceIcon = "👋";
+        } else if (monthInc === 0 && total > 0) {
+            advice = "<strong>Oups !</strong> Vous n'avez enregistré aucun revenu ce mois-ci. L'analyse de vos dépenses risque d'être faussée."; adviceIcon = "⚠️";
         } else if (pctFixe > 50) {
-            advice = `<strong>Attention :</strong> Vos charges fixes (<strong>${pctFixe.toFixed(0)}%</strong>) dépassent la recommandation des 50%. Envisagez de renégocier certains contrats.`; adviceIcon = "⚠️";
+            advice = `<strong>Attention :</strong> Vos charges fixes (<strong>${pctFixe.toFixed(0)}% de vos revenus</strong>) dépassent la recommandation des 50%. Envisagez de renégocier certains contrats.`; adviceIcon = "⚠️";
         } else if (pctLoisirs > 20) {
-            advice = `<strong>Alerte Plaisir :</strong> Vous avez alloué <strong>${pctLoisirs.toFixed(0)}%</strong> aux loisirs (limite conseillée: 20%). Levez un peu le pied !`; adviceIcon = "🛍️";
+            advice = `<strong>Alerte Plaisir :</strong> Vous avez alloué <strong>${pctLoisirs.toFixed(0)}% de vos revenus</strong> aux loisirs (limite conseillée: 20%). Levez un peu le pied !`; adviceIcon = "🛍️";
         } else if (pctVie > 30) {
-            advice = `<strong>Quotidien :</strong> Vos dépenses courantes (<strong>${pctVie.toFixed(0)}%</strong>) sont au-dessus des 30% idéaux. Surveillez vos prochains achats.`; adviceIcon = "🛒";
+            advice = `<strong>Quotidien :</strong> Vos dépenses courantes (<strong>${pctVie.toFixed(0)}% de vos revenus</strong>) sont au-dessus des 30% idéaux. Surveillez vos achats.`; adviceIcon = "🛒";
         } else {
-            advice = `<strong>Félicitations !</strong> Vous respectez parfaitement la règle d'or des 50-30-20. Votre budget est sain.`; adviceIcon = "✅";
+            advice = `<strong>Félicitations !</strong> Vous respectez parfaitement la règle d'or des 50-30-20. Votre équilibre financier est parfait.`; adviceIcon = "✅";
         }
         
         document.querySelector('.advice-icon').innerText = adviceIcon; document.getElementById('advice-text').innerHTML = advice;
 
-        document.getElementById('ring-fixe').style.strokeDashoffset = 251.2 - (Math.min(types.fixe / (budget*0.5||1), 1) * 251.2);
-        document.getElementById('ring-vie').style.strokeDashoffset = 251.2 - (Math.min(types.vie / (budget*0.3||1), 1) * 251.2);
-        document.getElementById('ring-loisirs').style.strokeDashoffset = 251.2 - (Math.min(types.loisirs / (budget*0.2||1), 1) * 251.2);
+        document.getElementById('ring-fixe').style.strokeDashoffset = 251.2 - (Math.min(types.fixe / (baseCalc*0.5), 1) * 251.2);
+        document.getElementById('ring-vie').style.strokeDashoffset = 251.2 - (Math.min(types.vie / (baseCalc*0.3), 1) * 251.2);
+        document.getElementById('ring-loisirs').style.strokeDashoffset = 251.2 - (Math.min(types.loisirs / (baseCalc*0.2), 1) * 251.2);
 
         renderSubRadar();
 
@@ -1677,11 +1686,11 @@
 
     function saveSettingsLocally() { 
         displayName = document.getElementById('set-displayname').value.trim();
-        budget = parseFloat(document.getElementById('set-budget').value) || 0; 
+        savingsGoal = parseFloat(document.getElementById('set-savings-goal').value) || 0; 
         emergencyGoal = parseFloat(document.getElementById('set-emergency').value) || 0;
         
         localStorage.setItem('apple_clean_name_v5', displayName);
-        localStorage.setItem('apple_clean_budget_v5', budget); 
+        localStorage.setItem('apple_clean_savings_v5', savingsGoal); 
         localStorage.setItem('apple_clean_emergency_v5', emergencyGoal);
         
         saveToCloud(); 
