@@ -7,6 +7,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Budget Pro">
     
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/11048/11048595.png">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/11048/11048595.png">
+    
     <title>Mon Budget Apple Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
@@ -915,7 +918,6 @@
             document.getElementById('inp-wish-name').value = item.name;
             document.getElementById('inp-wish-price').value = item.price;
             document.getElementById('inp-wish-url').value = item.url || '';
-            // Restaure le compte cible, sinon met le premier dispo
             document.getElementById('inp-wish-account').value = item.accountId || (accounts[0] ? accounts[0].id : '');
             
             document.getElementById('btn-delete-wish').style.display = 'block';
@@ -925,7 +927,7 @@
             document.getElementById('inp-wish-name').value = '';
             document.getElementById('inp-wish-price').value = '';
             document.getElementById('inp-wish-url').value = '';
-            document.getElementById('inp-wish-account').value = accounts[0] ? accounts[0].id : ''; // Valeur par défaut
+            document.getElementById('inp-wish-account').value = accounts[0] ? accounts[0].id : ''; 
             
             document.getElementById('btn-delete-wish').style.display = 'none';
             document.getElementById('btn-submit-wish').innerText = "Enregistrer";
@@ -996,7 +998,7 @@
     function updateAccountsSelectors() { 
         const options = accounts.map(a => `<option value="${escapeHTML(a.id)}">${escapeHTML(a.name)}</option>`).join('');
         document.getElementById('inp-account').innerHTML = options; 
-        document.getElementById('inp-wish-account').innerHTML = options; // Met aussi à jour la pop-up Projets
+        document.getElementById('inp-wish-account').innerHTML = options; 
     }
     
     function addAccount() {
@@ -1204,9 +1206,7 @@
         }
 
         container.innerHTML = wishlist.map(w => {
-            // Récupérer la balance du compte spécifique
             const accId = w.accountId;
-            // Sécurité : si aucun compte ou si le compte a été supprimé, on utilise l'argent total ou 0.
             const accBalance = accId ? (accBalances[accId] || 0) : globalRealBalance;
             const accObj = accounts.find(a => a.id === accId);
             const accName = accObj ? escapeHTML(accObj.name) : 'Tous les comptes';
@@ -1304,7 +1304,6 @@
             }).join('');
         }
 
-        // On passe accBalances pour que la wishlist connaisse l'argent de chaque compte
         renderWishlist(epargneMois, accBalances);
     }
 
