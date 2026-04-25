@@ -773,11 +773,9 @@
                 accounts = data.accounts || [];
                 wishlist = data.wishlist || [];
                 
-                if (data.categories && data.categories.length > 0) {
-                    categories = data.categories;
-                } else {
-                    categories = [...DEFAULT_CATEGORIES];
-                }
+                // CORRECTION: Assurer la présence des catégories par défaut
+                const cloudCustomCats = (data.categories || []).filter(c => c.isCustom);
+                categories = [...DEFAULT_CATEGORIES, ...cloudCustomCats];
                 
                 savingsGoal = data.savingsGoal !== undefined ? data.savingsGoal : 500;
                 emergencyGoal = data.emergencyGoal || 5000;
@@ -791,7 +789,10 @@
                 expenses = JSON.parse(localStorage.getItem('apple_clean_v5') || '[]');
                 accounts = JSON.parse(localStorage.getItem('apple_clean_acc_v5') || '[{"id":"acc1","name":"Compte Principal","initBalance":1000,"color":"blue"}]');
                 wishlist = [];
-                categories = [...DEFAULT_CATEGORIES];
+                
+                const localCustomCats = JSON.parse(localStorage.getItem('apple_clean_cats_v5') || '[]').filter(c => c.isCustom);
+                categories = [...DEFAULT_CATEGORIES, ...localCustomCats];
+                
                 savingsGoal = parseFloat(localStorage.getItem('apple_clean_savings_v5')) || 500;
                 emergencyGoal = parseFloat(localStorage.getItem('apple_clean_emergency_v5')) || 5000;
                 catBudgets = JSON.parse(localStorage.getItem('apple_clean_catbudgets_v5') || '{}');
@@ -916,6 +917,7 @@
         viewDate.setMonth(viewDate.getMonth() + dir);
         updateGlobalMonthLabel();
         
+        // Animation
         const area = document.getElementById('app-wrapper');
         area.classList.remove('fade-in');
         void area.offsetWidth;
@@ -1435,7 +1437,6 @@
         }
     }
 
-    // --- NOUVEAU BOUTON : EFFACER UNIQUEMENT L'HISTORIQUE ---
     function deleteAllOperations() {
         if(confirm("Attention : Cela va effacer TOUTES vos transactions (Dépenses et Revenus) de façon définitive.\n\nVos comptes, soldes initiaux, projets et catégories seront conservés tels quels.\n\nÊtes-vous sûr de vouloir tout effacer ?")) {
             hapticTap();
@@ -1565,7 +1566,6 @@
             hapticTap(); 
         } else { 
             swipedElement.style.transform = `translateX(0px)`; 
-            // Si c'est un tap (très peu de mouvement horizontal) sur mobile, on ouvre la modale
             if (Math.abs(diffX) < 10 && id) {
                 openEditModal(id);
             }
@@ -1756,7 +1756,6 @@
             }
             const urlBadge = safeUrl ? `<a href="${safeUrl}" target="_blank" class="tag-badge" style="text-decoration:none; margin-left:6px;" onclick="event.stopPropagation()">🔗</a>` : '';
 
-            // Note : L'appel direct via onclick garantit que les ordinateurs peuvent cliquer. Le touchend gère le mobile.
             html += `
             <div class="tx-swipe-container">
                 <div class="tx-delete-btn" onclick="deleteTx('${e.originalId}')">Suppr.</div>
