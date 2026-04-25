@@ -51,7 +51,7 @@
         .tab-bar { 
             display: flex; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; 
             scrollbar-width: none; background: var(--card-bg); padding: 6px; border-radius: 14px; 
-            margin-bottom: 30px; border: 1px solid var(--border); 
+            margin-bottom: 20px; border: 1px solid var(--border); 
         }
         .tab-bar::-webkit-scrollbar { display: none; } 
         
@@ -62,6 +62,20 @@
         }
         .tab-btn.active { background: var(--input-bg); color: var(--accent); }
         .tab-icon { font-size: 16px; }
+
+        /* SÉLECTEUR DE MOIS GLOBAL (NOUVEAU) */
+        .month-selector {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--card-bg); border-radius: 14px; padding: 10px 15px;
+            margin-bottom: 20px; border: 1px solid var(--border);
+        }
+        .month-btn {
+            background: var(--input-bg); color: var(--accent); border: none;
+            width: 36px; height: 36px; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer;
+            transition: 0.2s; display: flex; align-items: center; justify-content: center;
+        }
+        .month-btn:active { transform: scale(0.9); }
+        .month-label { font-size: 16px; font-weight: 700; text-transform: capitalize; color: var(--text-main); }
 
         .card { background-color: var(--card-bg); border-radius: var(--radius); padding: 25px; margin-bottom: 20px; border: 1px solid var(--border); }
 
@@ -133,13 +147,14 @@
         a.tag-badge { text-decoration: none; cursor: pointer; }
         a.tag-badge:hover { opacity: 0.8; }
 
-        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
         .cal-day-label { text-align: center; font-size: 12px; font-weight: 600; color: var(--text-muted); padding-bottom: 10px; }
         .cal-cell { aspect-ratio: 1; background: var(--input-bg); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 500; position: relative; cursor: pointer; transition: 0.2s; }
         .cal-cell:hover { background: var(--border); }
         .cal-cell.has-tx::after { content: ''; width: 5px; height: 5px; background: var(--accent); border-radius: 50%; position: absolute; bottom: 6px; }
-        
+        .tx-item { cursor: pointer; padding: 12px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .tx-item:last-child { border-bottom: none; }
+
         /* VUE 3: STATISTIQUES */
         .rings-container { display: flex; justify-content: space-around; align-items: center; padding: 20px 0; }
         .ring-box { position: relative; width: 100px; height: 100px; }
@@ -155,7 +170,6 @@
         .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--border); }
         .settings-row:last-child { border-bottom: none; }
         .btn-export { background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); padding: 10px 16px; border-radius: 10px; font-size: 14px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
-        
         .btn-danger-outline { background: transparent; border: 1px solid var(--red); color: var(--red); width: 100%; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; gap: 8px; transition: 0.2s; }
         .btn-danger-outline:active { background: rgba(255, 69, 58, 0.1); transform: scale(0.98); }
 
@@ -212,7 +226,7 @@
                 <label style="font-size: 13px; font-weight:500; color: var(--text-muted); display:block; margin-bottom: 8px;">Fréquence</label>
                 <select id="inp-frequency" class="input-control" style="margin-bottom:15px; font-weight:600;">
                     <option value="monthly">Tous les mois (le même jour)</option>
-                    <option value="last_working_day">Dernier jour ouvré du mois (Salaire)</option>
+                    <option value="last_working_day">Dernier jour ouvré du mois</option>
                     <option value="4weeks">Toutes les 4 semaines</option>
                     <option value="2weeks">Toutes les 2 semaines</option>
                     <option value="weekly">Toutes les semaines</option>
@@ -245,6 +259,12 @@
         </div>
     </div>
 
+    <div class="month-selector">
+        <button class="month-btn" onclick="changeGlobalMonth(-1)">‹</button>
+        <div class="month-label" id="global-month-label">Mois Année</div>
+        <button class="month-btn" onclick="changeGlobalMonth(1)">›</button>
+    </div>
+
     <div class="tab-bar">
         <button class="tab-btn active" onclick="switchTab('dash', this)"><span class="tab-icon">■</span> Tableau de bord</button>
         <button class="tab-btn" onclick="switchTab('tx', this)"><span class="tab-icon">≡</span> Journal</button>
@@ -273,7 +293,7 @@
             
             <div class="card">
                 <div class="prog-header">
-                    <span>Progression du budget mensuel</span>
+                    <span>Progression du budget (Mois affiché)</span>
                     <span id="prog-label" style="color:var(--text-muted); font-weight:500;" class="blur-val">0 € / 0 €</span>
                 </div>
                 <div class="prog-bar-bg"><div class="prog-bar-fill" id="prog-fill"></div></div>
@@ -311,13 +331,6 @@
             </div>
 
             <div id="journal-cal-view" style="display:none;">
-                <div class="cal-header">
-                    <h2 id="cal-month-title" style="margin:0; font-size:16px;">Mois</h2>
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn-privacy" onclick="changeCalMonth(-1)">‹</button>
-                        <button class="btn-privacy" onclick="changeCalMonth(1)">›</button>
-                    </div>
-                </div>
                 <div class="cal-grid" id="cal-grid">
                     <div class="cal-day-label">Lun</div><div class="cal-day-label">Mar</div><div class="cal-day-label">Mer</div>
                     <div class="cal-day-label">Jeu</div><div class="cal-day-label">Ven</div><div class="cal-day-label">Sam</div><div class="cal-day-label">Dim</div>
@@ -447,7 +460,11 @@
     let savedTheme = localStorage.getItem('apple_clean_theme_v4') || 'auto';
     let savedColor = localStorage.getItem('apple_clean_color_v1') || 'blue';
     
-    let selectedCat = 'alim'; let currentFilter = 'all'; let calDate = new Date();
+    let selectedCat = 'alim'; let currentFilter = 'all'; 
+    
+    // NOUVEAU : Date globale pour la navigation dans le temps
+    let viewDate = new Date(); 
+    
     let currentType = 'expense'; let privacyMode = false;
     let globalRealBalance = 0;
     let editingTxId = null;
@@ -490,7 +507,28 @@
         applyColor(savedColor);
         document.getElementById('inp-date').valueAsDate = new Date(); document.getElementById('set-budget').value = budget;
         
+        updateGlobalMonthLabel();
         renderCats(); renderFilters(); updateAccountsSelectors(); updateAllViews(); renderSettingsAccounts();
+    }
+
+    // --- NAVIGATION DANS LE TEMPS ---
+    function updateGlobalMonthLabel() {
+        const formatter = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' });
+        document.getElementById('global-month-label').innerText = formatter.format(viewDate);
+    }
+
+    function changeGlobalMonth(dir) {
+        hapticTap();
+        viewDate.setMonth(viewDate.getMonth() + dir);
+        updateGlobalMonthLabel();
+        
+        // On met à jour toutes les vues avec ce nouveau mois
+        updateAllViews();
+        renderTransactions();
+        renderStats();
+        if (document.getElementById('journal-cal-view').style.display === 'block') {
+            renderCalendar();
+        }
     }
 
     function changeTheme(t) { localStorage.setItem('apple_clean_theme_v4', t); applyTheme(t); }
@@ -672,14 +710,10 @@
             </div>`).join('');
     }
 
-    // --- ALGORITHME DERNIER JOUR OUVRÉ ---
     function getLastWorkingDay(year, month) {
-        let lastDay = new Date(year, month + 1, 0); // Dernier jour du mois cible
-        if (lastDay.getDay() === 0) { // Dimanche
-            lastDay.setDate(lastDay.getDate() - 2); // Devient Vendredi
-        } else if (lastDay.getDay() === 6) { // Samedi
-            lastDay.setDate(lastDay.getDate() - 1); // Devient Vendredi
-        }
+        let lastDay = new Date(year, month + 1, 0); 
+        if (lastDay.getDay() === 0) { lastDay.setDate(lastDay.getDate() - 2); } 
+        else if (lastDay.getDay() === 6) { lastDay.setDate(lastDay.getDate() - 1); }
         return lastDay.getDate();
     }
 
@@ -706,12 +740,10 @@
                 curr.setDate(curr.getDate() + freqDays);
             }
         } else if (exp.frequency === 'last_working_day') {
-            // Algorithme "Dernier jour ouvré"
             let occDay = getLastWorkingDay(year, month);
             let occDate = new Date(year, month, occDay);
             if (occDate >= startDate && occDate <= endDate) occurrences.push(occDay);
         } else {
-            // Mensuel classique
             if (startDate <= targetEnd && targetStart <= endDate) {
                 let d = startDate.getDate(); let maxDays = targetEnd.getDate();
                 if (d > maxDays) d = maxDays;
@@ -812,12 +844,18 @@
 
     // --- DASHBOARD ---
     function updateAllViews() {
-        const now = new Date(); const tY = now.getFullYear(); const tM = now.getMonth();
+        // always use real NOW for actual bank balances
+        const nowReal = new Date(); 
+        
+        // use viewDate for the selected month stats
+        const tY = viewDate.getFullYear(); 
+        const tM = viewDate.getMonth();
+        
         const accBalances = {}; accounts.forEach(a => accBalances[a.id] = a.initBalance); globalRealBalance = 0;
 
         expenses.forEach(e => {
             if(accBalances[e.accountId] === undefined) return;
-            const pastCount = getPastOccurrencesCount(e, now);
+            const pastCount = getPastOccurrencesCount(e, nowReal);
             accBalances[e.accountId] += (e.type === 'income' ? 1 : -1) * (e.amount * pastCount);
         });
 
@@ -844,15 +882,27 @@
             document.getElementById('prog-fill').style.background = monthExp > budget ? 'var(--red)' : 'var(--accent)';
         }
 
-        const todayDay = now.getDate();
-        const upcoming = currentMonthData.filter(e => e.recurring && e.type === 'expense' && e.displayDay > todayDay).sort((a,b) => a.displayDay - b.displayDay);
-        
+        // Upcoming is relative to real today ONLY if we are viewing the current real month.
+        // If we view past or future, "upcoming" doesn't make much sense in the same way, 
+        // but we can just show all expenses of that viewed month that happen after "day 1" or hide the block.
+        // Better: if viewing a different month, show nothing in "upcoming" to avoid confusion, or show all.
+        let upcoming = [];
+        if (tY === nowReal.getFullYear() && tM === nowReal.getMonth()) {
+            const todayDay = nowReal.getDate();
+            upcoming = currentMonthData.filter(e => e.recurring && e.type === 'expense' && e.displayDay > todayDay).sort((a,b) => a.displayDay - b.displayDay);
+        }
+
         const upList = document.getElementById('upcoming-list');
-        if(upcoming.length === 0) upList.innerHTML = "<p style='color:var(--text-muted); font-size:14px; margin:0;'>Tout est payé pour ce mois-ci ! 🎉</p>";
-        else upList.innerHTML = upcoming.map(e => {
-            const urlBadge = e.url ? `<a href="${e.url}" target="_blank" class="tag-badge" style="text-decoration:none; margin-right:10px;" onclick="event.stopPropagation()">🔗</a>` : '';
-            return `<div class="upcoming-item"><div><span class="upcoming-date" style="background:var(--input-bg); color:var(--accent); padding:4px 8px; border-radius:6px; font-size:11px; font-weight:700; margin-right:12px;">Le ${e.displayDay}</span><span style="font-weight:600; font-size:14px;">${urlBadge}${e.label}</span></div><div class="blur-val" style="font-weight:700;">${e.amount.toFixed(2)} €</div></div>`;
-        }).join('');
+        if (tY !== nowReal.getFullYear() || tM !== nowReal.getMonth()) {
+            upList.innerHTML = "<p style='color:var(--text-muted); font-size:14px; margin:0;'>L'échéancier n'est disponible que pour le mois en cours.</p>";
+        } else if(upcoming.length === 0) {
+            upList.innerHTML = "<p style='color:var(--text-muted); font-size:14px; margin:0;'>Tout est payé pour ce mois-ci ! 🎉</p>";
+        } else {
+            upList.innerHTML = upcoming.map(e => {
+                const urlBadge = e.url ? `<a href="${e.url}" target="_blank" class="tag-badge" style="text-decoration:none; margin-right:10px;" onclick="event.stopPropagation()">🔗</a>` : '';
+                return `<div class="upcoming-item"><div><span class="upcoming-date" style="background:var(--input-bg); color:var(--accent); padding:4px 8px; border-radius:6px; font-size:11px; font-weight:700; margin-right:12px;">Le ${e.displayDay}</span><span style="font-weight:600; font-size:14px;">${urlBadge}${e.label}</span></div><div class="blur-val" style="font-weight:700;">${e.amount.toFixed(2)} €</div></div>`;
+            }).join('');
+        }
     }
 
     function simulatePurchase() {
@@ -874,12 +924,12 @@
     function setFilter(f, el) { hapticTap(); currentFilter = f; document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active')); el.classList.add('active'); renderTransactions(); }
 
     function renderTransactions() {
-        const list = document.getElementById('tx-list'); const search = document.getElementById('tx-search').value.toLowerCase(); const now = new Date();
-        const activeExps = expandExpensesForMonth(now.getFullYear(), now.getMonth());
+        const list = document.getElementById('tx-list'); const search = document.getElementById('tx-search').value.toLowerCase(); 
+        const activeExps = expandExpensesForMonth(viewDate.getFullYear(), viewDate.getMonth());
         
         const filtered = activeExps.filter(e => (currentFilter === 'all' || (currentFilter === 'income' ? e.type === 'income' : e.cat === currentFilter)) && (e.label.toLowerCase().includes(search) || (e.note && e.note.toLowerCase().includes(search))));
         
-        if(filtered.length === 0) { list.innerHTML = "<p style='color:var(--text-muted); text-align:center; padding:20px 0;'>Aucune transaction trouvée</p>"; return; }
+        if(filtered.length === 0) { list.innerHTML = "<p style='color:var(--text-muted); text-align:center; padding:20px 0;'>Aucune transaction trouvée pour ce mois</p>"; return; }
         
         list.innerHTML = filtered.map(e => {
             const isInc = e.type === 'income'; const icon = isInc ? '💰' : CATEGORIES.find(c => c.id === e.cat).icon;
@@ -915,7 +965,7 @@
     // --- CALENDRIER ---
     function renderCalendar() {
         const grid = document.getElementById('cal-grid'); while (grid.childNodes.length > 7) grid.removeChild(grid.lastChild);
-        const year = calDate.getFullYear(); const month = calDate.getMonth(); document.getElementById('cal-month-title').innerText = new Intl.DateTimeFormat('fr-FR', {month:'long', year:'numeric'}).format(calDate);
+        const year = viewDate.getFullYear(); const month = viewDate.getMonth(); 
         const firstDay = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month + 1, 0).getDate(); const startDay = firstDay === 0 ? 6 : firstDay - 1;
         
         const activeExps = expandExpensesForMonth(year, month);
@@ -926,7 +976,7 @@
             const div = document.createElement('div'); div.className = `cal-cell ${hasTx ? 'has-tx' : ''}`; div.innerText = day; div.onclick = () => showCalDetails(day, year, month, activeExps); grid.appendChild(div);
         }
     }
-    function changeCalMonth(dir) { hapticTap(); calDate.setMonth(calDate.getMonth() + dir); document.getElementById('cal-details').style.display = 'none'; renderCalendar(); }
+
     function showCalDetails(day, year, month, activeExps) {
         hapticTap();
         const details = document.getElementById('cal-details'); const list = document.getElementById('cal-details-list');
@@ -943,8 +993,8 @@
 
     // --- STATS ---
     function renderStats() {
-        const list = document.getElementById('stats-list'); const now = new Date();
-        const currentMonthExp = expandExpensesForMonth(now.getFullYear(), now.getMonth()).filter(e => e.type === 'expense');
+        const list = document.getElementById('stats-list'); 
+        const currentMonthExp = expandExpensesForMonth(viewDate.getFullYear(), viewDate.getMonth()).filter(e => e.type === 'expense');
         const total = currentMonthExp.reduce((s, e) => s + e.amount, 0);
         const types = { fixe: 0, vie: 0, loisirs: 0 }; const catTotals = {};
         
