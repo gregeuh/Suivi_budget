@@ -2,16 +2,19 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Budget Pro">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Budget">
     
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/11048/11048595.png">
     <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/11048/11048595.png">
     
-    <title>Mon Budget Apple Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Mon Budget</title>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    </style>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
@@ -19,335 +22,238 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
     <style>
-        /* THEMES ET VARIABLES */
+        /* THEMES ET VARIABLES APPLE-LIKE */
         :root {
-            --accent: #007aff; --accent-light: rgba(0, 122, 255, 0.15);
-            --red: #ff453a; --green: #32d74b; --orange: #ff9f0a; 
-            --radius-card: 20px; --radius-btn: 14px;
+            --accent: #007aff; --accent-light: rgba(0, 122, 255, 0.1);
+            --red: #ff3b30; --red-light: rgba(255, 59, 48, 0.1);
+            --green: #34c759; --green-light: rgba(52, 199, 89, 0.1);
+            --orange: #ff9500; --orange-light: rgba(255, 149, 0, 0.1);
+            --radius-card: 24px; --radius-btn: 16px;
         }
 
         body[data-theme="dark"] {
             --bg-color: #000000; --card-bg: #1c1c1e; --text-main: #ffffff;
-            --text-muted: #8e8e93; --input-bg: #2c2c2e; --border: #3a3a3c;
-            --shadow: 0 4px 15px rgba(0,0,0,0.3);
+            --text-muted: #8e8e93; --input-bg: #2c2c2e; --border: transparent;
+            --shadow: none; --glass-bg: rgba(28, 28, 30, 0.7);
         }
 
         body[data-theme="light"] {
             --bg-color: #f2f2f7; --card-bg: #ffffff; --text-main: #000000;
-            --text-muted: #8e8e93; --input-bg: #e5e5ea; --border: rgba(0,0,0,0.05);
-            --shadow: 0 4px 20px rgba(0,0,0,0.04);
+            --text-muted: #8e8e93; --input-bg: #f2f2f7; --border: transparent;
+            --shadow: 0 8px 30px rgba(0,0,0,0.04); --glass-bg: rgba(255, 255, 255, 0.8);
         }
 
         body {
-            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color); color: var(--text-main);
             margin: 0; display: flex; justify-content: center;
-            -webkit-font-smoothing: antialiased; transition: background-color 0.3s, color 0.3s;
+            -webkit-font-smoothing: antialiased; padding-top: env(safe-area-inset-top);
         }
 
         /* ECRAN D'AUTHENTIFICATION */
-        #auth-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--bg-color); z-index: 9999; display: flex;
-            flex-direction: column; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;
-        }
-        .auth-box {
-            background: var(--card-bg); border: 1px solid var(--border); padding: 40px;
-            border-radius: var(--radius-card); width: 100%; max-width: 400px; text-align: center;
-            box-shadow: var(--shadow);
-        }
+        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-color); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        .auth-box { background: var(--card-bg); padding: 40px; border-radius: var(--radius-card); width: 100%; max-width: 400px; text-align: center; box-shadow: var(--shadow); }
         .auth-logo { font-size: 56px; margin-bottom: 20px; }
-        .auth-input {
-            width: 100%; padding: 16px; border-radius: var(--radius-btn); border: 1px solid transparent;
-            background: var(--input-bg); color: var(--text-main); margin-bottom: 15px;
-            font-size: 16px; outline: none; box-sizing: border-box;
-        }
-        .auth-input:focus { border-color: var(--accent); }
-        .auth-btn {
-            width: 100%; padding: 18px; border-radius: var(--radius-btn); background: var(--accent);
-            color: white; border: none; font-weight: 700; font-size: 16px; cursor: pointer;
-            margin-bottom: 15px; transition: 0.2s;
-        }
-        .auth-btn:active { transform: scale(0.98); }
-        .auth-link { color: var(--text-muted); font-size: 14px; cursor: pointer; text-decoration: underline; }
-        .auth-error { color: var(--red); font-size: 14px; margin-bottom: 15px; font-weight: 500; min-height: 20px; }
+        .auth-input { width: 100%; padding: 16px; border-radius: var(--radius-btn); border: none; background: var(--input-bg); color: var(--text-main); margin-bottom: 15px; font-size: 16px; outline: none; box-sizing: border-box; }
+        .auth-btn { width: 100%; padding: 18px; border-radius: var(--radius-btn); background: var(--accent); color: white; border: none; font-weight: 600; font-size: 16px; cursor: pointer; margin-bottom: 15px; transition: 0.2s; }
+        .auth-btn:active { transform: scale(0.97); }
 
-        .app-wrapper { width: 100%; max-width: 900px; padding: 25px 20px; display: none; box-sizing: border-box; }
-        .privacy-active .blur-val { filter: blur(8px); pointer-events: none; transition: 0.2s; }
+        .app-wrapper { width: 100%; max-width: 800px; padding: 20px; display: none; box-sizing: border-box; padding-bottom: 100px; }
+        
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* HEADER & ACTIONS */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .header h1 { font-size: 34px; font-weight: 700; margin: 0; letter-spacing: -0.5px; transition: 0.3s; }
-        .header-actions { display: flex; gap: 12px; align-items: center; }
-        
-        .btn-privacy { background: var(--input-bg); color: var(--text-main); border: none; width: 44px; height: 44px; border-radius: 14px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .btn-privacy:active { transform: scale(0.95); }
-        .btn-add { background: var(--accent); color: white; border: none; padding: 0 20px; height: 44px; border-radius: 22px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background-color 0.3s, transform 0.2s; box-shadow: 0 4px 10px var(--accent-light); }
-        .btn-add:active { transform: scale(0.95); opacity: 0.9; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .header h1 { font-size: 34px; font-weight: 800; letter-spacing: -1px; margin: 0; }
+        .btn-add { background: var(--accent); color: white; border: none; padding: 0 18px; height: 40px; border-radius: 20px; font-weight: 600; font-size: 15px; cursor: pointer; box-shadow: 0 4px 12px var(--accent-light); transition: 0.2s; display:flex; align-items:center; gap:6px;}
+        .btn-add:active { transform: scale(0.95); }
 
-        /* ONGLETS */
-        .tab-bar { display: flex; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; background: var(--card-bg); padding: 8px; border-radius: 18px; margin-bottom: 25px; border: 1px solid var(--border); box-shadow: var(--shadow); }
-        .tab-bar::-webkit-scrollbar { display: none; } 
-        .tab-btn { flex: 1 0 auto; white-space: nowrap; background: none; border: none; color: var(--text-muted); padding: 12px 18px; font-size: 14px; font-weight: 600; border-radius: 12px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .tab-btn.active { background: var(--input-bg); color: var(--accent); }
-        .tab-icon { font-size: 16px; }
+        /* ONGLETS FLOTTANTS (Apple Style) */
+        .tab-bar-container { position: fixed; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 1000; padding: 0 20px; box-sizing: border-box; pointer-events: none; }
+        .tab-bar { pointer-events: auto; display: flex; background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 6px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid rgba(128,128,128,0.1); }
+        .tab-btn { background: none; border: none; color: var(--text-muted); padding: 12px 20px; font-size: 20px; border-radius: 24px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
+        .tab-btn.active { color: var(--accent); background: var(--card-bg); box-shadow: 0 2px 10px rgba(0,0,0,0.05); transform: scale(1.05); }
 
-        /* SÉLECTEUR DE MOIS GLOBAL */
-        .month-selector { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); border-radius: 18px; padding: 12px 20px; margin-bottom: 25px; border: 1px solid var(--border); box-shadow: var(--shadow); }
-        .month-btn { background: var(--input-bg); color: var(--accent); border: none; width: 40px; height: 40px; border-radius: 12px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        /* SÉLECTEUR DE MOIS DISCRET */
+        .month-selector { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 25px; }
+        .month-btn { background: var(--input-bg); color: var(--text-main); border: none; width: 36px; height: 36px; border-radius: 18px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .month-btn:active { transform: scale(0.9); }
-        .month-label { font-size: 17px; font-weight: 700; text-transform: capitalize; color: var(--text-main); }
+        .month-label { font-size: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
 
-        .card { background-color: var(--card-bg); border-radius: var(--radius-card); padding: 25px; margin-bottom: 25px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+        /* HERO SECTION (Solde Total) */
+        .hero-section { text-align: center; padding: 20px 0 40px 0; }
+        .hero-label { font-size: 12px; text-transform: uppercase; font-weight: 600; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 8px; }
+        .hero-balance { font-size: 52px; font-weight: 800; letter-spacing: -2px; line-height: 1; margin-bottom: 20px; }
+        
+        .hero-stats { display: flex; justify-content: center; gap: 20px; }
+        .hero-stat-pill { background: var(--card-bg); padding: 10px 16px; border-radius: 20px; box-shadow: var(--shadow); font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 6px;}
 
-        /* VUE 1 : DASHBOARD */
-        .accounts-scroll { display: flex; gap: 15px; overflow-x: auto; margin-bottom: 25px; scrollbar-width: none; padding-bottom: 5px; }
+        .card { background-color: var(--card-bg); border-radius: var(--radius-card); padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow); }
+
+        /* GLASSMORPHISM BANK CARDS */
+        .accounts-scroll { display: flex; gap: 16px; overflow-x: auto; margin-bottom: 30px; scrollbar-width: none; padding: 10px 0; }
         .accounts-scroll::-webkit-scrollbar { display: none; }
-        .bank-card { min-width: 280px; padding: 25px; border-radius: 20px; background: var(--accent); color: white; position: relative; overflow: hidden; transition: background 0.3s; box-shadow: 0 8px 20px var(--accent-light); }
-        .bank-card::after { content:''; position:absolute; top:-50%; right:-20%; width:150px; height:150px; background:rgba(255,255,255,0.1); border-radius:50%; }
-        .bank-card.alt-color { background: linear-gradient(135deg, #1c1c1e 0%, #3a3a3c 100%); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
-        .bank-card.alt-color-2 { background: linear-gradient(135deg, #ff9f0a 0%, #ff453a 100%); border: none; box-shadow: 0 8px 20px rgba(255,69,58,0.2); }
-        .acc-name { font-size: 12px; font-weight: 600; text-transform: uppercase; opacity: 0.9; margin-bottom: 12px; letter-spacing: 0.5px; }
-        .acc-val { font-size: 34px; font-weight: 700; letter-spacing: -0.5px; }
-
-        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
-        .stat-card { padding: 20px; border-radius: 18px; background: var(--card-bg); border: 1px solid var(--border); box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: center; }
-        .stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; color: var(--text-muted); letter-spacing: 0.5px; line-height: 1.3; }
-        .stat-value { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
-        .stat-value.green { color: var(--green); }
-        .stat-value.red { color: var(--red); }
+        .bank-card { min-width: 260px; padding: 24px; border-radius: 24px; color: white; position: relative; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(20px); }
+        .bank-card.blue { background: linear-gradient(135deg, #007aff 0%, #005bb5 100%); }
+        .bank-card.purple { background: linear-gradient(135deg, #af52de 0%, #7d33a6 100%); }
+        .bank-card.pink { background: linear-gradient(135deg, #ff2d55 0%, #c41e3d 100%); }
+        .bank-card.green { background: linear-gradient(135deg, #34c759 0%, #248a3d 100%); }
+        .bank-card.orange { background: linear-gradient(135deg, #ff9500 0%, #cc7700 100%); }
+        .bank-card.alt-color { background: linear-gradient(135deg, #2c2c2e 0%, #1c1c1e 100%); }
+        .bank-card::before { content:''; position:absolute; top:-40%; right:-10%; width:180px; height:180px; background:linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%); border-radius:50%; }
         
-        .prog-header { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; margin-bottom: 15px; }
-        .prog-bar-bg { height: 10px; background: var(--input-bg); border-radius: 10px; overflow: hidden; }
-        .prog-bar-fill { height: 100%; background: var(--accent); transition: width 0.8s ease-out, background 0.3s; width: 0%; border-radius: 10px; }
+        .acc-name { font-size: 11px; font-weight: 600; text-transform: uppercase; opacity: 0.8; margin-bottom: 8px; letter-spacing: 1px; }
+        .acc-val { font-size: 32px; font-weight: 700; letter-spacing: -1px; }
 
-        .upcoming-item { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid var(--border); }
-        .upcoming-item:last-child { border-bottom: none; padding-bottom: 0; }
+        /* JAUGE ÉPAISSE */
+        .prog-header { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 12px; color: var(--text-muted); }
+        .prog-bar-bg { height: 12px; background: var(--input-bg); border-radius: 6px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+        .prog-bar-fill { height: 100%; background: var(--accent); transition: width 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); border-radius: 6px; }
 
-        /* MODAL RESPONSIVE */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); padding: 15px; box-sizing: border-box; }
-        .modal-content { background-color: var(--card-bg); margin: 5vh auto; padding: 30px; border-radius: 24px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-sizing: border-box; }
-        @keyframes slideUp { from { transform: translateY(40px) scale(0.98); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
-        .close-btn { position: absolute; top: 25px; right: 25px; font-size: 24px; background: var(--input-bg); color: var(--text-muted); width: 36px; height: 36px; border-radius: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; z-index: 10; transition: 0.2s;}
-        .close-btn:active { transform: scale(0.9); }
-
-        .segmented-control { display: flex; background: var(--input-bg); border-radius: 14px; padding: 4px; margin-bottom: 25px; }
-        .segment { flex: 1; text-align: center; padding: 12px; font-size: 14px; font-weight: 600; border-radius: 10px; cursor: pointer; color: var(--text-muted); transition: 0.2s; }
-        .segment.active { background: var(--card-bg); color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .segment.active.income-tab { color: var(--green); }
-
-        .inputs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .input-group { display: flex; flex-direction: column; gap: 8px;}
-        .input-group label { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-left: 4px; }
-        .input-control { background-color: var(--input-bg); color: var(--text-main); border: 1px solid transparent; padding: 16px; border-radius: 14px; width: 100%; box-sizing: border-box; font-size: 15px; outline: none; transition: 0.2s; }
-        .input-control:focus { border-color: var(--accent); background-color: var(--card-bg); box-shadow: 0 0 0 4px var(--accent-light); }
+        /* LISTE DE TRANSACTIONS AERÉE */
+        .tx-date-header { font-size: 14px; font-weight: 700; color: var(--text-main); margin: 25px 0 10px 0; border-bottom: 1px solid var(--input-bg); padding-bottom: 8px; }
+        .tx-item-content { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; cursor: pointer; }
+        .tx-icon-box { font-size: 24px; background: var(--input-bg); width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 16px; margin-right: 15px; }
+        .tx-title { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
+        .tx-subtitle { font-size: 13px; color: var(--text-muted); }
         
-        .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 25px; }
-        .category-item { display: flex; flex-direction: column; align-items: center; background-color: var(--input-bg); border: 2px solid transparent; border-radius: 16px; padding: 15px 5px; cursor: pointer; transition: 0.2s; text-align: center; }
-        .category-item.selected { border-color: var(--accent); background-color: var(--accent-light); transform: scale(0.98); }
+        /* BOTTOM SHEET MODAL (Nouveau Tiroir) */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: flex-end; justify-content: center; }
+        .modal-content { background-color: var(--card-bg); width: 100%; max-width: 600px; border-radius: 32px 32px 0 0; padding: 30px 25px max(30px, env(safe-area-inset-bottom)) 25px; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); animation: slideUpSheet 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-sizing: border-box; }
+        @keyframes slideUpSheet { from { transform: translateY(100%); } to { transform: translateY(0); } }
         
-        .btn-submit { background-color: var(--accent); color: white; border: none; width: 100%; padding: 18px; border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px var(--accent-light); }
-        .btn-submit:active { transform: scale(0.98); }
+        .sheet-handle { width: 40px; height: 5px; background: var(--text-muted); border-radius: 3px; margin: 0 auto 20px auto; opacity: 0.3; }
 
-        /* VUE 2: JOURNAL */
-        .filter-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 15px; scrollbar-width: none;}
-        .filter-bar::-webkit-scrollbar { display: none; }
-        .filter-pill { padding: 10px 18px; background: var(--input-bg); border-radius: 50px; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; white-space: nowrap; border: 1px solid transparent; transition: 0.3s;}
-        .filter-pill.active { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
+        /* GRILLE DE CATÉGORIES 3 COLONNES */
+        .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 25px; }
+        .category-item { display: flex; flex-direction: column; align-items: center; background-color: var(--input-bg); border: 2px solid transparent; border-radius: 20px; padding: 18px 5px; cursor: pointer; transition: 0.2s; text-align: center; }
+        .category-item.selected { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+
+        /* INPUTS MODERNES */
+        .input-group label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: block; letter-spacing: 0.5px; }
+        .input-control { background-color: var(--input-bg); color: var(--text-main); border: none; padding: 16px; border-radius: 16px; width: 100%; box-sizing: border-box; font-size: 16px; outline: none; font-weight: 500; transition: 0.2s; }
+        .input-control:focus { background-color: var(--card-bg); box-shadow: 0 0 0 2px var(--accent); }
+        .amount-input { font-size: 40px; font-weight: 800; background: transparent; border: none; outline: none; color: var(--text-main); width: 100%; text-align: center; margin-bottom: 20px; }
+        .amount-input::placeholder { color: var(--text-muted); opacity: 0.5; }
+
+        .btn-submit { background-color: var(--accent); color: white; border: none; width: 100%; padding: 18px; border-radius: 18px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         
-        .tx-swipe-container { position: relative; overflow: hidden; border-bottom: 1px solid var(--border); }
-        .tx-swipe-container:last-child { border-bottom: none; }
-        .tx-delete-btn { position: absolute; right: 0; top: 0; bottom: 0; width: 80px; background: var(--red); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; cursor: pointer; z-index: 1; }
-        .tx-item-content { position: relative; z-index: 2; background: var(--card-bg); display: flex; justify-content: space-between; align-items: center; padding: 18px 0; transition: transform 0.2s ease-out; cursor: pointer; }
-        
-        .tag-badge { background: var(--input-bg); color: var(--accent); padding: 4px 8px; border-radius: 6px; font-size: 11px; margin-left: 6px; display: inline-flex; align-items: center; gap: 4px; font-weight: 600; transition: 0.3s; }
-        a.tag-badge { text-decoration: none; cursor: pointer; }
-        a.tag-badge:hover { background: var(--border); }
-        
-        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
-        .cal-day-label { text-align: center; font-size: 12px; font-weight: 600; color: var(--text-muted); padding-bottom: 10px; }
-        .cal-cell { aspect-ratio: 1; background: var(--input-bg); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; position: relative; cursor: pointer; transition: 0.2s; }
-        .cal-cell:hover { background: var(--border); }
-        .cal-cell.has-tx { background: var(--accent-light); color: var(--accent); }
-        .cal-cell.has-tx::after { content: ''; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; position: absolute; bottom: 8px; }
-        .tx-item { cursor: pointer; padding: 15px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        /* ÉTAT VIDE */
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+        .empty-state-icon { font-size: 64px; margin-bottom: 15px; opacity: 0.8; }
+        .empty-state-title { font-size: 18px; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
 
-        /* VUE 3: STATISTIQUES */
-        .rings-container { display: flex; justify-content: space-around; align-items: center; padding: 25px 0; }
-        .ring-box { position: relative; width: 100px; height: 100px; }
-        .ring-box svg { transform: rotate(-90deg); width: 100%; height: 100%; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
-        .ring-bg { fill: none; stroke: var(--input-bg); stroke-width: 8; }
-        .ring-fill { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s cubic-bezier(0.16, 1, 0.3, 1); }
-        .ring-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 22px; }
-        .stats-row { margin-bottom: 20px; }
-        .stats-info { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 10px; color: var(--text-muted); }
-        .stats-info span:last-child { color: var(--text-main); font-weight: 600; }
-
-        .advice-box { background: var(--accent-light); border: 1px solid transparent; padding: 18px; border-radius: 18px; margin-bottom: 25px; display: flex; gap: 15px; align-items: flex-start; }
-        .advice-icon { font-size: 28px; }
-        .advice-text { font-size: 14px; line-height: 1.6; color: var(--text-main); }
-        
-        .projection-box { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
-        .proj-card { background: var(--input-bg); padding: 18px; border-radius: 16px; text-align: center; }
-        .proj-title { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 0.5px;}
-        .proj-val { font-size: 22px; font-weight: 700; color: var(--green); letter-spacing: -0.5px;}
-
-        /* VUE 4: PROFIL */
-        .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid var(--border); }
-        .settings-row:last-child { border-bottom: none; }
-        .btn-export { background: var(--input-bg); border: 1px solid transparent; color: var(--text-main); padding: 12px 20px; border-radius: 14px; font-size: 14px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s;}
-        .btn-export:active { transform: scale(0.97); background: var(--border); }
-        
-        .btn-danger-outline { background: transparent; border: 2px solid var(--red); color: var(--red); width: 100%; padding: 16px; border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; justify-content: center; gap: 8px; transition: 0.2s; }
-        .btn-danger-outline:active { background: rgba(255, 69, 58, 0.1); transform: scale(0.98); }
-
-        .color-picker { display: flex; gap: 12px; }
-        .color-swatch { width: 36px; height: 36px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: 0.2s; box-sizing: border-box; }
-        .color-swatch.active { border-color: var(--text-main); transform: scale(1.15); }
-
-        .profile-header-card { display: flex; align-items: center; gap: 18px; margin-bottom: 15px; }
-        .profile-avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; box-shadow: 0 4px 15px var(--accent-light); }
-
-        .section { display: none; animation: fadeIn 0.3s; }
+        .section { display: none; }
         .section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); cursor: pointer; }
-
-        @media (max-width: 600px) {
-            .app-wrapper { padding: 15px 15px 80px 15px; }
-            .inputs-grid { grid-template-columns: 1fr; gap: 12px; }
-            .category-grid { gap: 8px; grid-template-columns: repeat(4, 1fr); }
-            .category-item { padding: 12px 2px; }
-            .modal-content { padding: 25px 20px; margin: 2vh auto; border-radius: 20px;}
-            .close-btn { top: 15px; right: 15px; }
-            .header h1 { font-size: 28px; }
-            .tab-btn { font-size: 13px; padding: 10px 8px; } 
-            /* Sticky Tab Bar for mobile */
-            .tab-bar { position: fixed; bottom: 15px; left: 15px; right: 15px; margin-bottom: 0; z-index: 1000; backdrop-filter: blur(10px); background: rgba(var(--card-bg-rgb, 255,255,255), 0.85); border-radius: 20px; padding: 10px;}
-            body[data-theme="dark"] .tab-bar { background: rgba(28,28,30, 0.85); }
-        }
     </style>
 </head>
 <body id="app-body" data-theme="dark">
 
 <div id="auth-screen">
     <div class="auth-box">
-        <div class="auth-logo">💰</div>
-        <h1 style="margin-top:0; font-size:24px;">Budget Pro Cloud</h1>
-        <p style="color:var(--text-muted); font-size:14px; margin-bottom:25px;">Connectez-vous pour synchroniser vos données en temps réel sur tous vos appareils.</p>
-        
+        <div class="auth-logo"></div>
+        <h1 style="margin-top:0; font-size:24px; letter-spacing:-0.5px;">Budget Pro</h1>
+        <p style="color:var(--text-muted); font-size:14px; margin-bottom:25px;">Vos données synchronisées et chiffrées sur votre Cloud personnel.</p>
         <div id="auth-error-msg" class="auth-error"></div>
-        
         <input type="email" id="auth-email" class="auth-input" placeholder="Adresse e-mail">
         <input type="password" id="auth-pass" class="auth-input" placeholder="Mot de passe">
-        
         <button class="auth-btn" id="btn-login" onclick="login()">Se connecter</button>
         <button class="auth-btn" id="btn-register" style="background:var(--input-bg); color:var(--text-main); display:none;" onclick="register()">Créer un compte</button>
-        
-        <div class="auth-link" id="auth-toggle-link" onclick="toggleAuthMode()">Pas encore de compte ? S'inscrire</div>
+        <div class="auth-link" id="auth-toggle-link" onclick="toggleAuthMode()">Créer un compte</div>
     </div>
 </div>
 
 <div id="add-modal" class="modal">
     <div class="modal-content">
-        <button class="close-btn" onclick="closeAddModal()">✕</button>
-        <h2 id="modal-title" style="font-size:22px; margin-bottom:20px;">Nouvelle opération</h2>
+        <div class="sheet-handle"></div>
+        <button class="close-btn" style="position:absolute; top:20px; right:20px;" onclick="closeAddModal()">✕</button>
         
-        <div class="segmented-control" style="width: 100%; margin-bottom: 20px;">
-            <div id="tab-type-exp" class="segment active" onclick="setOpType('expense')">Dépense</div>
-            <div id="tab-type-inc" class="segment income-tab" onclick="setOpType('income')">Revenu</div>
+        <div style="display:flex; justify-content:center; gap:15px; margin-bottom:20px;">
+            <button id="type-exp-btn" style="border:none; background:none; font-size:18px; font-weight:700; color:var(--text-main); opacity:0.5; transition:0.2s;" onclick="setOpType('expense')">Dépense</button>
+            <button id="type-inc-btn" style="border:none; background:none; font-size:18px; font-weight:700; color:var(--text-main); opacity:0.5; transition:0.2s;" onclick="setOpType('income')">Revenu</button>
         </div>
+
+        <input type="number" step="0.01" id="inp-amount" class="amount-input" placeholder="0,00 €">
         
-        <div class="inputs-grid">
-            <div class="input-group">
-                <label>Compte</label>
-                <select id="inp-account" class="input-control" style="appearance:none; font-weight:600;"></select>
-            </div>
-            <div class="input-group"><label>Montant (€)</label><input type="number" step="0.01" id="inp-amount" class="input-control" placeholder="0.00"></div>
-            <div class="input-group"><label>Date</label><input type="date" id="inp-date" class="input-control"></div>
-            
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
             <div class="input-group">
                 <label>Libellé</label>
-                <input type="text" id="inp-label" class="input-control" placeholder="ex: Salaire, Amazon" oninput="autoCategorize(this.value)" list="label-suggestions" autocomplete="off">
+                <input type="text" id="inp-label" class="input-control" placeholder="Quoi ?" oninput="autoCategorize(this.value)" list="label-suggestions" autocomplete="off">
                 <datalist id="label-suggestions"></datalist>
             </div>
-
-            <div class="input-group"><label>Note (utilisez #tag)</label><input type="text" id="inp-note" class="input-control" placeholder="ex: #Vacances"></div>
-            <div class="input-group"><label>Lien web (URL optionnelle)</label><input type="url" id="inp-url" class="input-control" placeholder="https://..."></div>
-        </div>
-
-        <div id="recurring-block">
-            <div style="display: flex; justify-content: space-between; align-items: center; background: var(--input-bg); padding: 12px 15px; border-radius: 14px; margin-bottom: 10px;">
-                <span style="font-size:14px; font-weight:600;">Opération récurrente</span>
-                <input type="checkbox" id="inp-recurring" onchange="toggleRecOptions()" style="width:20px; height:20px; accent-color:var(--accent); cursor:pointer;">
-            </div>
-            
-            <div id="rec-options" style="background: var(--bg-color); border: 1px solid var(--border); padding: 18px; border-radius: 14px; margin-bottom: 20px; display: none;">
-                <label style="font-size: 13px; font-weight:600; color: var(--text-muted); display:block; margin-bottom: 8px;">Fréquence</label>
-                <select id="inp-frequency" class="input-control" style="margin-bottom:15px; font-weight:600;">
-                    <option value="monthly">Tous les mois (le même jour)</option>
-                    <option value="last_working_day">Dernier jour ouvré du mois</option>
-                    <option value="4weeks">Toutes les 4 semaines</option>
-                    <option value="2weeks">Toutes les 2 semaines</option>
-                    <option value="weekly">Toutes les semaines</option>
-                </select>
-                
-                <label style="font-size: 13px; font-weight:600; margin-bottom: 8px; color: var(--text-muted); display:block;">Date de fin (Optionnel)</label>
-                <input type="date" id="inp-rec-end" class="input-control">
+            <div class="input-group">
+                <label>Date</label>
+                <input type="date" id="inp-date" class="input-control">
             </div>
         </div>
 
         <div id="category-block">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
-                <span style="font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Catégorie</span>
-            </div>
+            <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; display:block;">Catégorie</label>
             <div class="category-grid" id="cat-container"></div>
         </div>
 
-        <div style="display:flex; gap:12px; margin-top:15px;">
-            <button id="btn-delete-tx" style="display:none; background:var(--red); color:white; border:none; padding:18px; border-radius:16px; font-weight:700; cursor:pointer; transition:0.2s;" onclick="deleteTxFromModal()">Supprimer</button>
-            <button id="btn-submit-tx" class="btn-submit" style="flex:1;" onclick="addExpense()">Enregistrer l'opération</button>
+        <button onclick="document.getElementById('advanced-options').style.display='block'; this.style.display='none';" style="background:none; border:none; color:var(--accent); font-weight:600; width:100%; text-align:center; padding:10px 0; margin-bottom:10px;">Options avancées (Récurrence, Note...)</button>
+        
+        <div id="advanced-options" style="display:none; margin-bottom:20px;">
+            <div class="input-group" style="margin-bottom:10px;">
+                <label>Compte</label>
+                <select id="inp-account" class="input-control" style="appearance:none; font-weight:600;"></select>
+            </div>
+            <div class="input-group" style="margin-bottom:10px;">
+                <input type="text" id="inp-note" class="input-control" placeholder="Note ou #Tag">
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; background: var(--input-bg); padding: 15px; border-radius: 16px; margin-bottom: 10px;">
+                <span style="font-weight:600; font-size:14px;">Opération récurrente</span>
+                <input type="checkbox" id="inp-recurring" onchange="toggleRecOptions()" style="width:20px; height:20px; accent-color:var(--accent);">
+            </div>
+            <div id="rec-options" style="display:none; margin-bottom:10px;">
+                <select id="inp-frequency" class="input-control" style="margin-bottom:10px;">
+                    <option value="monthly">Mensuel</option><option value="last_working_day">Fin de mois ouvré</option><option value="weekly">Hebdomadaire</option>
+                </select>
+                <input type="date" id="inp-rec-end" class="input-control" placeholder="Date de fin">
+            </div>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button id="btn-delete-tx" style="display:none; background:var(--red-light); color:var(--red); border:none; width:60px; border-radius:18px; font-weight:700; cursor:pointer;" onclick="deleteTxFromModal()">🗑</button>
+            <button id="btn-submit-tx" class="btn-submit" style="flex:1;" onclick="addExpense()">Valider</button>
         </div>
     </div>
 </div>
 
 <div id="wishlist-modal" class="modal">
     <div class="modal-content">
-        <button class="close-btn" onclick="closeWishlistModal()">✕</button>
-        <h2 id="wishlist-modal-title" style="font-size:22px; margin-bottom:20px;">Nouvelle Envie</h2>
+        <div class="sheet-handle"></div>
+        <button class="close-btn" style="position:absolute; top:20px; right:20px;" onclick="closeWishlistModal()">✕</button>
+        <h2 id="wishlist-modal-title" style="margin-top:0; font-size:24px; font-weight:800; letter-spacing:-0.5px;">Mon Projet</h2>
+        
+        <input type="number" step="0.01" id="inp-wish-price" class="amount-input" placeholder="0,00 €">
         
         <div class="input-group" style="margin-bottom:15px;">
-            <label>Nom du projet / produit</label>
-            <input type="text" id="inp-wish-name" class="input-control" placeholder="ex: iPhone 17 Pro">
+            <label>Nom du projet</label>
+            <input type="text" id="inp-wish-name" class="input-control" placeholder="ex: iPhone 17">
         </div>
         <div class="input-group" style="margin-bottom:15px;">
-            <label>Compte ciblé pour l'achat</label>
+            <label>Épargné sur</label>
             <select id="inp-wish-account" class="input-control" style="appearance:none; font-weight:600;"></select>
         </div>
-        <div class="input-group" style="margin-bottom:15px;">
-            <label>Prix estimé (€)</label>
-            <input type="number" step="0.01" id="inp-wish-price" class="input-control" placeholder="1200.00">
-        </div>
-        <div class="input-group" style="margin-bottom:25px;">
-            <label>Lien web (URL optionnelle)</label>
-            <input type="url" id="inp-wish-url" class="input-control" placeholder="https://www.apple.com...">
-        </div>
 
-        <div style="display:flex; gap:12px;">
-            <button id="btn-delete-wish" style="display:none; background:var(--red); color:white; border:none; padding:18px; border-radius:16px; font-weight:700; cursor:pointer; transition:0.2s;" onclick="deleteWishFromModal()">Supprimer</button>
-            <button id="btn-submit-wish" class="btn-submit" style="flex:1;" onclick="saveWishlistItem()">Enregistrer</button>
+        <div style="display:flex; gap:10px; margin-top:25px;">
+            <button id="btn-delete-wish" style="display:none; background:var(--red-light); color:var(--red); border:none; width:60px; border-radius:18px; font-weight:700; cursor:pointer;" onclick="deleteWishFromModal()">🗑</button>
+            <button id="btn-submit-wish" class="btn-submit" style="flex:1;" onclick="saveWishlistItem()">Enregistrer le projet</button>
         </div>
     </div>
 </div>
 
 <div class="app-wrapper" id="app-wrapper">
     
-    <div class="header">
-        <h1 id="welcome-title">Dépenses</h1>
-        <div class="header-actions">
-            <button class="btn-privacy" onclick="togglePrivacy()" title="Confidentialité">👁</button>
-            <button class="btn-add" onclick="openAddModal()"><span>+</span> Ajouter</button>
+    <div class="tab-bar-container">
+        <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab('dash', this)">🏠</button>
+            <button class="tab-btn" onclick="switchTab('tx', this)">📝</button>
+            <button class="tab-btn" onclick="switchTab('stats', this)">📊</button>
+            <button class="tab-btn" onclick="switchTab('settings', this)">⚙️</button>
         </div>
     </div>
 
@@ -357,250 +263,166 @@
         <button class="month-btn" onclick="changeGlobalMonth(1)">›</button>
     </div>
 
-    <div class="tab-bar">
-        <button class="tab-btn active" onclick="switchTab('dash', this)"><span class="tab-icon">■</span> Tableau de bord</button>
-        <button class="tab-btn" onclick="switchTab('tx', this)"><span class="tab-icon">≡</span> Journal</button>
-        <button class="tab-btn" onclick="switchTab('stats', this)"><span class="tab-icon">◎</span> Statistiques</button>
-        <button class="tab-btn" onclick="switchTab('settings', this)"><span class="tab-icon">👤</span> Profil</button>
-    </div>
-
     <div id="tab-dash" class="section active">
         <div id="capture-area">
-            <div class="accounts-scroll" id="accounts-container"></div>
-
-            <div class="summary-grid">
-                <div class="stat-card">
-                    <div class="stat-label" id="label-dash-inc">Revenus (Mois)</div>
-                    <div class="stat-value green blur-val" id="dash-inc">+0 €</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label" id="label-dash-exp">Dépenses (Mois)</div>
-                    <div class="stat-value red blur-val" id="dash-exp">-0 €</div>
-                </div>
-                <div class="stat-card" style="background:var(--accent-light); border-color:transparent;">
-                    <div class="stat-label" style="color:var(--accent);">Reste à vivre <br><span style="font-size:9px; opacity:0.8;">(Compte Princ.)</span></div>
-                    <div class="stat-value blur-val" id="dash-remaining" style="color:var(--accent);">0 €</div>
+            
+            <div class="hero-section">
+                <div class="hero-label">Reste à vivre (Ce mois)</div>
+                <div class="hero-balance blur-val" id="dash-remaining">0 €</div>
+                
+                <div class="hero-stats">
+                    <div class="hero-stat-pill" style="color: var(--green); background: var(--green-light);">↓ <span id="dash-inc" class="blur-val">0 €</span></div>
+                    <div class="hero-stat-pill" style="color: var(--text-main);">↑ <span id="dash-exp" class="blur-val">0 €</span></div>
                 </div>
             </div>
+
+            <div class="accounts-scroll" id="accounts-container"></div>
             
-            <div class="card">
+            <div class="card" style="padding:20px;">
                 <div class="prog-header">
-                    <span>Marge de dépense (Objectif : <span id="dash-goal-text">0</span>€ restants)</span>
-                    <span id="prog-label" style="color:var(--text-muted); font-weight:500;" class="blur-val">0 € / 0 €</span>
+                    <span>Marge Sécurisée</span>
+                    <span id="prog-label" class="blur-val">0 € / 0 €</span>
                 </div>
                 <div class="prog-bar-bg"><div class="prog-bar-fill" id="prog-fill"></div></div>
+                <div style="font-size:11px; text-align:center; color:var(--text-muted); margin-top:10px;">Objectif : <span id="dash-goal-text">0</span>€ restants en fin de mois</div>
             </div>
 
-            <div class="card">
-                <h2 style="font-size:16px; margin-top:0;">⏳ À venir ce mois-ci</h2>
-                <div id="upcoming-list" style="font-size:14px; color:var(--text-muted);">
-                    Tout est payé pour ce mois-ci ! 🎉
-                </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; margin-top:35px;">
+                <h2 style="font-size:20px; margin:0; letter-spacing:-0.5px;">Mes Projets</h2>
+                <button style="background:var(--input-bg); color:var(--accent); border:none; padding:6px 14px; border-radius:12px; font-weight:600; cursor:pointer;" onclick="openWishlistModal()">+ Ajouter</button>
             </div>
-
-            <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <h2 style="font-size:16px; margin:0;">🎯 Mes Projets & Envies</h2>
-                    <button class="btn-export" onclick="openWishlistModal()" style="padding:8px 14px; font-size:13px; margin:0;">+ Ajouter</button>
-                </div>
-                <div id="wishlist-container">
-                    </div>
+            <div id="wishlist-container"></div>
+            
+            <h2 style="font-size:20px; margin:35px 0 15px 0; letter-spacing:-0.5px;">À venir ce mois-ci</h2>
+            <div class="card" style="padding:10px 20px;">
+                <div id="upcoming-list" style="font-size:14px; color:var(--text-muted);"></div>
             </div>
         </div>
     </div>
 
     <div id="tab-tx" class="section">
-        <div class="card">
-            <div class="segmented-control" style="margin:0 0 20px 0;">
-                <div id="view-list-btn" class="segment active" onclick="setJournalView('list')">Liste</div>
-                <div id="view-cal-btn" class="segment" onclick="setJournalView('cal')">Calendrier</div>
-            </div>
-
-            <div id="journal-list-view">
-                <input type="text" id="tx-search" placeholder="🔍 Rechercher (ex: #Vacances, Loyer...)" class="sim-input" style="width:100%; box-sizing:border-box; margin-bottom:15px; background:var(--bg-color); padding:16px;" oninput="renderTransactions()">
-                <div class="filter-bar" id="filter-bar"></div>
-                <div id="tx-list"></div>
-            </div>
-
-            <div id="journal-cal-view" style="display:none;">
-                <div class="cal-grid" id="cal-grid">
-                    <div class="cal-day-label">Lun</div><div class="cal-day-label">Mar</div><div class="cal-day-label">Mer</div>
-                    <div class="cal-day-label">Jeu</div><div class="cal-day-label">Ven</div><div class="cal-day-label">Sam</div><div class="cal-day-label">Dim</div>
-                </div>
-                <div id="cal-details" style="margin-top:20px; border-top:1px solid var(--border); padding-top:20px; display:none;">
-                    <h4 id="cal-details-title" style="margin-top:0; font-size:16px;">Dépenses du jour</h4>
-                    <div id="cal-details-list"></div>
-                </div>
-            </div>
-        </div>
+        <h1 style="font-size: 34px; font-weight: 800; letter-spacing: -1px; margin-bottom: 20px;">Transactions</h1>
+        
+        <input type="text" id="tx-search" placeholder="🔍 Rechercher (Libellé, #Tag...)" style="width:100%; padding:14px 18px; border-radius:16px; border:none; background:var(--input-bg); color:var(--text-main); font-size:15px; outline:none; margin-bottom:20px; box-sizing:border-box;" oninput="renderTransactions()">
+        
+        <div class="filter-bar" id="filter-bar"></div>
+        
+        <div id="tx-list" style="margin-bottom: 40px;"></div>
     </div>
 
     <div id="tab-stats" class="section">
-        
-        <div class="card">
-            <h2 style="font-size:16px; margin-top:0;">📡 Radar à Abonnements</h2>
-            <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">Vos charges fixes récurrentes détectées.</p>
-            <div id="sub-radar-list"></div>
+        <h1 style="font-size: 34px; font-weight: 800; letter-spacing: -1px; margin-bottom: 20px;">Analyses</h1>
+
+        <div class="card" style="display:flex; align-items:center; gap:25px; padding: 30px;">
+            <div style="position:relative; width:110px; height:110px; flex-shrink:0;">
+                <svg viewBox="0 0 100 100" style="transform:rotate(-90deg); width:100%; height:100%;">
+                    <circle cx="50" cy="50" r="44" fill="none" stroke="var(--input-bg)" stroke-width="12"/>
+                    <circle id="score-circle" cx="50" cy="50" r="44" fill="none" stroke="var(--accent)" stroke-width="12" stroke-dasharray="276" stroke-dashoffset="276" stroke-linecap="round" style="transition: stroke-dashoffset 1.5s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.5s;"/>
+                </svg>
+                <div id="score-text" class="blur-val" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:32px; font-weight:800; letter-spacing:-1px;">0</div>
+            </div>
+            <div>
+                <h2 style="margin:0 0 8px 0; font-size:20px; letter-spacing:-0.5px;">Score Santé</h2>
+                <p id="score-desc" style="margin:0; font-size:13px; color:var(--text-muted); line-height:1.5;">Calcul en cours...</p>
+            </div>
         </div>
 
-        <div class="advice-box">
+        <div class="advice-box" style="background:var(--card-bg); box-shadow:var(--shadow);">
             <div class="advice-icon">💡</div>
             <div class="advice-text" id="advice-text">Calcul en cours...</div>
         </div>
 
-        <div class="card">
-            <h2 style="font-size:16px; margin-top:0;">📈 Projections & Épargne</h2>
-            <p style="font-size:13px; color:var(--text-muted); margin-bottom:15px;">Basé sur votre capacité d'épargne du mois affiché.</p>
-            <div class="prog-header" style="margin-top:15px; margin-bottom:8px;">
-                <span>Fonds d'urgence</span>
-                <span id="emergency-label" style="color:var(--text-muted); font-weight:600;" class="blur-val">0 € / 0 €</span>
-            </div>
-            <div class="prog-bar-bg"><div class="prog-bar-fill" id="emergency-fill" style="background:var(--green)"></div></div>
-            
-            <div class="projection-box">
-                <div class="proj-card">
-                    <div class="proj-title">Épargne du mois</div>
-                    <div class="proj-val blur-val" id="proj-month">0 €</div>
-                </div>
-                <div class="proj-card">
-                    <div class="proj-title">Projection sur 1 an</div>
-                    <div class="proj-val blur-val" id="proj-year">0 €</div>
-                </div>
-            </div>
-        </div>
+        <h2 style="font-size:20px; margin:35px 0 15px 0; letter-spacing:-0.5px;">Radar Abonnements</h2>
+        <div id="sub-radar-list"></div>
 
+        <h2 style="font-size:20px; margin:35px 0 15px 0; letter-spacing:-0.5px;">Règle d'or (50/30/20)</h2>
         <div class="card">
-            <h2 style="font-size:16px; margin-top:0;">Règle d'or (50/30/20)</h2>
-            <p style="font-size:13px; color:var(--text-muted); margin-bottom:15px;">Analyse basée sur vos revenus du mois.</p>
-            <div class="rings-container">
-                <div class="ring-box">
-                    <svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="40"/><circle id="ring-fixe" class="ring-fill" cx="50" cy="50" r="40" stroke="#ff453a" stroke-dasharray="251.2" stroke-dashoffset="251.2"/></svg>
-                    <div class="ring-icon">🏠</div>
-                </div>
-                <div class="ring-box">
-                    <svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="40"/><circle id="ring-vie" class="ring-fill" cx="50" cy="50" r="40" stroke="#32d74b" stroke-dasharray="251.2" stroke-dashoffset="251.2"/></svg>
-                    <div class="ring-icon">🛒</div>
-                </div>
-                <div class="ring-box">
-                    <svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="40"/><circle id="ring-loisirs" class="ring-fill" cx="50" cy="50" r="40" stroke="var(--accent)" stroke-dasharray="251.2" stroke-dashoffset="251.2" style="transition: stroke 0.3s;"/></svg>
-                    <div class="ring-icon">🎬</div>
-                </div>
-            </div>
-            <div style="display:flex; justify-content:space-around; font-size:12px; color:var(--text-muted); font-weight:600; text-align:center;">
-                <span style="width:33%">Fixe<br>(Idéal 50%)</span>
-                <span style="width:33%">Quotidien<br>(Idéal 30%)</span>
-                <span style="width:33%">Loisirs<br>(Idéal 20%)</span>
+            <div class="rings-container" style="padding:10px 0;">
+                <div style="position:relative; width:80px; height:80px;"><svg viewBox="0 0 100 100" style="transform:rotate(-90deg);width:100%;height:100%;"><circle fill="none" stroke="var(--input-bg)" stroke-width="12" cx="50" cy="50" r="40"/><circle id="ring-fixe" fill="none" stroke="var(--red)" stroke-width="12" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" cx="50" cy="50" r="40" style="transition:1s cubic-bezier(0.16,1,0.3,1)"/></svg><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;">🏠</div></div>
+                <div style="position:relative; width:80px; height:80px;"><svg viewBox="0 0 100 100" style="transform:rotate(-90deg);width:100%;height:100%;"><circle fill="none" stroke="var(--input-bg)" stroke-width="12" cx="50" cy="50" r="40"/><circle id="ring-vie" fill="none" stroke="var(--green)" stroke-width="12" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" cx="50" cy="50" r="40" style="transition:1s cubic-bezier(0.16,1,0.3,1)"/></svg><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;">🛒</div></div>
+                <div style="position:relative; width:80px; height:80px;"><svg viewBox="0 0 100 100" style="transform:rotate(-90deg);width:100%;height:100%;"><circle fill="none" stroke="var(--input-bg)" stroke-width="12" cx="50" cy="50" r="40"/><circle id="ring-loisirs" fill="none" stroke="var(--accent)" stroke-width="12" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" cx="50" cy="50" r="40" style="transition:1s cubic-bezier(0.16,1,0.3,1)"/></svg><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;">🎬</div></div>
             </div>
         </div>
         
-        <div class="card">
-            <h2 style="font-size:16px; margin-top:0;">Budgets par catégorie (Enveloppes)</h2>
-            <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">Configurez vos limites dans l'onglet Profil.</p>
+        <h2 style="font-size:20px; margin:35px 0 15px 0; letter-spacing:-0.5px;">Détails & Enveloppes</h2>
+        <div class="card" style="padding:20px;">
             <div id="stats-list"></div>
         </div>
     </div>
 
     <div id="tab-settings" class="section">
+        <h1 style="font-size: 34px; font-weight: 800; letter-spacing: -1px; margin-bottom: 20px;">Réglages</h1>
         
-        <div class="card">
-            <div class="profile-header-card">
-                <div class="profile-avatar">👤</div>
-                <div>
-                    <h2 style="margin:0; font-size:20px;" id="profile-name-display">Mon Profil</h2>
-                    <p style="margin:0; font-size:13px; color:var(--text-muted);" id="profile-email-display">Connecté</p>
-                </div>
-            </div>
-            
-            <div class="settings-row">
-                <div class="settings-info"><h4>Prénom / Pseudo</h4><p>Pour le message d'accueil</p></div>
-                <input type="text" id="set-displayname" class="input-control" style="width:140px; text-align:right; background:var(--bg-color);" onchange="saveSettingsLocally()" placeholder="ex: Maxime">
+        <div class="card" style="display:flex; align-items:center; gap:20px;">
+            <div style="width: 70px; height: 70px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 32px; color: white;">👤</div>
+            <div style="flex:1;">
+                <input type="text" id="set-displayname" placeholder="Votre Prénom" onchange="saveSettingsLocally()" style="background:transparent; border:none; color:var(--text-main); font-size:22px; font-weight:700; width:100%; outline:none; padding:0; margin-bottom:4px;">
+                <div id="profile-email-display" style="font-size:13px; color:var(--text-muted);">Connecté</div>
             </div>
         </div>
 
-        <div class="card">
-            <h2 style="font-size:16px; margin-top:0;">Épargne & Style</h2>
-            <div class="settings-row">
-                <div class="settings-info"><h4>Thème visuel</h4><p>S'adapte à votre système</p></div>
-                <select class="input-control" style="width:130px; font-weight:600; background:var(--bg-color);" onchange="changeTheme(this.value)" id="set-theme">
-                    <option value="auto">Automatique</option><option value="dark">Sombre</option><option value="light">Clair</option>
-                </select>
+        <h2 style="font-size:20px; margin:35px 0 15px 0; letter-spacing:-0.5px;">Objectifs</h2>
+        <div class="card" style="padding:0 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 0; border-bottom:1px solid var(--input-bg);">
+                <div><div style="font-weight:600; font-size:15px;">Épargne cible</div><div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Fin de mois</div></div>
+                <input type="number" id="set-savings-goal" class="input-control" style="width:90px; text-align:right; padding:10px;" onchange="saveSettingsLocally()">
             </div>
-            
-            <div class="settings-row">
-                <div class="settings-info"><h4>Couleur de l'application</h4><p>Personnalisez le style</p></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 0;">
+                <div><div style="font-weight:600; font-size:15px;">Fonds Sécurité</div><div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Bouclier total</div></div>
+                <input type="number" id="set-emergency" class="input-control" style="width:90px; text-align:right; padding:10px;" onchange="saveSettingsLocally()">
+            </div>
+        </div>
+
+        <h2 style="font-size:20px; margin:35px 0 15px 0; letter-spacing:-0.5px;">Mes Comptes</h2>
+        <div class="card" style="padding: 10px 20px;">
+            <div id="settings-accounts-list"></div>
+            <button style="background:var(--input-bg); color:var(--accent); border:none; width:100%; padding:14px; border-radius:14px; font-weight:600; cursor:pointer; margin:10px 0;" onclick="addAccount()">+ Ajouter un compte</button>
+        </div>
+
+        <h2 style="font-size:20px; margin:35px 0 15px 0; letter-spacing:-0.5px;">Mes Catégories & Limites</h2>
+        <div class="card" style="padding: 10px 20px;">
+            <div id="settings-custom-cats-list"></div>
+            <button style="background:var(--input-bg); color:var(--accent); border:none; width:100%; padding:14px; border-radius:14px; font-weight:600; cursor:pointer; margin:10px 0;" onclick="addCustomCategory()">+ Créer une catégorie</button>
+        </div>
+        <div class="card" style="padding: 10px 20px;" id="settings-cat-budgets"></div>
+
+        <h2 style="font-size:20px; margin:35px 0 15px 0; letter-spacing:-0.5px;">Apparence</h2>
+        <div class="card" style="padding:0 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 0; border-bottom:1px solid var(--input-bg);">
+                <div style="font-weight:600; font-size:15px;">Thème</div>
+                <select class="input-control" style="width:140px; padding:10px;" onchange="changeTheme(this.value)" id="set-theme"><option value="auto">Automatique</option><option value="dark">Sombre</option><option value="light">Clair</option></select>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 0;">
+                <div style="font-weight:600; font-size:15px;">Couleur</div>
                 <div class="color-picker">
                     <div id="color-blue" class="color-swatch" style="background:#007aff;" onclick="applyColor('blue')"></div>
                     <div id="color-purple" class="color-swatch" style="background:#af52de;" onclick="applyColor('purple')"></div>
                     <div id="color-pink" class="color-swatch" style="background:#ff2d55;" onclick="applyColor('pink')"></div>
-                    <div id="color-green" class="color-swatch" style="background:#32d74b;" onclick="applyColor('green')"></div>
-                    <div id="color-orange" class="color-swatch" style="background:#ff9f0a;" onclick="applyColor('orange')"></div>
+                    <div id="color-green" class="color-swatch" style="background:#34c759;" onclick="applyColor('green')"></div>
+                    <div id="color-orange" class="color-swatch" style="background:#ff9500;" onclick="applyColor('orange')"></div>
                 </div>
             </div>
-
-            <div class="settings-row">
-                <div class="settings-info"><h4>Objectif d'épargne mensuel</h4><p>Solde cible en fin de mois</p></div>
-                <input type="number" id="set-savings-goal" class="input-control" style="width:100px; text-align:right; background:var(--bg-color);" onchange="saveSettingsLocally()" placeholder="ex: 500">
-            </div>
-            
-            <div class="settings-row">
-                <div class="settings-info"><h4>Fonds d'Urgence</h4><p>Objectif d'épargne sécurité totale</p></div>
-                <input type="number" id="set-emergency" class="input-control" style="width:100px; text-align:right; background:var(--bg-color);" onchange="saveSettingsLocally()" placeholder="ex: 5000">
-            </div>
         </div>
 
-        <div class="card">
-            <h2 style="font-size:16px; margin-top:0;">Mes Comptes</h2>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Note : Le 1er compte de la liste est votre "Compte Principal". Il sert au calcul du "Reste à vivre".</p>
-            <div id="settings-accounts-list"></div>
-            <button class="btn-export" style="width:100%; justify-content:center; margin-top:15px;" onclick="addAccount()">+ Ajouter un compte</button>
-        </div>
-
-        <div class="card">
-            <h2 style="font-size:16px; margin-top:0;">Mes Catégories</h2>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Ajoutez des catégories personnalisées avec la règle correspondante (Fixe, Quotidien, Loisirs).</p>
-            <div id="settings-custom-cats-list"></div>
-            <button class="btn-export" style="width:100%; justify-content:center; margin-top:15px;" onclick="addCustomCategory()">+ Créer une catégorie</button>
-        </div>
-
-        <div class="card">
-            <h2 style="font-size:16px; margin-top:0;">Enveloppes (Limites par catégorie)</h2>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Fixez un budget maximum par catégorie. Laissez vide pour ignorer.</p>
-            <div id="settings-cat-budgets"></div>
-        </div>
-
-        <div class="card">
-            <h2 style="font-size:16px; margin-top:0;">📥 Import Bancaire CSV</h2>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Importez le relevé CSV de votre banque pour catégoriser automatiquement vos opérations récentes.</p>
-            <div style="display:flex; gap:10px;">
-                <button class="btn-submit" onclick="document.getElementById('csv-file-input').click()" style="width:100%; justify-content:center;">Importer un relevé CSV</button>
-                <input type="file" id="csv-file-input" style="display:none" accept=".csv" onchange="importCSV(event)">
+        <h2 style="font-size:20px; margin:35px 0 15px 0; letter-spacing:-0.5px;">Outils</h2>
+        <div class="card" style="padding:20px;">
+            <button onclick="document.getElementById('csv-file-input').click()" style="background:var(--input-bg); color:var(--text-main); border:none; width:100%; padding:16px; border-radius:16px; font-weight:600; cursor:pointer; margin-bottom:12px; display:flex; justify-content:center; gap:10px;">📥 Importer Relevé CSV</button>
+            <input type="file" id="csv-file-input" style="display:none" accept=".csv" onchange="importCSV(event)">
+            <div style="display:flex; gap:12px;">
+                <button style="background:var(--input-bg); color:var(--text-main); border:none; flex:1; padding:14px; border-radius:14px; font-weight:600; cursor:pointer;" onclick="exportPDF()">📄 PDF</button>
+                <button style="background:var(--input-bg); color:var(--text-main); border:none; flex:1; padding:14px; border-radius:14px; font-weight:600; cursor:pointer;" onclick="exportCSV()">⬇ CSV</button>
             </div>
         </div>
 
-        <div class="card" style="border-color: var(--orange); background: rgba(255, 159, 10, 0.08);">
-            <h2 style="font-size:16px; color:var(--orange); margin-top:0;">🧹 Nouveau Départ</h2>
-            <p style="font-size: 13px; color: var(--text-main); opacity:0.8; margin-bottom: 20px;">Efface tout l'historique des opérations mais <strong>conserve vos comptes et fige leur solde actuel</strong>. Parfait pour débuter un nouveau mois.</p>
-            <button class="btn-danger-outline" style="border-color:var(--orange); color:var(--orange);" onclick="freshStart()">Nettoyer l'historique</button>
-        </div>
-
-        <div class="card">
-            <h2 style="font-size:16px; margin-top:0;">Export Manuel (Lecture seule)</h2>
-            <div style="display:flex; gap:12px; margin-top: 20px;">
-                <button class="btn-export" style="flex:1; justify-content:center;" onclick="exportPDF()">📄 PDF</button>
-                <button class="btn-export" style="flex:1; justify-content:center;" onclick="exportCSV()">⬇ CSV</button>
-            </div>
-        </div>
-
-        <div class="card" style="border-color: rgba(255, 69, 58, 0.4); background: rgba(255, 69, 58, 0.05);">
-            <h2 style="font-size:16px; color:var(--red); margin-top:0;">Session</h2>
-            <p style="font-size: 13px; color: var(--text-main); opacity: 0.8; margin-bottom: 20px;">Déconnectez-vous pour fermer votre session sur cet appareil.</p>
-            <button class="btn-danger-outline" onclick="logoutUser()">Se déconnecter</button>
-        </div>
-        
-        <div style="text-align:center; padding-bottom:40px;">
-            <button onclick="clearData()" style="background:none; border:none; color:var(--text-muted); text-decoration:underline; font-size:13px; cursor:pointer; padding:10px;">Réinitialiser l'application entière (Irréversible)</button>
+        <div class="card" style="background:var(--red-light);">
+            <div style="font-weight:700; color:var(--red); font-size:16px; margin-bottom:8px;">Zone de danger</div>
+            <p style="font-size:13px; color:var(--text-main); opacity:0.8; margin-bottom:20px; line-height:1.4;">Les actions ci-dessous sont sensibles.</p>
+            <button style="background:var(--card-bg); color:var(--orange); border:none; width:100%; padding:16px; border-radius:16px; font-weight:700; cursor:pointer; margin-bottom:12px;" onclick="freshStart()">🧹 Nouveau Mois (Garder Soldes)</button>
+            <button style="background:var(--card-bg); color:var(--red); border:none; width:100%; padding:16px; border-radius:16px; font-weight:700; cursor:pointer;" onclick="logoutUser()">Se déconnecter</button>
         </div>
     </div>
+
+    <button class="btn-add" style="position:fixed; bottom:90px; left:50%; transform:translateX(-50%); width:60px; height:60px; border-radius:30px; font-size:32px; justify-content:center; z-index:900; box-shadow: 0 10px 25px var(--accent-light); padding:0;" onclick="openAddModal()">+</button>
 </div>
 
 <script>
@@ -619,43 +441,16 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // NOUVEAU : ACTIVATION DU MODE HORS-LIGNE
-    db.enablePersistence()
-      .catch(function(err) {
-          if (err.code == 'failed-precondition') {
-              console.log("Le mode hors-ligne ne peut être activé que sur un seul onglet à la fois.");
-          } else if (err.code == 'unimplemented') {
-              console.log("Le navigateur ne supporte pas le mode hors-ligne de Firebase.");
-          }
-      });
-
+    db.enablePersistence().catch(err => console.log("Hors-ligne indispo", err));
     const auth = firebase.auth();
 
-    let cloudDocRef = null;
-    let isRegisterMode = false;
-    let currentUser = null;
+    let cloudDocRef = null; let isRegisterMode = false; let currentUser = null;
 
-    // --- VARIABLES DE L'APPLICATION ---
-    let displayName = '';
-    let expenses = [];
-    let accounts = [];
-    let wishlist = [];
-    let categories = []; 
-    
-    let savingsGoal = 500; 
-    let emergencyGoal = 5000;
-    let catBudgets = {};
-    let savedTheme = 'auto';
-    let savedColor = 'blue';
+    let displayName = ''; let expenses = []; let accounts = []; let wishlist = []; let categories = []; 
+    let savingsGoal = 500; let emergencyGoal = 5000; let catBudgets = {}; let savedTheme = 'auto'; let savedColor = 'blue';
 
-    let selectedCat = 'alim'; 
-    let currentFilter = 'all'; 
-    let viewDate = new Date(); 
-    let currentType = 'expense'; 
-    let privacyMode = false;
-    let globalRealBalance = 0;
-    let editingTxId = null;
-    let editingWishId = null;
+    let selectedCat = 'alim'; let currentFilter = 'all'; let viewDate = new Date(); let currentType = 'expense'; 
+    let privacyMode = false; let globalRealBalance = 0; let editingTxId = null; let editingWishId = null;
 
     const DEFAULT_CATEGORIES = [
         { id: 'alim', label: 'Alimentation', icon: '🛒', type: 'vie', isCustom: false },
@@ -667,22 +462,18 @@
         { id: 'cadeaux', label: 'Cadeaux', icon: '🎁', type: 'loisirs', isCustom: false },
         { id: 'sante', label: 'Santé', icon: '💊', type: 'vie', isCustom: false },
         { id: 'resto', label: 'Restaurant', icon: '🍽️', type: 'loisirs', isCustom: false },
-        { id: 'tech', label: 'Technologie', icon: '💻', type: 'loisirs', isCustom: false },
+        { id: 'tech', label: 'Tech', icon: '💻', type: 'loisirs', isCustom: false },
         { id: 'autre', label: 'Autre', icon: '📦', type: 'loisirs', isCustom: false }
     ];
 
     auth.onAuthStateChanged(user => {
         if (user) {
-            currentUser = user;
-            document.getElementById('profile-email-display').innerText = user.email; 
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('app-wrapper').style.display = 'block';
+            currentUser = user; document.getElementById('profile-email-display').innerText = user.email; 
+            document.getElementById('auth-screen').style.display = 'none'; document.getElementById('app-wrapper').style.display = 'block';
             initCloudSync();
         } else {
-            currentUser = null;
-            cloudDocRef = null;
-            document.getElementById('auth-screen').style.display = 'flex';
-            document.getElementById('app-wrapper').style.display = 'none';
+            currentUser = null; cloudDocRef = null;
+            document.getElementById('auth-screen').style.display = 'flex'; document.getElementById('app-wrapper').style.display = 'none';
         }
     });
 
@@ -695,118 +486,72 @@
     }
 
     function login() {
-        const email = document.getElementById('auth-email').value;
-        const pass = document.getElementById('auth-pass').value;
-        if(!email || !pass) return showError("Veuillez remplir tous les champs.");
-        auth.signInWithEmailAndPassword(email, pass).catch(error => showError("Erreur de connexion. Vérifiez vos identifiants."));
+        const email = document.getElementById('auth-email').value; const pass = document.getElementById('auth-pass').value;
+        if(!email || !pass) return showError("Champs requis.");
+        auth.signInWithEmailAndPassword(email, pass).catch(e => showError("Erreur identifiants."));
     }
 
     function register() {
-        const email = document.getElementById('auth-email').value;
-        const pass = document.getElementById('auth-pass').value;
-        if(!email || !pass) return showError("Veuillez remplir tous les champs.");
-        if(pass.length < 6) return showError("Le mot de passe doit faire au moins 6 caractères.");
-        auth.createUserWithEmailAndPassword(email, pass).catch(error => showError("Erreur lors de l'inscription."));
+        const email = document.getElementById('auth-email').value; const pass = document.getElementById('auth-pass').value;
+        if(!email || !pass) return showError("Champs requis."); if(pass.length < 6) return showError("6 car. min.");
+        auth.createUserWithEmailAndPassword(email, pass).catch(e => showError("Erreur inscription."));
     }
 
     function showError(msg) { document.getElementById('auth-error-msg').innerText = msg; }
-    function logoutUser() { hapticTap(); if(confirm("Êtes-vous sûr de vouloir vous déconnecter ?")) auth.signOut(); }
+    function logoutUser() { hapticTap(); if(confirm("Se déconnecter ?")) auth.signOut(); }
 
-    // ==========================================
-    // 2. LOGIQUE DE SYNCHRONISATION CLOUD
-    // ==========================================
-    
     function initCloudSync() {
         if(!currentUser) return;
         cloudDocRef = db.collection('users').doc(currentUser.uid);
-
         cloudDocRef.onSnapshot(doc => {
             if (doc.exists) {
                 const data = doc.data();
-                displayName = data.displayName || '';
-                expenses = data.expenses || [];
-                accounts = data.accounts || [];
-                wishlist = data.wishlist || [];
-                categories = data.categories || [...DEFAULT_CATEGORIES];
+                displayName = data.displayName || ''; expenses = data.expenses || []; accounts = data.accounts || [];
+                wishlist = data.wishlist || []; categories = data.categories || [...DEFAULT_CATEGORIES];
                 savingsGoal = data.savingsGoal !== undefined ? data.savingsGoal : (data.budget || 500);
-                emergencyGoal = data.emergencyGoal || 5000;
-                catBudgets = data.catBudgets || {};
-                savedTheme = data.theme || 'auto';
-                savedColor = data.color || 'blue';
-
+                emergencyGoal = data.emergencyGoal || 5000; catBudgets = data.catBudgets || {};
+                savedTheme = data.theme || 'auto'; savedColor = data.color || 'blue';
                 applyAppSettings();
             } else {
                 displayName = localStorage.getItem('apple_clean_name_v5') || '';
-                expenses = JSON.parse(localStorage.getItem('apple_clean_v5') || localStorage.getItem('apple_clean_v4') || '[]');
-                accounts = JSON.parse(localStorage.getItem('apple_clean_acc_v5') || localStorage.getItem('apple_clean_acc_v4') || '[{"id":"acc1","name":"COMPTE COURANT","initBalance":2000,"color":""}]');
-                wishlist = [];
-                categories = [...DEFAULT_CATEGORIES];
-                savingsGoal = parseFloat(localStorage.getItem('apple_clean_savings_v5') || localStorage.getItem('apple_clean_budget_v5')) || 500;
+                expenses = JSON.parse(localStorage.getItem('apple_clean_v5') || '[]');
+                accounts = JSON.parse(localStorage.getItem('apple_clean_acc_v5') || '[{"id":"acc1","name":"Compte Principal","initBalance":1000,"color":"blue"}]');
+                wishlist = []; categories = [...DEFAULT_CATEGORIES];
+                savingsGoal = parseFloat(localStorage.getItem('apple_clean_savings_v5')) || 500;
                 emergencyGoal = parseFloat(localStorage.getItem('apple_clean_emergency_v5')) || 5000;
                 catBudgets = JSON.parse(localStorage.getItem('apple_clean_catbudgets_v5') || '{}');
-                savedTheme = localStorage.getItem('apple_clean_theme_v5') || 'auto';
-                savedColor = localStorage.getItem('apple_clean_color_v5') || 'blue';
-
-                saveToCloud(); 
-                applyAppSettings(); 
+                savedTheme = localStorage.getItem('apple_clean_theme_v5') || 'auto'; savedColor = localStorage.getItem('apple_clean_color_v5') || 'blue';
+                saveToCloud(); applyAppSettings(); 
             }
         });
     }
 
     function saveToCloud() {
         if (!cloudDocRef) return;
-        cloudDocRef.set({
-            displayName, expenses, accounts, wishlist, categories,
-            savingsGoal, emergencyGoal, catBudgets, theme: savedTheme, color: savedColor
-        }, { merge: true }).catch(err => console.error("Erreur de sauvegarde Cloud :", err));
+        cloudDocRef.set({ displayName, expenses, accounts, wishlist, categories, savingsGoal, emergencyGoal, catBudgets, theme: savedTheme, color: savedColor }, { merge: true });
     }
 
     function applyAppSettings() {
         document.getElementById('set-displayname').value = displayName;
-        if(displayName) {
-            document.getElementById('welcome-title').innerText = `Bonjour ${displayName} !`;
-            document.getElementById('profile-name-display').innerText = displayName;
-        } else {
-            document.getElementById('welcome-title').innerText = "Dépenses";
-            document.getElementById('profile-name-display').innerText = "Mon Profil";
-        }
-
         applyTheme(savedTheme); document.getElementById('set-theme').value = savedTheme;
         applyColor(savedColor);
         document.getElementById('set-savings-goal').value = savingsGoal;
         document.getElementById('set-emergency').value = emergencyGoal;
         
-        updateGlobalMonthLabel();
-        updateSuggestions(); 
-        renderCats(); renderFilters(); updateAccountsSelectors(); 
-        renderSettingsAccounts(); renderSettingsCategories(); renderSettingsCatBudgets();
-        updateAllViews(); 
-        
+        updateGlobalMonthLabel(); updateSuggestions(); renderCats(); renderFilters(); updateAccountsSelectors(); 
+        renderSettingsAccounts(); renderSettingsCategories(); renderSettingsCatBudgets(); updateAllViews(); 
         if (document.getElementById('tab-tx').classList.contains('active')) renderTransactions();
         if (document.getElementById('tab-stats').classList.contains('active')) renderStats();
-        if (document.getElementById('journal-cal-view').style.display === 'block') renderCalendar();
     }
 
-
-    // ==========================================
-    // 3. LE MOTEUR DE L'APPLICATION
-    // ==========================================
-
-    function escapeHTML(str) {
-        if(!str) return '';
-        return String(str).replace(/[&<>'"]/g, match => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[match]);
-    }
-
+    function escapeHTML(str) { return String(str||'').replace(/[&<>'"]/g, match => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[match]); }
     function hapticTap() { if (navigator.vibrate) navigator.vibrate(15); }
-
     function animateValue(obj, start, end, duration, formatFn) {
         let startTimestamp = null;
         const step = (timestamp) => {
             if (!startTimestamp) startTimestamp = timestamp;
             const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            const easeProgress = 1 - Math.pow(1 - progress, 4);
-            const current = start + easeProgress * (end - start);
-            obj.innerHTML = formatFn(current);
+            obj.innerHTML = formatFn(start + (1 - Math.pow(1 - progress, 4)) * (end - start));
             if (progress < 1) window.requestAnimationFrame(step);
         };
         window.requestAnimationFrame(step);
@@ -821,102 +566,71 @@
         if (currentUser) saveToCloud(); 
     }
 
-    function changeTheme(t) { 
-        savedTheme = t; applyTheme(t); 
-        if (currentUser) saveToCloud(); 
-    }
+    function changeTheme(t) { savedTheme = t; applyTheme(t); if (currentUser) saveToCloud(); }
+    function applyTheme(t) { document.body.setAttribute('data-theme', t === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : t); }
 
-    function applyTheme(t) {
-        if(t === 'auto') document.body.setAttribute('data-theme', window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        else document.body.setAttribute('data-theme', t);
-    }
-
-    function updateGlobalMonthLabel() {
-        const formatter = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' });
-        document.getElementById('global-month-label').innerText = formatter.format(viewDate);
-    }
-
+    function updateGlobalMonthLabel() { document.getElementById('global-month-label').innerText = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(viewDate); }
     function changeGlobalMonth(dir) {
-        hapticTap();
-        viewDate.setMonth(viewDate.getMonth() + dir);
-        updateGlobalMonthLabel();
+        hapticTap(); viewDate.setMonth(viewDate.getMonth() + dir); updateGlobalMonthLabel();
+        
+        // Animation CSS pour le changement de mois
+        const area = document.getElementById('app-wrapper');
+        area.classList.remove('fade-in');
+        void area.offsetWidth; // trigger reflow
+        area.classList.add('fade-in');
+
         updateAllViews(); renderTransactions(); renderStats();
-        if (document.getElementById('journal-cal-view').style.display === 'block') renderCalendar();
     }
 
     function updateSuggestions() {
-        const uniqueLabels = [...new Set(expenses.map(e => e.label))];
-        document.getElementById('label-suggestions').innerHTML = uniqueLabels.map(l => `<option value="${escapeHTML(l)}">`).join('');
+        document.getElementById('label-suggestions').innerHTML = [...new Set(expenses.map(e => e.label))].map(l => `<option value="${escapeHTML(l)}">`).join('');
     }
 
-    function autoCategorize(text) {
-        if(!text) return;
-        const lower = text.toLowerCase();
-        const pastTx = expenses.find(e => e.label.toLowerCase() === lower && e.type === currentType);
-        
-        if (pastTx) {
-            if (currentType === 'expense') selectCat(pastTx.cat);
-            if (pastTx.url && !document.getElementById('inp-url').value) document.getElementById('inp-url').value = pastTx.url; 
-            return; 
-        }
+    const KEYWORDS = {
+        'alim': ['leclerc', 'carrefour', 'auchan', 'intermarche', 'lidl', 'courses', 'boulangerie', 'aldi', 'monoprix'],
+        'transp': ['sncf', 'total', 'esso', 'uber', 'taxi', 'ratp', 'essence', 'peage', 'navigo', 'avion', 'bolt'],
+        'loisirs': ['netflix', 'spotify', 'cinema', 'ugc', 'apple', 'psn', 'xbox', 'prime', 'disney', 'salle de sport', 'basic fit'],
+        'logement': ['loyer', 'edf', 'engie', 'eau', 'assurance', 'internet', 'ikea', 'leroy merlin'],
+        'vetements': ['zara', 'h&m', 'uniqlo', 'nike', 'adidas', 'zalando', 'asos', 'shein', 'mango', 'primark'],
+        'beaute': ['sephora', 'nocibe', 'coiffeur', 'barbier', 'maquillage', 'yves rocher'],
+        'resto': ['mcdonalds', 'kfc', 'burger king', 'deliveroo', 'ubereats', 'pizzeria', 'restaurant', 'bar', 'bistro'],
+        'tech': ['amazon', 'fnac', 'darty', 'boulanger', 'free', 'orange', 'sfr', 'bouygues']
+    };
 
-        for(const [cat, words] of Object.entries(KEYWORDS)) {
-            if(words.some(w => lower.includes(w))) {
-                if(currentType === 'expense') selectCat(cat);
-                return;
-            }
-        }
-        
+    function autoCategorize(text) {
+        if(!text) return; const lower = text.toLowerCase();
+        const pastTx = expenses.find(e => e.label.toLowerCase() === lower && e.type === currentType);
+        if (pastTx) { if (currentType === 'expense') selectCat(pastTx.cat); return; }
+        for(const [cat, words] of Object.entries(KEYWORDS)) { if(words.some(w => lower.includes(w))) { if(currentType === 'expense') selectCat(cat); return; } }
         const customMatch = categories.find(c => c.isCustom && lower.includes(c.label.toLowerCase()));
         if (customMatch && currentType === 'expense') selectCat(customMatch.id);
-
-        if(RECURRING_KEYWORDS.some(w => lower.includes(w))) {
-            document.getElementById('inp-recurring').checked = true; toggleRecOptions();
-        }
     }
 
     function openAddModal() { 
         hapticTap(); editingTxId = null; 
         document.getElementById('modal-title').innerText = "Nouvelle opération";
-        document.getElementById('btn-submit-tx').innerText = "Enregistrer l'opération";
+        document.getElementById('btn-submit-tx').innerText = "Ajouter";
         document.getElementById('btn-delete-tx').style.display = 'none';
-
-        document.getElementById('inp-amount').value = ''; document.getElementById('inp-label').value = ''; 
-        document.getElementById('inp-note').value = ''; document.getElementById('inp-url').value = ''; 
-        document.getElementById('inp-date').valueAsDate = new Date();
-        document.getElementById('inp-recurring').checked = false; document.getElementById('inp-frequency').value = 'monthly';
-        document.getElementById('inp-rec-end').value = '';
-        
-        setOpType('expense'); toggleRecOptions();
-        document.getElementById('add-modal').style.display = 'block'; 
+        document.getElementById('inp-amount').value = ''; document.getElementById('inp-label').value = ''; document.getElementById('inp-note').value = ''; document.getElementById('inp-url').value = ''; 
+        document.getElementById('inp-date').valueAsDate = new Date(); document.getElementById('inp-recurring').checked = false; document.getElementById('inp-frequency').value = 'monthly';
+        setOpType('expense'); toggleRecOptions(); document.getElementById('advanced-options').style.display='none'; document.querySelector('#add-modal button[onclick*="advanced"]').style.display='block';
+        document.getElementById('add-modal').style.display = 'flex'; 
+        setTimeout(()=> document.getElementById('inp-amount').focus(), 300);
     }
 
     function openEditModal(id) {
-        hapticTap();
-        const tx = expenses.find(e => e.id === id); if (!tx) return;
-
+        hapticTap(); const tx = expenses.find(e => e.id === id); if (!tx) return;
         editingTxId = id; 
-        document.getElementById('modal-title').innerText = "Modifier l'opération";
+        document.getElementById('modal-title').innerText = "Détails";
         document.getElementById('btn-submit-tx').innerText = "Mettre à jour";
         document.getElementById('btn-delete-tx').style.display = 'block';
-
         setOpType(tx.type);
-        document.getElementById('inp-account').value = tx.accountId;
-        document.getElementById('inp-amount').value = tx.amount;
-        document.getElementById('inp-date').value = tx.date;
-        document.getElementById('inp-label').value = tx.label; 
-        document.getElementById('inp-note').value = tx.note || '';
-        document.getElementById('inp-url').value = tx.url || '';
-        
+        document.getElementById('inp-account').value = tx.accountId; document.getElementById('inp-amount').value = tx.amount; document.getElementById('inp-date').value = tx.date; document.getElementById('inp-label').value = tx.label; document.getElementById('inp-note').value = tx.note || ''; document.getElementById('inp-url').value = tx.url || '';
         if (tx.type === 'expense') selectCat(tx.cat);
-
         document.getElementById('inp-recurring').checked = tx.recurring || false;
-        if(tx.recurring) {
-            document.getElementById('inp-frequency').value = tx.frequency || 'monthly';
-            document.getElementById('inp-rec-end').value = tx.endDate || '';
-        }
-        toggleRecOptions();
-        document.getElementById('add-modal').style.display = 'block';
+        if(tx.recurring) { document.getElementById('inp-frequency').value = tx.frequency || 'monthly'; document.getElementById('inp-rec-end').value = tx.endDate || ''; }
+        toggleRecOptions(); document.getElementById('advanced-options').style.display='block'; document.querySelector('#add-modal button[onclick*="advanced"]').style.display='none';
+        document.getElementById('add-modal').style.display = 'flex';
     }
 
     function closeAddModal() { document.getElementById('add-modal').style.display = 'none'; }
@@ -924,37 +638,29 @@
     
     function setOpType(t) {
         hapticTap(); currentType = t;
-        document.getElementById('tab-type-exp').classList.toggle('active', t==='expense');
-        document.getElementById('tab-type-inc').classList.toggle('active', t==='income');
+        document.getElementById('type-exp-btn').style.opacity = t==='expense' ? '1' : '0.4';
+        document.getElementById('type-exp-btn').style.color = t==='expense' ? 'var(--text-main)' : 'var(--text-muted)';
+        document.getElementById('type-inc-btn').style.opacity = t==='income' ? '1' : '0.4';
+        document.getElementById('type-inc-btn').style.color = t==='income' ? 'var(--green)' : 'var(--text-muted)';
         document.getElementById('category-block').style.display = t==='expense' ? 'block' : 'none';
     }
     function toggleRecOptions() { document.getElementById('rec-options').style.display = document.getElementById('inp-recurring').checked ? 'block' : 'none'; }
 
-    // --- IMPORT CSV ---
+    // --- IMPORT CSV (Raccourci) ---
     function importCSV(event) {
-        hapticTap();
-        const file = event.target.files[0];
-        if (!file) return;
-        
-        if (accounts.length === 0) return alert("Veuillez d'abord créer un compte bancaire.");
-        
+        hapticTap(); const file = event.target.files[0]; if (!file) return;
+        if (accounts.length === 0) return alert("Créez un compte d'abord.");
         let accountId = accounts[0].id;
         if (accounts.length > 1) {
             const accNames = accounts.map((a, i) => `${i + 1}. ${a.name}`).join('\n');
-            const choice = prompt("Sur quel compte importer ces données ? Entrez le numéro du compte :\n\n" + accNames);
-            const idx = parseInt(choice) - 1;
-            if (!isNaN(idx) && accounts[idx]) { accountId = accounts[idx].id; } 
-            else { event.target.value = ''; return alert("Import annulé : Compte non reconnu."); }
+            const idx = parseInt(prompt("Compte cible (N°) :\n\n" + accNames)) - 1;
+            if (!isNaN(idx) && accounts[idx]) accountId = accounts[idx].id; else return;
         }
-
         const reader = new FileReader();
         reader.onload = function(e) {
-            const text = e.target.result; const lines = text.split('\n'); let count = 0;
-
-            lines.forEach((line, index) => {
-                if (index === 0) return; 
-                const cols = line.split(/[;,]/); if (cols.length < 2) return;
-
+            let count = 0;
+            e.target.result.split('\n').forEach((line, i) => {
+                if (i === 0) return; const cols = line.split(/[;,]/); if (cols.length < 2) return;
                 let dateStr = '', amount = 0, label = '';
                 cols.forEach(c => {
                     c = c.replace(/["']/g, '').trim();
@@ -962,319 +668,176 @@
                     else if (c.match(/^-?\d+([.,]\d+)?$/)) amount = parseFloat(c.replace(',', '.'));
                     else if (c.length > label.length && !c.match(/^\d+$/)) label = c;
                 });
-
                 if (dateStr && label && amount !== 0) {
-                    let isoDate = dateStr;
-                    if (dateStr.includes('/')) { const parts = dateStr.split('/'); isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`; }
-                    
+                    let isoDate = dateStr.includes('/') ? `${dateStr.split('/')[2]}-${dateStr.split('/')[1]}-${dateStr.split('/')[0]}` : dateStr;
                     let isInc = amount > 0; let guessedCat = 'autre';
-                    
                     if (!isInc) {
                         const lowerLabel = label.toLowerCase();
-                        for(const [cat, words] of Object.entries(KEYWORDS)) {
-                            if(words.some(w => lowerLabel.includes(w))) { guessedCat = cat; break; }
-                        }
-                        if (guessedCat === 'autre') {
-                            const customMatch = categories.find(c => c.isCustom && lowerLabel.includes(c.label.toLowerCase()));
-                            if (customMatch) guessedCat = customMatch.id;
-                        }
+                        for(const [cat, words] of Object.entries(KEYWORDS)) { if(words.some(w => lowerLabel.includes(w))) { guessedCat = cat; break; } }
+                        if (guessedCat === 'autre') { const customMatch = categories.find(c => c.isCustom && lowerLabel.includes(c.label.toLowerCase())); if (customMatch) guessedCat = customMatch.id; }
                     }
-
-                    expenses.unshift({
-                        id: Date.now() + Math.random(), accountId, amount: Math.abs(amount), date: isoDate, label,
-                        note: 'Import CSV', url: '', type: isInc ? 'income' : 'expense', cat: isInc ? 'income' : guessedCat, recurring: false
-                    });
+                    expenses.unshift({ id: Date.now()+Math.random(), accountId, amount: Math.abs(amount), date: isoDate, label, note: 'Import CSV', url: '', type: isInc ? 'income' : 'expense', cat: isInc ? 'income' : guessedCat, recurring: false });
                     count++;
                 }
             });
-            
-            if (count > 0) {
-                saveToCloud(); updateSuggestions(); updateAllViews();
-                alert(`✅ Importation réussie !\n${count} opérations ont été ajoutées et auto-catégorisées.`);
-            } else { alert("❌ Erreur d'import : Aucune opération valide détectée."); }
-            event.target.value = ''; 
-        };
-        reader.readAsText(file);
+            if (count > 0) { saveToCloud(); updateAllViews(); alert(`✅ ${count} opérations importées.`); }
+        }; reader.readAsText(file);
     }
 
-    // --- FONCTIONS WISHLIST (PROJETS) ---
     function openWishlistModal(id = null) {
-        hapticTap();
-        editingWishId = id;
-        
+        hapticTap(); editingWishId = id;
         if (id) {
-            const item = wishlist.find(w => w.id === id);
-            if(!item) return;
+            const item = wishlist.find(w => w.id === id); if(!item) return;
             document.getElementById('wishlist-modal-title').innerText = "Modifier l'envie";
-            document.getElementById('inp-wish-name').value = item.name;
-            document.getElementById('inp-wish-price').value = item.price;
-            document.getElementById('inp-wish-url').value = item.url || '';
-            document.getElementById('inp-wish-account').value = item.accountId || (accounts[0] ? accounts[0].id : '');
-            
-            document.getElementById('btn-delete-wish').style.display = 'block';
-            document.getElementById('btn-submit-wish').innerText = "Mettre à jour";
+            document.getElementById('inp-wish-name').value = item.name; document.getElementById('inp-wish-price').value = item.price; document.getElementById('inp-wish-url').value = item.url || ''; document.getElementById('inp-wish-account').value = item.accountId || (accounts[0] ? accounts[0].id : '');
+            document.getElementById('btn-delete-wish').style.display = 'block'; document.getElementById('btn-submit-wish').innerText = "Mettre à jour";
         } else {
             document.getElementById('wishlist-modal-title').innerText = "Nouvelle Envie";
-            document.getElementById('inp-wish-name').value = '';
-            document.getElementById('inp-wish-price').value = '';
-            document.getElementById('inp-wish-url').value = '';
-            document.getElementById('inp-wish-account').value = accounts[0] ? accounts[0].id : ''; 
-            
-            document.getElementById('btn-delete-wish').style.display = 'none';
-            document.getElementById('btn-submit-wish').innerText = "Enregistrer";
+            document.getElementById('inp-wish-name').value = ''; document.getElementById('inp-wish-price').value = ''; document.getElementById('inp-wish-url').value = ''; document.getElementById('inp-wish-account').value = accounts[0] ? accounts[0].id : ''; 
+            document.getElementById('btn-delete-wish').style.display = 'none'; document.getElementById('btn-submit-wish').innerText = "Ajouter le projet";
         }
-        document.getElementById('wishlist-modal').style.display = 'block';
+        document.getElementById('wishlist-modal').style.display = 'flex';
     }
 
     function closeWishlistModal() { document.getElementById('wishlist-modal').style.display = 'none'; }
 
     function saveWishlistItem() {
         hapticTap();
-        const name = document.getElementById('inp-wish-name').value.trim();
-        let priceInput = document.getElementById('inp-wish-price').value;
-        priceInput = priceInput.replace(',', '.'); const price = parseFloat(priceInput);
-        const url = document.getElementById('inp-wish-url').value.trim();
-        const accountId = document.getElementById('inp-wish-account').value;
-
-        if (!name || isNaN(price) || price <= 0 || !accountId) return alert("Veuillez saisir un nom, un compte et un prix valide.");
-
-        if (editingWishId) {
-            const index = wishlist.findIndex(w => w.id === editingWishId);
-            if (index !== -1) { wishlist[index] = { ...wishlist[index], name, price, url, accountId }; }
-        } else {
-            wishlist.push({ id: Date.now(), name, price, url, accountId });
-        }
-
+        const name = document.getElementById('inp-wish-name').value.trim(); const price = parseFloat(document.getElementById('inp-wish-price').value.replace(',', '.'));
+        const url = document.getElementById('inp-wish-url').value.trim(); const accountId = document.getElementById('inp-wish-account').value;
+        if (!name || isNaN(price) || price <= 0 || !accountId) return alert("Infos invalides.");
+        if (editingWishId) { const i = wishlist.findIndex(w => w.id === editingWishId); if (i !== -1) wishlist[i] = { ...wishlist[i], name, price, url, accountId }; } 
+        else wishlist.push({ id: Date.now(), name, price, url, accountId });
         saveToCloud(); closeWishlistModal(); updateAllViews(); 
     }
 
-    function deleteWishFromModal() {
-        if(confirm("Supprimer ce projet de la liste ?")) {
-            hapticTap(); wishlist = wishlist.filter(w => w.id !== editingWishId);
-            saveToCloud(); closeWishlistModal(); updateAllViews();
-        }
-    }
+    function deleteWishFromModal() { if(confirm("Supprimer ?")) { hapticTap(); wishlist = wishlist.filter(w => w.id !== editingWishId); saveToCloud(); closeWishlistModal(); updateAllViews(); } }
 
     function setJournalView(view) {
         hapticTap();
-        document.getElementById('view-list-btn').classList.toggle('active', view === 'list');
-        document.getElementById('view-cal-btn').classList.toggle('active', view === 'cal');
-        document.getElementById('journal-list-view').style.display = view === 'list' ? 'block' : 'none';
-        document.getElementById('journal-cal-view').style.display = view === 'cal' ? 'block' : 'none';
+        document.getElementById('view-list-btn').classList.toggle('active', view === 'list'); document.getElementById('view-cal-btn').classList.toggle('active', view === 'cal');
+        document.getElementById('journal-list-view').style.display = view === 'list' ? 'block' : 'none'; document.getElementById('journal-cal-view').style.display = view === 'cal' ? 'block' : 'none';
         if (view === 'cal') renderCalendar();
     }
 
     function switchTab(id, btn) {
         hapticTap();
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(s => {s.classList.remove('active'); s.classList.remove('fade-in')});
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('tab-' + id).classList.add('active'); btn.classList.add('active');
+        
+        const target = document.getElementById('tab-' + id);
+        target.classList.add('active');
+        void target.offsetWidth; // Reflow
+        target.classList.add('fade-in');
+        
+        btn.classList.add('active');
+        window.scrollTo(0,0);
+        
         if(id === 'dash') updateAllViews(); if(id === 'tx') renderTransactions(); if(id === 'stats') renderStats();
     }
 
     function updateAccountsSelectors() { 
         const options = accounts.map(a => `<option value="${escapeHTML(a.id)}">${escapeHTML(a.name)}</option>`).join('');
-        document.getElementById('inp-account').innerHTML = options; 
-        document.getElementById('inp-wish-account').innerHTML = options; 
+        document.getElementById('inp-account').innerHTML = options; document.getElementById('inp-wish-account').innerHTML = options; 
     }
     
     function adjustBalance(accId) {
-        hapticTap();
-        const acc = accounts.find(a => a.id === accId); if (!acc) return;
-        
+        hapticTap(); const acc = accounts.find(a => a.id === accId); if (!acc) return;
         const nowReal = new Date(); let currentCalcBal = acc.initBalance;
-        expenses.forEach(e => {
-            if(e.accountId === accId) {
-                const pastCount = getPastOccurrencesCount(e, nowReal);
-                currentCalcBal += (e.type === 'income' ? 1 : -1) * (e.amount * pastCount);
-            }
-        });
-
-        let realBalInput = prompt(`Solde RÉEL actuel sur l'application de votre banque pour "${acc.name}" (€) :\n(Solde calculé actuel : ${currentCalcBal.toFixed(2)}€)`);
-        if (realBalInput === null || realBalInput.trim() === '') return;
-        
-        realBalInput = realBalInput.replace(',', '.'); const realBal = parseFloat(realBalInput);
-        if (isNaN(realBal)) return alert("Montant invalide.");
-
-        const diff = realBal - currentCalcBal;
-        if (Math.abs(diff) < 0.01) return alert("Le solde est déjà parfaitement à jour ! ✅");
-
-        if (confirm(`Il y a une différence de ${Math.abs(diff).toFixed(2)}€.\nVoulez-vous qu'une opération automatique "⚖️ Ajustement" soit créée pour corriger le solde ?`)) {
-            const isoDate = nowReal.toISOString().split('T')[0];
-            expenses.unshift({
-                amount: Math.abs(diff), label: "⚖️ Ajustement bancaire", note: "Créé automatiquement", url: "", 
-                date: isoDate, type: diff > 0 ? 'income' : 'expense', cat: diff > 0 ? 'income' : 'autre', 
-                accountId: accId, recurring: false, frequency: null, endDate: null, id: Date.now() 
-            });
-            saveToCloud(); updateAllViews();
-            if (document.getElementById('tab-tx').classList.contains('active')) renderTransactions();
+        expenses.forEach(e => { if(e.accountId === accId) { const pastCount = getPastOccurrencesCount(e, nowReal); currentCalcBal += (e.type === 'income' ? 1 : -1) * (e.amount * pastCount); } });
+        let realBalInput = prompt(`Solde RÉEL actuel (${acc.name}) :\nCalculé : ${currentCalcBal.toFixed(2)}€`);
+        if (!realBalInput) return; const realBal = parseFloat(realBalInput.replace(',', '.')); if (isNaN(realBal)) return;
+        const diff = realBal - currentCalcBal; if (Math.abs(diff) < 0.01) return alert("À jour ! ✅");
+        if (confirm(`Différence de ${Math.abs(diff).toFixed(2)}€. Créer un ajustement ?`)) {
+            expenses.unshift({ amount: Math.abs(diff), label: "⚖️ Ajustement bancaire", note: "Auto", url: "", date: nowReal.toISOString().split('T')[0], type: diff > 0 ? 'income' : 'expense', cat: diff > 0 ? 'income' : 'autre', accountId: accId, recurring: false, id: Date.now() });
+            saveToCloud(); updateAllViews(); if (document.getElementById('tab-tx').classList.contains('active')) renderTransactions();
         }
     }
 
     function freshStart() {
-        if(confirm("Attention : Cela va effacer TOUTES vos transactions passées.\n\nLes soldes actuels de vos comptes seront sauvegardés comme nouveaux soldes de départ. Vos projets et enveloppes seront conservés.\n\nÊtes-vous sûr de vouloir commencer un nouveau mois ?")) {
+        if(confirm("Attention : Efface TOUTES les transactions passées (les soldes actuels seront gardés comme départ). Continuer ?")) {
             hapticTap(); const nowReal = new Date();
             accounts.forEach(acc => {
                 let currentCalcBal = acc.initBalance;
-                expenses.forEach(e => {
-                    if(e.accountId === acc.id) {
-                        const pastCount = getPastOccurrencesCount(e, nowReal);
-                        currentCalcBal += (e.type === 'income' ? 1 : -1) * (e.amount * pastCount);
-                    }
-                });
+                expenses.forEach(e => { if(e.accountId === acc.id) { currentCalcBal += (e.type === 'income' ? 1 : -1) * (e.amount * getPastOccurrencesCount(e, nowReal)); } });
                 acc.initBalance = currentCalcBal; 
             });
-            expenses = []; saveToCloud(); applyAppSettings();
-            alert("Historique effacé ! Vos comptes sont prêts pour un nouveau départ. 🚀");
+            expenses = []; saveToCloud(); applyAppSettings(); alert("Historique effacé ! 🚀");
         }
     }
 
     function addAccount() {
-        hapticTap();
-        const name = prompt("Nom du compte (ex: Livret A) :"); if(!name) return;
-        let balInput = prompt("Solde initial (€) :"); if (balInput === null) return;
-        balInput = balInput.replace(',', '.'); const bal = parseFloat(balInput) || 0;
-        const colors = ['', 'alt-color', 'alt-color-2']; const color = colors[accounts.length % 3];
-        accounts.push({ id: 'acc_'+Date.now(), name: name.toUpperCase(), initBalance: bal, color: color }); 
+        hapticTap(); const name = prompt("Nom du compte :"); if(!name) return;
+        const bal = parseFloat(prompt("Solde initial (€) :", "0").replace(',', '.')); if (isNaN(bal)) return;
+        const colors = ['blue', 'purple', 'pink', 'green', 'orange', 'alt-color'];
+        accounts.push({ id: 'acc_'+Date.now(), name: name, initBalance: bal, color: colors[accounts.length % colors.length] }); 
         saveToCloud();
     }
 
     function editAccount(id) {
-        hapticTap();
-        const accIndex = accounts.findIndex(a => a.id === id); if (accIndex === -1) return;
-        let balInput = prompt(`Nouveau solde initial (de départ) pour ${accounts[accIndex].name} (€) :\n\n⚠️ Si vous voulez juste mettre à jour le solde d'aujourd'hui, utilisez plutôt le bouton "⚖️ Ajuster" sur le Tableau de bord.`, accounts[accIndex].initBalance);
-        if (balInput === null) return;
-        balInput = balInput.replace(',', '.'); const bal = parseFloat(balInput);
-        if (!isNaN(bal)) { accounts[accIndex].initBalance = bal; saveToCloud(); } else { alert("Montant invalide."); }
+        hapticTap(); const acc = accounts.find(a => a.id === id); if (!acc) return;
+        const bal = parseFloat(prompt(`Nouveau solde initial pour ${acc.name} (€) :\n(Utilisez "Ajuster" sur le dashboard pour le solde actuel)`, acc.initBalance).replace(',', '.'));
+        if (!isNaN(bal)) { acc.initBalance = bal; saveToCloud(); }
     }
 
     function deleteAccount(id) {
-        hapticTap();
-        if(accounts.length <= 1) return alert("Vous devez garder au moins un compte principal.");
-        if(confirm("Supprimer ce compte et les opérations liées ?")) {
-            accounts = accounts.filter(a => a.id !== id); expenses = expenses.filter(e => e.accountId !== id);
-            saveToCloud(); 
-        }
+        hapticTap(); if(accounts.length <= 1) return alert("1 compte min.");
+        if(confirm("Supprimer ce compte et ses opérations ?")) { accounts = accounts.filter(a => a.id !== id); expenses = expenses.filter(e => e.accountId !== id); saveToCloud(); }
     }
     
     function renderSettingsAccounts() {
         document.getElementById('settings-accounts-list').innerHTML = accounts.map(a => `
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid var(--border)">
-                <div><strong style="font-size:14px;">${escapeHTML(a.name)}</strong><br><small style="color:var(--text-muted)">Initial: ${a.initBalance.toFixed(2)} €</small></div>
-                <div style="display:flex; gap:15px;">
-                    <button onclick="editAccount('${escapeHTML(a.id)}')" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:14px; font-weight:600;">Modifier</button>
-                    <button onclick="deleteAccount('${escapeHTML(a.id)}')" style="background:none; border:none; color:var(--red); cursor:pointer; font-size:18px;">✕</button>
-                </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid var(--input-bg)">
+                <div><strong style="font-size:15px;">${escapeHTML(a.name)}</strong><br><small style="color:var(--text-muted)">Initial: ${a.initBalance.toFixed(2)} €</small></div>
+                <div style="display:flex; gap:15px;"><button onclick="editAccount('${escapeHTML(a.id)}')" style="background:none; border:none; color:var(--accent); font-weight:600;">Modif.</button><button onclick="deleteAccount('${escapeHTML(a.id)}')" style="background:none; border:none; color:var(--red); font-size:18px;">✕</button></div>
             </div>`).join('');
     }
 
-    // --- GESTION DES CATÉGORIES PERSONNALISÉES ---
     function addCustomCategory() {
-        hapticTap();
-        const label = prompt("Nom de la catégorie (ex: Animaux) :"); if (!label) return;
-        const icon = prompt("Emoji pour la catégorie (ex: 🐶) :", "🏷️"); if (!icon) return;
-        const typeChoice = prompt("Type de dépense (entrez le chiffre) :\n1. Charge Fixe (ex: Assurances)\n2. Dépense Quotidienne (ex: Courses)\n3. Loisirs (ex: Sorties)", "2");
-        
-        let type = 'vie';
-        if (typeChoice === '1') type = 'fixe';
-        if (typeChoice === '3') type = 'loisirs';
-
-        const id = 'cat_' + Date.now();
-        categories.push({ id, label, icon, type, isCustom: true });
+        hapticTap(); const label = prompt("Nom :"); if (!label) return; const icon = prompt("Emoji :", "🏷️"); if (!icon) return;
+        const typeChoice = prompt("Type :\n1. Fixe\n2. Quotidien\n3. Loisirs", "2");
+        categories.push({ id: 'cat_' + Date.now(), label, icon, type: typeChoice==='1'?'fixe':(typeChoice==='3'?'loisirs':'vie'), isCustom: true });
         saveToCloud(); applyAppSettings();
     }
 
     function deleteCategory(id) {
-        hapticTap();
-        if (confirm("Supprimer cette catégorie ? Les opérations associées seront reclassées en 'Autre'.")) {
-            categories = categories.filter(c => c.id !== id);
-            expenses.forEach(e => { if (e.cat === id) e.cat = 'autre'; });
-            saveToCloud(); applyAppSettings();
+        hapticTap(); if (confirm("Supprimer ? Les op. seront en 'Autre'.")) {
+            categories = categories.filter(c => c.id !== id); expenses.forEach(e => { if (e.cat === id) e.cat = 'autre'; }); saveToCloud(); applyAppSettings();
         }
     }
 
     function renderSettingsCategories() {
-        const container = document.getElementById('settings-custom-cats-list');
         const customCats = categories.filter(c => c.isCustom);
-        if (customCats.length === 0) {
-            container.innerHTML = "<p style='color:var(--text-muted); font-size:13px;'>Aucune catégorie personnalisée.</p>";
-            return;
-        }
-        container.innerHTML = customCats.map(c => {
-            const typeStr = c.type === 'fixe' ? 'Fixe' : (c.type === 'loisirs' ? 'Loisirs' : 'Quotidien');
-            return `
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid var(--border)">
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <span style="font-size:24px; background:var(--input-bg); width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:10px;">${c.icon}</span>
-                    <div><strong style="font-size:14px;">${escapeHTML(c.label)}</strong><br><small style="color:var(--text-muted)">Règle: ${typeStr}</small></div>
-                </div>
-                <button onclick="deleteCategory('${escapeHTML(c.id)}')" style="background:none; border:none; color:var(--red); cursor:pointer; font-size:18px;">✕</button>
-            </div>`;
-        }).join('');
+        document.getElementById('settings-custom-cats-list').innerHTML = customCats.length === 0 ? "<p style='color:var(--text-muted); font-size:13px;'>Aucune catégorie personnalisée.</p>" : customCats.map(c => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid var(--input-bg)">
+                <div style="display:flex; align-items:center; gap:12px;"><span style="font-size:20px; background:var(--input-bg); width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:12px;">${c.icon}</span>
+                <div><strong style="font-size:15px;">${escapeHTML(c.label)}</strong><br><small style="color:var(--text-muted)">${c.type==='fixe'?'Fixe':(c.type==='loisirs'?'Loisirs':'Quotidien')}</small></div></div>
+                <button onclick="deleteCategory('${escapeHTML(c.id)}')" style="background:none; border:none; color:var(--red); font-size:18px;">✕</button>
+            </div>`).join('');
     }
 
     function renderSettingsCatBudgets() {
-        const container = document.getElementById('settings-cat-budgets');
-        container.innerHTML = categories.map(c => `
+        document.getElementById('settings-cat-budgets').innerHTML = categories.map(c => `
             <div class="settings-row" style="padding: 12px 0;">
-                <div class="settings-info" style="display:flex; align-items:center; gap:10px;">
-                    <span style="font-size:20px; background:var(--input-bg); width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:10px;">${c.icon}</span>
-                    <h4 style="margin:0;">${escapeHTML(c.label)}</h4>
-                </div>
-                <input type="number" class="input-control" style="width:90px; text-align:right; padding:10px; background:var(--bg-color);"
-                       placeholder="Illimité" value="${catBudgets[c.id] || ''}"
-                       onchange="saveCatBudget('${c.id}', this.value)">
-            </div>
-        `).join('');
+                <div class="settings-info" style="display:flex; align-items:center; gap:12px;"><span style="font-size:20px; background:var(--input-bg); width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:12px;">${c.icon}</span><h4 style="margin:0; font-size:15px;">${escapeHTML(c.label)}</h4></div>
+                <input type="number" class="input-control" style="width:90px; text-align:right; padding:10px; background:var(--input-bg);" placeholder="Illimité" value="${catBudgets[c.id] || ''}" onchange="saveCatBudget('${c.id}', this.value)">
+            </div>`).join('');
     }
 
-    function saveCatBudget(catId, value) {
-        const val = parseFloat(value);
-        if(isNaN(val) || val <= 0) delete catBudgets[catId];
-        else catBudgets[catId] = val;
-        saveToCloud();
-    }
-
-    function getLastWorkingDay(year, month) {
-        let lastDay = new Date(year, month + 1, 0); 
-        if (lastDay.getDay() === 0) { lastDay.setDate(lastDay.getDate() - 2); } 
-        else if (lastDay.getDay() === 6) { lastDay.setDate(lastDay.getDate() - 1); }
-        return lastDay.getDate();
-    }
+    function saveCatBudget(catId, value) { const val = parseFloat(value); if(isNaN(val) || val <= 0) delete catBudgets[catId]; else catBudgets[catId] = val; saveToCloud(); }
 
     function getOccurrences(exp, year, month) {
-        const occurrences = [];
-        const startDate = new Date(exp.date); startDate.setHours(0,0,0,0);
-        const targetStart = new Date(year, month, 1); const targetEnd = new Date(year, month + 1, 0);
-        let endDate = exp.endDate ? new Date(exp.endDate) : new Date(2100, 0, 1); endDate.setHours(23,59,59,999);
-
-        if (!exp.recurring) {
-            if (startDate.getFullYear() === year && startDate.getMonth() === month) occurrences.push(startDate.getDate());
-            return occurrences;
-        }
-
-        let freqDays = 0;
-        if (exp.frequency === 'weekly') freqDays = 7;
-        else if (exp.frequency === '2weeks') freqDays = 14;
-        else if (exp.frequency === '4weeks') freqDays = 28;
-
-        if (freqDays > 0) {
-            let curr = new Date(startDate.getTime());
-            while (curr <= targetEnd && curr <= endDate) {
-                if (curr >= targetStart && curr.getFullYear() === year && curr.getMonth() === month) occurrences.push(curr.getDate());
-                curr.setDate(curr.getDate() + freqDays);
-            }
-        } else if (exp.frequency === 'last_working_day') {
-            let occDay = getLastWorkingDay(year, month);
-            let occDate = new Date(year, month, occDay);
-            if (occDate >= startDate && occDate <= endDate) occurrences.push(occDay);
+        const occurrences = []; const sd = new Date(exp.date); sd.setHours(0,0,0,0); const tS = new Date(year, month, 1); const tE = new Date(year, month + 1, 0);
+        let ed = exp.endDate ? new Date(exp.endDate) : new Date(2100, 0, 1); ed.setHours(23,59,59,999);
+        if (!exp.recurring) { if (sd.getFullYear() === year && sd.getMonth() === month) occurrences.push(sd.getDate()); return occurrences; }
+        
+        let fD = exp.frequency === 'weekly'?7 : (exp.frequency==='2weeks'?14 : (exp.frequency==='4weeks'?28:0));
+        if (fD > 0) { let c = new Date(sd); while (c <= tE && c <= ed) { if (c >= tS && c.getFullYear() === year && c.getMonth() === month) occurrences.push(c.getDate()); c.setDate(c.getDate() + fD); } } 
+        else if (exp.frequency === 'last_working_day') {
+            let lD = new Date(year, month + 1, 0); if(lD.getDay()===0) lD.setDate(lD.getDate()-2); else if(lD.getDay()===6) lD.setDate(lD.getDate()-1);
+            let d = lD.getDate(); if (new Date(year,month,d) >= sd && new Date(year,month,d) <= ed) occurrences.push(d);
         } else {
-            if (startDate <= targetEnd && targetStart <= endDate) {
-                let d = startDate.getDate(); let maxDays = targetEnd.getDate();
-                if (d > maxDays) d = maxDays;
-                let occDate = new Date(year, month, d);
-                if (occDate >= startDate && occDate <= endDate) occurrences.push(d);
-            }
+            if (sd <= tE && tS <= ed) { let d = Math.min(sd.getDate(), tE.getDate()); if (new Date(year,month,d) >= sd && new Date(year,month,d) <= ed) occurrences.push(d); }
         }
         return occurrences;
     }
@@ -1282,107 +845,64 @@
     function getPastOccurrencesCount(exp, now) {
         const sd = new Date(exp.date); if (sd > now) return 0; if (!exp.recurring) return 1;
         let ed = exp.endDate ? new Date(exp.endDate) : now; if (ed > now) ed = now;
-
         if (!exp.frequency || exp.frequency === 'monthly' || exp.frequency === 'last_working_day') {
-            let count = (ed.getFullYear() - sd.getFullYear()) * 12 + (ed.getMonth() - sd.getMonth());
-            let occDay = exp.frequency === 'last_working_day' ? getLastWorkingDay(ed.getFullYear(), ed.getMonth()) : sd.getDate();
-            if (ed.getDate() >= occDay) count++;
-            return count;
-        } else {
-            let freqDays = exp.frequency === 'weekly' ? 7 : (exp.frequency === '2weeks' ? 14 : 28);
-            const diffTime = ed.getTime() - sd.getTime();
-            return Math.floor(Math.floor(diffTime / (1000 * 60 * 60 * 24)) / freqDays) + 1;
-        }
+            let c = (ed.getFullYear() - sd.getFullYear()) * 12 + (ed.getMonth() - sd.getMonth());
+            let d = exp.frequency === 'last_working_day' ? (new Date(ed.getFullYear(), ed.getMonth()+1, 0).getDay()===0?new Date(ed.getFullYear(), ed.getMonth()+1, 0).getDate()-2:(new Date(ed.getFullYear(), ed.getMonth()+1, 0).getDay()===6?new Date(ed.getFullYear(), ed.getMonth()+1, 0).getDate()-1:new Date(ed.getFullYear(), ed.getMonth()+1, 0).getDate())) : sd.getDate();
+            if (ed.getDate() >= d) c++; return c;
+        } else { return Math.floor(((ed - sd) / 86400000) / (exp.frequency === 'weekly'?7:(exp.frequency==='2weeks'?14:28))) + 1; }
     }
 
     function expandExpensesForMonth(year, month) {
-        let expanded = [];
-        expenses.forEach(e => {
-            const occs = getOccurrences(e, year, month);
-            occs.forEach(day => { expanded.push({...e, originalId: e.id, displayDay: day, displayDateStr: `${String(day).padStart(2,'0')}/${String(month+1).padStart(2,'0')}/${year}`}); });
-        });
-        expanded.sort((a,b) => b.displayDay - a.displayDay);
-        return expanded;
+        let exp = []; expenses.forEach(e => { getOccurrences(e, year, month).forEach(day => { exp.push({...e, originalId: e.id, displayDay: day, displayDateStr: `${String(day).padStart(2,'0')}/${String(month+1).padStart(2,'0')}/${year}`}); }); });
+        return exp.sort((a,b) => b.displayDay - a.displayDay);
     }
 
-    function renderCats() { document.getElementById('cat-container').innerHTML = categories.map(c => `<div class="category-item ${selectedCat === c.id ? 'selected' : ''}" onclick="selectCat('${c.id}')"><span style="font-size:24px; margin-bottom:8px;">${c.icon}</span><span style="font-size:12px; font-weight:600;">${escapeHTML(c.label)}</span></div>`).join(''); }
+    function renderCats() { document.getElementById('cat-container').innerHTML = categories.map(c => `<div class="category-item ${selectedCat === c.id ? 'selected' : ''}" onclick="selectCat('${c.id}')"><span style="font-size:28px; margin-bottom:8px;">${c.icon}</span><span style="font-size:12px; font-weight:600;">${escapeHTML(c.label)}</span></div>`).join(''); }
     function selectCat(id) { hapticTap(); selectedCat = id; renderCats(); }
 
     function addExpense() {
-        hapticTap();
-        let amtInput = document.getElementById('inp-amount').value;
-        if(amtInput) amtInput = amtInput.replace(',', '.');
-        const amt = parseFloat(amtInput); 
-        const lbl = document.getElementById('inp-label').value.trim(); 
-        const noteRaw = document.getElementById('inp-note').value.trim();
-        const urlRaw = document.getElementById('inp-url').value.trim();
-        const accId = document.getElementById('inp-account').value;
-        
-        if(!amt || !lbl || !accId) return alert("Montant, Libellé et Compte requis.");
-
-        const isRecurring = document.getElementById('inp-recurring').checked;
+        hapticTap(); const amt = parseFloat(document.getElementById('inp-amount').value.replace(',', '.')); 
+        const lbl = document.getElementById('inp-label').value.trim(); const accId = document.getElementById('inp-account').value;
+        if(isNaN(amt) || !lbl || !accId) return alert("Montant et Libellé requis.");
 
         const txData = {
-            amount: amt, label: lbl, note: noteRaw, url: urlRaw, date: document.getElementById('inp-date').value, type: currentType,
-            cat: currentType === 'expense' ? selectedCat : 'income', accountId: accId, recurring: isRecurring,
-            frequency: isRecurring ? document.getElementById('inp-frequency').value : null,
-            endDate: isRecurring ? document.getElementById('inp-rec-end').value : null, 
-            id: editingTxId ? editingTxId : Date.now() 
+            amount: amt, label: lbl, note: document.getElementById('inp-note').value.trim(), url: document.getElementById('inp-url').value.trim(), date: document.getElementById('inp-date').value, type: currentType,
+            cat: currentType === 'expense' ? selectedCat : 'income', accountId: accId, recurring: document.getElementById('inp-recurring').checked,
+            frequency: document.getElementById('inp-recurring').checked ? document.getElementById('inp-frequency').value : null,
+            endDate: document.getElementById('inp-recurring').checked ? document.getElementById('inp-rec-end').value : null, id: editingTxId || Date.now() 
         };
 
-        if (editingTxId) {
-            const index = expenses.findIndex(e => e.id === editingTxId);
-            if (index !== -1) expenses[index] = txData;
-        } else {
-            expenses.unshift(txData);
-        }
-
-        saveToCloud(); 
-        closeAddModal(); 
+        if (editingTxId) { const i = expenses.findIndex(e => e.id === editingTxId); if (i !== -1) expenses[i] = txData; } 
+        else { expenses.unshift(txData); }
+        saveToCloud(); closeAddModal(); updateAllViews(); if(document.getElementById('tab-tx').classList.contains('active')) renderTransactions();
     }
 
-    function deleteTxFromModal() {
-        if(confirm("Supprimer cette opération de façon permanente ?")) {
-            deleteTx(editingTxId);
-            closeAddModal();
-        }
+    function deleteTxFromModal() { if(confirm("Supprimer ?")) { hapticTap(); expenses = expenses.filter(e => e.id !== editingTxId); saveToCloud(); closeAddModal(); updateAllViews(); if(document.getElementById('tab-tx').classList.contains('active')) renderTransactions();} }
+
+    function renderWishlist(epargneMois, accBalances) {
+        const container = document.getElementById('wishlist-container');
+        if (wishlist.length === 0) { container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">🎯</div><div class="empty-state-title">Aucun projet</div>
+                <div style="font-size:14px; margin-bottom:20px;">Fixez-vous un objectif pour visualiser votre épargne !</div>
+            </div>`; return; }
+        container.innerHTML = wishlist.map(w => {
+            const accB = w.accountId ? (accBalances[w.accountId] || 0) : globalRealBalance; const miss = w.price - accB; const prog = Math.min((accB / w.price) * 100, 100);
+            let stat = prog >= 100 ? `<span style="color:var(--green); font-weight:600;">✅ Financement atteint !</span>` : `<span style="color:var(--orange); font-weight:600;">⚠️ Manque ${miss.toFixed(0)}€</span> <span style="color:var(--text-muted)">${epargneMois > 0 ? `(~${Math.ceil(miss/epargneMois)} mois)` : ''}</span>`;
+            return `
+            <div class="card" style="padding:20px; cursor:pointer;" onclick="openWishlistModal(${w.id})">
+                <div style="font-weight:700; font-size:16px; margin-bottom:6px;">${escapeHTML(w.name)}</div>
+                <div style="font-size:24px; font-weight:800; letter-spacing:-1px; margin-bottom:15px;">${w.price.toFixed(0)} €</div>
+                <div class="prog-bar-bg" style="height:8px; margin-bottom:12px;"><div class="prog-bar-fill" style="width:${prog}%; background:${prog>=100?'var(--green)':'var(--accent)'}"></div></div>
+                <div style="font-size:13px;">${stat}</div>
+            </div>`;
+        }).join('');
     }
 
-    function deleteTx(id) {
-        hapticTap();
-        expenses = expenses.filter(e => e.id !== id);
-        saveToCloud(); 
-    }
-
-    let touchStartX = 0; let swipedElement = null;
-    function handleTouchStart(e, element) { touchStartX = e.touches[0].clientX; swipedElement = element; element.style.transition = 'none'; }
-    function handleTouchMove(e) {
-        if(!swipedElement) return;
-        const diffX = e.touches[0].clientX - touchStartX;
-        if(diffX < 0 && diffX > -80) swipedElement.style.transform = `translateX(${diffX}px)`;
-    }
-    function handleTouchEnd(e) {
-        if(!swipedElement) return;
-        swipedElement.style.transition = 'transform 0.2s ease-out';
-        const diffX = e.changedTouches[0].clientX - touchStartX;
-        if(diffX < -40) { swipedElement.style.transform = `translateX(-80px)`; hapticTap(); } 
-        else { swipedElement.style.transform = `translateX(0px)`; }
-        swipedElement = null;
-    }
-
-    // --- DASHBOARD (CIBLAGE COMPTE PRINCIPAL POUR RESTE A VIVRE) ---
     function updateAllViews() {
-        const nowReal = new Date(); 
-        const tY = viewDate.getFullYear(); 
-        const tM = viewDate.getMonth();
-        
+        const tY = viewDate.getFullYear(); const tM = viewDate.getMonth(); const nowR = new Date();
         const accBalances = {}; accounts.forEach(a => accBalances[a.id] = a.initBalance); globalRealBalance = 0;
-
-        expenses.forEach(e => {
-            if(accBalances[e.accountId] === undefined) return;
-            const pastCount = getPastOccurrencesCount(e, nowReal);
-            accBalances[e.accountId] += (e.type === 'income' ? 1 : -1) * (e.amount * pastCount);
-        });
+        expenses.forEach(e => { if(accBalances[e.accountId] !== undefined) accBalances[e.accountId] += (e.type === 'income' ? 1 : -1) * (e.amount * getPastOccurrencesCount(e, nowR)); });
 
         document.getElementById('accounts-container').innerHTML = accounts.map(a => {
             globalRealBalance += accBalances[a.id];
@@ -1390,303 +910,164 @@
             <div class="bank-card ${a.color}">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:2;">
                     <div class="acc-name">${escapeHTML(a.name)}</div>
-                    <button onclick="adjustBalance('${escapeHTML(a.id)}')" style="background:rgba(255,255,255,0.2); border:none; color:white; border-radius:8px; font-size:11px; padding:6px 10px; cursor:pointer; font-weight:700; transition:0.2s; backdrop-filter: blur(5px);">⚖️ Ajuster</button>
+                    <button onclick="adjustBalance('${escapeHTML(a.id)}')" style="background:rgba(0,0,0,0.2); border:none; color:white; border-radius:10px; font-size:11px; padding:6px 12px; cursor:pointer; font-weight:700;">Ajuster</button>
                 </div>
-                <div class="acc-val blur-val" id="acc-val-${a.id}">0.00 €</div>
+                <div class="acc-val blur-val" id="acc-val-${a.id}">${accBalances[a.id].toFixed(2)} €</div>
             </div>`;
         }).join('');
 
-        accounts.forEach(a => {
-            if(document.getElementById(`acc-val-${a.id}`)) animateValue(document.getElementById(`acc-val-${a.id}`), 0, accBalances[a.id], 800, val => val.toFixed(2) + " €");
-        });
-
-        const currentMonthData = expandExpensesForMonth(tY, tM);
+        const curData = expandExpensesForMonth(tY, tM);
+        const mInc = curData.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0); const mExp = curData.filter(e => e.type === 'expense').reduce((s, e) => s + e.amount, 0);
+        const mainAccId = accounts[0] ? accounts[0].id : null; const mainData = curData.filter(e => e.accountId === mainAccId);
+        const rAV = mainData.filter(e=>e.type==='income').reduce((s,e)=>s+e.amount,0) - mainData.filter(e=>e.type==='expense').reduce((s,e)=>s+e.amount,0);
         
-        const monthInc = currentMonthData.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0);
-        const monthExp = currentMonthData.filter(e => e.type === 'expense').reduce((s, e) => s + e.amount, 0);
-        
-        const defaultAccId = accounts[0] ? accounts[0].id : null;
-        const mainAccData = currentMonthData.filter(e => e.accountId === defaultAccId);
-        const mainInc = mainAccData.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0);
-        const mainExp = mainAccData.filter(e => e.type === 'expense').reduce((s, e) => s + e.amount, 0);
-        const resteAVivreMain = mainInc - mainExp;
-        
-        animateValue(document.getElementById('dash-inc'), 0, monthInc, 800, val => "+" + val.toFixed(0) + " €");
-        animateValue(document.getElementById('dash-exp'), 0, monthExp, 800, val => "-" + val.toFixed(0) + " €");
-        animateValue(document.getElementById('dash-remaining'), 0, resteAVivreMain, 800, val => val.toFixed(0) + " €");
+        animateValue(document.getElementById('dash-inc'), 0, mInc, 800, v => "+" + v.toFixed(0) + " €");
+        animateValue(document.getElementById('dash-exp'), 0, mExp, 800, v => "-" + v.toFixed(0) + " €");
+        animateValue(document.getElementById('dash-remaining'), 0, rAV, 800, v => v.toFixed(0) + " €");
         
         document.getElementById('dash-goal-text').innerText = savingsGoal.toFixed(0);
-        const safeLimit = Math.max(0, monthInc - savingsGoal);
-        document.getElementById('prog-label').innerText = monthExp.toFixed(0) + " € / " + safeLimit.toFixed(0) + " €";
-        
-        let pct = safeLimit > 0 ? (monthExp / safeLimit) * 100 : (monthExp > 0 ? 100 : 0);
-        document.getElementById('prog-fill').style.width = Math.min(pct, 100) + "%";
-        document.getElementById('prog-fill').style.background = pct >= 100 ? 'var(--red)' : (pct > 80 ? 'var(--orange)' : 'var(--accent)');
+        const safe = Math.max(0, mInc - savingsGoal); document.getElementById('prog-label').innerText = mExp.toFixed(0) + " € / " + safe.toFixed(0) + " €";
+        let pct = safe > 0 ? (mExp / safe) * 100 : (mExp > 0 ? 100 : 0);
+        document.getElementById('prog-fill').style.width = Math.min(pct, 100) + "%"; document.getElementById('prog-fill').style.background = pct >= 100 ? 'var(--red)' : (pct > 85 ? 'var(--orange)' : 'var(--accent)');
 
-        let upcoming = [];
-        if (tY === nowReal.getFullYear() && tM === nowReal.getMonth()) {
-            const todayDay = nowReal.getDate();
-            upcoming = currentMonthData.filter(e => e.recurring && e.type === 'expense' && e.displayDay > todayDay).sort((a,b) => a.displayDay - b.displayDay);
-        }
-
-        const upList = document.getElementById('upcoming-list');
-        if (tY !== nowReal.getFullYear() || tM !== nowReal.getMonth()) {
-            upList.innerHTML = "<p style='color:var(--text-muted); font-size:14px; margin:0; text-align:center; padding:10px;'>L'échéancier n'est disponible que pour le mois en cours.</p>";
-        } else if(upcoming.length === 0) {
-            upList.innerHTML = "<p style='color:var(--text-muted); font-size:14px; margin:0; text-align:center; padding:10px;'>Tout est payé pour ce mois-ci ! 🎉</p>";
-        } else {
-            upList.innerHTML = upcoming.map(e => {
-                const safeUrl = escapeHTML(e.url);
-                const safeLabel = escapeHTML(e.label);
-                const urlBadge = safeUrl ? `<a href="${safeUrl}" target="_blank" class="tag-badge" style="text-decoration:none; margin-right:10px;" onclick="event.stopPropagation()">🔗</a>` : '';
-                return `<div class="upcoming-item"><div><span class="upcoming-date" style="background:var(--input-bg); color:var(--accent); padding:6px 10px; border-radius:8px; font-size:11px; font-weight:700; margin-right:12px;">Le ${e.displayDay}</span><span style="font-weight:600; font-size:14px;">${urlBadge}${safeLabel}</span></div><div class="blur-val" style="font-weight:700;">${e.amount.toFixed(2)} €</div></div>`;
-            }).join('');
-        }
-
-        renderWishlist(monthInc - monthExp, accBalances);
+        const todayD = nowR.getDate(); const up = curData.filter(e => e.recurring && e.type === 'expense' && e.displayDay > todayD).sort((a,b) => a.displayDay - b.displayDay);
+        document.getElementById('upcoming-list').innerHTML = (tY !== nowR.getFullYear() || tM !== nowR.getMonth()) ? "<div style='text-align:center; padding:10px;'>Uniquement dispo pour le mois en cours.</div>" : (up.length === 0 ? "<div style='text-align:center; padding:10px;'>Tout est payé ! 🎉</div>" : up.map(e => `
+            <div class="upcoming-item">
+                <div style="display:flex; align-items:center; gap:12px;"><div style="background:var(--input-bg); color:var(--text-main); width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:16px;">${e.displayDay}</div>
+                <span style="font-weight:600; font-size:15px;">${escapeHTML(e.label)}</span></div>
+                <div class="blur-val" style="font-weight:700; font-size:16px;">${e.amount.toFixed(0)} €</div>
+            </div>`).join(''));
+        renderWishlist(mInc - mExp, accBalances);
     }
 
-    // --- JOURNAL ---
-    function renderFilters() {
-        document.getElementById('filter-bar').innerHTML = `<div class="filter-pill ${currentFilter==='all'?'active':''}" onclick="setFilter('all', this)">Tout</div><div class="filter-pill ${currentFilter==='income'?'active':''}" onclick="setFilter('income', this)">Revenus</div>` + categories.map(c => `<div class="filter-pill ${currentFilter===c.id?'active':''}" onclick="setFilter('${c.id}', this)">${escapeHTML(c.label)}</div>`).join('');
+    // --- SÉPARATEURS DE DATES (Apple Style) ---
+    function formatRelativeDate(dateStr) {
+        const today = new Date(); const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+        const [y, m, d] = dateStr.split('-'); const target = new Date(y, m-1, d);
+        if (target.toDateString() === today.toDateString()) return "Aujourd'hui";
+        if (target.toDateString() === yesterday.toDateString()) return "Hier";
+        return new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }).format(target);
     }
+
+    function renderFilters() { document.getElementById('filter-bar').innerHTML = `<div class="filter-pill active" onclick="setFilter('all', this)">Tout</div><div class="filter-pill" onclick="setFilter('income', this)">Revenus</div>` + categories.map(c => `<div class="filter-pill" onclick="setFilter('${c.id}', this)">${escapeHTML(c.label)}</div>`).join(''); }
     function setFilter(f, el) { hapticTap(); currentFilter = f; document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active')); el.classList.add('active'); renderTransactions(); }
 
     function renderTransactions() {
         const list = document.getElementById('tx-list'); const search = document.getElementById('tx-search').value.toLowerCase(); 
         const activeExps = expandExpensesForMonth(viewDate.getFullYear(), viewDate.getMonth());
-        
         const filtered = activeExps.filter(e => (currentFilter === 'all' || (currentFilter === 'income' ? e.type === 'income' : e.cat === currentFilter)) && (e.label.toLowerCase().includes(search) || (e.note && e.note.toLowerCase().includes(search))));
         
-        if(filtered.length === 0) { list.innerHTML = "<p style='color:var(--text-muted); text-align:center; padding:20px 0;'>Aucune transaction trouvée pour ce mois</p>"; return; }
+        if(filtered.length === 0) { list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🍃</div><div class="empty-state-title">Aucune opération</div><div>Vous n'avez rien dépensé.</div></div>`; return; }
         
-        list.innerHTML = filtered.map(e => {
+        let html = ''; let lastDate = '';
+        filtered.forEach(e => {
+            if (e.date !== lastDate) { html += `<div class="tx-date-header">${formatRelativeDate(e.date)}</div>`; lastDate = e.date; }
             const catObj = categories.find(c => c.id === e.cat) || categories.find(c => c.id === 'autre');
             const isInc = e.type === 'income'; const icon = isInc ? '💰' : catObj.icon;
             
-            const safeLabel = escapeHTML(e.label);
-            const safeNote = escapeHTML(e.note || '');
-            const safeUrl = escapeHTML(e.url || '');
-            const tags = safeNote ? (safeNote.match(/#[a-z0-9]+/gi) || []) : [];
-            const accName = escapeHTML(accounts.find(a => a.id === e.accountId)?.name || "Supprimé");
-            
-            let freqBadge = '';
-            if (e.recurring) {
-                if (e.frequency === '4weeks') freqBadge = 'Toutes les 4 sem.';
-                else if (e.frequency === '2weeks') freqBadge = 'Toutes les 2 sem.';
-                else if (e.frequency === 'weekly') freqBadge = 'Hebdo.';
-                else if (e.frequency === 'last_working_day') freqBadge = 'Dernier jr ouvré';
-                else freqBadge = 'Mensuel';
-                freqBadge = `<span class="tag-badge" style="color:var(--orange)">${freqBadge}</span>`;
-            }
-            
-            const urlBadge = safeUrl ? `<a href="${safeUrl}" target="_blank" class="tag-badge" style="text-decoration:none; display:inline-flex; align-items:center;" onclick="event.stopPropagation()">🔗 Lien</a>` : '';
-
-            return `
+            html += `
             <div class="tx-swipe-container">
                 <div class="tx-delete-btn" onclick="deleteTx(${e.originalId})">Suppr.</div>
                 <div class="tx-item-content" onclick="openEditModal(${e.originalId})" ontouchstart="handleTouchStart(event, this)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">
-                    <div style="display:flex; align-items:center; gap:15px;"><span style="font-size:24px; background:var(--input-bg); width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:14px;">${icon}</span>
-                        <div><div style="font-weight:600;">${safeLabel} ${tags.map(t => `<span class="tag-badge">${escapeHTML(t)}</span>`).join('')} ${freqBadge} ${urlBadge}</div>
-                        <div style="font-size:12px; color:var(--text-muted); margin-top:6px;">${e.displayDateStr} • ${accName}</div></div>
+                    <div style="display:flex; align-items:center;">
+                        <div class="tx-icon-box">${icon}</div>
+                        <div><div class="tx-title">${escapeHTML(e.label)} ${e.recurring ? '🔄' : ''}</div><div class="tx-subtitle">${escapeHTML(accounts.find(a => a.id === e.accountId)?.name || "")}</div></div>
                     </div>
-                    <div class="blur-val" style="font-weight:700; color:${isInc ? 'var(--green)' : 'var(--text-main)'}; font-size:16px;">${isInc ? '+' : '-'}${e.amount.toFixed(2)} €</div>
+                    <div class="blur-val" style="font-weight:700; font-size:17px; letter-spacing:-0.5px; color:${isInc ? 'var(--green)' : 'var(--text-main)'}">${isInc ? '+' : '-'}${e.amount.toFixed(2)} €</div>
                 </div>
             </div>`;
-        }).join('');
+        });
+        list.innerHTML = html;
     }
 
     function renderCalendar() {
         const grid = document.getElementById('cal-grid'); while (grid.childNodes.length > 7) grid.removeChild(grid.lastChild);
-        const year = viewDate.getFullYear(); const month = viewDate.getMonth(); 
-        const firstDay = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month + 1, 0).getDate(); const startDay = firstDay === 0 ? 6 : firstDay - 1;
-        
-        const activeExps = expandExpensesForMonth(year, month);
-
-        for(let i=0; i<startDay; i++) { const div = document.createElement('div'); div.className = 'cal-cell empty'; grid.appendChild(div); }
-        for(let day=1; day<=daysInMonth; day++) {
+        const y = viewDate.getFullYear(); const m = viewDate.getMonth(); const fD = new Date(y, m, 1).getDay(); const dIM = new Date(y, m + 1, 0).getDate(); const sD = fD === 0 ? 6 : fD - 1;
+        const activeExps = expandExpensesForMonth(y, m);
+        for(let i=0; i<sD; i++) { const div = document.createElement('div'); div.className = 'cal-cell empty'; grid.appendChild(div); }
+        for(let day=1; day<=dIM; day++) {
             const hasTx = activeExps.some(e => e.displayDay === day);
-            const div = document.createElement('div'); div.className = `cal-cell ${hasTx ? 'has-tx' : ''}`; div.innerText = day; div.onclick = () => showCalDetails(day, year, month, activeExps); grid.appendChild(div);
+            const div = document.createElement('div'); div.className = `cal-cell ${hasTx ? 'has-tx' : ''}`; div.innerText = day; div.onclick = () => { hapticTap();
+                const dE = activeExps.filter(e => e.displayDay === day); document.getElementById('cal-details-title').innerText = `${day}/${m+1}/${y}`;
+                document.getElementById('cal-details-list').innerHTML = dE.length > 0 ? dE.map(e => `<div class="tx-item" onclick="openEditModal(${e.originalId})"><span style="display:flex; align-items:center; gap:12px;"><div class="tx-icon-box" style="width:36px; height:36px; border-radius:10px; margin:0;">${e.type==='income'?'💰':(categories.find(c=>c.id===e.cat)||{}).icon}</div> <b>${escapeHTML(e.label)}</b></span><span class="blur-val" style="font-weight:700; color:${e.type==='income'?'var(--green)':'var(--text-main)'}">${e.type==='income'?'+':'-'}${e.amount.toFixed(2)} €</span></div>`).join('') : '<div style="color:var(--text-muted); font-size:14px; padding:10px 0;">Rien ce jour.</div>';
+                document.getElementById('cal-details').style.display = 'block';
+            }; grid.appendChild(div);
         }
     }
 
-    function showCalDetails(day, year, month, activeExps) {
-        hapticTap();
-        const details = document.getElementById('cal-details'); const list = document.getElementById('cal-details-list');
-        const dayExps = activeExps.filter(e => e.displayDay === day);
-        document.getElementById('cal-details-title').innerText = `Opérations du ${String(day).padStart(2,'0')}/${String(month+1).padStart(2,'0')}/${year}`;
-        if(dayExps.length > 0) { 
-            list.innerHTML = dayExps.map(e => {
-                const safeUrl = escapeHTML(e.url);
-                const safeLabel = escapeHTML(e.label);
-                const catObj = categories.find(c => c.id === e.cat) || categories.find(c => c.id === 'autre');
-                const urlBadge = safeUrl ? `<a href="${safeUrl}" target="_blank" class="tag-badge" style="text-decoration:none; margin-right:8px;" onclick="event.stopPropagation()">🔗</a>` : '';
-                return `<div class="tx-item" onclick="openEditModal(${e.originalId})"><span style="display:flex; align-items:center; gap:10px;"><span style="font-size:20px; background:var(--input-bg); width:36px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:10px;">${e.type==='income'?'💰':catObj.icon}</span> ${urlBadge}${safeLabel}</span><span class="blur-val" style="font-weight:700; color:${e.type==='income'?'var(--green)':'var(--text-main)'}">${e.type==='income'?'+':'-'}${e.amount.toFixed(2)} €</span></div>`;
-            }).join(''); 
-            details.style.display = 'block'; 
-        } else details.style.display = 'none';
-    }
-
-    // --- STATISTIQUES ET RADAR ---
     function renderSubRadar() {
-        const list = document.getElementById('sub-radar-list');
-        const subs = expenses.filter(e => e.recurring === true && e.type === 'expense');
-        
-        if(subs.length === 0) {
-            list.innerHTML = "<p style='color:var(--text-muted); font-size:13px; text-align:center;'>Aucun abonnement détecté. Cochez 'Opération récurrente' lors d'un ajout.</p>";
-            return;
-        }
-
-        let totalMonthly = 0; let html = '';
-        
+        const list = document.getElementById('sub-radar-list'); const subs = expenses.filter(e => e.recurring && e.type === 'expense');
+        if(subs.length === 0) { list.innerHTML = "<div class='empty-state'><div class='empty-state-icon'>📡</div><div class='empty-state-title'>Aucun abonnement</div><div style='font-size:13px;'>Vos charges fixes apparaîtront ici.</div></div>"; return; }
+        let total = 0; let html = '';
         subs.forEach(sub => {
-            let monthlyCost = sub.amount; let freqText = "Mensuel";
-            if(sub.frequency === 'weekly') { monthlyCost = sub.amount * 4.33; freqText = "Hebdomadaire"; }
-            else if(sub.frequency === '2weeks') { monthlyCost = sub.amount * 2.16; freqText = "Toutes les 2 sem."; }
-            else if(sub.frequency === '4weeks') { monthlyCost = sub.amount * 1.08; freqText = "Toutes les 4 sem."; }
-            
-            totalMonthly += monthlyCost;
-            const catObj = categories.find(c => c.id === sub.cat) || categories.find(c => c.id === 'autre');
-            const catIcon = catObj.icon || '💸';
-
-            html += `
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid var(--border);">
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <span style="font-size:20px; background:var(--input-bg); width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:14px;">${catIcon}</span>
-                        <div>
-                            <div style="font-weight:600; font-size:14px;">${escapeHTML(sub.label)}</div>
-                            <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">${freqText} (${sub.amount.toFixed(2)}€)</div>
-                        </div>
-                    </div>
-                    <div style="font-weight:700; color:var(--red); font-size:16px;">- ${monthlyCost.toFixed(2)} € <span style="font-size:10px; color:var(--text-muted); font-weight:normal;">/mois</span></div>
-                </div>`;
+            let mC = sub.amount; let fT = "Mensuel";
+            if(sub.frequency === 'weekly') { mC *= 4.33; fT = "Hebdo"; } else if(sub.frequency === '2weeks') { mC *= 2.16; fT = "2 sem."; } else if(sub.frequency === '4weeks') { mC *= 1.08; fT = "4 sem."; }
+            total += mC; const icon = (categories.find(c => c.id === sub.cat)||{}).icon || '💸';
+            html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid var(--border);"><div style="display:flex; align-items:center; gap:15px;"><div class="tx-icon-box">${icon}</div><div><div style="font-weight:600; font-size:15px;">${escapeHTML(sub.label)}</div><div style="font-size:13px; color:var(--text-muted); margin-top:2px;">${fT}</div></div></div><div style="font-weight:700; color:var(--red); font-size:16px;">- ${mC.toFixed(0)} € <span style="font-size:10px; color:var(--text-muted);">/m</span></div></div>`;
         });
-
-        html = `
-            <div style="background:linear-gradient(135deg, #ff453a 0%, #ff9f0a 100%); color:white; padding:20px; border-radius:18px; margin-bottom:25px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 8px 20px rgba(255,69,58,0.3);">
-                <div>
-                    <div style="font-size:12px; opacity:0.9; text-transform:uppercase; font-weight:700; letter-spacing:0.5px;">Coût Total</div>
-                    <div style="font-size:28px; font-weight:700; margin-top:5px;">${totalMonthly.toFixed(2)} € <span style="font-size:14px; font-weight:500;">/mois</span></div>
-                </div>
-                <div style="font-size:40px; opacity:0.9;">📡</div>
-            </div>
-        ` + html;
-
-        list.innerHTML = html;
+        list.innerHTML = `<div style="background:linear-gradient(135deg, #ff3b30 0%, #ff9500 100%); color:white; padding:25px; border-radius:24px; margin-bottom:25px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 10px 30px rgba(255,59,48,0.3);"><div><div style="font-size:12px; text-transform:uppercase; font-weight:700; letter-spacing:1px; margin-bottom:4px; opacity:0.9;">Total fixe</div><div style="font-size:36px; font-weight:800; letter-spacing:-1px;">${total.toFixed(0)} € <span style="font-size:14px; font-weight:600; opacity:0.8;">/m</span></div></div><div style="font-size:48px; opacity:0.9;">📡</div></div>` + html;
     }
 
     function renderStats() {
-        const list = document.getElementById('stats-list'); 
-        const currentMonthData = expandExpensesForMonth(viewDate.getFullYear(), viewDate.getMonth());
-        const currentMonthExp = currentMonthData.filter(e => e.type === 'expense');
-        const monthInc = currentMonthData.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0);
-        
-        const total = currentMonthExp.reduce((s, e) => s + e.amount, 0);
-        const types = { fixe: 0, vie: 0, loisirs: 0 }; const catTotals = {};
-        
-        currentMonthExp.forEach(e => {
-            const catInfo = categories.find(c => c.id === e.cat) || categories.find(c => c.id === 'autre');
-            if(catInfo) types[catInfo.type] += e.amount; catTotals[e.cat] = (catTotals[e.cat] || 0) + e.amount;
-        });
+        const list = document.getElementById('stats-list'); const cMD = expandExpensesForMonth(viewDate.getFullYear(), viewDate.getMonth());
+        const mInc = cMD.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0); const cME = cMD.filter(e => e.type === 'expense'); const total = cME.reduce((s, e) => s + e.amount, 0);
+        const types = { fixe: 0, vie: 0, loisirs: 0 }; const cTot = {};
+        cME.forEach(e => { const cI = categories.find(c => c.id === e.cat) || categories.find(c => c.id === 'autre'); if(cI) types[cI.type] += e.amount; cTot[e.cat] = (cTot[e.cat] || 0) + e.amount; });
 
-        const epargneMois = monthInc - total;
-        const projYear = epargneMois > 0 ? epargneMois * 12 : 0;
+        const ep = mInc - total;
         
-        document.getElementById('proj-month').innerText = epargneMois > 0 ? `+${epargneMois.toFixed(0)} €` : `${epargneMois.toFixed(0)} €`;
-        document.getElementById('proj-month').style.color = epargneMois > 0 ? 'var(--green)' : 'var(--red)';
-        document.getElementById('proj-year').innerText = `+${projYear.toFixed(0)} €`;
-        
-        if(emergencyGoal > 0) {
-            document.getElementById('emergency-label').innerText = `${globalRealBalance.toFixed(0)} € / ${emergencyGoal} €`;
-            document.getElementById('emergency-fill').style.width = Math.min((globalRealBalance/emergencyGoal)*100, 100) + "%";
-        } else {
-            document.getElementById('emergency-label').innerText = "Objectif non défini";
-            document.getElementById('emergency-fill').style.width = "0%";
-        }
+        let score = 0; let uS = emergencyGoal > 0 ? Math.min((globalRealBalance / emergencyGoal) * 30, 30) : 30;
+        let eS = savingsGoal > 0 ? Math.min((Math.max(ep, 0) / savingsGoal) * 40, 40) : 40; let mS = ep >= 0 ? 30 : 0;
+        score = Math.round(uS + eS + mS); if(mInc === 0 && total === 0) score = 0;
+        let sC = "var(--red)"; let sT = "Alerte 🚨"; if(score >= 50) { sC = "var(--orange)"; sT = "Moyen ⚠️"; } if(score >= 70) { sC = "var(--accent)"; sT = "Bon 👍"; } if(score >= 90) { sC = "var(--green)"; sT = "Excellent 🌟"; }
 
-        const baseCalc = monthInc > 0 ? monthInc : 1; 
-        
-        const pctFixe = (types.fixe / baseCalc) * 100;
-        const pctVie = (types.vie / baseCalc) * 100;
-        const pctLoisirs = (types.loisirs / baseCalc) * 100;
+        animateValue(document.getElementById('score-text'), 0, score, 1500, v => Math.round(v)); document.getElementById('score-text').style.color = sC; document.getElementById('score-circle').style.stroke = sC;
+        setTimeout(() => { document.getElementById('score-circle').style.strokeDashoffset = 276 - (score / 100) * 276; }, 100); document.getElementById('score-desc').innerText = `Niveau : ${sT}. Calculé sur vos objectifs.`;
 
-        let advice = ""; let adviceIcon = "💡";
-        if (monthInc === 0 && total === 0) {
-            advice = "<strong>Bienvenue !</strong> Ajoutez vos revenus du mois pour activer l'analyse 50/30/20."; adviceIcon = "👋";
-        } else if (monthInc === 0 && total > 0) {
-            advice = "<strong>Oups !</strong> Vous n'avez enregistré aucun revenu ce mois-ci. L'analyse de vos dépenses risque d'être faussée."; adviceIcon = "⚠️";
-        } else if (pctFixe > 50) {
-            advice = `<strong>Attention :</strong> Vos charges fixes (<strong>${pctFixe.toFixed(0)}% de vos revenus</strong>) dépassent la recommandation des 50%. Envisagez de renégocier certains contrats.`; adviceIcon = "⚠️";
-        } else if (pctLoisirs > 20) {
-            advice = `<strong>Alerte Plaisir :</strong> Vous avez alloué <strong>${pctLoisirs.toFixed(0)}% de vos revenus</strong> aux loisirs (limite conseillée: 20%). Levez un peu le pied !`; adviceIcon = "🛍️";
-        } else if (pctVie > 30) {
-            advice = `<strong>Quotidien :</strong> Vos dépenses courantes (<strong>${pctVie.toFixed(0)}% de vos revenus</strong>) sont au-dessus des 30% idéaux. Surveillez vos achats.`; adviceIcon = "🛒";
-        } else {
-            advice = `<strong>Félicitations !</strong> Vous respectez parfaitement la règle d'or des 50-30-20. Votre équilibre financier est parfait.`; adviceIcon = "✅";
-        }
-        
-        document.querySelector('.advice-icon').innerText = adviceIcon; document.getElementById('advice-text').innerHTML = advice;
+        document.getElementById('proj-month').innerText = ep > 0 ? `+${ep.toFixed(0)} €` : `${ep.toFixed(0)} €`; document.getElementById('proj-month').style.color = ep > 0 ? 'var(--green)' : 'var(--red)';
+        document.getElementById('proj-year').innerText = `+${(ep>0?ep*12:0).toFixed(0)} €`;
+        document.getElementById('emergency-label').innerText = `${globalRealBalance.toFixed(0)} € / ${emergencyGoal} €`; document.getElementById('emergency-fill').style.width = emergencyGoal>0 ? Math.min((globalRealBalance/emergencyGoal)*100, 100) + "%" : "0%";
 
-        document.getElementById('ring-fixe').style.strokeDashoffset = 251.2 - (Math.min(types.fixe / (baseCalc*0.5), 1) * 251.2);
-        document.getElementById('ring-vie').style.strokeDashoffset = 251.2 - (Math.min(types.vie / (baseCalc*0.3), 1) * 251.2);
-        document.getElementById('ring-loisirs').style.strokeDashoffset = 251.2 - (Math.min(types.loisirs / (baseCalc*0.2), 1) * 251.2);
+        const bC = mInc > 0 ? mInc : 1; 
+        document.getElementById('ring-fixe').style.strokeDashoffset = 251.2 - (Math.min(types.fixe / (bC*0.5), 1) * 251.2);
+        document.getElementById('ring-vie').style.strokeDashoffset = 251.2 - (Math.min(types.vie / (bC*0.3), 1) * 251.2);
+        document.getElementById('ring-loisirs').style.strokeDashoffset = 251.2 - (Math.min(types.loisirs / (bC*0.2), 1) * 251.2);
+
+        let adv = "<strong>Félicitations !</strong> Règle respectée."; let aI = "✅";
+        if (mInc === 0) { adv = "<strong>Oups !</strong> Ajoutez vos revenus."; aI = "⚠️"; }
+        else if (types.fixe/bC > 0.5) { adv = "<strong>Attention :</strong> Charges fixes > 50%."; aI = "⚠️"; }
+        else if (types.loisirs/bC > 0.2) { adv = "<strong>Plaisir :</strong> Loisirs > 20%. Levez le pied !"; aI = "🛍️"; }
+        else if (types.vie/bC > 0.3) { adv = "<strong>Quotidien :</strong> Dépenses > 30%."; aI = "🛒"; }
+        document.querySelector('.advice-icon').innerText = aI; document.getElementById('advice-text').innerHTML = adv;
 
         renderSubRadar();
 
-        if(total === 0) { list.innerHTML = "<p style='color:var(--text-muted); text-align:center; margin-top:20px;'>Aucune dépense ce mois-ci</p>"; return; }
-        const sortedCats = Object.keys(catTotals).sort((a, b) => catTotals[b] - catTotals[a]);
-        
-        list.innerHTML = sortedCats.map(cId => {
-            const cat = categories.find(c => c.id === cId) || categories.find(c => c.id === 'autre'); 
-            const val = catTotals[cId];
-            const catLimit = catBudgets[cId];
-            
-            let limitText = ""; let pctBar = (val/total)*100; let barColor = "var(--accent)";
-            
-            if (catLimit) {
-                limitText = `<span style="font-size:12px; color:var(--text-muted); font-weight:500;"> / ${catLimit}€</span>`;
-                pctBar = (val/catLimit)*100;
-                if(pctBar > 100) barColor = "var(--red)";
-            }
-
-            return `<div class="stats-row">
-                        <div class="stats-info"><span style="display:flex; align-items:center; gap:8px;"><span style="font-size:16px; background:var(--input-bg); width:30px; height:30px; display:flex; align-items:center; justify-content:center; border-radius:8px;">${cat.icon}</span> ${escapeHTML(cat.label)}</span><span class="blur-val" style="display:flex; align-items:center;">${val.toFixed(2)} € ${limitText}</span></div>
-                        <div class="prog-bar-bg" style="height:8px; margin-top:8px;"><div class="prog-bar-fill" style="width: ${Math.min(pctBar, 100)}%; background:${barColor}"></div></div>
-                    </div>`;
+        if(total === 0) { list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">✉️</div><div class="empty-state-title">Enveloppes vides</div></div>`; return; }
+        list.innerHTML = Object.keys(cTot).sort((a, b) => cTot[b] - cTot[a]).map(cId => {
+            const cat = categories.find(c => c.id === cId) || categories.find(c => c.id === 'autre'); const val = cTot[cId]; const lim = catBudgets[cId];
+            let lT = ""; let pct = (val/total)*100; let col = "var(--accent)";
+            if (lim) { lT = `<span style="font-size:12px; color:var(--text-muted);">/ ${lim}€</span>`; pct = (val/lim)*100; if(pct > 100) col = "var(--red)"; }
+            return `
+            <div class="stats-row">
+                <div class="stats-info"><span style="display:flex; align-items:center; gap:12px;"><div class="tx-icon-box" style="width:36px; height:36px; border-radius:10px; margin:0;">${cat.icon}</div> <span style="font-weight:600; color:var(--text-main); font-size:15px;">${escapeHTML(cat.label)}</span></span><span class="blur-val" style="font-weight:700; font-size:15px; display:flex; align-items:center; gap:4px;">${val.toFixed(0)} € ${lT}</span></div>
+                <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:${Math.min(pct, 100)}%; background:${col}"></div></div>
+            </div>`;
         }).join('');
     }
 
     function saveSettingsLocally() { 
-        displayName = document.getElementById('set-displayname').value.trim();
-        savingsGoal = parseFloat(document.getElementById('set-savings-goal').value) || 0; 
-        emergencyGoal = parseFloat(document.getElementById('set-emergency').value) || 0;
-        
-        localStorage.setItem('apple_clean_name_v5', displayName);
-        localStorage.setItem('apple_clean_savings_v5', savingsGoal); 
-        localStorage.setItem('apple_clean_emergency_v5', emergencyGoal);
-        
+        displayName = document.getElementById('set-displayname').value.trim(); savingsGoal = parseFloat(document.getElementById('set-savings-goal').value) || 0; emergencyGoal = parseFloat(document.getElementById('set-emergency').value) || 0;
+        localStorage.setItem('apple_clean_name_v5', displayName); localStorage.setItem('apple_clean_savings_v5', savingsGoal); localStorage.setItem('apple_clean_emergency_v5', emergencyGoal);
         saveToCloud(); applyAppSettings(); 
     }
     
     function exportCSV() {
         let csv = "Type,Compte,Date,Libelle,Montant,Categorie,Recurrent,Frequence,Date_Fin,Note,URL\n";
-        expenses.forEach(e => {
-            const safeLabel = escapeHTML(e.label).replace(/,/g, ' ');
-            const safeNote = escapeHTML(e.note).replace(/,/g, ' ');
-            const accName = escapeHTML(accounts.find(a=>a.id===e.accountId)?.name||'N/A');
-            const catObj = categories.find(c=>c.id===e.cat) || {label: e.cat};
-            csv += `${e.type},${accName},${e.date},${safeLabel},${e.amount},${catObj.label},${e.recurring?'Oui':'Non'},${e.frequency||''},${e.endDate||''},${safeNote},${escapeHTML(e.url||'')}\n`;
-        });
+        expenses.forEach(e => { csv += `${e.type},${escapeHTML(accounts.find(a=>a.id===e.accountId)?.name||'N/A')},${e.date},${escapeHTML(e.label).replace(/,/g, ' ')},${e.amount},${(categories.find(c=>c.id===e.cat)||{}).label||e.cat},${e.recurring?'Oui':'Non'},${e.frequency||''},${e.endDate||''},${escapeHTML(e.note).replace(/,/g, ' ')},${escapeHTML(e.url||'')}\n`; });
         const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'budget.csv'; a.click();
     }
     
-    function clearData() { 
-        if(confirm("Effacer toutes les données de façon irréversible sur tous vos appareils ?")) { 
-            expenses = []; accounts = []; wishlist = []; categories = [...DEFAULT_CATEGORIES];
-            saveToCloud(); 
-        } 
-    }
-
+    function clearData() { if(confirm("Irréversible ! Continuer ?")) { expenses = []; accounts = []; wishlist = []; categories = [...DEFAULT_CATEGORIES]; saveToCloud(); } }
 </script>
 </body>
 </html>
