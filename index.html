@@ -7,11 +7,11 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Budget Pro">
     
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/11048/11048595.png">
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/11048/11048595.png">
-    
     <title>Mon Budget Apple Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/11048/11048595.png">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/11048/11048595.png">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
@@ -749,6 +749,7 @@
         if (document.getElementById('journal-cal-view').style.display === 'block') renderCalendar();
     }
 
+
     // ==========================================
     // 3. LE MOTEUR DE L'APPLICATION
     // ==========================================
@@ -947,7 +948,7 @@
             let count = 0;
 
             lines.forEach((line, index) => {
-                if (index === 0) return; // Ignore l'en-tête (header)
+                if (index === 0) return; 
                 const cols = line.split(/[;,]/); 
                 if (cols.length < 2) return;
 
@@ -955,11 +956,8 @@
                 
                 cols.forEach(c => {
                     c = c.replace(/["']/g, '').trim();
-                    // Date Format FR ou EN
                     if (c.match(/^\d{2}\/\d{2}\/\d{4}$/) || c.match(/^\d{4}-\d{2}-\d{2}$/)) dateStr = c;
-                    // Montant (positif ou négatif, virgule ou point)
                     else if (c.match(/^-?\d+([.,]\d+)?$/)) amount = parseFloat(c.replace(',', '.'));
-                    // Libellé (la plus longue chaîne de texte)
                     else if (c.length > label.length && !c.match(/^\d+$/)) label = c;
                 });
 
@@ -1005,13 +1003,14 @@
                 updateAllViews();
                 alert(`✅ Importation réussie !\n${count} opérations ont été ajoutées et auto-catégorisées.`);
             } else {
-                alert("❌ Erreur d'import : Aucune opération valide détectée. Assurez-vous que votre fichier contient bien des dates, libellés et montants séparés par des virgules ou points-virgules.");
+                alert("❌ Erreur d'import : Aucune opération valide détectée.");
             }
-            event.target.value = ''; // Reset input pour un futur import
+            event.target.value = ''; 
         };
         reader.readAsText(file);
     }
 
+    // --- FONCTIONS WISHLIST (PROJETS) ---
     function openWishlistModal(id = null) {
         hapticTap();
         editingWishId = id;
@@ -1106,6 +1105,57 @@
         document.getElementById('inp-wish-account').innerHTML = options; 
     }
     
+    // --- NOUVEAU: FONCTION D'AJUSTEMENT DE SOLDE ---
+    function adjustBalance(accId) {
+        hapticTap();
+        const acc = accounts.find(a => a.id === accId);
+        if (!acc) return;
+        
+        const nowReal = new Date();
+        let currentCalcBal = acc.initBalance;
+        expenses.forEach(e => {
+            if(e.accountId === accId) {
+                const pastCount = getPastOccurrencesCount(e, nowReal);
+                currentCalcBal += (e.type === 'income' ? 1 : -1) * (e.amount * pastCount);
+            }
+        });
+
+        let realBalInput = prompt(`Solde RÉEL actuel sur l'application de votre banque pour "${acc.name}" (€) :\n(Solde calculé actuel : ${currentCalcBal.toFixed(2)}€)`);
+        if (realBalInput === null || realBalInput.trim() === '') return;
+        
+        realBalInput = realBalInput.replace(',', '.');
+        const realBal = parseFloat(realBalInput);
+        if (isNaN(realBal)) return alert("Montant invalide.");
+
+        const diff = realBal - currentCalcBal;
+        if (Math.abs(diff) < 0.01) return alert("Le solde est déjà parfaitement à jour ! ✅");
+
+        if (confirm(`Il y a une différence de ${Math.abs(diff).toFixed(2)}€.\nVoulez-vous qu'une opération automatique "⚖️ Ajustement" soit créée pour corriger le solde ?`)) {
+            
+            const isoDate = nowReal.toISOString().split('T')[0];
+            
+            const txData = {
+                amount: Math.abs(diff), 
+                label: "⚖️ Ajustement bancaire", 
+                note: "Créé automatiquement", 
+                url: "", 
+                date: isoDate, 
+                type: diff > 0 ? 'income' : 'expense',
+                cat: diff > 0 ? 'income' : 'autre', 
+                accountId: accId, 
+                recurring: false,
+                frequency: null,
+                endDate: null, 
+                id: Date.now() 
+            };
+
+            expenses.unshift(txData);
+            saveToCloud();
+            updateAllViews();
+            if (document.getElementById('tab-tx').classList.contains('active')) renderTransactions();
+        }
+    }
+
     function addAccount() {
         hapticTap();
         const name = prompt("Nom du compte (ex: Livret A) :"); if(!name) return;
@@ -1120,7 +1170,7 @@
     function editAccount(id) {
         hapticTap();
         const accIndex = accounts.findIndex(a => a.id === id); if (accIndex === -1) return;
-        let balInput = prompt(`Nouveau solde initial pour ${accounts[accIndex].name} (€) :`, accounts[accIndex].initBalance);
+        let balInput = prompt(`Nouveau solde initial (de départ) pour ${accounts[accIndex].name} (€) :\n\n⚠️ Si vous voulez juste mettre à jour le solde d'aujourd'hui, utilisez plutôt le bouton "⚖️ Ajuster" sur le Tableau de bord.`, accounts[accIndex].initBalance);
         if (balInput === null) return;
         balInput = balInput.replace(',', '.'); const bal = parseFloat(balInput);
         if (!isNaN(bal)) { accounts[accIndex].initBalance = bal; saveToCloud(); } else { alert("Montant invalide."); }
@@ -1364,9 +1414,17 @@
             accBalances[e.accountId] += (e.type === 'income' ? 1 : -1) * (e.amount * pastCount);
         });
 
+        // NOUVEAUTÉ : Bouton "Ajuster" sur chaque carte
         document.getElementById('accounts-container').innerHTML = accounts.map(a => {
             globalRealBalance += accBalances[a.id];
-            return `<div class="bank-card ${a.color}"><div class="acc-name">${escapeHTML(a.name)}</div><div class="acc-val blur-val" id="acc-val-${a.id}">0.00 €</div></div>`;
+            return `
+            <div class="bank-card ${a.color}">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:2;">
+                    <div class="acc-name">${escapeHTML(a.name)}</div>
+                    <button onclick="adjustBalance('${escapeHTML(a.id)}')" style="background:rgba(255,255,255,0.2); border:none; color:white; border-radius:6px; font-size:10px; padding:4px 8px; cursor:pointer; font-weight:600; transition:0.2s;">⚖️ Ajuster</button>
+                </div>
+                <div class="acc-val blur-val" id="acc-val-${a.id}">0.00 €</div>
+            </div>`;
         }).join('');
 
         accounts.forEach(a => {
@@ -1593,7 +1651,6 @@
         document.getElementById('ring-vie').style.strokeDashoffset = 251.2 - (Math.min(types.vie / (budget*0.3||1), 1) * 251.2);
         document.getElementById('ring-loisirs').style.strokeDashoffset = 251.2 - (Math.min(types.loisirs / (budget*0.2||1), 1) * 251.2);
 
-        // Appel du Radar à abonnements
         renderSubRadar();
 
         if(total === 0) { list.innerHTML = "<p style='color:var(--text-muted); text-align:center; margin-top:20px;'>Aucune dépense ce mois-ci</p>"; return; }
