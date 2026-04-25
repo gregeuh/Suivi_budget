@@ -117,7 +117,12 @@
         .upcoming-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
         .upcoming-item:last-child { border-bottom: none; padding-bottom: 0; }
 
-        /* MODAL D'AJOUT RESPONSIVE */
+        .sim-box { display: flex; gap: 15px; margin-top: 15px; }
+        .sim-input { flex: 1; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); padding: 14px; border-radius: 12px; font-size: 14px; outline: none; }
+        .sim-btn { background: var(--accent); color: white; border: none; padding: 0 20px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .sim-btn:active { transform: scale(0.96); }
+
+        /* MODAL RESPONSIVE */
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); padding: 15px; box-sizing: border-box; }
         .modal-content { background-color: var(--card-bg); margin: 2vh auto; padding: 25px; border-radius: 20px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; border: 1px solid var(--border); animation: slideUp 0.3s; box-sizing: border-box; }
         @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -153,6 +158,8 @@
         .tx-item-content { position: relative; z-index: 2; background: var(--card-bg); display: flex; justify-content: space-between; align-items: center; padding: 15px 0; transition: transform 0.2s ease-out; cursor: pointer; }
         
         .tag-badge { background: var(--border); color: var(--accent); padding: 4px 8px; border-radius: 6px; font-size: 11px; margin-left: 6px; display: inline-flex; align-items: center; gap: 4px; font-weight: 600; transition: 0.3s; }
+        a.tag-badge { text-decoration: none; cursor: pointer; }
+        a.tag-badge:hover { opacity: 0.8; }
         
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
         .cal-day-label { text-align: center; font-size: 12px; font-weight: 600; color: var(--text-muted); padding-bottom: 10px; }
@@ -291,6 +298,31 @@
     </div>
 </div>
 
+<div id="wishlist-modal" class="modal">
+    <div class="modal-content">
+        <button class="close-btn" onclick="closeWishlistModal()">✕</button>
+        <h2 id="wishlist-modal-title" style="font-size:22px; margin-bottom:20px;">Nouvelle Envie</h2>
+        
+        <div class="input-group" style="margin-bottom:15px;">
+            <label>Nom du projet / produit</label>
+            <input type="text" id="inp-wish-name" class="input-control" placeholder="ex: iPhone 17 Pro">
+        </div>
+        <div class="input-group" style="margin-bottom:15px;">
+            <label>Prix estimé (€)</label>
+            <input type="number" step="0.01" id="inp-wish-price" class="input-control" placeholder="1200.00">
+        </div>
+        <div class="input-group" style="margin-bottom:25px;">
+            <label>Lien web (URL optionnelle)</label>
+            <input type="url" id="inp-wish-url" class="input-control" placeholder="https://www.apple.com...">
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button id="btn-delete-wish" style="display:none; background:var(--red); color:white; border:none; padding:18px; border-radius:14px; font-weight:600; cursor:pointer; transition:0.2s;" onclick="deleteWishFromModal()">Supprimer</button>
+            <button id="btn-submit-wish" class="btn-submit" style="flex:1;" onclick="saveWishlistItem()">Enregistrer</button>
+        </div>
+    </div>
+</div>
+
 <div class="app-wrapper" id="app-wrapper">
     
     <div class="header">
@@ -351,7 +383,7 @@
             <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                     <h2 style="font-size:16px; margin:0;">🎯 Mes Projets & Envies</h2>
-                    <button class="btn-export" onclick="addWishlistItem()" style="padding:6px 12px; font-size:12px;">+ Ajouter</button>
+                    <button class="btn-export" onclick="openWishlistModal()" style="padding:6px 12px; font-size:12px;">+ Ajouter</button>
                 </div>
                 <div id="wishlist-container">
                     </div>
@@ -548,7 +580,7 @@
     let displayName = '';
     let expenses = [];
     let accounts = [];
-    let wishlist = []; // <-- NOUVELLE VARIABLE WISH LIST
+    let wishlist = [];
     let budget = 2000;
     let emergencyGoal = 5000;
     let catBudgets = {};
@@ -562,6 +594,7 @@
     let privacyMode = false;
     let globalRealBalance = 0;
     let editingTxId = null;
+    let editingWishId = null; // NOUVEAU : ID d'édition pour la wishlist
 
     auth.onAuthStateChanged(user => {
         if (user) {
@@ -631,7 +664,7 @@
                 displayName = data.displayName || '';
                 expenses = data.expenses || [];
                 accounts = data.accounts || [];
-                wishlist = data.wishlist || []; // Récupère la Wishlist
+                wishlist = data.wishlist || [];
                 budget = data.budget || 2000;
                 emergencyGoal = data.emergencyGoal || 5000;
                 catBudgets = data.catBudgets || {};
@@ -664,7 +697,7 @@
             displayName: displayName,
             expenses: expenses,
             accounts: accounts,
-            wishlist: wishlist, // Sauvegarde la Wishlist
+            wishlist: wishlist,
             budget: budget,
             emergencyGoal: emergencyGoal,
             catBudgets: catBudgets,
@@ -871,6 +904,73 @@
     }
     function toggleRecOptions() { document.getElementById('rec-options').style.display = document.getElementById('inp-recurring').checked ? 'block' : 'none'; }
 
+    // --- FONCTIONS WISHLIST (NOUVEAU MODAL) ---
+    function openWishlistModal(id = null) {
+        hapticTap();
+        editingWishId = id;
+        
+        if (id) {
+            const item = wishlist.find(w => w.id === id);
+            if(!item) return;
+            document.getElementById('wishlist-modal-title').innerText = "Modifier l'envie";
+            document.getElementById('inp-wish-name').value = item.name;
+            document.getElementById('inp-wish-price').value = item.price;
+            document.getElementById('inp-wish-url').value = item.url || '';
+            document.getElementById('btn-delete-wish').style.display = 'block';
+            document.getElementById('btn-submit-wish').innerText = "Mettre à jour";
+        } else {
+            document.getElementById('wishlist-modal-title').innerText = "Nouvelle Envie";
+            document.getElementById('inp-wish-name').value = '';
+            document.getElementById('inp-wish-price').value = '';
+            document.getElementById('inp-wish-url').value = '';
+            document.getElementById('btn-delete-wish').style.display = 'none';
+            document.getElementById('btn-submit-wish').innerText = "Enregistrer";
+        }
+        
+        document.getElementById('wishlist-modal').style.display = 'block';
+    }
+
+    function closeWishlistModal() {
+        document.getElementById('wishlist-modal').style.display = 'none';
+    }
+
+    function saveWishlistItem() {
+        hapticTap();
+        const name = document.getElementById('inp-wish-name').value.trim();
+        let priceInput = document.getElementById('inp-wish-price').value;
+        priceInput = priceInput.replace(',', '.');
+        const price = parseFloat(priceInput);
+        const url = document.getElementById('inp-wish-url').value.trim();
+
+        if (!name || isNaN(price) || price <= 0) return alert("Veuillez saisir un nom et un prix valide.");
+
+        if (editingWishId) {
+            const index = wishlist.findIndex(w => w.id === editingWishId);
+            if (index !== -1) {
+                wishlist[index].name = name;
+                wishlist[index].price = price;
+                wishlist[index].url = url;
+            }
+        } else {
+            wishlist.push({ id: Date.now(), name: name, price: price, url: url });
+        }
+
+        saveToCloud();
+        closeWishlistModal();
+        updateAllViews(); 
+    }
+
+    function deleteWishFromModal() {
+        if(confirm("Supprimer ce projet de la liste ?")) {
+            hapticTap();
+            wishlist = wishlist.filter(w => w.id !== editingWishId);
+            saveToCloud();
+            closeWishlistModal();
+            updateAllViews();
+        }
+    }
+
+
     function setJournalView(view) {
         hapticTap();
         document.getElementById('view-list-btn').classList.toggle('active', view === 'list');
@@ -1071,25 +1171,20 @@
         saveToCloud(); 
     }
 
-    // --- NOUVEAU: WISH LIST (PROJETS) ---
-    function addWishlistItem() {
-        hapticTap();
-        const name = prompt("Nom du projet/produit (ex: iPhone 17) :");
-        if (!name) return;
-        let priceInput = prompt("Prix en euros (€) :");
-        if (!priceInput) return;
-        priceInput = priceInput.replace(',', '.');
-        const price = parseFloat(priceInput);
-        if (isNaN(price) || price <= 0) return alert("Prix invalide.");
-
-        wishlist.push({ id: Date.now(), name: name, price: price });
-        saveToCloud();
+    let touchStartX = 0; let swipedElement = null;
+    function handleTouchStart(e, element) { touchStartX = e.touches[0].clientX; swipedElement = element; element.style.transition = 'none'; }
+    function handleTouchMove(e) {
+        if(!swipedElement) return;
+        const diffX = e.touches[0].clientX - touchStartX;
+        if(diffX < 0 && diffX > -80) swipedElement.style.transform = `translateX(${diffX}px)`;
     }
-
-    function deleteWishlistItem(id) {
-        hapticTap();
-        wishlist = wishlist.filter(w => w.id !== id);
-        saveToCloud();
+    function handleTouchEnd(e) {
+        if(!swipedElement) return;
+        swipedElement.style.transition = 'transform 0.2s ease-out';
+        const diffX = e.changedTouches[0].clientX - touchStartX;
+        if(diffX < -40) { swipedElement.style.transform = `translateX(-80px)`; hapticTap(); } 
+        else { swipedElement.style.transform = `translateX(0px)`; }
+        swipedElement = null;
     }
 
     function renderWishlist(epargneMois) {
@@ -1117,10 +1212,14 @@
                 }
             }
 
+            const safeUrl = escapeHTML(w.url);
+            const linkHtml = safeUrl ? `<a href="${safeUrl}" target="_blank" class="tag-badge" style="text-decoration:none; display:inline-flex; align-items:center; margin-left:8px;" onclick="event.stopPropagation()">🔗 Lien</a>` : '';
+
             return `
-            <div style="background:var(--input-bg); padding:15px; border-radius:12px; margin-bottom:10px; position:relative;">
-                <button onclick="deleteWishlistItem(${w.id})" style="position:absolute; top:15px; right:15px; background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:16px;">✕</button>
-                <div style="font-weight:600; font-size:14px; margin-bottom:5px; padding-right:20px;">${escapeHTML(w.name)}</div>
+            <div style="background:var(--input-bg); padding:15px; border-radius:12px; margin-bottom:10px; position:relative; cursor:pointer; transition:0.2s;" onclick="openWishlistModal(${w.id})">
+                <div style="font-weight:600; font-size:14px; margin-bottom:5px;">
+                    ${escapeHTML(w.name)} ${linkHtml}
+                </div>
                 <div style="font-size:16px; font-weight:700; margin-bottom:10px;">${w.price.toFixed(2)} €</div>
                 <div class="prog-bar-bg" style="height:6px; margin-bottom:8px;">
                     <div class="prog-bar-fill" style="width:${progress}%; background:${barColor}"></div>
@@ -1128,22 +1227,6 @@
                 <div style="font-size:12px;">${status}</div>
             </div>`;
         }).join('');
-    }
-
-    let touchStartX = 0; let swipedElement = null;
-    function handleTouchStart(e, element) { touchStartX = e.touches[0].clientX; swipedElement = element; element.style.transition = 'none'; }
-    function handleTouchMove(e) {
-        if(!swipedElement) return;
-        const diffX = e.touches[0].clientX - touchStartX;
-        if(diffX < 0 && diffX > -80) swipedElement.style.transform = `translateX(${diffX}px)`;
-    }
-    function handleTouchEnd(e) {
-        if(!swipedElement) return;
-        swipedElement.style.transition = 'transform 0.2s ease-out';
-        const diffX = e.changedTouches[0].clientX - touchStartX;
-        if(diffX < -40) { swipedElement.style.transform = `translateX(-80px)`; hapticTap(); } 
-        else { swipedElement.style.transform = `translateX(0px)`; }
-        swipedElement = null;
     }
 
     // --- DASHBOARD ---
@@ -1173,7 +1256,6 @@
         const monthInc = currentMonthData.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0);
         const monthExp = currentMonthData.filter(e => e.type === 'expense').reduce((s, e) => s + e.amount, 0);
         
-        // Calcul de l'épargne du mois pour la wishlist
         const epargneMois = monthInc - monthExp;
         
         animateValue(document.getElementById('dash-inc'), 0, monthInc, 800, val => "+" + val.toFixed(0) + " €");
@@ -1206,7 +1288,6 @@
             }).join('');
         }
 
-        // Affichage de la wishlist avec la projection basée sur l'épargne du mois
         renderWishlist(epargneMois);
     }
 
