@@ -108,7 +108,7 @@
 
         .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
         .stat-card { padding: 20px; border-radius: 14px; background: var(--card-bg); border: 1px solid var(--border); }
-        .stat-label { font-size: 10px; font-weight: 600; text-transform: uppercase; margin-bottom: 10px; color: var(--text-muted); letter-spacing: 0.5px; }
+        .stat-label { font-size: 10px; font-weight: 600; text-transform: uppercase; margin-bottom: 10px; color: var(--text-muted); letter-spacing: 0.5px; line-height: 1.2; }
         .stat-value { font-size: 24px; font-weight: 700; }
         .stat-value.green { color: var(--green); }
         .stat-value.red { color: var(--red); }
@@ -138,7 +138,7 @@
         .input-control:focus { border-color: var(--accent); }
         
         .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
-        .category-item { display: flex; flex-direction: column; align-items: center; background-color: var(--input-bg); border: 2px solid transparent; border-radius: 12px; padding: 15px 5px; cursor: pointer; transition: 0.2s; }
+        .category-item { display: flex; flex-direction: column; align-items: center; background-color: var(--input-bg); border: 2px solid transparent; border-radius: 12px; padding: 15px 5px; cursor: pointer; transition: 0.2s; text-align: center; }
         .category-item.selected { border-color: var(--accent); background-color: var(--accent-light); }
         
         .btn-submit { background-color: var(--accent); color: white; border: none; width: 100%; padding: 18px; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; }
@@ -206,7 +206,7 @@
 
         @media (max-width: 600px) {
             .inputs-grid { grid-template-columns: 1fr; gap: 12px; }
-            .category-grid { gap: 5px; }
+            .category-grid { gap: 5px; grid-template-columns: repeat(4, 1fr); }
             .category-item { padding: 10px 2px; }
             .modal-content { padding: 20px 15px; margin: 5vh auto; }
             .close-btn { top: 15px; right: 15px; }
@@ -285,7 +285,9 @@
         </div>
 
         <div id="category-block">
-            <div style="font-size: 13px; font-weight: 600; margin-bottom: 10px; color: var(--text-muted); text-transform: uppercase;">Catégorie</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+                <span style="font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Catégorie</span>
+            </div>
             <div class="category-grid" id="cat-container"></div>
         </div>
 
@@ -354,16 +356,16 @@
 
             <div class="summary-grid">
                 <div class="stat-card">
-                    <div class="stat-label">Revenus (Mois)</div>
+                    <div class="stat-label" id="label-dash-inc">Revenus (Mois)</div>
                     <div class="stat-value green blur-val" id="dash-inc">+0 €</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">Dépenses (Mois)</div>
+                    <div class="stat-label" id="label-dash-exp">Dépenses (Mois)</div>
                     <div class="stat-value red blur-val" id="dash-exp">-0 €</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-label">Reste à vivre</div>
-                    <div class="stat-value blur-val" id="dash-remaining">0 €</div>
+                <div class="stat-card" style="background:var(--accent-light); border-color:var(--accent);">
+                    <div class="stat-label" style="color:var(--accent);">Reste à vivre <br><span style="font-size:8px; opacity:0.8;">(Compte Princ.)</span></div>
+                    <div class="stat-value blur-val" id="dash-remaining" style="color:var(--accent);">0 €</div>
                 </div>
             </div>
             
@@ -534,8 +536,22 @@
 
         <div class="card">
             <h2 style="font-size:16px;">Mes Comptes</h2>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Note : Le 1er compte de la liste est votre "Compte Principal". Il sert au calcul du "Reste à vivre".</p>
             <div id="settings-accounts-list"></div>
             <button class="btn-export" style="width:100%; justify-content:center; margin-top:10px;" onclick="addAccount()">+ Ajouter un compte</button>
+        </div>
+
+        <div class="card">
+            <h2 style="font-size:16px;">Mes Catégories</h2>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Ajoutez des catégories personnalisées avec la règle correspondante (Fixe, Quotidien, Loisirs).</p>
+            <div id="settings-custom-cats-list"></div>
+            <button class="btn-export" style="width:100%; justify-content:center; margin-top:10px;" onclick="addCustomCategory()">+ Créer une catégorie</button>
+        </div>
+
+        <div class="card">
+            <h2 style="font-size:16px;">Enveloppes (Limites par catégorie)</h2>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Fixez un budget maximum par catégorie. Laissez vide pour ignorer.</p>
+            <div id="settings-cat-budgets"></div>
         </div>
 
         <div class="card">
@@ -545,12 +561,6 @@
                 <button class="btn-export" onclick="document.getElementById('csv-file-input').click()" style="background:var(--accent); color:white; border:none; width:100%; justify-content:center;">Importer un relevé CSV</button>
                 <input type="file" id="csv-file-input" style="display:none" accept=".csv" onchange="importCSV(event)">
             </div>
-        </div>
-
-        <div class="card">
-            <h2 style="font-size:16px;">Enveloppes (Limites par catégorie)</h2>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Fixez un budget maximum par catégorie. Laissez vide pour ignorer.</p>
-            <div id="settings-cat-budgets"></div>
         </div>
 
         <div class="card" style="border-color: var(--orange); background: rgba(255, 159, 10, 0.05);">
@@ -605,6 +615,8 @@
     let expenses = [];
     let accounts = [];
     let wishlist = [];
+    let categories = []; // La liste dynamique des catégories
+    
     let savingsGoal = 500; 
     let emergencyGoal = 5000;
     let catBudgets = {};
@@ -619,6 +631,20 @@
     let globalRealBalance = 0;
     let editingTxId = null;
     let editingWishId = null;
+
+    const DEFAULT_CATEGORIES = [
+        { id: 'alim', label: 'Alimentation', icon: '🛒', type: 'vie', isCustom: false },
+        { id: 'transp', label: 'Transport', icon: '🚗', type: 'vie', isCustom: false },
+        { id: 'loisirs', label: 'Loisirs', icon: '🎬', type: 'loisirs', isCustom: false },
+        { id: 'logement', label: 'Logement', icon: '🏠', type: 'fixe', isCustom: false },
+        { id: 'vetements', label: 'Vêtements', icon: '👕', type: 'vie', isCustom: false },
+        { id: 'beaute', label: 'Beauté', icon: '🧴', type: 'vie', isCustom: false },
+        { id: 'cadeaux', label: 'Cadeaux', icon: '🎁', type: 'loisirs', isCustom: false },
+        { id: 'sante', label: 'Santé', icon: '💊', type: 'vie', isCustom: false },
+        { id: 'resto', label: 'Restaurant', icon: '🍽️', type: 'loisirs', isCustom: false },
+        { id: 'tech', label: 'Technologie', icon: '💻', type: 'loisirs', isCustom: false },
+        { id: 'autre', label: 'Autre', icon: '📦', type: 'loisirs', isCustom: false }
+    ];
 
     auth.onAuthStateChanged(user => {
         if (user) {
@@ -647,9 +673,7 @@
         const email = document.getElementById('auth-email').value;
         const pass = document.getElementById('auth-pass').value;
         if(!email || !pass) return showError("Veuillez remplir tous les champs.");
-        
-        auth.signInWithEmailAndPassword(email, pass)
-            .catch(error => showError("Erreur de connexion. Vérifiez vos identifiants."));
+        auth.signInWithEmailAndPassword(email, pass).catch(error => showError("Erreur de connexion. Vérifiez vos identifiants."));
     }
 
     function register() {
@@ -657,21 +681,11 @@
         const pass = document.getElementById('auth-pass').value;
         if(!email || !pass) return showError("Veuillez remplir tous les champs.");
         if(pass.length < 6) return showError("Le mot de passe doit faire au moins 6 caractères.");
-
-        auth.createUserWithEmailAndPassword(email, pass)
-            .catch(error => showError("Erreur lors de l'inscription. (Email déjà utilisé ?)"));
+        auth.createUserWithEmailAndPassword(email, pass).catch(error => showError("Erreur lors de l'inscription."));
     }
 
-    function showError(msg) {
-        document.getElementById('auth-error-msg').innerText = msg;
-    }
-
-    function logoutUser() {
-        hapticTap();
-        if(confirm("Êtes-vous sûr de vouloir vous déconnecter ?")) {
-            auth.signOut();
-        }
-    }
+    function showError(msg) { document.getElementById('auth-error-msg').innerText = msg; }
+    function logoutUser() { hapticTap(); if(confirm("Êtes-vous sûr de vouloir vous déconnecter ?")) auth.signOut(); }
 
     // ==========================================
     // 2. LOGIQUE DE SYNCHRONISATION CLOUD
@@ -688,6 +702,7 @@
                 expenses = data.expenses || [];
                 accounts = data.accounts || [];
                 wishlist = data.wishlist || [];
+                categories = data.categories || [...DEFAULT_CATEGORIES];
                 savingsGoal = data.savingsGoal !== undefined ? data.savingsGoal : (data.budget || 500);
                 emergencyGoal = data.emergencyGoal || 5000;
                 catBudgets = data.catBudgets || {};
@@ -696,10 +711,12 @@
 
                 applyAppSettings();
             } else {
+                console.log("Premier lancement : Migration des données locales vers le Cloud...");
                 displayName = localStorage.getItem('apple_clean_name_v5') || '';
                 expenses = JSON.parse(localStorage.getItem('apple_clean_v5') || localStorage.getItem('apple_clean_v4') || '[]');
                 accounts = JSON.parse(localStorage.getItem('apple_clean_acc_v5') || localStorage.getItem('apple_clean_acc_v4') || '[{"id":"acc1","name":"COMPTE COURANT","initBalance":2000,"color":""}]');
                 wishlist = [];
+                categories = [...DEFAULT_CATEGORIES];
                 savingsGoal = parseFloat(localStorage.getItem('apple_clean_savings_v5') || localStorage.getItem('apple_clean_budget_v5')) || 500;
                 emergencyGoal = parseFloat(localStorage.getItem('apple_clean_emergency_v5')) || 5000;
                 catBudgets = JSON.parse(localStorage.getItem('apple_clean_catbudgets_v5') || '{}');
@@ -715,21 +732,13 @@
     function saveToCloud() {
         if (!cloudDocRef) return;
         cloudDocRef.set({
-            displayName: displayName,
-            expenses: expenses,
-            accounts: accounts,
-            wishlist: wishlist,
-            savingsGoal: savingsGoal,
-            emergencyGoal: emergencyGoal,
-            catBudgets: catBudgets,
-            theme: savedTheme,
-            color: savedColor
+            displayName, expenses, accounts, wishlist, categories,
+            savingsGoal, emergencyGoal, catBudgets, theme: savedTheme, color: savedColor
         }, { merge: true }).catch(err => console.error("Erreur de sauvegarde Cloud :", err));
     }
 
     function applyAppSettings() {
         document.getElementById('set-displayname').value = displayName;
-        
         if(displayName) {
             document.getElementById('welcome-title').innerText = `Bonjour ${displayName} !`;
             document.getElementById('profile-name-display').innerText = displayName;
@@ -746,7 +755,7 @@
         updateGlobalMonthLabel();
         updateSuggestions(); 
         renderCats(); renderFilters(); updateAccountsSelectors(); 
-        renderSettingsAccounts(); renderSettingsCatBudgets();
+        renderSettingsAccounts(); renderSettingsCategories(); renderSettingsCatBudgets();
         updateAllViews(); 
         
         if (document.getElementById('tab-tx').classList.contains('active')) renderTransactions();
@@ -776,20 +785,6 @@
         'tech': ['amazon', 'fnac', 'darty', 'boulanger', 'free', 'orange', 'sfr', 'bouygues', 'ldlc']
     };
     const RECURRING_KEYWORDS = ['netflix', 'spotify', 'loyer', 'edf', 'engie', 'free', 'orange', 'sfr', 'bouygues', 'apple', 'amazon prime', 'disney', 'navigo', 'basic fit'];
-
-    const CATEGORIES = [
-        { id: 'alim', label: 'Alimentation', icon: '🛒', type: 'vie' },
-        { id: 'transp', label: 'Transport', icon: '🚗', type: 'vie' },
-        { id: 'loisirs', label: 'Loisirs', icon: '🎬', type: 'loisirs' },
-        { id: 'logement', label: 'Logement', icon: '🏠', type: 'fixe' },
-        { id: 'vetements', label: 'Vêtements', icon: '👕', type: 'vie' },
-        { id: 'beaute', label: 'Beauté', icon: '🧴', type: 'vie' },
-        { id: 'cadeaux', label: 'Cadeaux', icon: '🎁', type: 'loisirs' },
-        { id: 'sante', label: 'Santé', icon: '💊', type: 'vie' },
-        { id: 'resto', label: 'Restaurant', icon: '🍽️', type: 'loisirs' },
-        { id: 'tech', label: 'Technologie', icon: '💻', type: 'loisirs' },
-        { id: 'autre', label: 'Autre', icon: '📦', type: 'loisirs' }
-    ];
 
     function hapticTap() { if (navigator.vibrate) navigator.vibrate(15); }
 
@@ -824,8 +819,7 @@
     }
 
     function changeTheme(t) { 
-        savedTheme = t; 
-        applyTheme(t); 
+        savedTheme = t; applyTheme(t); 
         if (currentUser) saveToCloud(); 
     }
 
@@ -843,9 +837,7 @@
         hapticTap();
         viewDate.setMonth(viewDate.getMonth() + dir);
         updateGlobalMonthLabel();
-        updateAllViews();
-        renderTransactions();
-        renderStats();
+        updateAllViews(); renderTransactions(); renderStats();
         if (document.getElementById('journal-cal-view').style.display === 'block') renderCalendar();
     }
 
@@ -865,12 +857,18 @@
             return; 
         }
 
+        // Check base keywords
         for(const [cat, words] of Object.entries(KEYWORDS)) {
             if(words.some(w => lower.includes(w))) {
                 if(currentType === 'expense') selectCat(cat);
-                break;
+                return;
             }
         }
+        
+        // Check custom categories matching exactly the label
+        const customMatch = categories.find(c => c.isCustom && lower.includes(c.label.toLowerCase()));
+        if (customMatch && currentType === 'expense') selectCat(customMatch.id);
+
         if(RECURRING_KEYWORDS.some(w => lower.includes(w))) {
             document.getElementById('inp-recurring').checked = true; toggleRecOptions();
         }
@@ -944,27 +942,19 @@
             const accNames = accounts.map((a, i) => `${i + 1}. ${a.name}`).join('\n');
             const choice = prompt("Sur quel compte importer ces données ? Entrez le numéro du compte :\n\n" + accNames);
             const idx = parseInt(choice) - 1;
-            if (!isNaN(idx) && accounts[idx]) {
-                accountId = accounts[idx].id;
-            } else {
-                event.target.value = '';
-                return alert("Import annulé : Compte non reconnu.");
-            }
+            if (!isNaN(idx) && accounts[idx]) { accountId = accounts[idx].id; } 
+            else { event.target.value = ''; return alert("Import annulé : Compte non reconnu."); }
         }
 
         const reader = new FileReader();
         reader.onload = function(e) {
-            const text = e.target.result;
-            const lines = text.split('\n');
-            let count = 0;
+            const text = e.target.result; const lines = text.split('\n'); let count = 0;
 
             lines.forEach((line, index) => {
                 if (index === 0) return; 
-                const cols = line.split(/[;,]/); 
-                if (cols.length < 2) return;
+                const cols = line.split(/[;,]/); if (cols.length < 2) return;
 
                 let dateStr = '', amount = 0, label = '';
-                
                 cols.forEach(c => {
                     c = c.replace(/["']/g, '').trim();
                     if (c.match(/^\d{2}\/\d{2}\/\d{4}$/) || c.match(/^\d{4}-\d{2}-\d{2}$/)) dateStr = c;
@@ -974,48 +964,33 @@
 
                 if (dateStr && label && amount !== 0) {
                     let isoDate = dateStr;
-                    if (dateStr.includes('/')) {
-                        const parts = dateStr.split('/');
-                        isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-                    }
+                    if (dateStr.includes('/')) { const parts = dateStr.split('/'); isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`; }
                     
-                    let isInc = amount > 0;
-                    let guessedCat = 'autre';
+                    let isInc = amount > 0; let guessedCat = 'autre';
                     
                     if (!isInc) {
                         const lowerLabel = label.toLowerCase();
                         for(const [cat, words] of Object.entries(KEYWORDS)) {
-                            if(words.some(w => lowerLabel.includes(w))) {
-                                guessedCat = cat;
-                                break;
-                            }
+                            if(words.some(w => lowerLabel.includes(w))) { guessedCat = cat; break; }
+                        }
+                        if (guessedCat === 'autre') {
+                            const customMatch = categories.find(c => c.isCustom && lowerLabel.includes(c.label.toLowerCase()));
+                            if (customMatch) guessedCat = customMatch.id;
                         }
                     }
 
                     expenses.unshift({
-                        id: Date.now() + Math.random(),
-                        accountId: accountId,
-                        amount: Math.abs(amount),
-                        date: isoDate,
-                        label: label,
-                        note: 'Import CSV',
-                        url: '',
-                        type: isInc ? 'income' : 'expense',
-                        cat: isInc ? 'income' : guessedCat,
-                        recurring: false
+                        id: Date.now() + Math.random(), accountId, amount: Math.abs(amount), date: isoDate, label,
+                        note: 'Import CSV', url: '', type: isInc ? 'income' : 'expense', cat: isInc ? 'income' : guessedCat, recurring: false
                     });
                     count++;
                 }
             });
             
             if (count > 0) {
-                saveToCloud();
-                updateSuggestions();
-                updateAllViews();
+                saveToCloud(); updateSuggestions(); updateAllViews();
                 alert(`✅ Importation réussie !\n${count} opérations ont été ajoutées et auto-catégorisées.`);
-            } else {
-                alert("❌ Erreur d'import : Aucune opération valide détectée.");
-            }
+            } else { alert("❌ Erreur d'import : Aucune opération valide détectée."); }
             event.target.value = ''; 
         };
         reader.readAsText(file);
@@ -1047,20 +1022,16 @@
             document.getElementById('btn-delete-wish').style.display = 'none';
             document.getElementById('btn-submit-wish').innerText = "Enregistrer";
         }
-        
         document.getElementById('wishlist-modal').style.display = 'block';
     }
 
-    function closeWishlistModal() {
-        document.getElementById('wishlist-modal').style.display = 'none';
-    }
+    function closeWishlistModal() { document.getElementById('wishlist-modal').style.display = 'none'; }
 
     function saveWishlistItem() {
         hapticTap();
         const name = document.getElementById('inp-wish-name').value.trim();
         let priceInput = document.getElementById('inp-wish-price').value;
-        priceInput = priceInput.replace(',', '.');
-        const price = parseFloat(priceInput);
+        priceInput = priceInput.replace(',', '.'); const price = parseFloat(priceInput);
         const url = document.getElementById('inp-wish-url').value.trim();
         const accountId = document.getElementById('inp-wish-account').value;
 
@@ -1068,28 +1039,18 @@
 
         if (editingWishId) {
             const index = wishlist.findIndex(w => w.id === editingWishId);
-            if (index !== -1) {
-                wishlist[index].name = name;
-                wishlist[index].price = price;
-                wishlist[index].url = url;
-                wishlist[index].accountId = accountId;
-            }
+            if (index !== -1) { wishlist[index] = { ...wishlist[index], name, price, url, accountId }; }
         } else {
-            wishlist.push({ id: Date.now(), name: name, price: price, url: url, accountId: accountId });
+            wishlist.push({ id: Date.now(), name, price, url, accountId });
         }
 
-        saveToCloud();
-        closeWishlistModal();
-        updateAllViews(); 
+        saveToCloud(); closeWishlistModal(); updateAllViews(); 
     }
 
     function deleteWishFromModal() {
         if(confirm("Supprimer ce projet de la liste ?")) {
-            hapticTap();
-            wishlist = wishlist.filter(w => w.id !== editingWishId);
-            saveToCloud();
-            closeWishlistModal();
-            updateAllViews();
+            hapticTap(); wishlist = wishlist.filter(w => w.id !== editingWishId);
+            saveToCloud(); closeWishlistModal(); updateAllViews();
         }
     }
 
@@ -1118,11 +1079,9 @@
     
     function adjustBalance(accId) {
         hapticTap();
-        const acc = accounts.find(a => a.id === accId);
-        if (!acc) return;
+        const acc = accounts.find(a => a.id === accId); if (!acc) return;
         
-        const nowReal = new Date();
-        let currentCalcBal = acc.initBalance;
+        const nowReal = new Date(); let currentCalcBal = acc.initBalance;
         expenses.forEach(e => {
             if(e.accountId === accId) {
                 const pastCount = getPastOccurrencesCount(e, nowReal);
@@ -1133,44 +1092,27 @@
         let realBalInput = prompt(`Solde RÉEL actuel sur l'application de votre banque pour "${acc.name}" (€) :\n(Solde calculé actuel : ${currentCalcBal.toFixed(2)}€)`);
         if (realBalInput === null || realBalInput.trim() === '') return;
         
-        realBalInput = realBalInput.replace(',', '.');
-        const realBal = parseFloat(realBalInput);
+        realBalInput = realBalInput.replace(',', '.'); const realBal = parseFloat(realBalInput);
         if (isNaN(realBal)) return alert("Montant invalide.");
 
         const diff = realBal - currentCalcBal;
         if (Math.abs(diff) < 0.01) return alert("Le solde est déjà parfaitement à jour ! ✅");
 
         if (confirm(`Il y a une différence de ${Math.abs(diff).toFixed(2)}€.\nVoulez-vous qu'une opération automatique "⚖️ Ajustement" soit créée pour corriger le solde ?`)) {
-            
             const isoDate = nowReal.toISOString().split('T')[0];
-            
-            const txData = {
-                amount: Math.abs(diff), 
-                label: "⚖️ Ajustement bancaire", 
-                note: "Créé automatiquement", 
-                url: "", 
-                date: isoDate, 
-                type: diff > 0 ? 'income' : 'expense',
-                cat: diff > 0 ? 'income' : 'autre', 
-                accountId: accId, 
-                recurring: false,
-                frequency: null,
-                endDate: null, 
-                id: Date.now() 
-            };
-
-            expenses.unshift(txData);
-            saveToCloud();
-            updateAllViews();
+            expenses.unshift({
+                amount: Math.abs(diff), label: "⚖️ Ajustement bancaire", note: "Créé automatiquement", url: "", 
+                date: isoDate, type: diff > 0 ? 'income' : 'expense', cat: diff > 0 ? 'income' : 'autre', 
+                accountId: accId, recurring: false, frequency: null, endDate: null, id: Date.now() 
+            });
+            saveToCloud(); updateAllViews();
             if (document.getElementById('tab-tx').classList.contains('active')) renderTransactions();
         }
     }
 
     function freshStart() {
         if(confirm("Attention : Cela va effacer TOUTES vos transactions passées.\n\nLes soldes actuels de vos comptes seront sauvegardés comme nouveaux soldes de départ. Vos projets et enveloppes seront conservés.\n\nÊtes-vous sûr de vouloir commencer un nouveau mois ?")) {
-            hapticTap();
-            const nowReal = new Date();
-            
+            hapticTap(); const nowReal = new Date();
             accounts.forEach(acc => {
                 let currentCalcBal = acc.initBalance;
                 expenses.forEach(e => {
@@ -1181,12 +1123,7 @@
                 });
                 acc.initBalance = currentCalcBal; 
             });
-            
-            expenses = [];
-            
-            saveToCloud();
-            applyAppSettings();
-            
+            expenses = []; saveToCloud(); applyAppSettings();
             alert("Historique effacé ! Vos comptes sont prêts pour un nouveau départ. 🚀");
         }
     }
@@ -1196,7 +1133,6 @@
         const name = prompt("Nom du compte (ex: Livret A) :"); if(!name) return;
         let balInput = prompt("Solde initial (€) :"); if (balInput === null) return;
         balInput = balInput.replace(',', '.'); const bal = parseFloat(balInput) || 0;
-        
         const colors = ['', 'alt-color', 'alt-color-2']; const color = colors[accounts.length % 3];
         accounts.push({ id: 'acc_'+Date.now(), name: name.toUpperCase(), initBalance: bal, color: color }); 
         saveToCloud();
@@ -1231,9 +1167,54 @@
             </div>`).join('');
     }
 
+    // --- GESTION DES CATÉGORIES PERSONNALISÉES ---
+    function addCustomCategory() {
+        hapticTap();
+        const label = prompt("Nom de la catégorie (ex: Animaux) :"); if (!label) return;
+        const icon = prompt("Emoji pour la catégorie (ex: 🐶) :", "🏷️"); if (!icon) return;
+        const typeChoice = prompt("Type de dépense (entrez le chiffre) :\n1. Charge Fixe (ex: Assurances)\n2. Dépense Quotidienne (ex: Courses)\n3. Loisirs (ex: Sorties)", "2");
+        
+        let type = 'vie';
+        if (typeChoice === '1') type = 'fixe';
+        if (typeChoice === '3') type = 'loisirs';
+
+        const id = 'cat_' + Date.now();
+        categories.push({ id, label, icon, type, isCustom: true });
+        saveToCloud(); applyAppSettings();
+    }
+
+    function deleteCategory(id) {
+        hapticTap();
+        if (confirm("Supprimer cette catégorie ? Les opérations associées seront reclassées en 'Autre'.")) {
+            categories = categories.filter(c => c.id !== id);
+            expenses.forEach(e => { if (e.cat === id) e.cat = 'autre'; });
+            saveToCloud(); applyAppSettings();
+        }
+    }
+
+    function renderSettingsCategories() {
+        const container = document.getElementById('settings-custom-cats-list');
+        const customCats = categories.filter(c => c.isCustom);
+        if (customCats.length === 0) {
+            container.innerHTML = "<p style='color:var(--text-muted); font-size:13px;'>Aucune catégorie personnalisée.</p>";
+            return;
+        }
+        container.innerHTML = customCats.map(c => {
+            const typeStr = c.type === 'fixe' ? 'Fixe' : (c.type === 'loisirs' ? 'Loisirs' : 'Quotidien');
+            return `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid var(--border)">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:24px;">${c.icon}</span>
+                    <div><strong style="font-size:14px;">${escapeHTML(c.label)}</strong><br><small style="color:var(--text-muted)">Règle: ${typeStr}</small></div>
+                </div>
+                <button onclick="deleteCategory('${escapeHTML(c.id)}')" style="background:none; border:none; color:var(--red); cursor:pointer; font-size:18px;">✕</button>
+            </div>`;
+        }).join('');
+    }
+
     function renderSettingsCatBudgets() {
         const container = document.getElementById('settings-cat-budgets');
-        container.innerHTML = CATEGORIES.map(c => `
+        container.innerHTML = categories.map(c => `
             <div class="settings-row" style="padding: 12px 0;">
                 <div class="settings-info" style="display:flex; align-items:center; gap:10px;">
                     <span style="font-size:20px;">${c.icon}</span>
@@ -1323,7 +1304,7 @@
         return expanded;
     }
 
-    function renderCats() { document.getElementById('cat-container').innerHTML = CATEGORIES.map(c => `<div class="category-item ${selectedCat === c.id ? 'selected' : ''}" onclick="selectCat('${c.id}')"><span style="font-size:24px; margin-bottom:8px;">${c.icon}</span><span style="font-size:12px; font-weight:600;">${c.label}</span></div>`).join(''); }
+    function renderCats() { document.getElementById('cat-container').innerHTML = categories.map(c => `<div class="category-item ${selectedCat === c.id ? 'selected' : ''}" onclick="selectCat('${c.id}')"><span style="font-size:24px; margin-bottom:8px;">${c.icon}</span><span style="font-size:12px; font-weight:600;">${escapeHTML(c.label)}</span></div>`).join(''); }
     function selectCat(id) { hapticTap(); selectedCat = id; renderCats(); }
 
     function addExpense() {
@@ -1370,6 +1351,22 @@
         hapticTap();
         expenses = expenses.filter(e => e.id !== id);
         saveToCloud(); 
+    }
+
+    let touchStartX = 0; let swipedElement = null;
+    function handleTouchStart(e, element) { touchStartX = e.touches[0].clientX; swipedElement = element; element.style.transition = 'none'; }
+    function handleTouchMove(e) {
+        if(!swipedElement) return;
+        const diffX = e.touches[0].clientX - touchStartX;
+        if(diffX < 0 && diffX > -80) swipedElement.style.transform = `translateX(${diffX}px)`;
+    }
+    function handleTouchEnd(e) {
+        if(!swipedElement) return;
+        swipedElement.style.transition = 'transform 0.2s ease-out';
+        const diffX = e.changedTouches[0].clientX - touchStartX;
+        if(diffX < -40) { swipedElement.style.transform = `translateX(-80px)`; hapticTap(); } 
+        else { swipedElement.style.transform = `translateX(0px)`; }
+        swipedElement = null;
     }
 
     function renderWishlist(epargneMois, accBalances) {
@@ -1450,14 +1447,23 @@
         });
 
         const currentMonthData = expandExpensesForMonth(tY, tM);
+        
+        // Stats générales (pour jauges et projections)
         const monthInc = currentMonthData.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0);
         const monthExp = currentMonthData.filter(e => e.type === 'expense').reduce((s, e) => s + e.amount, 0);
-        
         const epargneMois = monthInc - monthExp;
+
+        // CIBLAGE : Calculs UNIQUEMENT pour le Compte Principal (accounts[0])
+        const defaultAccId = accounts[0] ? accounts[0].id : null;
+        const mainAccData = currentMonthData.filter(e => e.accountId === defaultAccId);
+        const mainInc = mainAccData.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0);
+        const mainExp = mainAccData.filter(e => e.type === 'expense').reduce((s, e) => s + e.amount, 0);
+        const resteAVivreMain = mainInc - mainExp;
         
         animateValue(document.getElementById('dash-inc'), 0, monthInc, 800, val => "+" + val.toFixed(0) + " €");
         animateValue(document.getElementById('dash-exp'), 0, monthExp, 800, val => "-" + val.toFixed(0) + " €");
-        animateValue(document.getElementById('dash-remaining'), 0, epargneMois, 800, val => val.toFixed(0) + " €");
+        // Le Reste à vivre se base maintenant sur le compte principal
+        animateValue(document.getElementById('dash-remaining'), 0, resteAVivreMain, 800, val => val.toFixed(0) + " €");
         
         document.getElementById('dash-goal-text').innerText = savingsGoal.toFixed(0);
         const safeLimit = Math.max(0, monthInc - savingsGoal);
@@ -1492,7 +1498,7 @@
 
     // --- JOURNAL ---
     function renderFilters() {
-        document.getElementById('filter-bar').innerHTML = `<div class="filter-pill ${currentFilter==='all'?'active':''}" onclick="setFilter('all', this)">Tout</div><div class="filter-pill ${currentFilter==='income'?'active':''}" onclick="setFilter('income', this)">Revenus</div>` + CATEGORIES.map(c => `<div class="filter-pill ${currentFilter===c.id?'active':''}" onclick="setFilter('${c.id}', this)">${c.label}</div>`).join('');
+        document.getElementById('filter-bar').innerHTML = `<div class="filter-pill ${currentFilter==='all'?'active':''}" onclick="setFilter('all', this)">Tout</div><div class="filter-pill ${currentFilter==='income'?'active':''}" onclick="setFilter('income', this)">Revenus</div>` + categories.map(c => `<div class="filter-pill ${currentFilter===c.id?'active':''}" onclick="setFilter('${c.id}', this)">${escapeHTML(c.label)}</div>`).join('');
     }
     function setFilter(f, el) { hapticTap(); currentFilter = f; document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active')); el.classList.add('active'); renderTransactions(); }
 
@@ -1505,7 +1511,9 @@
         if(filtered.length === 0) { list.innerHTML = "<p style='color:var(--text-muted); text-align:center; padding:20px 0;'>Aucune transaction trouvée pour ce mois</p>"; return; }
         
         list.innerHTML = filtered.map(e => {
-            const isInc = e.type === 'income'; const icon = isInc ? '💰' : CATEGORIES.find(c => c.id === e.cat).icon;
+            const catObj = categories.find(c => c.id === e.cat) || categories.find(c => c.id === 'autre');
+            const isInc = e.type === 'income'; const icon = isInc ? '💰' : catObj.icon;
+            
             const safeLabel = escapeHTML(e.label);
             const safeNote = escapeHTML(e.note || '');
             const safeUrl = escapeHTML(e.url || '');
@@ -1561,8 +1569,9 @@
             list.innerHTML = dayExps.map(e => {
                 const safeUrl = escapeHTML(e.url);
                 const safeLabel = escapeHTML(e.label);
+                const catObj = categories.find(c => c.id === e.cat) || categories.find(c => c.id === 'autre');
                 const urlBadge = safeUrl ? `<a href="${safeUrl}" target="_blank" class="tag-badge" style="text-decoration:none; margin-right:8px;" onclick="event.stopPropagation()">🔗</a>` : '';
-                return `<div class="tx-item" onclick="openEditModal(${e.originalId})"><span>${e.type==='income'?'💰':CATEGORIES.find(c=>c.id===e.cat).icon} ${urlBadge}${safeLabel}</span><span class="blur-val" style="font-weight:700; color:${e.type==='income'?'var(--green)':'var(--text-main)'}">${e.type==='income'?'+':'-'}${e.amount.toFixed(2)} €</span></div>`;
+                return `<div class="tx-item" onclick="openEditModal(${e.originalId})"><span>${e.type==='income'?'💰':catObj.icon} ${urlBadge}${safeLabel}</span><span class="blur-val" style="font-weight:700; color:${e.type==='income'?'var(--green)':'var(--text-main)'}">${e.type==='income'?'+':'-'}${e.amount.toFixed(2)} €</span></div>`;
             }).join(''); 
             details.style.display = 'block'; 
         } else details.style.display = 'none';
@@ -1589,7 +1598,8 @@
             else if(sub.frequency === '4weeks') { monthlyCost = sub.amount * 1.08; freqText = "Toutes les 4 sem."; }
             
             totalMonthly += monthlyCost;
-            const catIcon = CATEGORIES.find(c => c.id === sub.cat)?.icon || '💸';
+            const catObj = categories.find(c => c.id === sub.cat) || categories.find(c => c.id === 'autre');
+            const catIcon = catObj.icon || '💸';
 
             html += `
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--border);">
@@ -1627,7 +1637,7 @@
         const types = { fixe: 0, vie: 0, loisirs: 0 }; const catTotals = {};
         
         currentMonthExp.forEach(e => {
-            const catInfo = CATEGORIES.find(c => c.id === e.cat);
+            const catInfo = categories.find(c => c.id === e.cat) || categories.find(c => c.id === 'autre');
             if(catInfo) types[catInfo.type] += e.amount; catTotals[e.cat] = (catTotals[e.cat] || 0) + e.amount;
         });
 
@@ -1680,7 +1690,8 @@
         const sortedCats = Object.keys(catTotals).sort((a, b) => catTotals[b] - catTotals[a]);
         
         list.innerHTML = sortedCats.map(cId => {
-            const cat = CATEGORIES.find(c => c.id === cId); const val = catTotals[cId];
+            const cat = categories.find(c => c.id === cId) || categories.find(c => c.id === 'autre'); 
+            const val = catTotals[cId];
             const catLimit = catBudgets[cId];
             
             let limitText = ""; let pctBar = (val/total)*100; let barColor = "var(--accent)";
@@ -1692,7 +1703,7 @@
             }
 
             return `<div class="stats-row">
-                        <div class="stats-info"><span>${cat.icon} ${cat.label}</span><span class="blur-val">${val.toFixed(2)} € ${limitText}</span></div>
+                        <div class="stats-info"><span>${cat.icon} ${escapeHTML(cat.label)}</span><span class="blur-val">${val.toFixed(2)} € ${limitText}</span></div>
                         <div class="prog-bar-bg" style="height:6px; margin-top:5px;"><div class="prog-bar-fill" style="width: ${Math.min(pctBar, 100)}%; background:${barColor}"></div></div>
                     </div>`;
         }).join('');
@@ -1707,8 +1718,7 @@
         localStorage.setItem('apple_clean_savings_v5', savingsGoal); 
         localStorage.setItem('apple_clean_emergency_v5', emergencyGoal);
         
-        saveToCloud(); 
-        applyAppSettings(); 
+        saveToCloud(); applyAppSettings(); 
     }
     
     function exportCSV() {
@@ -1717,14 +1727,15 @@
             const safeLabel = escapeHTML(e.label).replace(/,/g, ' ');
             const safeNote = escapeHTML(e.note).replace(/,/g, ' ');
             const accName = escapeHTML(accounts.find(a=>a.id===e.accountId)?.name||'N/A');
-            csv += `${e.type},${accName},${e.date},${safeLabel},${e.amount},${e.cat},${e.recurring?'Oui':'Non'},${e.frequency||''},${e.endDate||''},${safeNote},${escapeHTML(e.url||'')}\n`;
+            const catObj = categories.find(c=>c.id===e.cat) || {label: e.cat};
+            csv += `${e.type},${accName},${e.date},${safeLabel},${e.amount},${catObj.label},${e.recurring?'Oui':'Non'},${e.frequency||''},${e.endDate||''},${safeNote},${escapeHTML(e.url||'')}\n`;
         });
         const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'budget.csv'; a.click();
     }
     
     function clearData() { 
         if(confirm("Effacer toutes les données de façon irréversible sur tous vos appareils ?")) { 
-            expenses = []; accounts = []; wishlist = [];
+            expenses = []; accounts = []; wishlist = []; categories = [...DEFAULT_CATEGORIES];
             saveToCloud(); 
         } 
     }
