@@ -117,11 +117,6 @@
         .upcoming-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
         .upcoming-item:last-child { border-bottom: none; padding-bottom: 0; }
 
-        .sim-box { display: flex; gap: 15px; margin-top: 15px; }
-        .sim-input { flex: 1; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); padding: 14px; border-radius: 12px; font-size: 14px; outline: none; }
-        .sim-btn { background: var(--accent); color: white; border: none; padding: 0 20px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .sim-btn:active { transform: scale(0.96); }
-
         /* MODAL RESPONSIVE */
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); padding: 15px; box-sizing: border-box; }
         .modal-content { background-color: var(--card-bg); margin: 2vh auto; padding: 25px; border-radius: 20px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; border: 1px solid var(--border); animation: slideUp 0.3s; box-sizing: border-box; }
@@ -306,6 +301,10 @@
         <div class="input-group" style="margin-bottom:15px;">
             <label>Nom du projet / produit</label>
             <input type="text" id="inp-wish-name" class="input-control" placeholder="ex: iPhone 17 Pro">
+        </div>
+        <div class="input-group" style="margin-bottom:15px;">
+            <label>Compte ciblé pour l'achat</label>
+            <select id="inp-wish-account" class="input-control" style="appearance:none; font-weight:600;"></select>
         </div>
         <div class="input-group" style="margin-bottom:15px;">
             <label>Prix estimé (€)</label>
@@ -594,7 +593,7 @@
     let privacyMode = false;
     let globalRealBalance = 0;
     let editingTxId = null;
-    let editingWishId = null; // NOUVEAU : ID d'édition pour la wishlist
+    let editingWishId = null;
 
     auth.onAuthStateChanged(user => {
         if (user) {
@@ -904,7 +903,7 @@
     }
     function toggleRecOptions() { document.getElementById('rec-options').style.display = document.getElementById('inp-recurring').checked ? 'block' : 'none'; }
 
-    // --- FONCTIONS WISHLIST (NOUVEAU MODAL) ---
+    // --- FONCTIONS WISHLIST (AVEC COMPTE CIBLÉ) ---
     function openWishlistModal(id = null) {
         hapticTap();
         editingWishId = id;
@@ -916,6 +915,9 @@
             document.getElementById('inp-wish-name').value = item.name;
             document.getElementById('inp-wish-price').value = item.price;
             document.getElementById('inp-wish-url').value = item.url || '';
+            // Restaure le compte cible, sinon met le premier dispo
+            document.getElementById('inp-wish-account').value = item.accountId || (accounts[0] ? accounts[0].id : '');
+            
             document.getElementById('btn-delete-wish').style.display = 'block';
             document.getElementById('btn-submit-wish').innerText = "Mettre à jour";
         } else {
@@ -923,6 +925,8 @@
             document.getElementById('inp-wish-name').value = '';
             document.getElementById('inp-wish-price').value = '';
             document.getElementById('inp-wish-url').value = '';
+            document.getElementById('inp-wish-account').value = accounts[0] ? accounts[0].id : ''; // Valeur par défaut
+            
             document.getElementById('btn-delete-wish').style.display = 'none';
             document.getElementById('btn-submit-wish').innerText = "Enregistrer";
         }
@@ -941,8 +945,9 @@
         priceInput = priceInput.replace(',', '.');
         const price = parseFloat(priceInput);
         const url = document.getElementById('inp-wish-url').value.trim();
+        const accountId = document.getElementById('inp-wish-account').value;
 
-        if (!name || isNaN(price) || price <= 0) return alert("Veuillez saisir un nom et un prix valide.");
+        if (!name || isNaN(price) || price <= 0 || !accountId) return alert("Veuillez saisir un nom, un compte et un prix valide.");
 
         if (editingWishId) {
             const index = wishlist.findIndex(w => w.id === editingWishId);
@@ -950,9 +955,10 @@
                 wishlist[index].name = name;
                 wishlist[index].price = price;
                 wishlist[index].url = url;
+                wishlist[index].accountId = accountId;
             }
         } else {
-            wishlist.push({ id: Date.now(), name: name, price: price, url: url });
+            wishlist.push({ id: Date.now(), name: name, price: price, url: url, accountId: accountId });
         }
 
         saveToCloud();
@@ -969,7 +975,6 @@
             updateAllViews();
         }
     }
-
 
     function setJournalView(view) {
         hapticTap();
@@ -988,7 +993,11 @@
         if(id === 'dash') updateAllViews(); if(id === 'tx') renderTransactions(); if(id === 'stats') renderStats();
     }
 
-    function updateAccountsSelectors() { document.getElementById('inp-account').innerHTML = accounts.map(a => `<option value="${escapeHTML(a.id)}">${escapeHTML(a.name)}</option>`).join(''); }
+    function updateAccountsSelectors() { 
+        const options = accounts.map(a => `<option value="${escapeHTML(a.id)}">${escapeHTML(a.name)}</option>`).join('');
+        document.getElementById('inp-account').innerHTML = options; 
+        document.getElementById('inp-wish-account').innerHTML = options; // Met aussi à jour la pop-up Projets
+    }
     
     function addAccount() {
         hapticTap();
@@ -1187,29 +1196,36 @@
         swipedElement = null;
     }
 
-    function renderWishlist(epargneMois) {
+    function renderWishlist(epargneMois, accBalances) {
         const container = document.getElementById('wishlist-container');
         if (wishlist.length === 0) {
-            container.innerHTML = "<p style='color:var(--text-muted); font-size:13px; text-align:center; padding:10px 0;'>Aucun projet. Ajoutez un objectif pour voir vos projections !</p>";
+            container.innerHTML = "<p style='color:var(--text-muted); font-size:13px; text-align:center; padding:10px 0;'>Aucun projet. Cliquez sur Ajouter pour suivre une nouvelle envie !</p>";
             return;
         }
 
         container.innerHTML = wishlist.map(w => {
-            const missing = w.price - globalRealBalance;
-            const progress = Math.min((globalRealBalance / w.price) * 100, 100);
+            // Récupérer la balance du compte spécifique
+            const accId = w.accountId;
+            // Sécurité : si aucun compte ou si le compte a été supprimé, on utilise l'argent total ou 0.
+            const accBalance = accId ? (accBalances[accId] || 0) : globalRealBalance;
+            const accObj = accounts.find(a => a.id === accId);
+            const accName = accObj ? escapeHTML(accObj.name) : 'Tous les comptes';
+
+            const missing = w.price - accBalance;
+            const progress = Math.min((accBalance / w.price) * 100, 100);
             let status = "";
             let barColor = "var(--accent)";
 
             if (progress >= 100) {
-                status = `<span style="color:var(--green); font-weight:600;">✅ Vous pouvez vous l'offrir !</span>`;
+                status = `<span style="color:var(--green); font-weight:600;">✅ Financement atteint sur ${accName} !</span>`;
                 barColor = "var(--green)";
             } else {
+                let timeEstimate = "";
                 if (epargneMois > 0) {
                     const months = Math.ceil(missing / epargneMois);
-                    status = `<span style="color:var(--orange); font-weight:600;">⏳ Accessible dans ~${months} mois</span> (manque ${missing.toFixed(0)}€)`;
-                } else {
-                    status = `<span style="color:var(--red); font-weight:600;">⚠️ Capacité d'épargne insuffisante</span>`;
+                    timeEstimate = `(Accessible dans ~${months} mois)`;
                 }
+                status = `<span style="color:var(--orange); font-weight:600;">⚠️ Il manque ${missing.toFixed(0)} €</span> <span style="color:var(--text-muted)">sur ${accName} ${timeEstimate}</span>`;
             }
 
             const safeUrl = escapeHTML(w.url);
@@ -1288,7 +1304,8 @@
             }).join('');
         }
 
-        renderWishlist(epargneMois);
+        // On passe accBalances pour que la wishlist connaisse l'argent de chaque compte
+        renderWishlist(epargneMois, accBalances);
     }
 
     // --- JOURNAL ---
