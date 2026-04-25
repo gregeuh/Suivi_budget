@@ -553,6 +553,12 @@
             <div id="settings-cat-budgets"></div>
         </div>
 
+        <div class="card" style="border-color: var(--orange); background: rgba(255, 159, 10, 0.05);">
+            <h2 style="font-size:16px; color:var(--orange); margin-top:0;">🧹 Nouveau Départ</h2>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Efface tout l'historique des opérations mais <strong>conserve vos comptes et fige leur solde actuel</strong>. Parfait pour débuter un nouveau mois.</p>
+            <button class="btn-danger-outline" style="border-color:var(--orange); color:var(--orange);" onclick="freshStart()">Nettoyer l'historique</button>
+        </div>
+
         <div class="card">
             <h2 style="font-size:16px;">Export Manuel (Lecture seule)</h2>
             <div style="display:flex; gap:10px; margin-top: 15px;">
@@ -568,7 +574,7 @@
         </div>
         
         <div style="text-align:center; padding-bottom:30px;">
-            <button onclick="clearData()" style="background:none; border:none; color:var(--text-muted); text-decoration:underline; font-size:12px; cursor:pointer;">Réinitialiser toutes les données (Irréversible)</button>
+            <button onclick="clearData()" style="background:none; border:none; color:var(--text-muted); text-decoration:underline; font-size:12px; cursor:pointer;">Réinitialiser l'application entière (Irréversible)</button>
         </div>
     </div>
 </div>
@@ -599,7 +605,7 @@
     let expenses = [];
     let accounts = [];
     let wishlist = [];
-    let savingsGoal = 500; // Remplaçant de 'budget'
+    let savingsGoal = 500; 
     let emergencyGoal = 5000;
     let catBudgets = {};
     let savedTheme = 'auto';
@@ -682,7 +688,6 @@
                 expenses = data.expenses || [];
                 accounts = data.accounts || [];
                 wishlist = data.wishlist || [];
-                // On récupère l'ancienne variable 'budget' si 'savingsGoal' n'existe pas encore
                 savingsGoal = data.savingsGoal !== undefined ? data.savingsGoal : (data.budget || 500);
                 emergencyGoal = data.emergencyGoal || 5000;
                 catBudgets = data.catBudgets || {};
@@ -691,8 +696,6 @@
 
                 applyAppSettings();
             } else {
-                console.log("Premier lancement : Migration des données locales vers le Cloud...");
-                
                 displayName = localStorage.getItem('apple_clean_name_v5') || '';
                 expenses = JSON.parse(localStorage.getItem('apple_clean_v5') || localStorage.getItem('apple_clean_v4') || '[]');
                 accounts = JSON.parse(localStorage.getItem('apple_clean_acc_v5') || localStorage.getItem('apple_clean_acc_v4') || '[{"id":"acc1","name":"COMPTE COURANT","initBalance":2000,"color":""}]');
@@ -1107,7 +1110,6 @@
         document.getElementById('inp-wish-account').innerHTML = options; 
     }
     
-    // --- NOUVEAU: FONCTION D'AJUSTEMENT DE SOLDE ---
     function adjustBalance(accId) {
         hapticTap();
         const acc = accounts.find(a => a.id === accId);
@@ -1155,6 +1157,35 @@
             saveToCloud();
             updateAllViews();
             if (document.getElementById('tab-tx').classList.contains('active')) renderTransactions();
+        }
+    }
+
+    // --- NOUVEAU: FONCTION DE NOUVEAU DEPART ---
+    function freshStart() {
+        if(confirm("Attention : Cela va effacer TOUTES vos transactions passées.\n\nLes soldes actuels de vos comptes seront sauvegardés comme nouveaux soldes de départ. Vos projets et enveloppes seront conservés.\n\nÊtes-vous sûr de vouloir commencer un nouveau mois ?")) {
+            hapticTap();
+            const nowReal = new Date();
+            
+            // 1. Calculer l'argent actuel et l'assigner comme point de départ
+            accounts.forEach(acc => {
+                let currentCalcBal = acc.initBalance;
+                expenses.forEach(e => {
+                    if(e.accountId === acc.id) {
+                        const pastCount = getPastOccurrencesCount(e, nowReal);
+                        currentCalcBal += (e.type === 'income' ? 1 : -1) * (e.amount * pastCount);
+                    }
+                });
+                acc.initBalance = currentCalcBal; // Fige le solde actuel
+            });
+            
+            // 2. Vider l'historique des dépenses
+            expenses = [];
+            
+            // 3. Sauvegarder sur le cloud et rafraîchir l'interface
+            saveToCloud();
+            applyAppSettings();
+            
+            alert("Historique effacé ! Vos comptes sont prêts pour un nouveau départ. 🚀");
         }
     }
 
@@ -1402,7 +1433,7 @@
         }).join('');
     }
 
-    // --- DASHBOARD (NOUVELLE LOGIQUE D'ÉPARGNE) ---
+    // --- DASHBOARD ---
     function updateAllViews() {
         const nowReal = new Date(); 
         const tY = viewDate.getFullYear(); 
@@ -1442,7 +1473,6 @@
         animateValue(document.getElementById('dash-exp'), 0, monthExp, 800, val => "-" + val.toFixed(0) + " €");
         animateValue(document.getElementById('dash-remaining'), 0, epargneMois, 800, val => val.toFixed(0) + " €");
         
-        // NOUVELLE LOGIQUE : MARGE DE DÉPENSES SÉCURISÉE
         document.getElementById('dash-goal-text').innerText = savingsGoal.toFixed(0);
         const safeLimit = Math.max(0, monthInc - savingsGoal);
         document.getElementById('prog-label').innerText = monthExp.toFixed(0) + " € / " + safeLimit.toFixed(0) + " €";
@@ -1632,8 +1662,7 @@
             document.getElementById('emergency-fill').style.width = "0%";
         }
 
-        // NOUVELLE LOGIQUE 50/30/20 BASÉE SUR LES REVENUS RÉELS
-        const baseCalc = monthInc > 0 ? monthInc : 1; // Pour éviter la division par zéro
+        const baseCalc = monthInc > 0 ? monthInc : 1; 
         
         const pctFixe = (types.fixe / baseCalc) * 100;
         const pctVie = (types.vie / baseCalc) * 100;
