@@ -47,25 +47,18 @@
         .btn-add { background: var(--blue); color: white; border: none; padding: 0 20px; height: 40px; border-radius: 20px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
         .btn-add:active { transform: scale(0.95); background: #0062cc; }
 
-        /* 4 ONGLETS AVEC CORRECTION RESPONSIVE MOBILE */
+        /* 4 ONGLETS */
         .tab-bar { 
-            display: flex; 
-            flex-wrap: nowrap; 
-            overflow-x: auto; 
-            -webkit-overflow-scrolling: touch; 
-            scrollbar-width: none; 
-            background: var(--card-bg); padding: 6px; border-radius: 14px; 
+            display: flex; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; 
+            scrollbar-width: none; background: var(--card-bg); padding: 6px; border-radius: 14px; 
             margin-bottom: 30px; border: 1px solid var(--border); 
         }
         .tab-bar::-webkit-scrollbar { display: none; } 
         
         .tab-btn { 
-            flex: 1 0 auto; 
-            white-space: nowrap; 
-            background: none; border: none; color: var(--text-muted); 
-            padding: 10px 15px; font-size: 14px; font-weight: 600; 
-            border-radius: 10px; cursor: pointer; transition: 0.2s; 
-            display: flex; align-items: center; justify-content: center; gap: 8px; 
+            flex: 1 0 auto; white-space: nowrap; background: none; border: none; color: var(--text-muted); 
+            padding: 10px 15px; font-size: 14px; font-weight: 600; border-radius: 10px; cursor: pointer; 
+            transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; 
         }
         .tab-btn.active { background: var(--input-bg); color: var(--text-main); }
         .tab-icon { font-size: 16px; }
@@ -379,11 +372,20 @@
         </div>
 
         <div class="card">
-            <h2 style="font-size:16px;">Export des données</h2>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Téléchargez vos rapports pour les archiver ou les imprimer.</p>
-            <div style="display:flex; gap:10px;">
+            <h2 style="font-size:16px;">Sauvegarde & Restauration</h2>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Indispensable pour changer de téléphone ou ne jamais perdre vos données. Créez une sauvegarde de sécurité sur votre appareil.</p>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="btn-export" onclick="exportBackup()">💾 Sauvegarder</button>
+                <button class="btn-export" style="background:var(--blue); color:white; border-color:var(--blue);" onclick="triggerImport()">🔄 Restaurer</button>
+                <input type="file" id="backup-file-input" style="display:none" accept=".json" onchange="importBackup(event)">
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 style="font-size:16px;">Export Manuel (Lecture seule)</h2>
+            <div style="display:flex; gap:10px; margin-top: 15px;">
                 <button class="btn-export" onclick="exportPDF()">📄 PDF</button>
-                <button class="btn-export" onclick="exportCSV()">⬇ Exporter en CSV</button>
+                <button class="btn-export" onclick="exportCSV()">⬇ CSV</button>
             </div>
         </div>
 
@@ -418,6 +420,7 @@
         { id: 'autre', label: 'Autre', icon: '📦', type: 'loisirs' }
     ];
 
+    // Maintien des clés de la v4 pour la rétrocompatibilité des données
     let expenses = JSON.parse(localStorage.getItem('apple_clean_v4') || '[]');
     let accounts = JSON.parse(localStorage.getItem('apple_clean_acc_v4') || '[{"id":"acc1","name":"COMPTE COURANT","initBalance":2000,"color":""}]');
     let budget = parseFloat(localStorage.getItem('apple_clean_budget_v4')) || 2000;
@@ -442,6 +445,60 @@
     function applyTheme(t) {
         if(t === 'auto') document.body.setAttribute('data-theme', window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         else document.body.setAttribute('data-theme', t);
+    }
+
+    // --- SAUVEGARDE ET RESTAURATION ---
+    function exportBackup() {
+        hapticTap();
+        const dataToSave = {
+            expenses: localStorage.getItem('apple_clean_v4') || '[]',
+            accounts: localStorage.getItem('apple_clean_acc_v4') || '[]',
+            budget: localStorage.getItem('apple_clean_budget_v4') || '2000',
+            theme: localStorage.getItem('apple_clean_theme_v4') || 'auto'
+        };
+        
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToSave));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        // Ajout de la date dans le nom du fichier pour s'y retrouver
+        const dateIso = new Date().toISOString().split('T')[0];
+        downloadAnchorNode.setAttribute("download", `sauvegarde_budget_pro_${dateIso}.json`);
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    }
+
+    function triggerImport() {
+        hapticTap();
+        document.getElementById('backup-file-input').click();
+    }
+
+    function importBackup(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                
+                // Vérification simple pour s'assurer que c'est bien notre fichier
+                if(data.expenses && data.accounts) {
+                    localStorage.setItem('apple_clean_v4', data.expenses);
+                    localStorage.setItem('apple_clean_acc_v4', data.accounts);
+                    if (data.budget) localStorage.setItem('apple_clean_budget_v4', data.budget);
+                    if (data.theme) localStorage.setItem('apple_clean_theme_v4', data.theme);
+                    
+                    alert("✅ Sauvegarde restaurée avec succès ! L'application va redémarrer.");
+                    location.reload(); // On recharge la page pour appliquer la restauration
+                } else {
+                    alert("❌ Erreur : Ce fichier ne semble pas être une sauvegarde Budget Pro valide.");
+                }
+            } catch(err) {
+                alert("❌ Erreur lors de la lecture du fichier. Fichier corrompu.");
+            }
+        };
+        reader.readAsText(file);
     }
 
     // --- AUTO-CATEGORISATION ---
@@ -499,7 +556,7 @@
         if(!name) return;
         let balInput = prompt("Solde initial (€) :");
         if (balInput === null) return;
-        balInput = balInput.replace(',', '.'); // Remplacement de la virgule par un point
+        balInput = balInput.replace(',', '.'); 
         const bal = parseFloat(balInput) || 0;
         
         const colors = ['', 'alt-color', 'alt-color-2']; 
@@ -516,7 +573,7 @@
         let balInput = prompt(`Nouveau solde initial pour ${accounts[accIndex].name} (€) :`, accounts[accIndex].initBalance);
         if (balInput === null) return;
         
-        balInput = balInput.replace(',', '.'); // Gestion des virgules pour les centimes
+        balInput = balInput.replace(',', '.'); 
         const bal = parseFloat(balInput);
         
         if (!isNaN(bal)) {
@@ -623,7 +680,6 @@
 
     function addExpense() {
         hapticTap();
-        // Remplacement de la virgule par un point pour le montant s'il est tapé au clavier
         let amtInput = document.getElementById('inp-amount').value;
         if(amtInput) amtInput = amtInput.replace(',', '.');
         
