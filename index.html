@@ -657,6 +657,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // Mode Hors-Ligne
     db.enablePersistence().catch(function(err) {
         console.log("Hors-ligne non disponible : ", err);
     });
@@ -914,6 +915,7 @@
         viewDate.setMonth(viewDate.getMonth() + dir);
         updateGlobalMonthLabel();
         
+        // Animation
         const area = document.getElementById('app-wrapper');
         area.classList.remove('fade-in');
         void area.offsetWidth;
@@ -1341,7 +1343,7 @@
         
         const target = document.getElementById('tab-' + id);
         target.classList.add('active');
-        void target.offsetWidth; 
+        void target.offsetWidth; // Reflow
         target.classList.add('fade-in');
         
         btn.classList.add('active');
