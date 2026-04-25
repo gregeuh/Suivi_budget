@@ -633,7 +633,11 @@
         <div class="card" style="background:var(--red-light);">
             <div style="font-weight:700; color:var(--red); font-size:16px; margin-bottom:8px;">Zone de danger</div>
             <p style="font-size:13px; color:var(--text-main); opacity:0.8; margin-bottom:20px; line-height:1.4;">Les actions ci-dessous sont sensibles.</p>
+            
             <button style="background:var(--card-bg); color:var(--orange); border:none; width:100%; padding:16px; border-radius:16px; font-weight:700; cursor:pointer; margin-bottom:12px;" onclick="freshStart()">🧹 Nouveau Mois (Garder Soldes)</button>
+            
+            <button style="background:var(--card-bg); color:var(--red); border:none; width:100%; padding:16px; border-radius:16px; font-weight:700; cursor:pointer; margin-bottom:12px;" onclick="deleteAllOperations()">🗑️ Effacer toutes les opérations</button>
+            
             <button style="background:var(--card-bg); color:var(--red); border:none; width:100%; padding:16px; border-radius:16px; font-weight:700; cursor:pointer;" onclick="logoutUser()">Se déconnecter</button>
         </div>
     </div>
@@ -688,7 +692,7 @@
     let editingTxId = null;
     let editingWishId = null;
     
-    window.isSwiping = false; // Sécurité pour les clics tactiles
+    window.isSwiping = false;
 
     const DEFAULT_CATEGORIES = [
         { id: 'alim', label: 'Alimentation', icon: '🛒', type: 'vie', isCustom: false },
@@ -912,7 +916,6 @@
         viewDate.setMonth(viewDate.getMonth() + dir);
         updateGlobalMonthLabel();
         
-        // Animation
         const area = document.getElementById('app-wrapper');
         area.classList.remove('fade-in');
         void area.offsetWidth;
@@ -991,14 +994,12 @@
         setTimeout(() => document.getElementById('inp-amount').focus(), 300);
     }
 
-    // Protection anti double-clic
     let lastEditTime = 0;
     function openEditModal(id) {
         if (Date.now() - lastEditTime < 300) return;
         lastEditTime = Date.now();
         hapticTap();
         
-        // Comparaison robuste pour gérer les ID importés en CSV
         const tx = expenses.find(e => String(e.id) === String(id));
         if (!tx) return;
 
@@ -1229,8 +1230,8 @@
         expenses.forEach(e => {
             const safeLabel = escapeHTML(e.label).replace(/,/g, ' ');
             const safeNote = escapeHTML(e.note).replace(/,/g, ' ');
-            const accName = escapeHTML(accounts.find(a=>a.id===e.accountId)?.name || 'N/A');
-            const catObj = categories.find(c=>c.id===e.cat) || {label: e.cat};
+            const accName = escapeHTML(accounts.find(a=>String(a.id)===String(e.accountId))?.name || 'N/A');
+            const catObj = categories.find(c=>String(c.id)===String(e.cat)) || {label: e.cat};
             csv += `${e.type},${accName},${e.date},${safeLabel},${e.amount},${catObj.label},${e.recurring?'Oui':'Non'},${e.frequency||''},${e.endDate||''},${safeNote},${escapeHTML(e.url||'')}\n`;
         });
         const a = document.createElement('a');
@@ -1342,7 +1343,7 @@
         
         const target = document.getElementById('tab-' + id);
         target.classList.add('active');
-        void target.offsetWidth; // Reflow
+        void target.offsetWidth; 
         target.classList.add('fade-in');
         
         btn.classList.add('active');
@@ -1433,6 +1434,18 @@
             alert("Historique effacé ! Vos comptes sont prêts pour un nouveau départ. 🚀");
         }
     }
+
+    // --- NOUVEAU BOUTON : EFFACER UNIQUEMENT L'HISTORIQUE ---
+    function deleteAllOperations() {
+        if(confirm("Attention : Cela va effacer TOUTES vos transactions (Dépenses et Revenus) de façon définitive.\n\nVos comptes, soldes initiaux, projets et catégories seront conservés tels quels.\n\nÊtes-vous sûr de vouloir tout effacer ?")) {
+            hapticTap();
+            expenses = [];
+            saveToCloud();
+            applyAppSettings();
+            alert("Toutes les opérations ont été supprimées. 🗑️");
+        }
+    }
+
 
     // ==========================================
     // 8. LOGIQUE GLOBALE ET SWIPES
@@ -1729,13 +1742,13 @@
                 lastDate = e.date;
             }
             
-            const catObj = categories.find(c => c.id === e.cat) || categories.find(c => c.id === 'autre') || {icon:'📦'};
+            const catObj = categories.find(c => String(c.id) === String(e.cat)) || categories.find(c => c.id === 'autre') || {icon:'📦'};
             const isInc = e.type === 'income';
             const icon = isInc ? '💰' : catObj.icon;
             
             const safeLabel = escapeHTML(e.label);
             const safeUrl = escapeHTML(e.url || '');
-            const accName = escapeHTML(accounts.find(a => a.id === e.accountId)?.name || "Supprimé");
+            const accName = escapeHTML(accounts.find(a => String(a.id) === String(e.accountId))?.name || "Supprimé");
             
             let freqBadge = '';
             if (e.recurring) {
@@ -1792,7 +1805,7 @@
                 
                 if(dE.length > 0) {
                     document.getElementById('cal-details-list').innerHTML = dE.map(e => {
-                        const icon = e.type === 'income' ? '💰' : (categories.find(c => c.id === e.cat) || {}).icon || '📦';
+                        const icon = e.type === 'income' ? '💰' : (categories.find(c => String(c.id) === String(e.cat)) || {}).icon || '📦';
                         return `<div class="tx-item" onclick="openEditModal('${e.originalId}')"><span style="display:flex; align-items:center; gap:12px;"><div class="tx-icon-box" style="width:40px; height:40px; border-radius:12px; margin:0;">${icon}</div> <b>${escapeHTML(e.label)}</b></span><span class="blur-val" style="font-weight:800; font-size:16px; color:${e.type==='income'?'var(--green)':'var(--text-main)'}">${e.type==='income'?'+':'-'}${e.amount.toFixed(2)} €</span></div>`;
                     }).join('');
                 } else {
@@ -1824,7 +1837,7 @@
             else if(sub.frequency === '4weeks') { mC *= 1.08; fT = "4 sem."; }
             
             totalMonthly += mC;
-            const catObj = categories.find(c => c.id === sub.cat) || categories.find(c => c.id === 'autre') || {icon:'💸'};
+            const catObj = categories.find(c => String(c.id) === String(sub.cat)) || categories.find(c => c.id === 'autre') || {icon:'💸'};
 
             html += `
             <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 0; border-bottom:1px solid var(--border);">
@@ -1863,7 +1876,7 @@
         const cTot = {};
         
         cME.forEach(e => {
-            const catInfo = categories.find(c => c.id === e.cat) || categories.find(c => c.id === 'autre') || {type:'loisirs'};
+            const catInfo = categories.find(c => String(c.id) === String(e.cat)) || categories.find(c => c.id === 'autre') || {type:'loisirs'};
             types[catInfo.type] += e.amount;
             cTot[e.cat] = (cTot[e.cat] || 0) + e.amount;
         });
@@ -1929,7 +1942,7 @@
         
         const sortedCats = Object.keys(cTot).sort((a, b) => cTot[b] - cTot[a]);
         list.innerHTML = sortedCats.map(cId => {
-            const cat = categories.find(c => c.id === cId) || categories.find(c => c.id === 'autre') || {icon:'📦', label:'Inconnu'};
+            const cat = categories.find(c => String(c.id) === String(cId)) || categories.find(c => c.id === 'autre') || {icon:'📦', label:'Inconnu'};
             const val = cTot[cId];
             const lim = catBudgets[cId];
             
@@ -2068,22 +2081,6 @@
         
         saveToCloud();
         applyAppSettings(); 
-    }
-    
-    function exportCSV() {
-        hapticTap();
-        let csv = "Type,Compte,Date,Libelle,Montant,Categorie,Recurrent,Frequence,Date_Fin,Note,URL\n";
-        expenses.forEach(e => {
-            const safeLabel = escapeHTML(e.label).replace(/,/g, ' ');
-            const safeNote = escapeHTML(e.note).replace(/,/g, ' ');
-            const accName = escapeHTML(accounts.find(a=>String(a.id)===String(e.accountId))?.name || 'N/A');
-            const catObj = categories.find(c=>String(c.id)===String(e.cat)) || {label: e.cat};
-            csv += `${e.type},${accName},${e.date},${safeLabel},${e.amount},${catObj.label},${e.recurring?'Oui':'Non'},${e.frequency||''},${e.endDate||''},${safeNote},${escapeHTML(e.url||'')}\n`;
-        });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-        a.download = 'budget.csv';
-        a.click();
     }
     
     function clearData() {
