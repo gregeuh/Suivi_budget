@@ -166,11 +166,16 @@
         .stats-info { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; color: var(--text-muted); }
         .stats-info span:last-child { color: var(--text-main); font-weight: 600; }
 
-        /* ASSISTANT CONSEIL */
+        /* ASSISTANT ET PROJECTIONS */
         .advice-box { background: var(--accent-light); border: 1px solid var(--accent); padding: 15px; border-radius: 14px; margin-bottom: 25px; display: flex; gap: 15px; align-items: flex-start; }
         .advice-icon { font-size: 24px; }
         .advice-text { font-size: 14px; line-height: 1.5; color: var(--text-main); }
         
+        .projection-box { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .proj-card { background: var(--input-bg); padding: 15px; border-radius: 12px; text-align: center; }
+        .proj-title { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: 5px; }
+        .proj-val { font-size: 20px; font-weight: 700; color: var(--green); }
+
         /* VUE 4: RÉGLAGES */
         .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--border); }
         .settings-row:last-child { border-bottom: none; }
@@ -358,8 +363,27 @@
         
         <div class="advice-box">
             <div class="advice-icon">💡</div>
-            <div class="advice-text" id="advice-text">
-                Calcul en cours...
+            <div class="advice-text" id="advice-text">Calcul en cours...</div>
+        </div>
+
+        <div class="card">
+            <h2 style="font-size:16px; margin-top:0;">📈 Projections & Épargne</h2>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:5px;">Basé sur votre capacité d'épargne du mois affiché.</p>
+            <div class="prog-header" style="margin-top:15px; margin-bottom:8px;">
+                <span>Fonds d'urgence</span>
+                <span id="emergency-label" style="color:var(--text-muted); font-weight:500;" class="blur-val">0 € / 0 €</span>
+            </div>
+            <div class="prog-bar-bg"><div class="prog-bar-fill" id="emergency-fill" style="background:var(--green)"></div></div>
+            
+            <div class="projection-box">
+                <div class="proj-card">
+                    <div class="proj-title">Épargne du mois</div>
+                    <div class="proj-val blur-val" id="proj-month">0 €</div>
+                </div>
+                <div class="proj-card">
+                    <div class="proj-title">Projection sur 1 an</div>
+                    <div class="proj-val blur-val" id="proj-year">0 €</div>
+                </div>
             </div>
         </div>
 
@@ -385,15 +409,17 @@
                 <span style="width:33%">Loisirs<br>(Idéal 20%)</span>
             </div>
         </div>
+        
         <div class="card">
-            <h2 style="font-size:16px;">Dépenses par catégorie</h2>
+            <h2 style="font-size:16px;">Budgets par catégorie (Enveloppes)</h2>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:15px;">Configurez vos limites dans l'onglet Réglages.</p>
             <div id="stats-list"></div>
         </div>
     </div>
 
     <div id="tab-settings" class="section">
         <div class="card">
-            <h2 style="font-size:16px;">Budget & Préférences</h2>
+            <h2 style="font-size:16px;">Budget Global & Style</h2>
             <div class="settings-row">
                 <div class="settings-info"><h4>Thème visuel</h4><p>S'adapte à votre système</p></div>
                 <select class="input-control" style="width:130px; font-weight:600;" onchange="changeTheme(this.value)" id="set-theme">
@@ -413,24 +439,33 @@
             </div>
 
             <div class="settings-row">
-                <div class="settings-info"><h4>Budget mensuel</h4><p>Cible de dépenses</p></div>
+                <div class="settings-info"><h4>Budget mensuel global</h4><p>Cible totale</p></div>
                 <input type="number" id="set-budget" class="input-control" style="width:100px; text-align:right" onchange="saveSettings()">
+            </div>
+            
+            <div class="settings-row">
+                <div class="settings-info"><h4>Fonds d'Urgence</h4><p>Objectif d'épargne sécurité</p></div>
+                <input type="number" id="set-emergency" class="input-control" style="width:100px; text-align:right" onchange="saveSettings()" placeholder="ex: 5000">
             </div>
         </div>
 
         <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h2 style="margin:0; font-size:16px;">Mes Comptes</h2>
-                <button class="btn-export" onclick="addAccount()">+ Ajouter</button>
-            </div>
+            <h2 style="font-size:16px;">Mes Comptes</h2>
             <div id="settings-accounts-list"></div>
+            <button class="btn-export" style="width:100%; justify-content:center; margin-top:10px;" onclick="addAccount()">+ Ajouter un compte</button>
+        </div>
+
+        <div class="card">
+            <h2 style="font-size:16px;">Enveloppes (Limites par catégorie)</h2>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Fixez un budget maximum par catégorie. Laissez vide pour ignorer.</p>
+            <div id="settings-cat-budgets"></div>
         </div>
 
         <div class="card">
             <h2 style="font-size:16px;">Sauvegarde & Restauration</h2>
             <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Indispensable pour changer de téléphone ou ne jamais perdre vos données. Créez une sauvegarde de sécurité sur votre appareil.</p>
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                <button class="btn-export" onclick="exportBackup()">💾 Sauvegarder</button>
+                <button class="btn-export" onclick="exportBackup()">💾 Sauvegarder JSON</button>
                 <button class="btn-export" style="background:var(--accent); color:white; border-color:var(--accent);" onclick="triggerImport()">🔄 Restaurer</button>
                 <input type="file" id="backup-file-input" style="display:none" accept=".json" onchange="importBackup(event)">
             </div>
@@ -439,26 +474,32 @@
         <div class="card">
             <h2 style="font-size:16px;">Export Manuel (Lecture seule)</h2>
             <div style="display:flex; gap:10px; margin-top: 15px;">
-                <button class="btn-export" onclick="exportPDF()">📄 PDF</button>
-                <button class="btn-export" onclick="exportCSV()">⬇ CSV</button>
+                <button class="btn-export" onclick="exportPDF()">📄 Exporter en PDF</button>
+                <button class="btn-export" onclick="exportCSV()">⬇ Exporter en CSV</button>
             </div>
         </div>
 
-        <div class="card">
-            <h2 style="font-size:16px;">Données</h2>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Effacer toutes les dépenses enregistrées de façon permanente.</p>
+        <div class="card" style="border-color: rgba(255, 69, 58, 0.3);">
+            <h2 style="font-size:16px; color:var(--red);">Zone de danger</h2>
             <button class="btn-danger-outline" onclick="clearData()">✕ Effacer toutes les données</button>
         </div>
     </div>
 </div>
 
 <script>
+    // --- SANITIZATION (SÉCURITÉ ANTI-XSS) ---
+    // Cette fonction rend inoffensif tout texte tapé par l'utilisateur
+    function escapeHTML(str) {
+        if(!str) return '';
+        return String(str).replace(/[&<>'"]/g, match => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[match]);
+    }
+
     const KEYWORDS = {
-        'alim': ['leclerc', 'carrefour', 'auchan', 'intermarche', 'lidl', 'courses', 'boulangerie', 'aldi', 'super u'],
-        'transp': ['sncf', 'total', 'esso', 'uber', 'taxi', 'ratp', 'essence', 'peage', 'navigo'],
-        'loisirs': ['netflix', 'spotify', 'cinema', 'ugc', 'apple', 'psn', 'xbox', 'amazon prime', 'disney'],
-        'logement': ['loyer', 'edf', 'engie', 'eau', 'assurance', 'internet'],
-        'resto': ['mcdonalds', 'kfc', 'burger king', 'deliveroo', 'ubereats', 'pizzeria', 'restaurant'],
+        'alim': ['leclerc', 'carrefour', 'auchan', 'intermarche', 'lidl', 'courses', 'boulangerie', 'aldi', 'super u', 'grand frais'],
+        'transp': ['sncf', 'total', 'esso', 'uber', 'taxi', 'ratp', 'essence', 'peage', 'navigo', 'avion', 'train'],
+        'loisirs': ['netflix', 'spotify', 'cinema', 'ugc', 'apple', 'psn', 'xbox', 'amazon prime', 'disney', 'salle de sport'],
+        'logement': ['loyer', 'edf', 'engie', 'eau', 'assurance', 'internet', 'bricolage'],
+        'resto': ['mcdonalds', 'kfc', 'burger king', 'deliveroo', 'ubereats', 'pizzeria', 'restaurant', 'bar', 'cafe'],
         'tech': ['amazon', 'fnac', 'darty', 'boulanger', 'free', 'orange', 'sfr', 'bouygues']
     };
     const RECURRING_KEYWORDS = ['netflix', 'spotify', 'loyer', 'edf', 'engie', 'free', 'orange', 'sfr', 'bouygues', 'apple', 'amazon prime', 'disney', 'navigo'];
@@ -474,11 +515,15 @@
         { id: 'autre', label: 'Autre', icon: '📦', type: 'loisirs' }
     ];
 
-    let expenses = JSON.parse(localStorage.getItem('apple_clean_v4') || '[]');
-    let accounts = JSON.parse(localStorage.getItem('apple_clean_acc_v4') || '[{"id":"acc1","name":"COMPTE COURANT","initBalance":2000,"color":""}]');
-    let budget = parseFloat(localStorage.getItem('apple_clean_budget_v4')) || 2000;
-    let savedTheme = localStorage.getItem('apple_clean_theme_v4') || 'auto';
-    let savedColor = localStorage.getItem('apple_clean_color_v1') || 'blue';
+    // Migration automatique ou création V5
+    let expenses = JSON.parse(localStorage.getItem('apple_clean_v5') || localStorage.getItem('apple_clean_v4') || '[]');
+    let accounts = JSON.parse(localStorage.getItem('apple_clean_acc_v5') || localStorage.getItem('apple_clean_acc_v4') || '[{"id":"acc1","name":"COMPTE COURANT","initBalance":2000,"color":""}]');
+    let budget = parseFloat(localStorage.getItem('apple_clean_budget_v5') || localStorage.getItem('apple_clean_budget_v4')) || 2000;
+    let emergencyGoal = parseFloat(localStorage.getItem('apple_clean_emergency_v5')) || 5000;
+    let catBudgets = JSON.parse(localStorage.getItem('apple_clean_catbudgets_v5') || '{}');
+    
+    let savedTheme = localStorage.getItem('apple_clean_theme_v5') || localStorage.getItem('apple_clean_theme_v4') || 'auto';
+    let savedColor = localStorage.getItem('apple_clean_color_v5') || localStorage.getItem('apple_clean_color_v1') || 'blue';
     
     let selectedCat = 'alim'; let currentFilter = 'all'; 
     let viewDate = new Date(); 
@@ -511,7 +556,7 @@
 
     function applyColor(c) {
         savedColor = c;
-        localStorage.setItem('apple_clean_color_v1', c);
+        localStorage.setItem('apple_clean_color_v5', c);
         document.documentElement.style.setProperty('--accent', ACCENT_COLORS[c].main);
         document.documentElement.style.setProperty('--accent-light', ACCENT_COLORS[c].light);
         
@@ -520,14 +565,21 @@
     }
 
     function init() {
+        // Sauvegarde immédiate en V5 pour éviter les soucis
+        localStorage.setItem('apple_clean_v5', JSON.stringify(expenses));
+        localStorage.setItem('apple_clean_acc_v5', JSON.stringify(accounts));
+        
         applyTheme(savedTheme); document.getElementById('set-theme').value = savedTheme;
         applyColor(savedColor);
-        document.getElementById('inp-date').valueAsDate = new Date(); document.getElementById('set-budget').value = budget;
+        document.getElementById('inp-date').valueAsDate = new Date(); 
+        document.getElementById('set-budget').value = budget;
+        document.getElementById('set-emergency').value = emergencyGoal;
         
         updateGlobalMonthLabel();
-        updateSuggestions(); // On initialise la liste des libellés connus
-        
-        renderCats(); renderFilters(); updateAccountsSelectors(); updateAllViews(); renderSettingsAccounts();
+        updateSuggestions(); 
+        renderCats(); renderFilters(); updateAccountsSelectors(); 
+        renderSettingsAccounts(); renderSettingsCatBudgets();
+        updateAllViews(); 
     }
 
     function updateGlobalMonthLabel() {
@@ -542,12 +594,10 @@
         updateAllViews();
         renderTransactions();
         renderStats();
-        if (document.getElementById('journal-cal-view').style.display === 'block') {
-            renderCalendar();
-        }
+        if (document.getElementById('journal-cal-view').style.display === 'block') renderCalendar();
     }
 
-    function changeTheme(t) { localStorage.setItem('apple_clean_theme_v4', t); applyTheme(t); }
+    function changeTheme(t) { localStorage.setItem('apple_clean_theme_v5', t); applyTheme(t); }
     function applyTheme(t) {
         if(t === 'auto') document.body.setAttribute('data-theme', window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         else document.body.setAttribute('data-theme', t);
@@ -556,16 +606,18 @@
     function exportBackup() {
         hapticTap();
         const dataToSave = {
-            expenses: localStorage.getItem('apple_clean_v4') || '[]',
-            accounts: localStorage.getItem('apple_clean_acc_v4') || '[]',
-            budget: localStorage.getItem('apple_clean_budget_v4') || '2000',
-            theme: localStorage.getItem('apple_clean_theme_v4') || 'auto',
-            color: localStorage.getItem('apple_clean_color_v1') || 'blue'
+            expenses: localStorage.getItem('apple_clean_v5') || '[]',
+            accounts: localStorage.getItem('apple_clean_acc_v5') || '[]',
+            budget: localStorage.getItem('apple_clean_budget_v5') || '2000',
+            emergency: localStorage.getItem('apple_clean_emergency_v5') || '5000',
+            catBudgets: localStorage.getItem('apple_clean_catbudgets_v5') || '{}',
+            theme: localStorage.getItem('apple_clean_theme_v5') || 'auto',
+            color: localStorage.getItem('apple_clean_color_v5') || 'blue'
         };
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToSave));
         const downloadAnchorNode = document.createElement('a'); downloadAnchorNode.setAttribute("href", dataStr);
         const dateIso = new Date().toISOString().split('T')[0];
-        downloadAnchorNode.setAttribute("download", `sauvegarde_budget_pro_${dateIso}.json`);
+        downloadAnchorNode.setAttribute("download", `budget_pro_v5_${dateIso}.json`);
         document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); downloadAnchorNode.remove();
     }
 
@@ -578,42 +630,37 @@
             try {
                 const data = JSON.parse(e.target.result);
                 if(data.expenses && data.accounts) {
-                    localStorage.setItem('apple_clean_v4', data.expenses);
-                    localStorage.setItem('apple_clean_acc_v4', data.accounts);
-                    if (data.budget) localStorage.setItem('apple_clean_budget_v4', data.budget);
-                    if (data.theme) localStorage.setItem('apple_clean_theme_v4', data.theme);
-                    if (data.color) localStorage.setItem('apple_clean_color_v1', data.color);
+                    localStorage.setItem('apple_clean_v5', data.expenses);
+                    localStorage.setItem('apple_clean_acc_v5', data.accounts);
+                    if (data.budget) localStorage.setItem('apple_clean_budget_v5', data.budget);
+                    if (data.emergency) localStorage.setItem('apple_clean_emergency_v5', data.emergency);
+                    if (data.catBudgets) localStorage.setItem('apple_clean_catbudgets_v5', data.catBudgets);
+                    if (data.theme) localStorage.setItem('apple_clean_theme_v5', data.theme);
+                    if (data.color) localStorage.setItem('apple_clean_color_v5', data.color);
                     alert("✅ Sauvegarde restaurée avec succès ! L'application va redémarrer.");
                     location.reload(); 
-                } else { alert("❌ Erreur : Ce fichier ne semble pas être une sauvegarde valide."); }
+                } else { alert("❌ Erreur : Fichier invalide."); }
             } catch(err) { alert("❌ Erreur lors de la lecture du fichier. Fichier corrompu."); }
         };
         reader.readAsText(file);
     }
 
-    // --- AUTO-COMPLÉTION DES LIBELLÉS ---
     function updateSuggestions() {
-        // Récupère tous les libellés uniques de tes anciennes dépenses
         const uniqueLabels = [...new Set(expenses.map(e => e.label))];
-        document.getElementById('label-suggestions').innerHTML = uniqueLabels.map(l => `<option value="${l}">`).join('');
+        document.getElementById('label-suggestions').innerHTML = uniqueLabels.map(l => `<option value="${escapeHTML(l)}">`).join('');
     }
 
-    // --- AUTO-CATEGORISATION INTELLIGENTE ---
     function autoCategorize(text) {
         if(!text) return;
         const lower = text.toLowerCase();
-
-        // 1. Apprentissage Local : Regarde si tu as déjà fait cette dépense avant
         const pastTx = expenses.find(e => e.label.toLowerCase() === lower && e.type === currentType);
+        
         if (pastTx) {
             if (currentType === 'expense') selectCat(pastTx.cat);
-            if (pastTx.url && !document.getElementById('inp-url').value) {
-                document.getElementById('inp-url').value = pastTx.url; // Remet même l'URL si elle existait !
-            }
-            return; // On arrête là, l'app a trouvé la correspondance parfaite
+            if (pastTx.url && !document.getElementById('inp-url').value) document.getElementById('inp-url').value = pastTx.url; 
+            return; 
         }
 
-        // 2. Dictionnaire Statique : Si c'est nouveau, on utilise les mots-clés de base
         for(const [cat, words] of Object.entries(KEYWORDS)) {
             if(words.some(w => lower.includes(w))) {
                 if(currentType === 'expense') selectCat(cat);
@@ -621,27 +668,21 @@
             }
         }
         
-        // Coche la case récurrente si c'est un abonnement connu
         if(RECURRING_KEYWORDS.some(w => lower.includes(w))) {
-            document.getElementById('inp-recurring').checked = true;
-            toggleRecOptions();
+            document.getElementById('inp-recurring').checked = true; toggleRecOptions();
         }
     }
 
     function openAddModal() { 
-        hapticTap(); 
-        editingTxId = null; 
+        hapticTap(); editingTxId = null; 
         document.getElementById('modal-title').innerText = "Nouvelle opération";
         document.getElementById('btn-submit-tx').innerText = "Enregistrer l'opération";
         document.getElementById('btn-delete-tx').style.display = 'none';
 
-        document.getElementById('inp-amount').value = ''; 
-        document.getElementById('inp-label').value = ''; 
-        document.getElementById('inp-note').value = ''; 
-        document.getElementById('inp-url').value = ''; 
+        document.getElementById('inp-amount').value = ''; document.getElementById('inp-label').value = ''; 
+        document.getElementById('inp-note').value = ''; document.getElementById('inp-url').value = ''; 
         document.getElementById('inp-date').valueAsDate = new Date();
-        document.getElementById('inp-recurring').checked = false; 
-        document.getElementById('inp-frequency').value = 'monthly';
+        document.getElementById('inp-recurring').checked = false; document.getElementById('inp-frequency').value = 'monthly';
         document.getElementById('inp-rec-end').value = '';
         
         setOpType('expense'); toggleRecOptions();
@@ -650,8 +691,7 @@
 
     function openEditModal(id) {
         hapticTap();
-        const tx = expenses.find(e => e.id === id);
-        if (!tx) return;
+        const tx = expenses.find(e => e.id === id); if (!tx) return;
 
         editingTxId = id; 
         document.getElementById('modal-title').innerText = "Modifier l'opération";
@@ -662,7 +702,7 @@
         document.getElementById('inp-account').value = tx.accountId;
         document.getElementById('inp-amount').value = tx.amount;
         document.getElementById('inp-date').value = tx.date;
-        document.getElementById('inp-label').value = tx.label;
+        document.getElementById('inp-label').value = tx.label; // Pas besoin de escapeHTML dans le champ .value directement, le navigateur gère
         document.getElementById('inp-note').value = tx.note || '';
         document.getElementById('inp-url').value = tx.url || '';
         
@@ -705,7 +745,7 @@
         if(id === 'dash') updateAllViews(); if(id === 'tx') renderTransactions(); if(id === 'stats') renderStats();
     }
 
-    function updateAccountsSelectors() { document.getElementById('inp-account').innerHTML = accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join(''); }
+    function updateAccountsSelectors() { document.getElementById('inp-account').innerHTML = accounts.map(a => `<option value="${escapeHTML(a.id)}">${escapeHTML(a.name)}</option>`).join(''); }
     
     function addAccount() {
         hapticTap();
@@ -731,22 +771,46 @@
         if(accounts.length <= 1) return alert("Vous devez garder au moins un compte principal.");
         if(confirm("Supprimer ce compte et les opérations liées ?")) {
             accounts = accounts.filter(a => a.id !== id); expenses = expenses.filter(e => e.accountId !== id);
-            saveAccounts(); localStorage.setItem('apple_clean_v4', JSON.stringify(expenses));
+            saveAccounts(); localStorage.setItem('apple_clean_v5', JSON.stringify(expenses));
             updateSuggestions();
         }
     }
     
-    function saveAccounts() { localStorage.setItem('apple_clean_acc_v4', JSON.stringify(accounts)); updateAccountsSelectors(); renderSettingsAccounts(); updateAllViews(); }
+    function saveAccounts() { localStorage.setItem('apple_clean_acc_v5', JSON.stringify(accounts)); updateAccountsSelectors(); renderSettingsAccounts(); updateAllViews(); }
     
     function renderSettingsAccounts() {
         document.getElementById('settings-accounts-list').innerHTML = accounts.map(a => `
             <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid var(--border)">
-                <div><strong style="font-size:14px;">${a.name}</strong><br><small style="color:var(--text-muted)">Initial: ${a.initBalance.toFixed(2)} €</small></div>
+                <div><strong style="font-size:14px;">${escapeHTML(a.name)}</strong><br><small style="color:var(--text-muted)">Initial: ${a.initBalance.toFixed(2)} €</small></div>
                 <div style="display:flex; gap:15px;">
-                    <button onclick="editAccount('${a.id}')" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:14px; font-weight:600;">Modifier</button>
-                    <button onclick="deleteAccount('${a.id}')" style="background:none; border:none; color:var(--red); cursor:pointer; font-size:18px;">✕</button>
+                    <button onclick="editAccount('${escapeHTML(a.id}')" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:14px; font-weight:600;">Modifier</button>
+                    <button onclick="deleteAccount('${escapeHTML(a.id}')" style="background:none; border:none; color:var(--red); cursor:pointer; font-size:18px;">✕</button>
                 </div>
             </div>`).join('');
+    }
+
+    // --- PARAMETRAGE DES ENVELOPPES ---
+    function renderSettingsCatBudgets() {
+        const container = document.getElementById('settings-cat-budgets');
+        container.innerHTML = CATEGORIES.map(c => `
+            <div class="settings-row" style="padding: 12px 0;">
+                <div class="settings-info" style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:20px;">${c.icon}</span>
+                    <h4 style="margin:0;">${c.label}</h4>
+                </div>
+                <input type="number" class="input-control" style="width:90px; text-align:right; padding:10px;"
+                       placeholder="Illimité" value="${catBudgets[c.id] || ''}"
+                       onchange="saveCatBudget('${c.id}', this.value)">
+            </div>
+        `).join('');
+    }
+
+    function saveCatBudget(catId, value) {
+        const val = parseFloat(value);
+        if(isNaN(val) || val <= 0) delete catBudgets[catId];
+        else catBudgets[catId] = val;
+        localStorage.setItem('apple_clean_catbudgets_v5', JSON.stringify(catBudgets));
+        if(document.getElementById('tab-stats').classList.contains('active')) renderStats();
     }
 
     function getLastWorkingDay(year, month) {
@@ -826,14 +890,19 @@
         hapticTap();
         let amtInput = document.getElementById('inp-amount').value;
         if(amtInput) amtInput = amtInput.replace(',', '.');
-        const amt = parseFloat(amtInput); const lbl = document.getElementById('inp-label').value; const accId = document.getElementById('inp-account').value;
+        const amt = parseFloat(amtInput); 
+        // SANITIZATION ICI : On ne stocke pas de code HTML malveillant
+        const lbl = document.getElementById('inp-label').value.trim(); 
+        const noteRaw = document.getElementById('inp-note').value.trim();
+        const urlRaw = document.getElementById('inp-url').value.trim();
+        const accId = document.getElementById('inp-account').value;
+        
         if(!amt || !lbl || !accId) return alert("Montant, Libellé et Compte requis.");
 
         const isRecurring = document.getElementById('inp-recurring').checked;
-        const urlField = document.getElementById('inp-url').value;
 
         const txData = {
-            amount: amt, label: lbl, note: document.getElementById('inp-note').value, url: urlField, date: document.getElementById('inp-date').value, type: currentType,
+            amount: amt, label: lbl, note: noteRaw, url: urlRaw, date: document.getElementById('inp-date').value, type: currentType,
             cat: currentType === 'expense' ? selectedCat : 'income', accountId: accId, recurring: isRecurring,
             frequency: isRecurring ? document.getElementById('inp-frequency').value : null,
             endDate: isRecurring ? document.getElementById('inp-rec-end').value : null, 
@@ -847,11 +916,8 @@
             expenses.unshift(txData);
         }
 
-        localStorage.setItem('apple_clean_v4', JSON.stringify(expenses));
-        
-        // Met à jour les suggestions d'autocomplétion
+        localStorage.setItem('apple_clean_v5', JSON.stringify(expenses));
         updateSuggestions();
-        
         closeAddModal(); updateAllViews(); renderTransactions();
     }
 
@@ -865,8 +931,8 @@
     function deleteTx(id) {
         hapticTap();
         expenses = expenses.filter(e => e.id !== id);
-        localStorage.setItem('apple_clean_v4', JSON.stringify(expenses));
-        updateSuggestions(); // Mettre à jour si le dernier libellé unique a été supprimé
+        localStorage.setItem('apple_clean_v5', JSON.stringify(expenses));
+        updateSuggestions(); 
         updateAllViews(); renderTransactions();
     }
 
@@ -902,7 +968,7 @@
 
         document.getElementById('accounts-container').innerHTML = accounts.map(a => {
             globalRealBalance += accBalances[a.id];
-            return `<div class="bank-card ${a.color}"><div class="acc-name">${a.name}</div><div class="acc-val blur-val" id="acc-val-${a.id}">0.00 €</div></div>`;
+            return `<div class="bank-card ${a.color}"><div class="acc-name">${escapeHTML(a.name)}</div><div class="acc-val blur-val" id="acc-val-${a.id}">0.00 €</div></div>`;
         }).join('');
 
         accounts.forEach(a => {
@@ -936,8 +1002,10 @@
             upList.innerHTML = "<p style='color:var(--text-muted); font-size:14px; margin:0;'>Tout est payé pour ce mois-ci ! 🎉</p>";
         } else {
             upList.innerHTML = upcoming.map(e => {
-                const urlBadge = e.url ? `<a href="${e.url}" target="_blank" class="tag-badge" style="text-decoration:none; margin-right:10px;" onclick="event.stopPropagation()">🔗</a>` : '';
-                return `<div class="upcoming-item"><div><span class="upcoming-date" style="background:var(--input-bg); color:var(--accent); padding:4px 8px; border-radius:6px; font-size:11px; font-weight:700; margin-right:12px;">Le ${e.displayDay}</span><span style="font-weight:600; font-size:14px;">${urlBadge}${e.label}</span></div><div class="blur-val" style="font-weight:700;">${e.amount.toFixed(2)} €</div></div>`;
+                const safeUrl = escapeHTML(e.url);
+                const safeLabel = escapeHTML(e.label);
+                const urlBadge = safeUrl ? `<a href="${safeUrl}" target="_blank" class="tag-badge" style="text-decoration:none; margin-right:10px;" onclick="event.stopPropagation()">🔗</a>` : '';
+                return `<div class="upcoming-item"><div><span class="upcoming-date" style="background:var(--input-bg); color:var(--accent); padding:4px 8px; border-radius:6px; font-size:11px; font-weight:700; margin-right:12px;">Le ${e.displayDay}</span><span style="font-weight:600; font-size:14px;">${urlBadge}${safeLabel}</span></div><div class="blur-val" style="font-weight:700;">${e.amount.toFixed(2)} €</div></div>`;
             }).join('');
         }
     }
@@ -970,8 +1038,12 @@
         
         list.innerHTML = filtered.map(e => {
             const isInc = e.type === 'income'; const icon = isInc ? '💰' : CATEGORIES.find(c => c.id === e.cat).icon;
-            const tags = e.note ? (e.note.match(/#[a-z0-9]+/gi) || []) : [];
-            const accName = accounts.find(a => a.id === e.accountId)?.name || "Supprimé";
+            
+            const safeLabel = escapeHTML(e.label);
+            const safeNote = escapeHTML(e.note || '');
+            const safeUrl = escapeHTML(e.url || '');
+            const tags = safeNote ? (safeNote.match(/#[a-z0-9]+/gi) || []) : [];
+            const accName = escapeHTML(accounts.find(a => a.id === e.accountId)?.name || "Supprimé");
             
             let freqBadge = '';
             if (e.recurring) {
@@ -983,14 +1055,14 @@
                 freqBadge = `<span class="tag-badge" style="color:var(--orange)">${freqBadge}</span>`;
             }
             
-            const urlBadge = e.url ? `<a href="${e.url}" target="_blank" class="tag-badge" style="text-decoration:none; display:inline-flex; align-items:center;" onclick="event.stopPropagation()">🔗 Lien</a>` : '';
+            const urlBadge = safeUrl ? `<a href="${safeUrl}" target="_blank" class="tag-badge" style="text-decoration:none; display:inline-flex; align-items:center;" onclick="event.stopPropagation()">🔗 Lien</a>` : '';
 
             return `
             <div class="tx-swipe-container">
                 <div class="tx-delete-btn" onclick="deleteTx(${e.originalId})">Suppr.</div>
                 <div class="tx-item-content" onclick="openEditModal(${e.originalId})" ontouchstart="handleTouchStart(event, this)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">
                     <div style="display:flex; align-items:center; gap:15px;"><span style="font-size:24px;">${icon}</span>
-                        <div><div style="font-weight:600;">${e.label} ${tags.map(t => `<span class="tag-badge">${t}</span>`).join('')} ${freqBadge} ${urlBadge}</div>
+                        <div><div style="font-weight:600;">${safeLabel} ${tags.map(t => `<span class="tag-badge">${t}</span>`).join('')} ${freqBadge} ${urlBadge}</div>
                         <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">${e.displayDateStr} • ${accName}</div></div>
                     </div>
                     <div class="blur-val" style="font-weight:700; color:${isInc ? 'var(--green)' : 'var(--text-main)'}">${isInc ? '+' : '-'}${e.amount.toFixed(2)} €</div>
@@ -999,7 +1071,6 @@
         }).join('');
     }
 
-    // --- CALENDRIER ---
     function renderCalendar() {
         const grid = document.getElementById('cal-grid'); while (grid.childNodes.length > 7) grid.removeChild(grid.lastChild);
         const year = viewDate.getFullYear(); const month = viewDate.getMonth(); 
@@ -1021,8 +1092,10 @@
         document.getElementById('cal-details-title').innerText = `Opérations du ${String(day).padStart(2,'0')}/${String(month+1).padStart(2,'0')}/${year}`;
         if(dayExps.length > 0) { 
             list.innerHTML = dayExps.map(e => {
-                const urlBadge = e.url ? `<a href="${e.url}" target="_blank" class="tag-badge" style="text-decoration:none; margin-right:8px;" onclick="event.stopPropagation()">🔗</a>` : '';
-                return `<div class="tx-item" onclick="openEditModal(${e.originalId})"><span>${e.type==='income'?'💰':CATEGORIES.find(c=>c.id===e.cat).icon} ${urlBadge}${e.label}</span><span class="blur-val" style="font-weight:700; color:${e.type==='income'?'var(--green)':'var(--text-main)'}">${e.type==='income'?'+':'-'}${e.amount.toFixed(2)} €</span></div>`;
+                const safeUrl = escapeHTML(e.url);
+                const safeLabel = escapeHTML(e.label);
+                const urlBadge = safeUrl ? `<a href="${safeUrl}" target="_blank" class="tag-badge" style="text-decoration:none; margin-right:8px;" onclick="event.stopPropagation()">🔗</a>` : '';
+                return `<div class="tx-item" onclick="openEditModal(${e.originalId})"><span>${e.type==='income'?'💰':CATEGORIES.find(c=>c.id===e.cat).icon} ${urlBadge}${safeLabel}</span><span class="blur-val" style="font-weight:700; color:${e.type==='income'?'var(--green)':'var(--text-main)'}">${e.type==='income'?'+':'-'}${e.amount.toFixed(2)} €</span></div>`;
             }).join(''); 
             details.style.display = 'block'; 
         } else details.style.display = 'none';
@@ -1031,7 +1104,10 @@
     // --- STATS ET ASSISTANT ---
     function renderStats() {
         const list = document.getElementById('stats-list'); 
-        const currentMonthExp = expandExpensesForMonth(viewDate.getFullYear(), viewDate.getMonth()).filter(e => e.type === 'expense');
+        const currentMonthData = expandExpensesForMonth(viewDate.getFullYear(), viewDate.getMonth());
+        const currentMonthExp = currentMonthData.filter(e => e.type === 'expense');
+        const monthInc = currentMonthData.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0);
+        
         const total = currentMonthExp.reduce((s, e) => s + e.amount, 0);
         const types = { fixe: 0, vie: 0, loisirs: 0 }; const catTotals = {};
         
@@ -1040,53 +1116,95 @@
             if(catInfo) types[catInfo.type] += e.amount; catTotals[e.cat] = (catTotals[e.cat] || 0) + e.amount;
         });
 
+        // 1. PROJECTIONS & EPARGNE
+        const epargneMois = monthInc - total;
+        const projYear = epargneMois > 0 ? epargneMois * 12 : 0;
+        
+        document.getElementById('proj-month').innerText = epargneMois > 0 ? `+${epargneMois.toFixed(0)} €` : `${epargneMois.toFixed(0)} €`;
+        document.getElementById('proj-month').style.color = epargneMois > 0 ? 'var(--green)' : 'var(--red)';
+        
+        document.getElementById('proj-year').innerText = `+${projYear.toFixed(0)} €`;
+        
+        if(emergencyGoal > 0) {
+            document.getElementById('emergency-label').innerText = `${globalRealBalance.toFixed(0)} € / ${emergencyGoal} €`;
+            document.getElementById('emergency-fill').style.width = Math.min((globalRealBalance/emergencyGoal)*100, 100) + "%";
+        } else {
+            document.getElementById('emergency-label').innerText = "Objectif non défini";
+            document.getElementById('emergency-fill').style.width = "0%";
+        }
+
+        // 2. ASSISTANT 50-30-20
         const pctFixe = (types.fixe / (budget || 1)) * 100;
         const pctVie = (types.vie / (budget || 1)) * 100;
         const pctLoisirs = (types.loisirs / (budget || 1)) * 100;
 
         let advice = ""; let adviceIcon = "💡";
-        
         if (total === 0) {
-            advice = "<strong>Bienvenue !</strong> Ajoutez vos premières dépenses pour que je puisse analyser ce mois.";
-            adviceIcon = "👋";
+            advice = "<strong>Bienvenue !</strong> Ajoutez vos premières dépenses pour que je puisse analyser ce mois."; adviceIcon = "👋";
         } else if (pctFixe > 50) {
-            advice = `<strong>Attention :</strong> Vos charges fixes (<strong>${pctFixe.toFixed(0)}%</strong>) dépassent la recommandation des 50%. Envisagez de renégocier certains contrats.`;
-            adviceIcon = "⚠️";
+            advice = `<strong>Attention :</strong> Vos charges fixes (<strong>${pctFixe.toFixed(0)}%</strong>) dépassent la recommandation des 50%. Envisagez de renégocier certains contrats.`; adviceIcon = "⚠️";
         } else if (pctLoisirs > 20) {
-            advice = `<strong>Alerte Plaisir :</strong> Vous avez alloué <strong>${pctLoisirs.toFixed(0)}%</strong> aux loisirs (limite conseillée: 20%). Levez un peu le pied !`;
-            adviceIcon = "🛍️";
+            advice = `<strong>Alerte Plaisir :</strong> Vous avez alloué <strong>${pctLoisirs.toFixed(0)}%</strong> aux loisirs (limite conseillée: 20%). Levez un peu le pied !`; adviceIcon = "🛍️";
         } else if (pctVie > 30) {
-            advice = `<strong>Quotidien :</strong> Vos dépenses courantes (<strong>${pctVie.toFixed(0)}%</strong>) sont au-dessus des 30% idéaux. Surveillez vos prochains achats.`;
-            adviceIcon = "🛒";
+            advice = `<strong>Quotidien :</strong> Vos dépenses courantes (<strong>${pctVie.toFixed(0)}%</strong>) sont au-dessus des 30% idéaux. Surveillez vos prochains achats.`; adviceIcon = "🛒";
         } else {
-            advice = `<strong>Félicitations !</strong> Vous respectez parfaitement la règle d'or des 50-30-20. Votre budget est sain.`;
-            adviceIcon = "✅";
+            advice = `<strong>Félicitations !</strong> Vous respectez parfaitement la règle d'or des 50-30-20. Votre budget est sain.`; adviceIcon = "✅";
         }
         
-        document.querySelector('.advice-icon').innerText = adviceIcon;
-        document.getElementById('advice-text').innerHTML = advice;
+        document.querySelector('.advice-icon').innerText = adviceIcon; document.getElementById('advice-text').innerHTML = advice;
 
         document.getElementById('ring-fixe').style.strokeDashoffset = 251.2 - (Math.min(types.fixe / (budget*0.5||1), 1) * 251.2);
         document.getElementById('ring-vie').style.strokeDashoffset = 251.2 - (Math.min(types.vie / (budget*0.3||1), 1) * 251.2);
         document.getElementById('ring-loisirs').style.strokeDashoffset = 251.2 - (Math.min(types.loisirs / (budget*0.2||1), 1) * 251.2);
 
+        // 3. ENVELOPPES CATEGORIES
         if(total === 0) { list.innerHTML = "<p style='color:var(--text-muted); text-align:center; margin-top:20px;'>Aucune dépense ce mois-ci</p>"; return; }
         const sortedCats = Object.keys(catTotals).sort((a, b) => catTotals[b] - catTotals[a]);
+        
         list.innerHTML = sortedCats.map(cId => {
             const cat = CATEGORIES.find(c => c.id === cId); const val = catTotals[cId];
-            return `<div class="stats-row"><div class="stats-info"><span>${cat.icon} ${cat.label}</span><span class="blur-val">${val.toFixed(2)} €</span></div><div class="prog-bar-bg" style="height:6px; margin-top:5px;"><div class="prog-bar-fill" style="width: ${(val/total)*100}%"></div></div></div>`;
+            const catLimit = catBudgets[cId];
+            
+            let limitText = "";
+            let pctBar = (val/total)*100;
+            let barColor = "var(--accent)";
+            
+            if (catLimit) {
+                limitText = `<span style="font-size:12px; color:var(--text-muted); font-weight:500;"> / ${catLimit}€</span>`;
+                pctBar = (val/catLimit)*100;
+                if(pctBar > 100) barColor = "var(--red)";
+            }
+
+            return `<div class="stats-row">
+                        <div class="stats-info"><span>${cat.icon} ${cat.label}</span><span class="blur-val">${val.toFixed(2)} € ${limitText}</span></div>
+                        <div class="prog-bar-bg" style="height:6px; margin-top:5px;"><div class="prog-bar-fill" style="width: ${Math.min(pctBar, 100)}%; background:${barColor}"></div></div>
+                    </div>`;
         }).join('');
     }
 
     // --- REGLAGES ---
-    function saveSettings() { budget = document.getElementById('set-budget').value; localStorage.setItem('apple_clean_budget_v4', budget); updateAllViews(); renderStats(); }
+    function saveSettings() { 
+        budget = parseFloat(document.getElementById('set-budget').value) || 0; 
+        emergencyGoal = parseFloat(document.getElementById('set-emergency').value) || 0;
+        localStorage.setItem('apple_clean_budget_v5', budget); 
+        localStorage.setItem('apple_clean_emergency_v5', emergencyGoal);
+        updateAllViews(); renderStats(); 
+    }
+    
     function exportPDF() { html2pdf().from(document.getElementById('capture-area')).set({ margin: 10, filename: 'Rapport_Budget.pdf' }).save(); }
+    
     function exportCSV() {
         let csv = "Type,Compte,Date,Libelle,Montant,Categorie,Recurrent,Frequence,Date_Fin,Note,URL\n";
-        expenses.forEach(e => csv += `${e.type},${accounts.find(a=>a.id===e.accountId)?.name||'N/A'},${e.date},${e.label},${e.amount},${e.cat},${e.recurring?'Oui':'Non'},${e.frequency||''},${e.endDate||''},${e.note||''},${e.url||''}\n`);
+        expenses.forEach(e => {
+            const safeLabel = escapeHTML(e.label).replace(/,/g, ' ');
+            const safeNote = escapeHTML(e.note).replace(/,/g, ' ');
+            const accName = escapeHTML(accounts.find(a=>a.id===e.accountId)?.name||'N/A');
+            csv += `${e.type},${accName},${e.date},${safeLabel},${e.amount},${e.cat},${e.recurring?'Oui':'Non'},${e.frequency||''},${e.endDate||''},${safeNote},${escapeHTML(e.url||'')}\n`;
+        });
         const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'budget.csv'; a.click();
     }
-    function clearData() { if(confirm("Effacer toutes les données de l'application ?")) { localStorage.clear(); location.reload(); } }
+    
+    function clearData() { if(confirm("Effacer toutes les données de l'application de façon irréversible ?")) { localStorage.clear(); location.reload(); } }
 
     init();
 </script>
