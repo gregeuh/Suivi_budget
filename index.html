@@ -635,9 +635,7 @@
             <p style="font-size:13px; color:var(--text-main); opacity:0.8; margin-bottom:20px; line-height:1.4;">Les actions ci-dessous sont sensibles.</p>
             
             <button style="background:var(--card-bg); color:var(--orange); border:none; width:100%; padding:16px; border-radius:16px; font-weight:700; cursor:pointer; margin-bottom:12px;" onclick="freshStart()">🧹 Nouveau Mois (Garder Soldes)</button>
-            
             <button style="background:var(--card-bg); color:var(--red); border:none; width:100%; padding:16px; border-radius:16px; font-weight:700; cursor:pointer; margin-bottom:12px;" onclick="deleteAllOperations()">🗑️ Effacer toutes les opérations</button>
-            
             <button style="background:var(--card-bg); color:var(--red); border:none; width:100%; padding:16px; border-radius:16px; font-weight:700; cursor:pointer;" onclick="logoutUser()">Se déconnecter</button>
         </div>
     </div>
@@ -659,7 +657,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Mode Hors-Ligne
     db.enablePersistence().catch(function(err) {
         console.log("Hors-ligne non disponible : ", err);
     });
@@ -694,6 +691,7 @@
     
     window.isSwiping = false;
 
+    // LA LISTE DES CATEGORIES PAR DEFAUT
     const DEFAULT_CATEGORIES = [
         { id: 'alim', label: 'Alimentation', icon: '🛒', type: 'vie', isCustom: false },
         { id: 'transp', label: 'Transport', icon: '🚗', type: 'vie', isCustom: false },
@@ -773,9 +771,11 @@
                 accounts = data.accounts || [];
                 wishlist = data.wishlist || [];
                 
-                // CORRECTION: Assurer la présence des catégories par défaut
-                const cloudCustomCats = (data.categories || []).filter(c => c.isCustom);
-                categories = [...DEFAULT_CATEGORIES, ...cloudCustomCats];
+                // --- LA CORRECTION ABSOLUE ICI ---
+                const savedCats = data.categories || [];
+                const customCatsOnly = savedCats.filter(c => c.isCustom);
+                categories = [...DEFAULT_CATEGORIES, ...customCatsOnly];
+                // ---------------------------------
                 
                 savingsGoal = data.savingsGoal !== undefined ? data.savingsGoal : 500;
                 emergencyGoal = data.emergencyGoal || 5000;
@@ -789,10 +789,7 @@
                 expenses = JSON.parse(localStorage.getItem('apple_clean_v5') || '[]');
                 accounts = JSON.parse(localStorage.getItem('apple_clean_acc_v5') || '[{"id":"acc1","name":"Compte Principal","initBalance":1000,"color":"blue"}]');
                 wishlist = [];
-                
-                const localCustomCats = JSON.parse(localStorage.getItem('apple_clean_cats_v5') || '[]').filter(c => c.isCustom);
-                categories = [...DEFAULT_CATEGORIES, ...localCustomCats];
-                
+                categories = [...DEFAULT_CATEGORIES];
                 savingsGoal = parseFloat(localStorage.getItem('apple_clean_savings_v5')) || 500;
                 emergencyGoal = parseFloat(localStorage.getItem('apple_clean_emergency_v5')) || 5000;
                 catBudgets = JSON.parse(localStorage.getItem('apple_clean_catbudgets_v5') || '{}');
@@ -917,7 +914,6 @@
         viewDate.setMonth(viewDate.getMonth() + dir);
         updateGlobalMonthLabel();
         
-        // Animation
         const area = document.getElementById('app-wrapper');
         area.classList.remove('fade-in');
         void area.offsetWidth;
@@ -1756,6 +1752,7 @@
             }
             const urlBadge = safeUrl ? `<a href="${safeUrl}" target="_blank" class="tag-badge" style="text-decoration:none; margin-left:6px;" onclick="event.stopPropagation()">🔗</a>` : '';
 
+            // Note : L'appel direct via onclick garantit que les ordinateurs peuvent cliquer. Le touchend gère le mobile.
             html += `
             <div class="tx-swipe-container">
                 <div class="tx-delete-btn" onclick="deleteTx('${e.originalId}')">Suppr.</div>
