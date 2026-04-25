@@ -70,7 +70,7 @@
 
         /* HEADER & ACTIONS */
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .header h1 { font-size: 32px; font-weight: 700; margin: 0; }
+        .header h1 { font-size: 32px; font-weight: 700; margin: 0; transition: 0.3s; }
         .header-actions { display: flex; gap: 12px; align-items: center; }
         
         .btn-privacy { background: var(--input-bg); color: var(--text-main); border: none; width: 40px; height: 40px; border-radius: 12px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
@@ -186,7 +186,7 @@
         .proj-title { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: 5px; }
         .proj-val { font-size: 20px; font-weight: 700; color: var(--green); }
 
-        /* VUE 4: RÉGLAGES */
+        /* VUE 4: PROFIL (EX-REGLAGES) */
         .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--border); }
         .settings-row:last-child { border-bottom: none; }
         .btn-export { background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); padding: 10px 16px; border-radius: 10px; font-size: 14px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
@@ -196,6 +196,10 @@
         .color-picker { display: flex; gap: 12px; }
         .color-swatch { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: 0.2s; box-sizing: border-box; }
         .color-swatch.active { border-color: var(--text-main); transform: scale(1.15); }
+
+        /* EN-TÊTE PROFIL */
+        .profile-header-card { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .profile-avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; }
 
         .section { display: none; }
         .section.active { display: block; }
@@ -296,7 +300,7 @@
 <div class="app-wrapper" id="app-wrapper">
     
     <div class="header">
-        <h1>Dépenses</h1>
+        <h1 id="welcome-title">Dépenses</h1>
         <div class="header-actions">
             <button class="btn-privacy" onclick="togglePrivacy()" title="Confidentialité">👁</button>
             <button class="btn-add" onclick="openAddModal()"><span>+</span> Ajouter</button>
@@ -313,7 +317,7 @@
         <button class="tab-btn active" onclick="switchTab('dash', this)"><span class="tab-icon">■</span> Tableau de bord</button>
         <button class="tab-btn" onclick="switchTab('tx', this)"><span class="tab-icon">≡</span> Journal</button>
         <button class="tab-btn" onclick="switchTab('stats', this)"><span class="tab-icon">◎</span> Statistiques</button>
-        <button class="tab-btn" onclick="switchTab('settings', this)"><span class="tab-icon">⚙</span> Réglages</button>
+        <button class="tab-btn" onclick="switchTab('settings', this)"><span class="tab-icon">👤</span> Profil</button>
     </div>
 
     <div id="tab-dash" class="section active">
@@ -440,12 +444,28 @@
         
         <div class="card">
             <h2 style="font-size:16px;">Budgets par catégorie (Enveloppes)</h2>
-            <p style="font-size:13px; color:var(--text-muted); margin-bottom:15px;">Configurez vos limites dans l'onglet Réglages.</p>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:15px;">Configurez vos limites dans l'onglet Profil.</p>
             <div id="stats-list"></div>
         </div>
     </div>
 
     <div id="tab-settings" class="section">
+        
+        <div class="card">
+            <div class="profile-header-card">
+                <div class="profile-avatar">👤</div>
+                <div>
+                    <h2 style="margin:0; font-size:18px;" id="profile-name-display">Mon Profil</h2>
+                    <p style="margin:0; font-size:13px; color:var(--text-muted);" id="profile-email-display">Connecté</p>
+                </div>
+            </div>
+            
+            <div class="settings-row">
+                <div class="settings-info"><h4>Prénom / Pseudo</h4><p>Pour le message d'accueil</p></div>
+                <input type="text" id="set-displayname" class="input-control" style="width:140px; text-align:right" onchange="saveSettingsLocally()" placeholder="ex: Maxime">
+            </div>
+        </div>
+
         <div class="card">
             <h2 style="font-size:16px;">Budget Global & Style</h2>
             <div class="settings-row">
@@ -497,10 +517,14 @@
             </div>
         </div>
 
-        <div class="card" style="border-color: rgba(255, 69, 58, 0.3);">
-            <h2 style="font-size:16px; color:var(--red);">Déconnexion</h2>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Quitter votre session sécurisée.</p>
+        <div class="card" style="border-color: rgba(255, 69, 58, 0.3); background: rgba(255, 69, 58, 0.05);">
+            <h2 style="font-size:16px; color:var(--red); margin-top:0;">Session</h2>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Déconnectez-vous pour fermer votre session sur cet appareil.</p>
             <button class="btn-danger-outline" onclick="logoutUser()">Se déconnecter</button>
+        </div>
+        
+        <div style="text-align:center; padding-bottom:30px;">
+            <button onclick="clearData()" style="background:none; border:none; color:var(--text-muted); text-decoration:underline; font-size:12px; cursor:pointer;">Réinitialiser toutes les données (Irréversible)</button>
         </div>
     </div>
 </div>
@@ -518,7 +542,6 @@
         appId: "1:829941841512:web:809543e1325a774af785dd"
     };
 
-    // Initialisation
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
@@ -528,6 +551,7 @@
     let currentUser = null;
 
     // --- VARIABLES DE L'APPLICATION ---
+    let displayName = '';
     let expenses = [];
     let accounts = [];
     let budget = 2000;
@@ -547,13 +571,12 @@
     // ÉCOUTEUR D'AUTHENTIFICATION FIREBASE
     auth.onAuthStateChanged(user => {
         if (user) {
-            // Utilisateur connecté
             currentUser = user;
+            document.getElementById('profile-email-display').innerText = user.email; // Met à jour l'email dans le profil
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('app-wrapper').style.display = 'block';
             initCloudSync();
         } else {
-            // Utilisateur déconnecté
             currentUser = null;
             cloudDocRef = null;
             document.getElementById('auth-screen').style.display = 'flex';
@@ -561,7 +584,6 @@
         }
     });
 
-    // --- FONCTIONS UI AUTHENTIFICATION ---
     function toggleAuthMode() {
         isRegisterMode = !isRegisterMode;
         document.getElementById('btn-login').style.display = isRegisterMode ? 'none' : 'block';
@@ -595,7 +617,9 @@
 
     function logoutUser() {
         hapticTap();
-        auth.signOut();
+        if(confirm("Êtes-vous sûr de vouloir vous déconnecter ?")) {
+            auth.signOut();
+        }
     }
 
 
@@ -607,11 +631,10 @@
         if(!currentUser) return;
         cloudDocRef = db.collection('users').doc(currentUser.uid);
 
-        // On écoute les changements en direct sur Firestore
         cloudDocRef.onSnapshot(doc => {
             if (doc.exists) {
-                // Les données existent sur le cloud, on met à jour l'application locale
                 const data = doc.data();
+                displayName = data.displayName || '';
                 expenses = data.expenses || [];
                 accounts = data.accounts || [];
                 budget = data.budget || 2000;
@@ -622,10 +645,9 @@
 
                 applyAppSettings();
             } else {
-                // PREMIÈRE CONNEXION !
-                // On récupère les données locales (s'il y en a) pour ne rien perdre, et on les pousse sur le Cloud
                 console.log("Premier lancement : Migration des données locales vers le Cloud...");
                 
+                displayName = localStorage.getItem('apple_clean_name_v5') || '';
                 expenses = JSON.parse(localStorage.getItem('apple_clean_v5') || localStorage.getItem('apple_clean_v4') || '[]');
                 accounts = JSON.parse(localStorage.getItem('apple_clean_acc_v5') || localStorage.getItem('apple_clean_acc_v4') || '[{"id":"acc1","name":"COMPTE COURANT","initBalance":2000,"color":""}]');
                 budget = parseFloat(localStorage.getItem('apple_clean_budget_v5')) || 2000;
@@ -634,16 +656,16 @@
                 savedTheme = localStorage.getItem('apple_clean_theme_v5') || 'auto';
                 savedColor = localStorage.getItem('apple_clean_color_v5') || 'blue';
 
-                saveToCloud(); // Pousse tout vers Firebase
-                applyAppSettings(); // Rafraichit l'interface
+                saveToCloud(); 
+                applyAppSettings(); 
             }
         });
     }
 
-    // Pousse toutes les données actuelles de l'application vers Firebase
     function saveToCloud() {
         if (!cloudDocRef) return;
         cloudDocRef.set({
+            displayName: displayName,
             expenses: expenses,
             accounts: accounts,
             budget: budget,
@@ -654,8 +676,19 @@
         }, { merge: true }).catch(err => console.error("Erreur de sauvegarde Cloud :", err));
     }
 
-    // Applique les données reçues sur l'interface
     function applyAppSettings() {
+        // Applique les données reçues sur l'interface
+        document.getElementById('set-displayname').value = displayName;
+        
+        // Met à jour le message d'accueil et le profil
+        if(displayName) {
+            document.getElementById('welcome-title').innerText = `Bonjour ${displayName} !`;
+            document.getElementById('profile-name-display').innerText = displayName;
+        } else {
+            document.getElementById('welcome-title').innerText = "Dépenses";
+            document.getElementById('profile-name-display').innerText = "Mon Profil";
+        }
+
         applyTheme(savedTheme); document.getElementById('set-theme').value = savedTheme;
         applyColor(savedColor);
         document.getElementById('set-budget').value = budget;
@@ -674,7 +707,7 @@
 
 
     // ==========================================
-    // 3. LE MOTEUR DE L'APPLICATION (SÉCURISÉ)
+    // 3. LE MOTEUR DE L'APPLICATION
     // ==========================================
 
     function escapeHTML(str) {
@@ -732,13 +765,13 @@
         document.documentElement.style.setProperty('--accent-light', ACCENT_COLORS[c].light);
         document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
         if(document.getElementById('color-' + c)) document.getElementById('color-' + c).classList.add('active');
-        saveToCloud(); // On pousse le choix couleur
+        saveToCloud(); 
     }
 
     function changeTheme(t) { 
         savedTheme = t; 
         applyTheme(t); 
-        saveToCloud(); // On pousse le choix de thème
+        saveToCloud(); 
     }
 
     function applyTheme(t) {
@@ -870,7 +903,7 @@
         
         const colors = ['', 'alt-color', 'alt-color-2']; const color = colors[accounts.length % 3];
         accounts.push({ id: 'acc_'+Date.now(), name: name.toUpperCase(), initBalance: bal, color: color }); 
-        saveToCloud(); // On sauvegarde sur le Cloud
+        saveToCloud();
     }
 
     function editAccount(id) {
@@ -921,7 +954,7 @@
         const val = parseFloat(value);
         if(isNaN(val) || val <= 0) delete catBudgets[catId];
         else catBudgets[catId] = val;
-        saveToCloud(); // On pousse les nouvelles limites
+        saveToCloud();
     }
 
     function getLastWorkingDay(year, month) {
@@ -1026,7 +1059,7 @@
             expenses.unshift(txData);
         }
 
-        saveToCloud(); // On sauvegarde en direct sur le serveur Cloud
+        saveToCloud(); 
         closeAddModal(); 
     }
 
@@ -1040,7 +1073,7 @@
     function deleteTx(id) {
         hapticTap();
         expenses = expenses.filter(e => e.id !== id);
-        saveToCloud(); // Supression sur le Cloud
+        saveToCloud(); 
     }
 
     let touchStartX = 0; let swipedElement = null;
@@ -1285,9 +1318,16 @@
     }
 
     function saveSettingsLocally() { 
+        displayName = document.getElementById('set-displayname').value.trim();
         budget = parseFloat(document.getElementById('set-budget').value) || 0; 
         emergencyGoal = parseFloat(document.getElementById('set-emergency').value) || 0;
-        saveToCloud(); // On pousse les nouveaux objectifs
+        
+        localStorage.setItem('apple_clean_name_v5', displayName);
+        localStorage.setItem('apple_clean_budget_v5', budget); 
+        localStorage.setItem('apple_clean_emergency_v5', emergencyGoal);
+        
+        saveToCloud(); 
+        applyAppSettings(); // Pour que le titre change instantanément !
     }
     
     function exportCSV() {
@@ -1305,7 +1345,7 @@
         if(confirm("Effacer toutes les données de façon irréversible sur tous vos appareils ?")) { 
             expenses = [];
             accounts = [];
-            saveToCloud(); // Écrase le cloud avec un tableau vide
+            saveToCloud(); 
         } 
     }
 
