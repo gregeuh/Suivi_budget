@@ -24,85 +24,175 @@
     <style>
         /* THEMES ET VARIABLES APPLE-LIKE */
         :root {
-            --accent: #007aff; --accent-light: rgba(0, 122, 255, 0.1);
-            --red: #ff3b30; --red-light: rgba(255, 59, 48, 0.1);
-            --green: #34c759; --green-light: rgba(52, 199, 89, 0.1);
-            --orange: #ff9500; --orange-light: rgba(255, 149, 0, 0.1);
-            --radius-card: 24px; --radius-btn: 16px;
+            --accent: #007aff; 
+            --accent-light: rgba(0, 122, 255, 0.1);
+            --red: #ff3b30; 
+            --red-light: rgba(255, 59, 48, 0.1);
+            --green: #34c759; 
+            --green-light: rgba(52, 199, 89, 0.1);
+            --orange: #ff9500; 
+            --orange-light: rgba(255, 149, 0, 0.1);
+            --radius-card: 24px; 
+            --radius-btn: 16px;
         }
 
         body[data-theme="dark"] {
-            --bg-color: #000000; --card-bg: #1c1c1e; --text-main: #ffffff;
-            --text-muted: #8e8e93; --input-bg: #2c2c2e; --border: transparent;
-            --shadow: none; --glass-bg: rgba(28, 28, 30, 0.7);
+            --bg-color: #000000; 
+            --card-bg: #1c1c1e; 
+            --text-main: #ffffff;
+            --text-muted: #8e8e93; 
+            --input-bg: #2c2c2e; 
+            --border: transparent;
+            --shadow: none; 
+            --glass-bg: rgba(28, 28, 30, 0.75);
         }
 
         body[data-theme="light"] {
-            --bg-color: #f2f2f7; --card-bg: #ffffff; --text-main: #000000;
-            --text-muted: #8e8e93; --input-bg: #e5e5ea; --border: transparent;
-            --shadow: 0 8px 30px rgba(0,0,0,0.04); --glass-bg: rgba(255, 255, 255, 0.8);
+            --bg-color: #f2f2f7; 
+            --card-bg: #ffffff; 
+            --text-main: #000000;
+            --text-muted: #8e8e93; 
+            --input-bg: #f2f2f7; 
+            --border: transparent;
+            --shadow: 0 8px 30px rgba(0,0,0,0.04); 
+            --glass-bg: rgba(255, 255, 255, 0.85);
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Inter', "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color); color: var(--text-main);
-            margin: 0; display: flex; justify-content: center;
-            -webkit-font-smoothing: antialiased; padding-top: env(safe-area-inset-top);
+            background-color: var(--bg-color); 
+            color: var(--text-main);
+            margin: 0; 
+            display: flex; 
+            justify-content: center;
+            -webkit-font-smoothing: antialiased; 
+            padding-top: env(safe-area-inset-top);
         }
 
         /* ECRAN D'AUTHENTIFICATION */
-        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-color); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
-        .auth-box { background: var(--card-bg); padding: 40px; border-radius: var(--radius-card); width: 100%; max-width: 400px; text-align: center; box-shadow: var(--shadow); }
+        #auth-screen { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background-color: var(--bg-color); z-index: 9999; display: flex; 
+            flex-direction: column; justify-content: center; align-items: center; 
+            padding: 20px; box-sizing: border-box; 
+        }
+        .auth-box { 
+            background: var(--card-bg); padding: 40px; border-radius: var(--radius-card); 
+            width: 100%; max-width: 400px; text-align: center; box-shadow: var(--shadow); 
+        }
         .auth-logo { font-size: 56px; margin-bottom: 20px; }
-        .auth-input { width: 100%; padding: 16px; border-radius: var(--radius-btn); border: none; background: var(--input-bg); color: var(--text-main); margin-bottom: 15px; font-size: 16px; outline: none; box-sizing: border-box; }
-        .auth-btn { width: 100%; padding: 18px; border-radius: var(--radius-btn); background: var(--accent); color: white; border: none; font-weight: 600; font-size: 16px; cursor: pointer; margin-bottom: 15px; transition: 0.2s; }
+        .auth-input { 
+            width: 100%; padding: 16px; border-radius: var(--radius-btn); border: none; 
+            background: var(--input-bg); color: var(--text-main); margin-bottom: 15px; 
+            font-size: 16px; outline: none; box-sizing: border-box; 
+        }
+        .auth-btn { 
+            width: 100%; padding: 18px; border-radius: var(--radius-btn); background: var(--accent); 
+            color: white; border: none; font-weight: 600; font-size: 16px; cursor: pointer; 
+            margin-bottom: 15px; transition: 0.2s; 
+        }
         .auth-btn:active { transform: scale(0.97); }
+        .auth-link { color: var(--accent); font-size: 14px; cursor: pointer; text-decoration: underline; font-weight: 600;}
+        .auth-error { color: var(--red); font-size: 14px; margin-bottom: 15px; font-weight: 500; min-height: 20px; }
 
-        .app-wrapper { width: 100%; max-width: 800px; padding: 20px; display: none; box-sizing: border-box; padding-bottom: 120px; }
+        /* CONTENEUR PRINCIPAL */
+        .app-wrapper { 
+            width: 100%; max-width: 800px; padding: 20px; display: none; 
+            box-sizing: border-box; padding-bottom: 120px; 
+        }
+        .privacy-active .blur-val { filter: blur(8px); pointer-events: none; transition: 0.2s; }
         
         .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
 
-        /* HEADER & ACTIONS */
+        /* HEADER */
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .header h1 { font-size: 34px; font-weight: 800; letter-spacing: -1px; margin: 0; }
-        .btn-add { background: var(--accent); color: white; border: none; padding: 0 18px; height: 40px; border-radius: 20px; font-weight: 600; font-size: 15px; cursor: pointer; box-shadow: 0 4px 12px var(--accent-light); transition: 0.2s; display:flex; align-items:center; gap:6px;}
-        .btn-add:active { transform: scale(0.95); }
+        .header h1 { font-size: 34px; font-weight: 800; letter-spacing: -1px; margin: 0; transition: 0.3s; }
+        .header-actions { display: flex; gap: 12px; align-items: center; }
+        .btn-privacy { 
+            background: var(--input-bg); color: var(--text-main); border: none; 
+            width: 44px; height: 44px; border-radius: 14px; font-size: 20px; 
+            cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; 
+        }
+        .btn-privacy:active { transform: scale(0.95); }
+        .btn-add { 
+            background: var(--accent); color: white; border: none; padding: 0 18px; 
+            height: 40px; border-radius: 20px; font-weight: 600; font-size: 15px; 
+            cursor: pointer; display: flex; align-items: center; gap: 8px; 
+            box-shadow: 0 4px 12px var(--accent-light); transition: 0.2s; 
+        }
+        .btn-add:active { transform: scale(0.95); opacity: 0.9; }
 
-        /* ONGLETS FLOTTANTS AVEC PILULE ANIMÉE */
-        .tab-bar-container { position: fixed; bottom: 25px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 1000; padding: 0 20px; box-sizing: border-box; pointer-events: none; }
-        .tab-bar { position: relative; pointer-events: auto; display: flex; background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 8px; border-radius: 32px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid rgba(128,128,128,0.15); width: 100%; max-width: 450px; }
-        
-        .tab-active-pill { position: absolute; top: 8px; bottom: 8px; left: 8px; width: calc((100% - 16px) / 4); background: var(--card-bg); border-radius: 24px; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 0; }
-        
-        .tab-btn { position: relative; z-index: 1; flex: 1; background: none; border: none; color: var(--text-muted); padding: 8px 0; border-radius: 20px; cursor: pointer; transition: color 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+        /* ONGLETS FLOTTANTS (Style Pilule) */
+        .tab-bar-container { 
+            position: fixed; bottom: 25px; left: 0; width: 100%; display: flex; 
+            justify-content: center; z-index: 1000; padding: 0 20px; box-sizing: border-box; pointer-events: none; 
+        }
+        .tab-bar { 
+            position: relative; pointer-events: auto; display: flex; background: var(--glass-bg); 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 8px; 
+            border-radius: 32px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); 
+            border: 1px solid rgba(128,128,128,0.15); width: 100%; max-width: 450px; 
+        }
+        .tab-active-pill { 
+            position: absolute; top: 8px; bottom: 8px; left: 8px; 
+            width: calc((100% - 16px) / 4); background: var(--card-bg); border-radius: 24px; 
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 0; 
+        }
+        .tab-btn { 
+            position: relative; z-index: 1; flex: 1; background: none; border: none; 
+            color: var(--text-muted); padding: 8px 0; border-radius: 20px; cursor: pointer; 
+            transition: color 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; 
+        }
         .tab-btn.active { color: var(--accent); }
-        .tab-icon { font-size: 22px; margin-bottom: 0px; transition: transform 0.2s; }
+        .tab-icon { font-size: 22px; transition: transform 0.2s; }
         .tab-btn.active .tab-icon { transform: scale(1.1); }
         .tab-text { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* SÉLECTEUR DE MOIS PLUS ASSUMÉ */
-        .month-selector { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); border-radius: var(--radius-card); padding: 16px 25px; margin-bottom: 25px; border: 1px solid var(--border); box-shadow: var(--shadow); }
-        .month-btn { background: var(--input-bg); color: var(--accent); border: none; width: 44px; height: 44px; border-radius: 16px; font-size: 22px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        /* SÉLECTEUR DE MOIS */
+        .month-selector { 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: var(--card-bg); border-radius: var(--radius-card); 
+            padding: 16px 25px; margin-bottom: 25px; box-shadow: var(--shadow); 
+        }
+        .month-btn { 
+            background: var(--input-bg); color: var(--accent); border: none; width: 44px; height: 44px; 
+            border-radius: 16px; font-size: 22px; font-weight: bold; cursor: pointer; 
+            transition: 0.2s; display: flex; align-items: center; justify-content: center; 
+        }
         .month-btn:active { transform: scale(0.9); }
         .month-label { font-size: 18px; font-weight: 800; text-transform: capitalize; color: var(--text-main); letter-spacing: -0.5px;}
 
-        /* HERO SECTION (Solde Total) avec SVG */
-        .hero-section { position: relative; text-align: center; padding: 45px 20px 35px 20px; overflow: hidden; background: var(--card-bg); border-radius: var(--radius-card); box-shadow: var(--shadow); margin-bottom: 25px; border: 1px solid var(--border); }
+        .card { 
+            background-color: var(--card-bg); border-radius: var(--radius-card); 
+            padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow); 
+        }
+
+        /* HERO SECTION */
+        .hero-section { 
+            position: relative; text-align: center; padding: 45px 20px 35px 20px; 
+            overflow: hidden; background: var(--card-bg); border-radius: var(--radius-card); 
+            box-shadow: var(--shadow); margin-bottom: 25px; 
+        }
         .hero-bg-curve { position: absolute; bottom: -5px; left: 0; width: 100%; height: 75%; z-index: 0; pointer-events: none; }
         .hero-content { position: relative; z-index: 1; }
         .hero-label { font-size: 13px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 10px; }
         .hero-balance { font-size: 56px; font-weight: 800; letter-spacing: -2.5px; line-height: 1; margin-bottom: 25px; }
-        
         .hero-stats { display: flex; justify-content: center; gap: 15px; }
         .hero-stat-pill { background: var(--input-bg); padding: 12px 18px; border-radius: 20px; font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 8px;}
-
-        .card { background-color: var(--card-bg); border-radius: var(--radius-card); padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow); }
 
         /* GLASSMORPHISM BANK CARDS */
         .accounts-scroll { display: flex; gap: 16px; overflow-x: auto; margin-bottom: 30px; scrollbar-width: none; padding: 10px 0; }
         .accounts-scroll::-webkit-scrollbar { display: none; }
-        .bank-card { min-width: 260px; padding: 24px; border-radius: 24px; color: white; position: relative; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .bank-card { 
+            min-width: 260px; padding: 24px; border-radius: 24px; color: white; 
+            position: relative; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
+            border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
+        }
         .bank-card.blue { background: linear-gradient(135deg, #007aff 0%, #005bb5 100%); }
         .bank-card.purple { background: linear-gradient(135deg, #af52de 0%, #7d33a6 100%); }
         .bank-card.pink { background: linear-gradient(135deg, #ff2d55 0%, #c41e3d 100%); }
@@ -110,14 +200,52 @@
         .bank-card.orange { background: linear-gradient(135deg, #ff9500 0%, #cc7700 100%); }
         .bank-card.alt-color { background: linear-gradient(135deg, #2c2c2e 0%, #1c1c1e 100%); }
         .bank-card::before { content:''; position:absolute; top:-40%; right:-10%; width:180px; height:180px; background:linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%); border-radius:50%; }
-        
         .acc-name { font-size: 11px; font-weight: 700; text-transform: uppercase; opacity: 0.9; margin-bottom: 12px; letter-spacing: 1px; }
         .acc-val { font-size: 34px; font-weight: 800; letter-spacing: -1px; }
 
-        /* JAUGE ÉPAISSE */
+        /* JAUGE & STATS */
         .prog-header { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; margin-bottom: 15px; color: var(--text-muted); }
         .prog-bar-bg { height: 12px; background: var(--input-bg); border-radius: 6px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
         .prog-bar-fill { height: 100%; background: var(--accent); transition: width 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); border-radius: 6px; }
+        .upcoming-item { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid var(--input-bg); }
+        .upcoming-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+        /* TIROIRS D'AJOUT (BOTTOM SHEET) */
+        .modal { 
+            display: none; position: fixed; z-index: 2000; left: 0; top: 0; 
+            width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); 
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); 
+            align-items: flex-end; justify-content: center; 
+        }
+        .modal-content { 
+            background-color: var(--card-bg); width: 100%; max-width: 800px; 
+            border-radius: 32px 32px 0 0; 
+            padding: 30px 25px max(30px, env(safe-area-inset-bottom)) 25px; 
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.2); 
+            animation: slideUpSheet 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+            box-sizing: border-box; max-height: 90vh; overflow-y: auto;
+        }
+        @keyframes slideUpSheet { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .sheet-handle { width: 40px; height: 5px; background: var(--text-muted); border-radius: 3px; margin: 0 auto 20px auto; opacity: 0.3; }
+
+        /* CONTROLES TIROIR */
+        .segmented-control { display: flex; background: var(--input-bg); border-radius: 14px; padding: 4px; margin-bottom: 25px; }
+        .segment { flex: 1; text-align: center; padding: 12px; font-size: 14px; font-weight: 600; border-radius: 10px; cursor: pointer; color: var(--text-muted); transition: 0.2s; }
+        .segment.active { background: var(--card-bg); color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .segment.active.income-tab { color: var(--green); }
+        
+        .input-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;}
+        .input-group label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-left: 4px; letter-spacing: 0.5px;}
+        .input-control { background-color: var(--input-bg); color: var(--text-main); border: none; padding: 16px; border-radius: 16px; width: 100%; box-sizing: border-box; font-size: 16px; outline: none; font-weight: 500; transition: 0.2s; }
+        .input-control:focus { background-color: var(--card-bg); box-shadow: 0 0 0 2px var(--accent); }
+        .amount-input { font-size: 48px; font-weight: 800; background: transparent; border: none; outline: none; color: var(--text-main); width: 100%; text-align: center; margin-bottom: 25px; letter-spacing: -2px;}
+        .amount-input::placeholder { color: var(--text-muted); opacity: 0.5; }
+        
+        .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 25px; }
+        .category-item { display: flex; flex-direction: column; align-items: center; background-color: var(--input-bg); border-radius: 20px; padding: 18px 5px; cursor: pointer; transition: 0.2s; text-align: center; }
+        .category-item.selected { background: var(--accent-light); color: var(--accent); transform: scale(0.98); }
+        .btn-submit { background-color: var(--accent); color: white; border: none; width: 100%; padding: 18px; border-radius: 18px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px var(--accent-light); }
+        .btn-submit:active { transform: scale(0.98); }
 
         /* LISTE DE TRANSACTIONS AERÉE */
         .tx-date-header { font-size: 14px; font-weight: 700; color: var(--text-main); margin: 25px 0 10px 0; border-bottom: 1px solid var(--input-bg); padding-bottom: 8px; letter-spacing: 0.5px;}
@@ -125,29 +253,50 @@
         .tx-icon-box { font-size: 24px; background: var(--input-bg); width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 16px; margin-right: 15px; }
         .tx-title { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
         .tx-subtitle { font-size: 13px; color: var(--text-muted); }
+        .tx-swipe-container { position: relative; overflow: hidden; border-bottom: 1px solid var(--input-bg); }
+        .tx-swipe-container:last-child { border-bottom: none; }
+        .tx-delete-btn { position: absolute; right: 0; top: 0; bottom: 0; width: 80px; background: var(--red); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; cursor: pointer; z-index: 1; }
+        .tx-item-content { position: relative; z-index: 2; background: var(--bg-color); transition: transform 0.2s ease-out; }
         
-        /* BOTTOM SHEET MODAL (Nouveau Tiroir) */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); align-items: flex-end; justify-content: center; }
-        .modal-content { background-color: var(--card-bg); width: 100%; max-width: 800px; border-radius: 32px 32px 0 0; padding: 30px 25px max(30px, env(safe-area-inset-bottom)) 25px; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); animation: slideUpSheet 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-sizing: border-box; max-height: 90vh; overflow-y: auto;}
-        @keyframes slideUpSheet { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .filter-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 15px; scrollbar-width: none;}
+        .filter-bar::-webkit-scrollbar { display: none; }
+        .filter-pill { padding: 10px 18px; background: var(--card-bg); box-shadow:var(--shadow); border-radius: 50px; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: 0.3s;}
+        .filter-pill.active { background: var(--accent); color: white; }
+
+        /* CALENDRIER & STATS */
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+        .cal-day-label { text-align: center; font-size: 12px; font-weight: 600; color: var(--text-muted); padding-bottom: 10px; }
+        .cal-cell { aspect-ratio: 1; background: var(--input-bg); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; position: relative; cursor: pointer; transition: 0.2s; }
+        .cal-cell:hover { background: var(--accent-light); }
+        .cal-cell.has-tx { background: var(--accent-light); color: var(--accent); }
+        .cal-cell.has-tx::after { content: ''; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; position: absolute; bottom: 8px; }
+
+        .rings-container { display: flex; justify-content: space-around; align-items: center; padding: 25px 0; }
+        .ring-box { position: relative; width: 100px; height: 100px; }
+        .ring-box svg { transform: rotate(-90deg); width: 100%; height: 100%; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+        .ring-bg { fill: none; stroke: var(--input-bg); stroke-width: 8; }
+        .ring-fill { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s cubic-bezier(0.16, 1, 0.3, 1); }
+        .ring-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 22px; }
+
+        .advice-box { background: var(--card-bg); padding: 18px; border-radius: 18px; margin-bottom: 25px; display: flex; gap: 15px; align-items: flex-start; box-shadow: var(--shadow); }
+        .advice-icon { font-size: 28px; }
+        .advice-text { font-size: 14px; line-height: 1.6; color: var(--text-main); }
         
-        .sheet-handle { width: 40px; height: 5px; background: var(--text-muted); border-radius: 3px; margin: 0 auto 20px auto; opacity: 0.3; }
+        .projection-box { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .proj-card { background: var(--input-bg); padding: 18px; border-radius: 16px; text-align: center; }
+        .proj-title { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 0.5px;}
+        .proj-val { font-size: 22px; font-weight: 700; color: var(--green); letter-spacing: -0.5px;}
 
-        /* GRILLE DE CATÉGORIES 3 COLONNES */
-        .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 25px; }
-        .category-item { display: flex; flex-direction: column; align-items: center; background-color: var(--input-bg); border: 2px solid transparent; border-radius: 20px; padding: 18px 5px; cursor: pointer; transition: 0.2s; text-align: center; }
-        .category-item.selected { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+        /* REGLAGES / PROFIL */
+        .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid var(--input-bg); }
+        .settings-row:last-child { border-bottom: none; }
+        .btn-danger-outline { background: transparent; border: 2px solid var(--red); color: var(--red); width: 100%; padding: 16px; border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; justify-content: center; gap: 8px; transition: 0.2s; }
+        .btn-danger-outline:active { background: rgba(255, 69, 58, 0.1); transform: scale(0.98); }
 
-        /* INPUTS MODERNES */
-        .input-group label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 0.5px; margin-left: 4px;}
-        .input-control { background-color: var(--input-bg); color: var(--text-main); border: none; padding: 16px; border-radius: 16px; width: 100%; box-sizing: border-box; font-size: 16px; outline: none; font-weight: 500; transition: 0.2s; }
-        .input-control:focus { background-color: var(--card-bg); box-shadow: 0 0 0 2px var(--accent); }
-        .amount-input { font-size: 48px; font-weight: 800; background: transparent; border: none; outline: none; color: var(--text-main); width: 100%; text-align: center; margin-bottom: 25px; letter-spacing: -2px;}
-        .amount-input::placeholder { color: var(--text-muted); opacity: 0.5; }
+        .color-picker { display: flex; gap: 12px; }
+        .color-swatch { width: 36px; height: 36px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: 0.2s; box-sizing: border-box; }
+        .color-swatch.active { border-color: var(--text-main); transform: scale(1.15); }
 
-        .btn-submit { background-color: var(--accent); color: white; border: none; width: 100%; padding: 18px; border-radius: 18px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px var(--accent-light); }
-        .btn-submit:active { transform: scale(0.98); }
-        
         /* ÉTAT VIDE */
         .empty-state { text-align: center; padding: 50px 20px; color: var(--text-muted); }
         .empty-state-icon { font-size: 64px; margin-bottom: 15px; opacity: 0.8; }
@@ -155,6 +304,20 @@
 
         .section { display: none; }
         .section.active { display: block; }
+        
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); cursor: pointer; }
+
+        @media (max-width: 600px) {
+            .app-wrapper { padding: 15px 15px 80px 15px; }
+            .inputs-grid { grid-template-columns: 1fr; gap: 12px; }
+            .category-grid { gap: 8px; grid-template-columns: repeat(3, 1fr); }
+            .header h1 { font-size: 28px; }
+            .tab-bar-container { bottom: 15px; }
+            .tab-bar { padding: 6px; }
+            .tab-btn { padding: 6px 0; }
+            .tab-icon { font-size: 20px; }
+            .tab-text { font-size: 9px; }
+        }
     </style>
 </head>
 <body id="app-body" data-theme="dark">
@@ -163,16 +326,13 @@
     <div class="auth-box">
         <div class="auth-logo">💰</div>
         <h1 style="margin-top:0; font-size:26px; letter-spacing:-0.5px; font-weight:800;">Budget Pro</h1>
-        <p style="color:var(--text-muted); font-size:14px; margin-bottom:30px;">Connexion au cloud privé.</p>
+        <p style="color:var(--text-muted); font-size:14px; margin-bottom:30px;">Connexion sécurisée au cloud privé.</p>
         
         <div id="auth-error-msg" class="auth-error"></div>
-        
         <input type="email" id="auth-email" class="auth-input" placeholder="Adresse e-mail">
         <input type="password" id="auth-pass" class="auth-input" placeholder="Mot de passe">
-        
         <button class="auth-btn" id="btn-login" onclick="login()">Se connecter</button>
         <button class="auth-btn" id="btn-register" style="background:var(--input-bg); color:var(--text-main); display:none;" onclick="register()">Créer un compte</button>
-        
         <div class="auth-link" id="auth-toggle-link" onclick="toggleAuthMode()">Créer un compte</div>
     </div>
 </div>
@@ -206,7 +366,7 @@
             <div class="category-grid" id="cat-container"></div>
         </div>
 
-        <button onclick="document.getElementById('advanced-options').style.display='block'; this.style.display='none';" style="background:var(--input-bg); border:none; color:var(--text-main); font-weight:600; width:100%; border-radius: 16px; text-align:center; padding:15px 0; margin-bottom:15px; transition:0.2s;">Options avancées (Compte, Récurrence...)</button>
+        <button onclick="document.getElementById('advanced-options').style.display='block'; this.style.display='none';" style="background:var(--input-bg); border:none; color:var(--text-main); font-weight:600; width:100%; border-radius: 16px; text-align:center; padding:15px 0; margin-bottom:15px; transition:0.2s; cursor:pointer;">Options avancées (Compte, Récurrence...)</button>
         
         <div id="advanced-options" style="display:none; margin-bottom:20px;">
             <div class="input-group" style="margin-bottom:15px;">
@@ -318,7 +478,7 @@
                     <span id="prog-label" class="blur-val" style="font-weight:700;">0 € / 0 €</span>
                 </div>
                 <div class="prog-bar-bg"><div class="prog-bar-fill" id="prog-fill"></div></div>
-                <div style="font-size:12px; font-weight:600; text-align:center; color:var(--text-muted); margin-top:12px;">Objectif d'épargne : <span id="dash-goal-text">0</span>€ restants à la fin du mois</div>
+                <div style="font-size:12px; font-weight:600; text-align:center; color:var(--text-muted); margin-top:12px;">Objectif d'épargne : <span id="dash-goal-text">0</span>€ restants en fin de mois</div>
             </div>
 
             <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Comptes</h2>
@@ -326,7 +486,7 @@
 
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; margin-top:35px;">
                 <h2 style="font-size:22px; margin:0; letter-spacing:-0.5px; font-weight:800;">Mes Projets</h2>
-                <button style="background:var(--input-bg); color:var(--accent); border:none; padding:8px 16px; border-radius:14px; font-weight:700; cursor:pointer;" onclick="openWishlistModal()">+ Ajouter</button>
+                <button style="background:var(--card-bg); color:var(--accent); border:none; padding:8px 16px; border-radius:14px; font-weight:700; cursor:pointer; box-shadow:var(--shadow);" onclick="openWishlistModal()">+ Ajouter</button>
             </div>
             <div id="wishlist-container"></div>
             
@@ -338,15 +498,16 @@
     </div>
 
     <div id="tab-tx" class="section">
+        <h1 style="font-size: 34px; font-weight: 800; letter-spacing: -1px; margin-bottom: 20px;">Transactions</h1>
         
         <input type="text" id="tx-search" placeholder="🔍 Rechercher (Libellé, #Tag...)" style="width:100%; padding:16px 20px; border-radius:18px; border:none; background:var(--card-bg); box-shadow:var(--shadow); color:var(--text-main); font-size:16px; font-weight:500; outline:none; margin-bottom:20px; box-sizing:border-box;" oninput="renderTransactions()">
         
         <div class="filter-bar" id="filter-bar"></div>
-        
-        <div id="tx-list"></div>
+        <div id="tx-list" style="margin-bottom: 40px;"></div>
     </div>
 
     <div id="tab-stats" class="section">
+        <h1 style="font-size: 34px; font-weight: 800; letter-spacing: -1px; margin-bottom: 20px;">Analyses</h1>
 
         <div class="card" style="display:flex; align-items:center; gap:25px; padding: 30px; border:none; background: linear-gradient(135deg, var(--card-bg) 0%, var(--input-bg) 100%);">
             <div style="position:relative; width:110px; height:110px; flex-shrink:0;">
@@ -357,8 +518,8 @@
                 <div id="score-text" class="blur-val" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:32px; font-weight:800; letter-spacing:-1px;">0</div>
             </div>
             <div>
-                <h2 style="margin:0 0 8px 0; font-size:22px; letter-spacing:-0.5px; font-weight:800;">Score Santé</h2>
-                <p id="score-desc" style="margin:0; font-size:14px; color:var(--text-muted); line-height:1.5;">Calcul en cours...</p>
+                <h2 style="margin:0 0 8px 0; font-size:20px; letter-spacing:-0.5px;">Score Santé</h2>
+                <p id="score-desc" style="margin:0; font-size:13px; color:var(--text-muted); line-height:1.5;">Calcul en cours...</p>
             </div>
         </div>
 
@@ -366,6 +527,9 @@
             <div class="advice-icon">💡</div>
             <div class="advice-text" id="advice-text">Calcul en cours...</div>
         </div>
+
+        <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Radar Abonnements</h2>
+        <div id="sub-radar-list"></div>
 
         <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Projections & Épargne</h2>
         <div class="card">
@@ -381,9 +545,9 @@
         <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Règle d'or (50/30/20)</h2>
         <div class="card">
             <div class="rings-container" style="padding:10px 0;">
-                <div style="position:relative; width:80px; height:80px;"><svg viewBox="0 0 100 100" style="transform:rotate(-90deg);width:100%;height:100%;"><circle fill="none" stroke="var(--input-bg)" stroke-width="12" cx="50" cy="50" r="40"/><circle id="ring-fixe" fill="none" stroke="var(--red)" stroke-width="12" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" cx="50" cy="50" r="40" style="transition:1s cubic-bezier(0.16,1,0.3,1)"/></svg><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:20px;">🏠</div></div>
-                <div style="position:relative; width:80px; height:80px;"><svg viewBox="0 0 100 100" style="transform:rotate(-90deg);width:100%;height:100%;"><circle fill="none" stroke="var(--input-bg)" stroke-width="12" cx="50" cy="50" r="40"/><circle id="ring-vie" fill="none" stroke="var(--green)" stroke-width="12" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" cx="50" cy="50" r="40" style="transition:1s cubic-bezier(0.16,1,0.3,1)"/></svg><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:20px;">🛒</div></div>
-                <div style="position:relative; width:80px; height:80px;"><svg viewBox="0 0 100 100" style="transform:rotate(-90deg);width:100%;height:100%;"><circle fill="none" stroke="var(--input-bg)" stroke-width="12" cx="50" cy="50" r="40"/><circle id="ring-loisirs" fill="none" stroke="var(--accent)" stroke-width="12" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" cx="50" cy="50" r="40" style="transition:1s cubic-bezier(0.16,1,0.3,1)"/></svg><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:20px;">🎬</div></div>
+                <div style="position:relative; width:80px; height:80px;"><svg viewBox="0 0 100 100" style="transform:rotate(-90deg);width:100%;height:100%;"><circle fill="none" stroke="var(--input-bg)" stroke-width="12" cx="50" cy="50" r="40"/><circle id="ring-fixe" fill="none" stroke="var(--red)" stroke-width="12" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" cx="50" cy="50" r="40" style="transition:1s cubic-bezier(0.16,1,0.3,1)"/></svg><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;">🏠</div></div>
+                <div style="position:relative; width:80px; height:80px;"><svg viewBox="0 0 100 100" style="transform:rotate(-90deg);width:100%;height:100%;"><circle fill="none" stroke="var(--input-bg)" stroke-width="12" cx="50" cy="50" r="40"/><circle id="ring-vie" fill="none" stroke="var(--green)" stroke-width="12" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" cx="50" cy="50" r="40" style="transition:1s cubic-bezier(0.16,1,0.3,1)"/></svg><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;">🛒</div></div>
+                <div style="position:relative; width:80px; height:80px;"><svg viewBox="0 0 100 100" style="transform:rotate(-90deg);width:100%;height:100%;"><circle fill="none" stroke="var(--input-bg)" stroke-width="12" cx="50" cy="50" r="40"/><circle id="ring-loisirs" fill="none" stroke="var(--accent)" stroke-width="12" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" cx="50" cy="50" r="40" style="transition:1s cubic-bezier(0.16,1,0.3,1)"/></svg><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;">🎬</div></div>
             </div>
             <div style="display:flex; justify-content:space-around; font-size:12px; color:var(--text-muted); font-weight:700; text-align:center; text-transform:uppercase;">
                 <span style="width:33%">Fixe</span><span style="width:33%">Quotidien</span><span style="width:33%">Loisirs</span>
@@ -391,57 +555,55 @@
         </div>
         
         <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Détails & Enveloppes</h2>
-        <div class="card" style="padding:24px;">
+        <div class="card" style="padding:20px;">
             <div id="stats-list"></div>
         </div>
-
-        <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Radar Abonnements</h2>
-        <div id="sub-radar-list"></div>
     </div>
 
     <div id="tab-settings" class="section">
+        <h1 style="font-size: 34px; font-weight: 800; letter-spacing: -1px; margin-bottom: 20px;">Réglages</h1>
         
         <div class="card" style="display:flex; align-items:center; gap:20px;">
-            <div style="width: 76px; height: 76px; border-radius: 38px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 32px; color: white; box-shadow: 0 8px 20px var(--accent-light);">👤</div>
+            <div style="width: 70px; height: 70px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 32px; color: white;">👤</div>
             <div style="flex:1;">
-                <input type="text" id="set-displayname" placeholder="Votre Prénom" onchange="saveSettingsLocally()" style="background:transparent; border:none; color:var(--text-main); font-size:26px; font-weight:800; letter-spacing:-0.5px; width:100%; outline:none; padding:0; margin-bottom:4px;">
-                <div id="profile-email-display" style="font-size:14px; color:var(--text-muted); font-weight:500;">Connecté</div>
+                <input type="text" id="set-displayname" placeholder="Votre Prénom" onchange="saveSettingsLocally()" style="background:transparent; border:none; color:var(--text-main); font-size:22px; font-weight:700; width:100%; outline:none; padding:0; margin-bottom:4px;">
+                <div id="profile-email-display" style="font-size:13px; color:var(--text-muted);">Connecté</div>
             </div>
         </div>
 
         <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Objectifs</h2>
-        <div class="card" style="padding:0 24px;">
+        <div class="card" style="padding:0 20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 0; border-bottom:1px solid var(--input-bg);">
-                <div><div style="font-weight:700; font-size:15px;">Épargne cible</div><div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Solde fin de mois</div></div>
-                <input type="number" id="set-savings-goal" class="input-control" style="width:100px; text-align:right; padding:12px;" onchange="saveSettingsLocally()">
+                <div><div style="font-weight:600; font-size:15px;">Épargne cible</div><div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Fin de mois</div></div>
+                <input type="number" id="set-savings-goal" class="input-control" style="width:90px; text-align:right; padding:10px;" onchange="saveSettingsLocally()">
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 0;">
-                <div><div style="font-weight:700; font-size:15px;">Fonds Sécurité</div><div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Bouclier total</div></div>
-                <input type="number" id="set-emergency" class="input-control" style="width:100px; text-align:right; padding:12px;" onchange="saveSettingsLocally()">
+                <div><div style="font-weight:600; font-size:15px;">Fonds Sécurité</div><div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Bouclier total</div></div>
+                <input type="number" id="set-emergency" class="input-control" style="width:90px; text-align:right; padding:10px;" onchange="saveSettingsLocally()">
             </div>
         </div>
 
         <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Mes Comptes</h2>
-        <div class="card" style="padding: 10px 24px;">
+        <div class="card" style="padding: 10px 20px;">
             <div id="settings-accounts-list"></div>
-            <button style="background:var(--input-bg); color:var(--accent); border:none; width:100%; padding:16px; border-radius:16px; font-weight:700; cursor:pointer; margin:10px 0; transition:0.2s;" onclick="addAccount()">+ Ajouter un compte</button>
+            <button style="background:var(--input-bg); color:var(--accent); border:none; width:100%; padding:14px; border-radius:14px; font-weight:600; cursor:pointer; margin:10px 0;" onclick="addAccount()">+ Ajouter un compte</button>
         </div>
 
         <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Mes Catégories & Limites</h2>
-        <div class="card" style="padding: 10px 24px;">
+        <div class="card" style="padding: 10px 20px;">
             <div id="settings-custom-cats-list"></div>
-            <button style="background:var(--input-bg); color:var(--accent); border:none; width:100%; padding:16px; border-radius:16px; font-weight:700; cursor:pointer; margin:10px 0;" onclick="addCustomCategory()">+ Créer une catégorie</button>
+            <button style="background:var(--input-bg); color:var(--accent); border:none; width:100%; padding:14px; border-radius:14px; font-weight:600; cursor:pointer; margin:10px 0;" onclick="addCustomCategory()">+ Créer une catégorie</button>
         </div>
-        <div class="card" style="padding: 10px 24px;" id="settings-cat-budgets"></div>
+        <div class="card" style="padding: 10px 20px;" id="settings-cat-budgets"></div>
 
         <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Apparence</h2>
-        <div class="card" style="padding:0 24px;">
+        <div class="card" style="padding:0 20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 0; border-bottom:1px solid var(--input-bg);">
-                <div style="font-weight:700; font-size:15px;">Thème</div>
-                <select class="input-control" style="width:140px; padding:12px; font-weight:600;" onchange="changeTheme(this.value)" id="set-theme"><option value="auto">Automatique</option><option value="dark">Sombre</option><option value="light">Clair</option></select>
+                <div style="font-weight:600; font-size:15px;">Thème</div>
+                <select class="input-control" style="width:140px; padding:10px;" onchange="changeTheme(this.value)" id="set-theme"><option value="auto">Automatique</option><option value="dark">Sombre</option><option value="light">Clair</option></select>
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 0;">
-                <div style="font-weight:700; font-size:15px;">Couleur</div>
+                <div style="font-weight:600; font-size:15px;">Couleur</div>
                 <div class="color-picker">
                     <div id="color-blue" class="color-swatch" style="background:#007aff;" onclick="applyColor('blue')"></div>
                     <div id="color-purple" class="color-swatch" style="background:#af52de;" onclick="applyColor('purple')"></div>
@@ -453,20 +615,20 @@
         </div>
 
         <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Outils</h2>
-        <div class="card" style="padding:24px;">
-            <button onclick="document.getElementById('csv-file-input').click()" style="background:var(--input-bg); color:var(--text-main); border:none; width:100%; padding:16px; border-radius:16px; font-weight:700; cursor:pointer; margin-bottom:12px; display:flex; justify-content:center; gap:10px;">📥 Importer Relevé CSV</button>
+        <div class="card" style="padding:20px;">
+            <button onclick="document.getElementById('csv-file-input').click()" style="background:var(--input-bg); color:var(--text-main); border:none; width:100%; padding:16px; border-radius:16px; font-weight:600; cursor:pointer; margin-bottom:12px; display:flex; justify-content:center; gap:10px;">📥 Importer Relevé CSV</button>
             <input type="file" id="csv-file-input" style="display:none" accept=".csv" onchange="importCSV(event)">
             <div style="display:flex; gap:12px;">
-                <button style="background:var(--input-bg); color:var(--text-main); border:none; flex:1; padding:16px; border-radius:16px; font-weight:700; cursor:pointer;" onclick="exportPDF()">📄 PDF</button>
-                <button style="background:var(--input-bg); color:var(--text-main); border:none; flex:1; padding:16px; border-radius:16px; font-weight:700; cursor:pointer;" onclick="exportCSV()">⬇ CSV</button>
+                <button style="background:var(--input-bg); color:var(--text-main); border:none; flex:1; padding:14px; border-radius:14px; font-weight:600; cursor:pointer;" onclick="exportPDF()">📄 PDF</button>
+                <button style="background:var(--input-bg); color:var(--text-main); border:none; flex:1; padding:14px; border-radius:14px; font-weight:600; cursor:pointer;" onclick="exportCSV()">⬇ CSV</button>
             </div>
         </div>
 
-        <div class="card" style="background:var(--red-light); border:none;">
-            <div style="font-weight:800; color:var(--red); font-size:18px; margin-bottom:8px; letter-spacing:-0.5px;">Zone de danger</div>
-            <p style="font-size:14px; color:var(--text-main); opacity:0.8; margin-bottom:20px; line-height:1.4;">Les actions ci-dessous sont sensibles.</p>
-            <button style="background:var(--card-bg); color:var(--orange); border:none; width:100%; padding:18px; border-radius:18px; font-weight:800; cursor:pointer; margin-bottom:12px; box-shadow:0 4px 12px rgba(0,0,0,0.05);" onclick="freshStart()">🧹 Nouveau Mois (Garder Soldes)</button>
-            <button style="background:var(--card-bg); color:var(--red); border:none; width:100%; padding:18px; border-radius:18px; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.05);" onclick="logoutUser()">Se déconnecter</button>
+        <div class="card" style="background:var(--red-light);">
+            <div style="font-weight:700; color:var(--red); font-size:16px; margin-bottom:8px;">Zone de danger</div>
+            <p style="font-size:13px; color:var(--text-main); opacity:0.8; margin-bottom:20px; line-height:1.4;">Les actions ci-dessous sont sensibles.</p>
+            <button style="background:var(--card-bg); color:var(--orange); border:none; width:100%; padding:16px; border-radius:16px; font-weight:700; cursor:pointer; margin-bottom:12px;" onclick="freshStart()">🧹 Nouveau Mois (Garder Soldes)</button>
+            <button style="background:var(--card-bg); color:var(--red); border:none; width:100%; padding:16px; border-radius:16px; font-weight:700; cursor:pointer;" onclick="logoutUser()">Se déconnecter</button>
         </div>
     </div>
 </div>
@@ -475,16 +637,55 @@
     // ==========================================
     // 1. CONFIGURATION FIREBASE & AUTHENTIFICATION
     // ==========================================
-    const firebaseConfig = { apiKey: "AIzaSyBQjRSVB-BgA2FtBUA70Si0auURGZlh1DE", authDomain: "suivi-budget-8f2d2.firebaseapp.com", projectId: "suivi-budget-8f2d2", storageBucket: "suivi-budget-8f2d2.firebasestorage.app", messagingSenderId: "829941841512", appId: "1:829941841512:web:809543e1325a774af785dd" };
-    firebase.initializeApp(firebaseConfig); const db = firebase.firestore();
-    db.enablePersistence().catch(err => console.log("Hors-ligne indispo", err));
+    const firebaseConfig = {
+        apiKey: "AIzaSyBQjRSVB-BgA2FtBUA70Si0auURGZlh1DE",
+        authDomain: "suivi-budget-8f2d2.firebaseapp.com",
+        projectId: "suivi-budget-8f2d2",
+        storageBucket: "suivi-budget-8f2d2.firebasestorage.app",
+        messagingSenderId: "829941841512",
+        appId: "1:829941841512:web:809543e1325a774af785dd"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // ACTIVATION DU MODE HORS-LIGNE
+    db.enablePersistence()
+      .catch(function(err) {
+          if (err.code == 'failed-precondition') {
+              console.log("Le mode hors-ligne ne peut être activé que sur un seul onglet à la fois.");
+          } else if (err.code == 'unimplemented') {
+              console.log("Le navigateur ne supporte pas le mode hors-ligne de Firebase.");
+          }
+      });
+
     const auth = firebase.auth();
 
-    let cloudDocRef = null; let isRegisterMode = false; let currentUser = null;
-    let displayName = ''; let expenses = []; let accounts = []; let wishlist = []; let categories = []; 
-    let savingsGoal = 500; let emergencyGoal = 5000; let catBudgets = {}; let savedTheme = 'auto'; let savedColor = 'blue';
-    let selectedCat = 'alim'; let currentFilter = 'all'; let viewDate = new Date(); let currentType = 'expense'; 
-    let privacyMode = false; let globalRealBalance = 0; let editingTxId = null; let editingWishId = null;
+    let cloudDocRef = null;
+    let isRegisterMode = false;
+    let currentUser = null;
+
+    // --- VARIABLES DE L'APPLICATION ---
+    let displayName = '';
+    let expenses = [];
+    let accounts = [];
+    let wishlist = [];
+    let categories = []; 
+    
+    let savingsGoal = 500; 
+    let emergencyGoal = 5000;
+    let catBudgets = {};
+    let savedTheme = 'auto';
+    let savedColor = 'blue';
+
+    let selectedCat = 'alim'; 
+    let currentFilter = 'all'; 
+    let viewDate = new Date(); 
+    let currentType = 'expense'; 
+    let privacyMode = false;
+    let globalRealBalance = 0;
+    let editingTxId = null;
+    let editingWishId = null;
 
     const DEFAULT_CATEGORIES = [
         { id: 'alim', label: 'Alimentation', icon: '🛒', type: 'vie', isCustom: false },
@@ -501,48 +702,215 @@
     ];
 
     auth.onAuthStateChanged(user => {
-        if (user) { currentUser = user; document.getElementById('profile-email-display').innerText = user.email; document.getElementById('auth-screen').style.display = 'none'; document.getElementById('app-wrapper').style.display = 'block'; initCloudSync(); } 
-        else { currentUser = null; cloudDocRef = null; document.getElementById('auth-screen').style.display = 'flex'; document.getElementById('app-wrapper').style.display = 'none'; }
+        if (user) {
+            currentUser = user;
+            document.getElementById('profile-email-display').innerText = user.email; 
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('app-wrapper').style.display = 'block';
+            initCloudSync();
+        } else {
+            currentUser = null;
+            cloudDocRef = null;
+            document.getElementById('auth-screen').style.display = 'flex';
+            document.getElementById('app-wrapper').style.display = 'none';
+        }
     });
 
-    function toggleAuthMode() { isRegisterMode = !isRegisterMode; document.getElementById('btn-login').style.display = isRegisterMode ? 'none' : 'block'; document.getElementById('btn-register').style.display = isRegisterMode ? 'block' : 'none'; document.getElementById('auth-toggle-link').innerText = isRegisterMode ? "Déjà un compte ? Se connecter" : "Créer un compte"; document.getElementById('auth-error-msg').innerText = ""; }
-    function login() { const e = document.getElementById('auth-email').value; const p = document.getElementById('auth-pass').value; if(!e || !p) return showError("Champs requis."); auth.signInWithEmailAndPassword(e, p).catch(err => showError("Erreur identifiants.")); }
-    function register() { const e = document.getElementById('auth-email').value; const p = document.getElementById('auth-pass').value; if(!e || !p) return showError("Champs requis."); if(p.length < 6) return showError("6 car. min."); auth.createUserWithEmailAndPassword(e, p).catch(err => showError("Erreur inscription.")); }
-    function showError(msg) { document.getElementById('auth-error-msg').innerText = msg; }
-    function logoutUser() { hapticTap(); if(confirm("Se déconnecter ?")) auth.signOut(); }
+    function toggleAuthMode() {
+        isRegisterMode = !isRegisterMode;
+        document.getElementById('btn-login').style.display = isRegisterMode ? 'none' : 'block';
+        document.getElementById('btn-register').style.display = isRegisterMode ? 'block' : 'none';
+        document.getElementById('auth-toggle-link').innerText = isRegisterMode ? "Déjà un compte ? Se connecter" : "Créer un compte";
+        document.getElementById('auth-error-msg').innerText = "";
+    }
 
+    function login() {
+        const email = document.getElementById('auth-email').value;
+        const pass = document.getElementById('auth-pass').value;
+        if(!email || !pass) return showError("Veuillez remplir tous les champs.");
+        auth.signInWithEmailAndPassword(email, pass).catch(error => showError("Erreur de connexion. Vérifiez vos identifiants."));
+    }
+
+    function register() {
+        const email = document.getElementById('auth-email').value;
+        const pass = document.getElementById('auth-pass').value;
+        if(!email || !pass) return showError("Veuillez remplir tous les champs.");
+        if(pass.length < 6) return showError("Le mot de passe doit faire au moins 6 caractères.");
+        auth.createUserWithEmailAndPassword(email, pass).catch(error => showError("Erreur lors de l'inscription."));
+    }
+
+    function showError(msg) {
+        document.getElementById('auth-error-msg').innerText = msg;
+    }
+
+    function logoutUser() {
+        hapticTap();
+        if(confirm("Êtes-vous sûr de vouloir vous déconnecter ?")) {
+            auth.signOut();
+        }
+    }
+
+    // ==========================================
+    // 2. LOGIQUE DE SYNCHRONISATION CLOUD
+    // ==========================================
+    
     function initCloudSync() {
-        if(!currentUser) return; cloudDocRef = db.collection('users').doc(currentUser.uid);
+        if(!currentUser) return;
+        cloudDocRef = db.collection('users').doc(currentUser.uid);
+
         cloudDocRef.onSnapshot(doc => {
             if (doc.exists) {
-                const data = doc.data(); displayName = data.displayName || ''; expenses = data.expenses || []; accounts = data.accounts || []; wishlist = data.wishlist || []; categories = data.categories || [...DEFAULT_CATEGORIES]; savingsGoal = data.savingsGoal !== undefined ? data.savingsGoal : 500; emergencyGoal = data.emergencyGoal || 5000; catBudgets = data.catBudgets || {}; savedTheme = data.theme || 'auto'; savedColor = data.color || 'blue'; applyAppSettings();
+                const data = doc.data();
+                displayName = data.displayName || '';
+                expenses = data.expenses || [];
+                accounts = data.accounts || [];
+                wishlist = data.wishlist || [];
+                categories = data.categories || [...DEFAULT_CATEGORIES];
+                savingsGoal = data.savingsGoal !== undefined ? data.savingsGoal : (data.budget || 500);
+                emergencyGoal = data.emergencyGoal || 5000;
+                catBudgets = data.catBudgets || {};
+                savedTheme = data.theme || 'auto';
+                savedColor = data.color || 'blue';
+
+                applyAppSettings();
             } else {
-                displayName = localStorage.getItem('apple_clean_name_v5') || ''; expenses = JSON.parse(localStorage.getItem('apple_clean_v5') || '[]'); accounts = JSON.parse(localStorage.getItem('apple_clean_acc_v5') || '[{"id":"acc1","name":"Compte Principal","initBalance":1000,"color":"blue"}]'); wishlist = []; categories = [...DEFAULT_CATEGORIES]; savingsGoal = parseFloat(localStorage.getItem('apple_clean_savings_v5')) || 500; emergencyGoal = parseFloat(localStorage.getItem('apple_clean_emergency_v5')) || 5000; catBudgets = JSON.parse(localStorage.getItem('apple_clean_catbudgets_v5') || '{}'); savedTheme = localStorage.getItem('apple_clean_theme_v5') || 'auto'; savedColor = localStorage.getItem('apple_clean_color_v5') || 'blue'; saveToCloud(); applyAppSettings(); 
+                displayName = localStorage.getItem('apple_clean_name_v5') || '';
+                expenses = JSON.parse(localStorage.getItem('apple_clean_v5') || localStorage.getItem('apple_clean_v4') || '[]');
+                accounts = JSON.parse(localStorage.getItem('apple_clean_acc_v5') || localStorage.getItem('apple_clean_acc_v4') || '[{"id":"acc1","name":"Compte Principal","initBalance":1000,"color":"blue"}]');
+                wishlist = [];
+                categories = [...DEFAULT_CATEGORIES];
+                savingsGoal = parseFloat(localStorage.getItem('apple_clean_savings_v5') || localStorage.getItem('apple_clean_budget_v5')) || 500;
+                emergencyGoal = parseFloat(localStorage.getItem('apple_clean_emergency_v5')) || 5000;
+                catBudgets = JSON.parse(localStorage.getItem('apple_clean_catbudgets_v5') || '{}');
+                savedTheme = localStorage.getItem('apple_clean_theme_v5') || 'auto';
+                savedColor = localStorage.getItem('apple_clean_color_v5') || 'blue';
+
+                saveToCloud(); 
+                applyAppSettings(); 
             }
         });
     }
 
-    function saveToCloud() { if (cloudDocRef) cloudDocRef.set({ displayName, expenses, accounts, wishlist, categories, savingsGoal, emergencyGoal, catBudgets, theme: savedTheme, color: savedColor }, { merge: true }); }
+    function saveToCloud() {
+        if (!cloudDocRef) return;
+        cloudDocRef.set({
+            displayName: displayName,
+            expenses: expenses,
+            accounts: accounts,
+            wishlist: wishlist,
+            categories: categories,
+            savingsGoal: savingsGoal,
+            emergencyGoal: emergencyGoal,
+            catBudgets: catBudgets,
+            theme: savedTheme,
+            color: savedColor
+        }, { merge: true }).catch(err => console.error("Erreur de sauvegarde Cloud :", err));
+    }
 
     function applyAppSettings() {
         document.getElementById('set-displayname').value = displayName;
-        if(displayName) { document.getElementById('welcome-title').innerText = `Bonjour ${displayName}`; } else { document.getElementById('welcome-title').innerText = "Budget"; }
-        applyTheme(savedTheme); document.getElementById('set-theme').value = savedTheme; applyColor(savedColor); document.getElementById('set-savings-goal').value = savingsGoal; document.getElementById('set-emergency').value = emergencyGoal;
-        updateGlobalMonthLabel(); updateSuggestions(); renderCats(); renderFilters(); updateAccountsSelectors(); renderSettingsAccounts(); renderSettingsCategories(); renderSettingsCatBudgets(); updateAllViews(); 
-        if (document.getElementById('tab-tx').classList.contains('active')) renderTransactions(); if (document.getElementById('tab-stats').classList.contains('active')) renderStats();
+        
+        if(displayName) {
+            document.getElementById('welcome-title').innerText = `Bonjour ${displayName}`;
+        } else {
+            document.getElementById('welcome-title').innerText = "Budget";
+        }
+
+        applyTheme(savedTheme); document.getElementById('set-theme').value = savedTheme;
+        applyColor(savedColor);
+        document.getElementById('set-savings-goal').value = savingsGoal;
+        document.getElementById('set-emergency').value = emergencyGoal;
+        
+        updateGlobalMonthLabel();
+        updateSuggestions(); 
+        renderCats(); renderFilters(); updateAccountsSelectors(); 
+        renderSettingsAccounts(); renderSettingsCategories(); renderSettingsCatBudgets();
+        updateAllViews(); 
+        
+        if (document.getElementById('tab-tx').classList.contains('active')) renderTransactions();
+        if (document.getElementById('tab-stats').classList.contains('active')) renderStats();
+        if (document.getElementById('journal-cal-view').style.display === 'block') renderCalendar();
     }
 
-    function escapeHTML(str) { return String(str||'').replace(/[&<>'"]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[m]); }
+
+    // ==========================================
+    // 3. LE MOTEUR DE L'APPLICATION
+    // ==========================================
+
+    function escapeHTML(str) {
+        if(!str) return '';
+        return String(str).replace(/[&<>'"]/g, match => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[match]);
+    }
+
     function hapticTap() { if (navigator.vibrate) navigator.vibrate(15); }
-    function animateValue(obj, start, end, duration, formatFn) { let sT = null; const step = (ts) => { if (!sT) sT = ts; const p = Math.min((ts - sT) / duration, 1); obj.innerHTML = formatFn(start + (1 - Math.pow(1 - p, 4)) * (end - start)); if (p < 1) window.requestAnimationFrame(step); }; window.requestAnimationFrame(step); }
 
-    function applyColor(c) { savedColor = c; document.documentElement.style.setProperty('--accent', ACCENT_COLORS[c].main); document.documentElement.style.setProperty('--accent-light', ACCENT_COLORS[c].light); document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active')); if(document.getElementById('color-' + c)) document.getElementById('color-' + c).classList.add('active'); if (currentUser) saveToCloud(); }
-    function changeTheme(t) { savedTheme = t; applyTheme(t); if (currentUser) saveToCloud(); }
-    function applyTheme(t) { document.body.setAttribute('data-theme', t === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : t); }
+    function animateValue(obj, start, end, duration, formatFn) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const easeProgress = 1 - Math.pow(1 - progress, 4);
+            const current = start + easeProgress * (end - start);
+            obj.innerHTML = formatFn(current);
+            if (progress < 1) window.requestAnimationFrame(step);
+        };
+        window.requestAnimationFrame(step);
+    }
 
-    function updateGlobalMonthLabel() { document.getElementById('global-month-label').innerText = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(viewDate); }
-    function changeGlobalMonth(dir) { hapticTap(); viewDate.setMonth(viewDate.getMonth() + dir); updateGlobalMonthLabel(); const area = document.getElementById('app-wrapper'); area.classList.remove('fade-in'); void area.offsetWidth; area.classList.add('fade-in'); updateAllViews(); renderTransactions(); renderStats(); }
-    function updateSuggestions() { document.getElementById('label-suggestions').innerHTML = [...new Set(expenses.map(e => e.label))].map(l => `<option value="${escapeHTML(l)}">`).join(''); }
+    const ACCENT_COLORS = {
+        'blue': { main: '#007aff', light: 'rgba(0, 122, 255, 0.15)' },
+        'purple': { main: '#af52de', light: 'rgba(175, 82, 222, 0.15)' },
+        'pink': { main: '#ff2d55', light: 'rgba(255, 45, 85, 0.15)' },
+        'green': { main: '#34c759', light: 'rgba(52, 199, 89, 0.15)' },
+        'orange': { main: '#ff9500', light: 'rgba(255, 149, 0, 0.15)' }
+    };
+
+    function applyColor(c) {
+        savedColor = c;
+        document.documentElement.style.setProperty('--accent', ACCENT_COLORS[c].main);
+        document.documentElement.style.setProperty('--accent-light', ACCENT_COLORS[c].light);
+        document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+        if(document.getElementById('color-' + c)) document.getElementById('color-' + c).classList.add('active');
+        if (currentUser) saveToCloud(); 
+    }
+
+    function changeTheme(t) { 
+        savedTheme = t; 
+        applyTheme(t); 
+        if (currentUser) saveToCloud(); 
+    }
+
+    function applyTheme(t) {
+        if(t === 'auto') document.body.setAttribute('data-theme', window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        else document.body.setAttribute('data-theme', t);
+    }
+
+    function updateGlobalMonthLabel() {
+        const formatter = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' });
+        document.getElementById('global-month-label').innerText = formatter.format(viewDate);
+    }
+
+    function changeGlobalMonth(dir) {
+        hapticTap();
+        viewDate.setMonth(viewDate.getMonth() + dir);
+        updateGlobalMonthLabel();
+        
+        // Animation CSS pour le changement de mois
+        const area = document.getElementById('app-wrapper');
+        area.classList.remove('fade-in');
+        void area.offsetWidth; // trigger reflow
+        area.classList.add('fade-in');
+
+        updateAllViews();
+        renderTransactions();
+        renderStats();
+        if (document.getElementById('journal-cal-view').style.display === 'block') renderCalendar();
+    }
+
+    function updateSuggestions() {
+        const uniqueLabels = [...new Set(expenses.map(e => e.label))];
+        document.getElementById('label-suggestions').innerHTML = uniqueLabels.map(l => `<option value="${escapeHTML(l)}">`).join('');
+    }
 
     const KEYWORDS = {
         'alim': ['leclerc', 'carrefour', 'auchan', 'intermarche', 'lidl', 'courses', 'boulangerie', 'aldi', 'monoprix'],
@@ -556,28 +924,82 @@
     };
 
     function autoCategorize(text) {
-        if(!text) return; const lower = text.toLowerCase(); const pastTx = expenses.find(e => e.label.toLowerCase() === lower && e.type === currentType);
-        if (pastTx) { if (currentType === 'expense') selectCat(pastTx.cat); return; }
-        for(const [cat, words] of Object.entries(KEYWORDS)) { if(words.some(w => lower.includes(w))) { if(currentType === 'expense') selectCat(cat); return; } }
-        const customMatch = categories.find(c => c.isCustom && lower.includes(c.label.toLowerCase())); if (customMatch && currentType === 'expense') selectCat(customMatch.id);
+        if(!text) return;
+        const lower = text.toLowerCase();
+        const pastTx = expenses.find(e => e.label.toLowerCase() === lower && e.type === currentType);
+        
+        if (pastTx) {
+            if (currentType === 'expense') selectCat(pastTx.cat);
+            if (pastTx.url && !document.getElementById('inp-url').value) document.getElementById('inp-url').value = pastTx.url; 
+            return; 
+        }
+
+        for(const [cat, words] of Object.entries(KEYWORDS)) {
+            if(words.some(w => lower.includes(w))) {
+                if(currentType === 'expense') selectCat(cat);
+                return;
+            }
+        }
+        
+        const customMatch = categories.find(c => c.isCustom && lower.includes(c.label.toLowerCase()));
+        if (customMatch && currentType === 'expense') selectCat(customMatch.id);
+
+        if(RECURRING_KEYWORDS.some(w => lower.includes(w))) {
+            document.getElementById('inp-recurring').checked = true; toggleRecOptions();
+        }
     }
 
     function openAddModal() { 
         hapticTap(); editingTxId = null; 
-        document.getElementById('modal-title').innerText = "Nouvelle opération"; document.getElementById('btn-submit-tx').innerText = "Ajouter"; document.getElementById('btn-delete-tx').style.display = 'none';
-        document.getElementById('inp-amount').value = ''; document.getElementById('inp-label').value = ''; document.getElementById('inp-note').value = ''; document.getElementById('inp-url').value = ''; 
-        document.getElementById('inp-date').valueAsDate = new Date(); document.getElementById('inp-recurring').checked = false; document.getElementById('inp-frequency').value = 'monthly';
-        setOpType('expense'); toggleRecOptions(); document.getElementById('advanced-options').style.display='none'; document.querySelector('#add-modal button[onclick*="advanced"]').style.display='block';
-        document.getElementById('add-modal').style.display = 'flex'; setTimeout(()=> document.getElementById('inp-amount').focus(), 300);
+        document.getElementById('modal-title').innerText = "Nouvelle opération";
+        document.getElementById('btn-submit-tx').innerText = "Ajouter";
+        document.getElementById('btn-delete-tx').style.display = 'none';
+
+        document.getElementById('inp-amount').value = ''; 
+        document.getElementById('inp-label').value = ''; 
+        document.getElementById('inp-note').value = ''; 
+        document.getElementById('inp-url').value = ''; 
+        document.getElementById('inp-date').valueAsDate = new Date();
+        document.getElementById('inp-recurring').checked = false; 
+        document.getElementById('inp-frequency').value = 'monthly';
+        document.getElementById('inp-rec-end').value = '';
+        
+        setOpType('expense'); toggleRecOptions();
+        document.getElementById('advanced-options').style.display='none'; 
+        document.querySelector('#add-modal button[onclick*="advanced"]').style.display='block';
+        
+        document.getElementById('add-modal').style.display = 'flex'; 
+        setTimeout(()=> document.getElementById('inp-amount').focus(), 300);
     }
 
     function openEditModal(id) {
-        hapticTap(); const tx = expenses.find(e => e.id === id); if (!tx) return; editingTxId = id; 
-        document.getElementById('modal-title').innerText = "Détails"; document.getElementById('btn-submit-tx').innerText = "Enregistrer"; document.getElementById('btn-delete-tx').style.display = 'block';
-        setOpType(tx.type); document.getElementById('inp-account').value = tx.accountId; document.getElementById('inp-amount').value = tx.amount; document.getElementById('inp-date').value = tx.date; document.getElementById('inp-label').value = tx.label; document.getElementById('inp-note').value = tx.note || ''; document.getElementById('inp-url').value = tx.url || '';
-        if (tx.type === 'expense') selectCat(tx.cat); document.getElementById('inp-recurring').checked = tx.recurring || false;
-        if(tx.recurring) { document.getElementById('inp-frequency').value = tx.frequency || 'monthly'; document.getElementById('inp-rec-end').value = tx.endDate || ''; }
-        toggleRecOptions(); document.getElementById('advanced-options').style.display='block'; document.querySelector('#add-modal button[onclick*="advanced"]').style.display='none';
+        hapticTap();
+        const tx = expenses.find(e => e.id === id); if (!tx) return;
+
+        editingTxId = id; 
+        document.getElementById('modal-title').innerText = "Détails";
+        document.getElementById('btn-submit-tx').innerText = "Enregistrer";
+        document.getElementById('btn-delete-tx').style.display = 'block';
+
+        setOpType(tx.type);
+        document.getElementById('inp-account').value = tx.accountId;
+        document.getElementById('inp-amount').value = tx.amount;
+        document.getElementById('inp-date').value = tx.date;
+        document.getElementById('inp-label').value = tx.label; 
+        document.getElementById('inp-note').value = tx.note || '';
+        document.getElementById('inp-url').value = tx.url || '';
+        
+        if (tx.type === 'expense') selectCat(tx.cat);
+
+        document.getElementById('inp-recurring').checked = tx.recurring || false;
+        if(tx.recurring) {
+            document.getElementById('inp-frequency').value = tx.frequency || 'monthly';
+            document.getElementById('inp-rec-end').value = tx.endDate || '';
+        }
+        toggleRecOptions(); 
+        document.getElementById('advanced-options').style.display='block'; 
+        document.querySelector('#add-modal button[onclick*="advanced"]').style.display='none';
+        
         document.getElementById('add-modal').style.display = 'flex';
     }
 
@@ -586,57 +1008,149 @@
     
     function setOpType(t) {
         hapticTap(); currentType = t;
-        document.getElementById('type-exp-btn').style.opacity = t==='expense' ? '1' : '0.4'; document.getElementById('type-exp-btn').style.color = t==='expense' ? 'var(--text-main)' : 'var(--text-muted)';
-        document.getElementById('type-inc-btn').style.opacity = t==='income' ? '1' : '0.4'; document.getElementById('type-inc-btn').style.color = t==='income' ? 'var(--green)' : 'var(--text-muted)';
+        document.getElementById('type-exp-btn').style.opacity = t==='expense' ? '1' : '0.4';
+        document.getElementById('type-exp-btn').style.color = t==='expense' ? 'var(--text-main)' : 'var(--text-muted)';
+        document.getElementById('type-inc-btn').style.opacity = t==='income' ? '1' : '0.4';
+        document.getElementById('type-inc-btn').style.color = t==='income' ? 'var(--green)' : 'var(--text-muted)';
         document.getElementById('category-block').style.display = t==='expense' ? 'block' : 'none';
     }
     function toggleRecOptions() { document.getElementById('rec-options').style.display = document.getElementById('inp-recurring').checked ? 'block' : 'none'; }
 
+    // --- IMPORT CSV ---
     function importCSV(event) {
-        hapticTap(); const file = event.target.files[0]; if (!file) return;
-        if (accounts.length === 0) return alert("Créez un compte d'abord.");
+        hapticTap();
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        if (accounts.length === 0) return alert("Veuillez d'abord créer un compte bancaire.");
+        
         let accountId = accounts[0].id;
-        if (accounts.length > 1) { const accNames = accounts.map((a, i) => `${i + 1}. ${a.name}`).join('\n'); const idx = parseInt(prompt("Compte cible (N°) :\n\n" + accNames)) - 1; if (!isNaN(idx) && accounts[idx]) accountId = accounts[idx].id; else return; }
-        const reader = new FileReader(); reader.onload = function(e) {
-            let count = 0; e.target.result.split('\n').forEach((line, i) => {
-                if (i === 0) return; const cols = line.split(/[;,]/); if (cols.length < 2) return;
+        if (accounts.length > 1) {
+            const accNames = accounts.map((a, i) => `${i + 1}. ${a.name}`).join('\n');
+            const choice = prompt("Sur quel compte importer ces données ? Entrez le numéro du compte :\n\n" + accNames);
+            const idx = parseInt(choice) - 1;
+            if (!isNaN(idx) && accounts[idx]) { accountId = accounts[idx].id; } 
+            else { event.target.value = ''; return alert("Import annulé : Compte non reconnu."); }
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const text = e.target.result; const lines = text.split('\n'); let count = 0;
+
+            lines.forEach((line, index) => {
+                if (index === 0) return; 
+                const cols = line.split(/[;,]/); if (cols.length < 2) return;
+
                 let dateStr = '', amount = 0, label = '';
-                cols.forEach(c => { c = c.replace(/["']/g, '').trim(); if (c.match(/^\d{2}\/\d{2}\/\d{4}$/) || c.match(/^\d{4}-\d{2}-\d{2}$/)) dateStr = c; else if (c.match(/^-?\d+([.,]\d+)?$/)) amount = parseFloat(c.replace(',', '.')); else if (c.length > label.length && !c.match(/^\d+$/)) label = c; });
+                
+                cols.forEach(c => {
+                    c = c.replace(/["']/g, '').trim();
+                    if (c.match(/^\d{2}\/\d{2}\/\d{4}$/) || c.match(/^\d{4}-\d{2}-\d{2}$/)) dateStr = c;
+                    else if (c.match(/^-?\d+([.,]\d+)?$/)) amount = parseFloat(c.replace(',', '.'));
+                    else if (c.length > label.length && !c.match(/^\d+$/)) label = c;
+                });
+
                 if (dateStr && label && amount !== 0) {
-                    let isoDate = dateStr.includes('/') ? `${dateStr.split('/')[2]}-${dateStr.split('/')[1]}-${dateStr.split('/')[0]}` : dateStr;
+                    let isoDate = dateStr;
+                    if (dateStr.includes('/')) { const parts = dateStr.split('/'); isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`; }
+                    
                     let isInc = amount > 0; let guessedCat = 'autre';
-                    if (!isInc) { const lowerLabel = label.toLowerCase(); for(const [cat, words] of Object.entries(KEYWORDS)) { if(words.some(w => lowerLabel.includes(w))) { guessedCat = cat; break; } } if (guessedCat === 'autre') { const customMatch = categories.find(c => c.isCustom && lowerLabel.includes(c.label.toLowerCase())); if (customMatch) guessedCat = customMatch.id; } }
-                    expenses.unshift({ id: Date.now()+Math.random(), accountId, amount: Math.abs(amount), date: isoDate, label, note: 'Import CSV', url: '', type: isInc ? 'income' : 'expense', cat: isInc ? 'income' : guessedCat, recurring: false }); count++;
+                    
+                    if (!isInc) {
+                        const lowerLabel = label.toLowerCase();
+                        for(const [cat, words] of Object.entries(KEYWORDS)) {
+                            if(words.some(w => lowerLabel.includes(w))) { guessedCat = cat; break; }
+                        }
+                        if (guessedCat === 'autre') {
+                            const customMatch = categories.find(c => c.isCustom && lowerLabel.includes(c.label.toLowerCase()));
+                            if (customMatch) guessedCat = customMatch.id;
+                        }
+                    }
+
+                    expenses.unshift({
+                        id: Date.now() + Math.random(), accountId, amount: Math.abs(amount), date: isoDate, label,
+                        note: 'Import CSV', url: '', type: isInc ? 'income' : 'expense', cat: isInc ? 'income' : guessedCat, recurring: false
+                    });
+                    count++;
                 }
             });
-            if (count > 0) { saveToCloud(); updateAllViews(); alert(`✅ ${count} opérations importées.`); }
-        }; reader.readAsText(file);
+            
+            if (count > 0) {
+                saveToCloud(); updateSuggestions(); updateAllViews();
+                alert(`✅ Importation réussie !\n${count} opérations ont été ajoutées et auto-catégorisées.`);
+            } else { alert("❌ Erreur d'import : Aucune opération valide détectée."); }
+            event.target.value = ''; 
+        };
+        reader.readAsText(file);
     }
 
+    // --- FONCTIONS WISHLIST (PROJETS) ---
     function openWishlistModal(id = null) {
-        hapticTap(); editingWishId = id;
+        hapticTap();
+        editingWishId = id;
+        
         if (id) {
-            const item = wishlist.find(w => w.id === id); if(!item) return;
-            document.getElementById('wishlist-modal-title').innerText = "Modifier l'envie"; document.getElementById('inp-wish-name').value = item.name; document.getElementById('inp-wish-price').value = item.price; document.getElementById('inp-wish-url').value = item.url || ''; document.getElementById('inp-wish-account').value = item.accountId || (accounts[0] ? accounts[0].id : '');
-            document.getElementById('btn-delete-wish').style.display = 'block'; document.getElementById('btn-submit-wish').innerText = "Enregistrer";
+            const item = wishlist.find(w => w.id === id);
+            if(!item) return;
+            document.getElementById('wishlist-modal-title').innerText = "Modifier l'envie";
+            document.getElementById('inp-wish-name').value = item.name;
+            document.getElementById('inp-wish-price').value = item.price;
+            document.getElementById('inp-wish-url').value = item.url || '';
+            document.getElementById('inp-wish-account').value = item.accountId || (accounts[0] ? accounts[0].id : '');
+            
+            document.getElementById('btn-delete-wish').style.display = 'block';
+            document.getElementById('btn-submit-wish').innerText = "Mettre à jour";
         } else {
-            document.getElementById('wishlist-modal-title').innerText = "Nouveau Projet"; document.getElementById('inp-wish-name').value = ''; document.getElementById('inp-wish-price').value = ''; document.getElementById('inp-wish-url').value = ''; document.getElementById('inp-wish-account').value = accounts[0] ? accounts[0].id : ''; 
-            document.getElementById('btn-delete-wish').style.display = 'none'; document.getElementById('btn-submit-wish').innerText = "Ajouter";
+            document.getElementById('wishlist-modal-title').innerText = "Nouveau Projet";
+            document.getElementById('inp-wish-name').value = '';
+            document.getElementById('inp-wish-price').value = '';
+            document.getElementById('inp-wish-url').value = '';
+            document.getElementById('inp-wish-account').value = accounts[0] ? accounts[0].id : ''; 
+            
+            document.getElementById('btn-delete-wish').style.display = 'none';
+            document.getElementById('btn-submit-wish').innerText = "Ajouter";
         }
-        document.getElementById('wishlist-modal').style.display = 'flex'; setTimeout(()=> document.getElementById('inp-wish-price').focus(), 300);
+        document.getElementById('wishlist-modal').style.display = 'flex';
+        setTimeout(()=> document.getElementById('inp-wish-price').focus(), 300);
     }
 
     function closeWishlistModal() { document.getElementById('wishlist-modal').style.display = 'none'; }
+
     function saveWishlistItem() {
-        hapticTap(); const name = document.getElementById('inp-wish-name').value.trim(); const price = parseFloat(document.getElementById('inp-wish-price').value.replace(',', '.'));
-        const url = document.getElementById('inp-wish-url').value.trim(); const accountId = document.getElementById('inp-wish-account').value;
-        if (!name || isNaN(price) || price <= 0 || !accountId) return alert("Infos invalides.");
-        if (editingWishId) { const i = wishlist.findIndex(w => w.id === editingWishId); if (i !== -1) wishlist[i] = { ...wishlist[i], name, price, url, accountId }; } else wishlist.push({ id: Date.now(), name, price, url, accountId });
+        hapticTap();
+        const name = document.getElementById('inp-wish-name').value.trim();
+        let priceInput = document.getElementById('inp-wish-price').value;
+        priceInput = priceInput.replace(',', '.'); const price = parseFloat(priceInput);
+        const url = document.getElementById('inp-wish-url').value.trim();
+        const accountId = document.getElementById('inp-wish-account').value;
+
+        if (!name || isNaN(price) || price <= 0 || !accountId) return alert("Veuillez saisir un nom, un compte et un prix valide.");
+
+        if (editingWishId) {
+            const index = wishlist.findIndex(w => w.id === editingWishId);
+            if (index !== -1) { wishlist[index] = { ...wishlist[index], name, price, url, accountId }; }
+        } else {
+            wishlist.push({ id: Date.now(), name, price, url, accountId });
+        }
+
         saveToCloud(); closeWishlistModal(); updateAllViews(); 
     }
-    function deleteWishFromModal() { if(confirm("Supprimer ?")) { hapticTap(); wishlist = wishlist.filter(w => w.id !== editingWishId); saveToCloud(); closeWishlistModal(); updateAllViews(); } }
 
-    function setJournalView(view) { hapticTap(); document.getElementById('view-list-btn').classList.toggle('active', view === 'list'); document.getElementById('view-cal-btn').classList.toggle('active', view === 'cal'); document.getElementById('journal-list-view').style.display = view === 'list' ? 'block' : 'none'; document.getElementById('journal-cal-view').style.display = view === 'cal' ? 'block' : 'none'; if (view === 'cal') renderCalendar(); }
+    function deleteWishFromModal() {
+        if(confirm("Supprimer ce projet de la liste ?")) {
+            hapticTap(); wishlist = wishlist.filter(w => w.id !== editingWishId);
+            saveToCloud(); closeWishlistModal(); updateAllViews();
+        }
+    }
+
+    function setJournalView(view) {
+        hapticTap();
+        document.getElementById('view-list-btn').classList.toggle('active', view === 'list');
+        document.getElementById('view-cal-btn').classList.toggle('active', view === 'cal');
+        document.getElementById('journal-list-view').style.display = view === 'list' ? 'block' : 'none';
+        document.getElementById('journal-cal-view').style.display = view === 'cal' ? 'block' : 'none';
+        if (view === 'cal') renderCalendar();
+    }
 
     function switchTab(id, btn, index) {
         hapticTap();
@@ -647,82 +1161,257 @@
         document.getElementById('tab-pill').style.transform = 'translateX(' + (index * 100) + '%)';
         
         const target = document.getElementById('tab-' + id);
-        target.classList.add('active'); void target.offsetWidth; target.classList.add('fade-in');
-        btn.classList.add('active'); window.scrollTo(0,0);
+        target.classList.add('active');
+        void target.offsetWidth; // Reflow
+        target.classList.add('fade-in');
+        
+        btn.classList.add('active');
+        window.scrollTo(0,0);
         
         if(id === 'dash') updateAllViews(); if(id === 'tx') renderTransactions(); if(id === 'stats') renderStats();
     }
 
-    function updateAccountsSelectors() { const options = accounts.map(a => `<option value="${escapeHTML(a.id)}">${escapeHTML(a.name)}</option>`).join(''); document.getElementById('inp-account').innerHTML = options; document.getElementById('inp-wish-account').innerHTML = options; }
+    function updateAccountsSelectors() { 
+        const options = accounts.map(a => `<option value="${escapeHTML(a.id)}">${escapeHTML(a.name)}</option>`).join('');
+        document.getElementById('inp-account').innerHTML = options; document.getElementById('inp-wish-account').innerHTML = options; 
+    }
     
     function adjustBalance(accId) {
         hapticTap(); const acc = accounts.find(a => a.id === accId); if (!acc) return;
+        
         const nowReal = new Date(); let currentCalcBal = acc.initBalance;
-        expenses.forEach(e => { if(e.accountId === accId) { currentCalcBal += (e.type === 'income' ? 1 : -1) * (e.amount * getPastOccurrencesCount(e, nowReal)); } });
-        let realBalInput = prompt(`Solde RÉEL actuel (${acc.name}) :\nCalculé : ${currentCalcBal.toFixed(2)}€`);
-        if (!realBalInput) return; const realBal = parseFloat(realBalInput.replace(',', '.')); if (isNaN(realBal)) return;
-        const diff = realBal - currentCalcBal; if (Math.abs(diff) < 0.01) return alert("À jour ! ✅");
-        if (confirm(`Différence de ${Math.abs(diff).toFixed(2)}€. Créer un ajustement ?`)) {
-            expenses.unshift({ amount: Math.abs(diff), label: "⚖️ Ajustement bancaire", note: "Auto", url: "", date: nowReal.toISOString().split('T')[0], type: diff > 0 ? 'income' : 'expense', cat: diff > 0 ? 'income' : 'autre', accountId: accId, recurring: false, id: Date.now() });
-            saveToCloud(); updateAllViews(); if (document.getElementById('tab-tx').classList.contains('active')) renderTransactions();
+        expenses.forEach(e => {
+            if(e.accountId === accId) {
+                const pastCount = getPastOccurrencesCount(e, nowReal);
+                currentCalcBal += (e.type === 'income' ? 1 : -1) * (e.amount * pastCount);
+            }
+        });
+
+        let realBalInput = prompt(`Solde RÉEL actuel sur l'application de votre banque pour "${acc.name}" (€) :\n(Solde calculé actuel : ${currentCalcBal.toFixed(2)}€)`);
+        if (realBalInput === null || realBalInput.trim() === '') return;
+        
+        realBalInput = realBalInput.replace(',', '.'); const realBal = parseFloat(realBalInput);
+        if (isNaN(realBal)) return alert("Montant invalide.");
+
+        const diff = realBal - currentCalcBal;
+        if (Math.abs(diff) < 0.01) return alert("Le solde est déjà parfaitement à jour ! ✅");
+
+        if (confirm(`Il y a une différence de ${Math.abs(diff).toFixed(2)}€.\nVoulez-vous qu'une opération automatique "⚖️ Ajustement" soit créée pour corriger le solde ?`)) {
+            const isoDate = nowReal.toISOString().split('T')[0];
+            expenses.unshift({
+                amount: Math.abs(diff), label: "⚖️ Ajustement bancaire", note: "Créé automatiquement", url: "", 
+                date: isoDate, type: diff > 0 ? 'income' : 'expense', cat: diff > 0 ? 'income' : 'autre', 
+                accountId: accId, recurring: false, frequency: null, endDate: null, id: Date.now() 
+            });
+            saveToCloud(); updateAllViews();
+            if (document.getElementById('tab-tx').classList.contains('active')) renderTransactions();
         }
     }
 
     function freshStart() {
-        if(confirm("Effacer l'historique et démarrer un nouveau mois ?")) {
+        if(confirm("Attention : Cela va effacer TOUTES vos transactions passées.\n\nLes soldes actuels de vos comptes seront sauvegardés comme nouveaux soldes de départ. Vos projets et enveloppes seront conservés.\n\nÊtes-vous sûr de vouloir commencer un nouveau mois ?")) {
             hapticTap(); const nowReal = new Date();
-            accounts.forEach(acc => { let currentCalcBal = acc.initBalance; expenses.forEach(e => { if(e.accountId === acc.id) { currentCalcBal += (e.type === 'income' ? 1 : -1) * (e.amount * getPastOccurrencesCount(e, nowReal)); } }); acc.initBalance = currentCalcBal; });
-            expenses = []; saveToCloud(); applyAppSettings(); alert("Historique effacé ! 🚀");
+            
+            accounts.forEach(acc => {
+                let currentCalcBal = acc.initBalance;
+                expenses.forEach(e => {
+                    if(e.accountId === acc.id) {
+                        const pastCount = getPastOccurrencesCount(e, nowReal);
+                        currentCalcBal += (e.type === 'income' ? 1 : -1) * (e.amount * pastCount);
+                    }
+                });
+                acc.initBalance = currentCalcBal; 
+            });
+            
+            expenses = []; saveToCloud(); applyAppSettings();
+            alert("Historique effacé ! Vos comptes sont prêts pour un nouveau départ. 🚀");
         }
     }
 
-    function addAccount() { hapticTap(); const name = prompt("Nom du compte :"); if(!name) return; const bal = parseFloat(prompt("Solde initial (€) :", "0").replace(',', '.')); if (isNaN(bal)) return; const colors = ['blue', 'purple', 'pink', 'green', 'orange', 'alt-color']; accounts.push({ id: 'acc_'+Date.now(), name: name, initBalance: bal, color: colors[accounts.length % colors.length] }); saveToCloud(); }
-    function editAccount(id) { hapticTap(); const acc = accounts.find(a => a.id === id); if (!acc) return; const bal = parseFloat(prompt(`Nouveau solde initial pour ${acc.name} (€) :`, acc.initBalance).replace(',', '.')); if (!isNaN(bal)) { acc.initBalance = bal; saveToCloud(); } }
-    function deleteAccount(id) { hapticTap(); if(accounts.length <= 1) return alert("1 compte min."); if(confirm("Supprimer ce compte ?")) { accounts = accounts.filter(a => a.id !== id); expenses = expenses.filter(e => e.accountId !== id); saveToCloud(); } }
-    function renderSettingsAccounts() { document.getElementById('settings-accounts-list').innerHTML = accounts.map(a => `<div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid var(--input-bg)"><div><strong style="font-size:15px;">${escapeHTML(a.name)}</strong><br><small style="color:var(--text-muted)">Initial: ${a.initBalance.toFixed(2)} €</small></div><div style="display:flex; gap:15px;"><button onclick="editAccount('${escapeHTML(a.id)}')" style="background:none; border:none; color:var(--accent); font-weight:600;">Modif.</button><button onclick="deleteAccount('${escapeHTML(a.id)}')" style="background:none; border:none; color:var(--red); font-size:18px;">✕</button></div></div>`).join(''); }
+    function addAccount() {
+        hapticTap(); const name = prompt("Nom du compte (ex: Livret A) :"); if(!name) return;
+        let balInput = prompt("Solde initial (€) :"); if (balInput === null) return;
+        balInput = balInput.replace(',', '.'); const bal = parseFloat(balInput) || 0;
+        const colors = ['blue', 'purple', 'pink', 'green', 'orange', 'alt-color'];
+        accounts.push({ id: 'acc_'+Date.now(), name: name, initBalance: bal, color: colors[accounts.length % colors.length] }); 
+        saveToCloud();
+    }
 
-    function addCustomCategory() { hapticTap(); const label = prompt("Nom :"); if (!label) return; const icon = prompt("Emoji :", "🏷️"); if (!icon) return; const typeChoice = prompt("Type :\n1. Fixe\n2. Quotidien\n3. Loisirs", "2"); categories.push({ id: 'cat_' + Date.now(), label, icon, type: typeChoice==='1'?'fixe':(typeChoice==='3'?'loisirs':'vie'), isCustom: true }); saveToCloud(); applyAppSettings(); }
-    function deleteCategory(id) { hapticTap(); if (confirm("Supprimer ? Les op. seront en 'Autre'.")) { categories = categories.filter(c => c.id !== id); expenses.forEach(e => { if (e.cat === id) e.cat = 'autre'; }); saveToCloud(); applyAppSettings(); } }
-    function renderSettingsCategories() { const customCats = categories.filter(c => c.isCustom); document.getElementById('settings-custom-cats-list').innerHTML = customCats.length === 0 ? "<p style='color:var(--text-muted); font-size:14px;'>Aucune.</p>" : customCats.map(c => `<div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid var(--input-bg)"><div style="display:flex; align-items:center; gap:12px;"><span style="font-size:20px; background:var(--input-bg); width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:12px;">${c.icon}</span><div><strong style="font-size:15px;">${escapeHTML(c.label)}</strong><br><small style="color:var(--text-muted)">${c.type==='fixe'?'Fixe':(c.type==='loisirs'?'Loisirs':'Quotidien')}</small></div></div><button onclick="deleteCategory('${escapeHTML(c.id)}')" style="background:none; border:none; color:var(--red); font-size:18px;">✕</button></div>`).join(''); }
-    function renderSettingsCatBudgets() { document.getElementById('settings-cat-budgets').innerHTML = categories.map(c => `<div class="settings-row" style="padding: 12px 0;"><div class="settings-info" style="display:flex; align-items:center; gap:12px;"><span style="font-size:20px; background:var(--input-bg); width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:12px;">${c.icon}</span><h4 style="margin:0; font-size:15px;">${escapeHTML(c.label)}</h4></div><input type="number" class="input-control" style="width:90px; text-align:right; padding:10px; background:var(--input-bg);" placeholder="Illimité" value="${catBudgets[c.id] || ''}" onchange="saveCatBudget('${c.id}', this.value)"></div>`).join(''); }
-    function saveCatBudget(catId, value) { const val = parseFloat(value); if(isNaN(val) || val <= 0) delete catBudgets[catId]; else catBudgets[catId] = val; saveToCloud(); }
+    function editAccount(id) {
+        hapticTap(); const acc = accounts.find(a => a.id === id); if (!acc) return;
+        let balInput = prompt(`Nouveau solde initial (de départ) pour ${acc.name} (€) :\n\n⚠️ Si vous voulez juste mettre à jour le solde d'aujourd'hui, utilisez plutôt le bouton "⚖️ Ajuster" sur le Tableau de bord.`, acc.initBalance);
+        if (balInput === null) return; balInput = balInput.replace(',', '.'); const bal = parseFloat(balInput);
+        if (!isNaN(bal)) { acc.initBalance = bal; saveToCloud(); } else { alert("Montant invalide."); }
+    }
+
+    function deleteAccount(id) {
+        hapticTap();
+        if(accounts.length <= 1) return alert("Vous devez garder au moins un compte principal.");
+        if(confirm("Supprimer ce compte et les opérations liées ?")) {
+            accounts = accounts.filter(a => a.id !== id); expenses = expenses.filter(e => e.accountId !== id);
+            saveToCloud(); 
+        }
+    }
+    
+    function renderSettingsAccounts() {
+        document.getElementById('settings-accounts-list').innerHTML = accounts.map(a => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid var(--input-bg)">
+                <div><strong style="font-size:15px;">${escapeHTML(a.name)}</strong><br><small style="color:var(--text-muted)">Initial: ${a.initBalance.toFixed(2)} €</small></div>
+                <div style="display:flex; gap:15px;">
+                    <button onclick="editAccount('${escapeHTML(a.id)}')" style="background:none; border:none; color:var(--accent); font-weight:600;">Modif.</button>
+                    <button onclick="deleteAccount('${escapeHTML(a.id)}')" style="background:none; border:none; color:var(--red); font-size:18px;">✕</button>
+                </div>
+            </div>`).join('');
+    }
+
+    function addCustomCategory() {
+        hapticTap(); const label = prompt("Nom de la catégorie (ex: Animaux) :"); if (!label) return;
+        const icon = prompt("Emoji pour la catégorie (ex: 🐶) :", "🏷️"); if (!icon) return;
+        const typeChoice = prompt("Type de dépense (entrez le chiffre) :\n1. Charge Fixe (ex: Assurances)\n2. Dépense Quotidienne (ex: Courses)\n3. Loisirs (ex: Sorties)", "2");
+        let type = 'vie'; if (typeChoice === '1') type = 'fixe'; if (typeChoice === '3') type = 'loisirs';
+        categories.push({ id: 'cat_' + Date.now(), label, icon, type, isCustom: true });
+        saveToCloud(); applyAppSettings();
+    }
+
+    function deleteCategory(id) {
+        hapticTap();
+        if (confirm("Supprimer cette catégorie ? Les opérations associées seront reclassées en 'Autre'.")) {
+            categories = categories.filter(c => c.id !== id);
+            expenses.forEach(e => { if (e.cat === id) e.cat = 'autre'; });
+            saveToCloud(); applyAppSettings();
+        }
+    }
+
+    function renderSettingsCategories() {
+        const container = document.getElementById('settings-custom-cats-list');
+        const customCats = categories.filter(c => c.isCustom);
+        if (customCats.length === 0) { container.innerHTML = "<p style='color:var(--text-muted); font-size:14px;'>Aucune catégorie personnalisée.</p>"; return; }
+        container.innerHTML = customCats.map(c => {
+            const typeStr = c.type === 'fixe' ? 'Fixe' : (c.type === 'loisirs' ? 'Loisirs' : 'Quotidien');
+            return `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid var(--input-bg)">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <span style="font-size:20px; background:var(--input-bg); width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:12px;">${c.icon}</span>
+                    <div><strong style="font-size:15px;">${escapeHTML(c.label)}</strong><br><small style="color:var(--text-muted)">Règle: ${typeStr}</small></div>
+                </div>
+                <button onclick="deleteCategory('${escapeHTML(c.id)}')" style="background:none; border:none; color:var(--red); font-size:18px;">✕</button>
+            </div>`;
+        }).join('');
+    }
+
+    function renderSettingsCatBudgets() {
+        const container = document.getElementById('settings-cat-budgets');
+        container.innerHTML = categories.map(c => `
+            <div class="settings-row" style="padding: 12px 0;">
+                <div class="settings-info" style="display:flex; align-items:center; gap:12px;">
+                    <span style="font-size:20px; background:var(--input-bg); width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:12px;">${c.icon}</span>
+                    <h4 style="margin:0; font-size:15px;">${escapeHTML(c.label)}</h4>
+                </div>
+                <input type="number" class="input-control" style="width:90px; text-align:right; padding:10px; background:var(--input-bg);"
+                       placeholder="Illimité" value="${catBudgets[c.id] || ''}" onchange="saveCatBudget('${c.id}', this.value)">
+            </div>
+        `).join('');
+    }
+
+    function saveCatBudget(catId, value) {
+        const val = parseFloat(value);
+        if(isNaN(val) || val <= 0) delete catBudgets[catId]; else catBudgets[catId] = val;
+        saveToCloud();
+    }
+
+    function getLastWorkingDay(year, month) {
+        let lastDay = new Date(year, month + 1, 0); 
+        if (lastDay.getDay() === 0) { lastDay.setDate(lastDay.getDate() - 2); } 
+        else if (lastDay.getDay() === 6) { lastDay.setDate(lastDay.getDate() - 1); }
+        return lastDay.getDate();
+    }
 
     function getOccurrences(exp, year, month) {
-        const occurrences = []; const sd = new Date(exp.date); sd.setHours(0,0,0,0); const tS = new Date(year, month, 1); const tE = new Date(year, month + 1, 0);
-        let ed = exp.endDate ? new Date(exp.endDate) : new Date(2100, 0, 1); ed.setHours(23,59,59,999);
-        if (!exp.recurring) { if (sd.getFullYear() === year && sd.getMonth() === month) occurrences.push(sd.getDate()); return occurrences; }
-        let fD = exp.frequency === 'weekly'?7 : (exp.frequency==='2weeks'?14 : (exp.frequency==='4weeks'?28:0));
-        if (fD > 0) { let c = new Date(sd); while (c <= tE && c <= ed) { if (c >= tS && c.getFullYear() === year && c.getMonth() === month) occurrences.push(c.getDate()); c.setDate(c.getDate() + fD); } } 
-        else if (exp.frequency === 'last_working_day') { let lD = new Date(year, month + 1, 0); if(lD.getDay()===0) lD.setDate(lD.getDate()-2); else if(lD.getDay()===6) lD.setDate(lD.getDate()-1); let d = lD.getDate(); if (new Date(year,month,d) >= sd && new Date(year,month,d) <= ed) occurrences.push(d); } 
-        else { if (sd <= tE && tS <= ed) { let d = Math.min(sd.getDate(), tE.getDate()); if (new Date(year,month,d) >= sd && new Date(year,month,d) <= ed) occurrences.push(d); } } return occurrences;
+        const occurrences = []; const startDate = new Date(exp.date); startDate.setHours(0,0,0,0);
+        const targetStart = new Date(year, month, 1); const targetEnd = new Date(year, month + 1, 0);
+        let endDate = exp.endDate ? new Date(exp.endDate) : new Date(2100, 0, 1); endDate.setHours(23,59,59,999);
+
+        if (!exp.recurring) { if (startDate.getFullYear() === year && startDate.getMonth() === month) occurrences.push(startDate.getDate()); return occurrences; }
+
+        let freqDays = 0; if (exp.frequency === 'weekly') freqDays = 7; else if (exp.frequency === '2weeks') freqDays = 14; else if (exp.frequency === '4weeks') freqDays = 28;
+
+        if (freqDays > 0) {
+            let curr = new Date(startDate.getTime());
+            while (curr <= targetEnd && curr <= endDate) {
+                if (curr >= targetStart && curr.getFullYear() === year && curr.getMonth() === month) occurrences.push(curr.getDate());
+                curr.setDate(curr.getDate() + freqDays);
+            }
+        } else if (exp.frequency === 'last_working_day') {
+            let occDay = getLastWorkingDay(year, month); let occDate = new Date(year, month, occDay);
+            if (occDate >= startDate && occDate <= endDate) occurrences.push(occDay);
+        } else {
+            if (startDate <= targetEnd && targetStart <= endDate) {
+                let d = Math.min(startDate.getDate(), targetEnd.getDate()); let occDate = new Date(year, month, d);
+                if (occDate >= startDate && occDate <= endDate) occurrences.push(d);
+            }
+        }
+        return occurrences;
     }
 
     function getPastOccurrencesCount(exp, now) {
-        const sd = new Date(exp.date); if (sd > now) return 0; if (!exp.recurring) return 1; let ed = exp.endDate ? new Date(exp.endDate) : now; if (ed > now) ed = now;
-        if (!exp.frequency || exp.frequency === 'monthly' || exp.frequency === 'last_working_day') { let c = (ed.getFullYear() - sd.getFullYear()) * 12 + (ed.getMonth() - sd.getMonth()); let d = exp.frequency === 'last_working_day' ? (new Date(ed.getFullYear(), ed.getMonth()+1, 0).getDay()===0?new Date(ed.getFullYear(), ed.getMonth()+1, 0).getDate()-2:(new Date(ed.getFullYear(), ed.getMonth()+1, 0).getDay()===6?new Date(ed.getFullYear(), ed.getMonth()+1, 0).getDate()-1:new Date(ed.getFullYear(), ed.getMonth()+1, 0).getDate())) : sd.getDate(); if (ed.getDate() >= d) c++; return c; } 
-        else { return Math.floor(((ed - sd) / 86400000) / (exp.frequency === 'weekly'?7:(exp.frequency==='2weeks'?14:28))) + 1; }
+        const sd = new Date(exp.date); if (sd > now) return 0; if (!exp.recurring) return 1;
+        let ed = exp.endDate ? new Date(exp.endDate) : now; if (ed > now) ed = now;
+
+        if (!exp.frequency || exp.frequency === 'monthly' || exp.frequency === 'last_working_day') {
+            let count = (ed.getFullYear() - sd.getFullYear()) * 12 + (ed.getMonth() - sd.getMonth());
+            let occDay = exp.frequency === 'last_working_day' ? getLastWorkingDay(ed.getFullYear(), ed.getMonth()) : sd.getDate();
+            if (ed.getDate() >= occDay) count++; return count;
+        } else {
+            let freqDays = exp.frequency === 'weekly' ? 7 : (exp.frequency === '2weeks' ? 14 : 28);
+            const diffTime = ed.getTime() - sd.getTime();
+            return Math.floor(Math.floor(diffTime / (1000 * 60 * 60 * 24)) / freqDays) + 1;
+        }
     }
 
-    function expandExpensesForMonth(year, month) { let exp = []; expenses.forEach(e => { getOccurrences(e, year, month).forEach(day => { exp.push({...e, originalId: e.id, displayDay: day, displayDateStr: `${String(day).padStart(2,'0')}/${String(month+1).padStart(2,'0')}/${year}`}); }); }); return exp.sort((a,b) => b.displayDay - a.displayDay); }
+    function expandExpensesForMonth(year, month) {
+        let expanded = [];
+        expenses.forEach(e => {
+            const occs = getOccurrences(e, year, month);
+            occs.forEach(day => { expanded.push({...e, originalId: e.id, displayDay: day, displayDateStr: `${String(day).padStart(2,'0')}/${String(month+1).padStart(2,'0')}/${year}`}); });
+        });
+        expanded.sort((a,b) => b.displayDay - a.displayDay); return expanded;
+    }
 
     function renderCats() { document.getElementById('cat-container').innerHTML = categories.map(c => `<div class="category-item ${selectedCat === c.id ? 'selected' : ''}" onclick="selectCat('${c.id}')"><span style="font-size:28px; margin-bottom:8px;">${c.icon}</span><span style="font-size:12px; font-weight:700;">${escapeHTML(c.label)}</span></div>`).join(''); }
     function selectCat(id) { hapticTap(); selectedCat = id; renderCats(); }
 
     function addExpense() {
-        hapticTap(); const amt = parseFloat(document.getElementById('inp-amount').value.replace(',', '.')); const lbl = document.getElementById('inp-label').value.trim(); const accId = document.getElementById('inp-account').value;
+        hapticTap();
+        let amtInput = document.getElementById('inp-amount').value; if(amtInput) amtInput = amtInput.replace(',', '.');
+        const amt = parseFloat(amtInput); const lbl = document.getElementById('inp-label').value.trim(); 
+        const noteRaw = document.getElementById('inp-note').value.trim(); const urlRaw = document.getElementById('inp-url').value.trim();
+        const accId = document.getElementById('inp-account').value;
+        
         if(isNaN(amt) || !lbl || !accId) return alert("Montant et Libellé requis.");
-        const txData = { amount: amt, label: lbl, note: document.getElementById('inp-note').value.trim(), url: document.getElementById('inp-url').value.trim(), date: document.getElementById('inp-date').value, type: currentType, cat: currentType === 'expense' ? selectedCat : 'income', accountId: accId, recurring: document.getElementById('inp-recurring').checked, frequency: document.getElementById('inp-recurring').checked ? document.getElementById('inp-frequency').value : null, endDate: document.getElementById('inp-recurring').checked ? document.getElementById('inp-rec-end').value : null, id: editingTxId || Date.now() };
-        if (editingTxId) { const i = expenses.findIndex(e => e.id === editingTxId); if (i !== -1) expenses[i] = txData; } else { expenses.unshift(txData); }
+
+        const txData = {
+            amount: amt, label: lbl, note: noteRaw, url: urlRaw, date: document.getElementById('inp-date').value, type: currentType,
+            cat: currentType === 'expense' ? selectedCat : 'income', accountId: accId, recurring: document.getElementById('inp-recurring').checked,
+            frequency: document.getElementById('inp-recurring').checked ? document.getElementById('inp-frequency').value : null,
+            endDate: document.getElementById('inp-recurring').checked ? document.getElementById('inp-rec-end').value : null, id: editingTxId || Date.now() 
+        };
+
+        if (editingTxId) { const index = expenses.findIndex(e => e.id === editingTxId); if (index !== -1) expenses[index] = txData; } 
+        else { expenses.unshift(txData); }
+
         saveToCloud(); closeAddModal(); updateAllViews(); if(document.getElementById('tab-tx').classList.contains('active')) renderTransactions();
     }
 
-    function deleteTxFromModal() { if(confirm("Supprimer ?")) { deleteTx(editingTxId); closeAddModal(); } }
-    function deleteTx(id) { hapticTap(); expenses = expenses.filter(e => e.id !== id); saveToCloud(); }
+    function deleteTxFromModal() { if(confirm("Supprimer cette opération de façon permanente ?")) { deleteTx(editingTxId); closeAddModal(); } }
+    function deleteTx(id) { hapticTap(); expenses = expenses.filter(e => e.id !== id); saveToCloud(); updateAllViews(); if(document.getElementById('tab-tx').classList.contains('active')) renderTransactions(); }
 
     let touchStartX = 0; let swipedElement = null;
-    function handleTouchStart(e, el) { touchStartX = e.touches[0].clientX; swipedElement = el; el.style.transition = 'none'; }
+    function handleTouchStart(e, element) { touchStartX = e.touches[0].clientX; swipedElement = element; element.style.transition = 'none'; }
     function handleTouchMove(e) { if(!swipedElement) return; const diffX = e.touches[0].clientX - touchStartX; if(diffX < 0 && diffX > -80) swipedElement.style.transform = `translateX(${diffX}px)`; }
-    function handleTouchEnd(e) { if(!swipedElement) return; swipedElement.style.transition = 'transform 0.2s ease-out'; const diffX = e.changedTouches[0].clientX - touchStartX; if(diffX < -40) { swipedElement.style.transform = `translateX(-80px)`; hapticTap(); } else { swipedElement.style.transform = `translateX(0px)`; } swipedElement = null; }
+    function handleTouchEnd(e) {
+        if(!swipedElement) return; swipedElement.style.transition = 'transform 0.2s ease-out'; const diffX = e.changedTouches[0].clientX - touchStartX;
+        if(diffX < -40) { swipedElement.style.transform = `translateX(-80px)`; hapticTap(); } else { swipedElement.style.transform = `translateX(0px)`; } swipedElement = null;
+    }
 
     function formatRelativeDate(dateStr) {
         const today = new Date(); const yesterday = new Date(); yesterday.setDate(today.getDate() - 1);
@@ -734,27 +1423,51 @@
 
     function renderWishlist(epargneMois, accBalances) {
         const container = document.getElementById('wishlist-container');
-        if (wishlist.length === 0) { container.innerHTML = `<div class="empty-state" style="padding:20px;"><div class="empty-state-icon" style="font-size:40px;">🎯</div><div class="empty-state-title" style="font-size:16px;">Aucun projet</div><div style="font-size:13px;">Fixez-vous un objectif !</div></div>`; return; }
+        if (wishlist.length === 0) {
+            container.innerHTML = `<div class="empty-state" style="padding:20px;"><div class="empty-state-icon" style="font-size:40px;">🎯</div><div class="empty-state-title" style="font-size:16px;">Aucun projet</div><div style="font-size:13px;">Fixez-vous un objectif !</div></div>`; return;
+        }
+
         container.innerHTML = wishlist.map(w => {
             const accB = w.accountId ? (accBalances[w.accountId] || 0) : globalRealBalance; const miss = w.price - accB; const prog = Math.min((accB / w.price) * 100, 100);
             let stat = prog >= 100 ? `<span style="color:var(--green); font-weight:700;">✅ Financement atteint !</span>` : `<span style="color:var(--orange); font-weight:700;">⚠️ Manque ${miss.toFixed(0)}€</span> <span style="color:var(--text-muted)">${epargneMois > 0 ? `(~${Math.ceil(miss/epargneMois)} mois)` : ''}</span>`;
-            return `<div class="card" style="padding:20px; cursor:pointer;" onclick="openWishlistModal(${w.id})"><div style="font-weight:800; font-size:18px; margin-bottom:6px; letter-spacing:-0.5px;">${escapeHTML(w.name)}</div><div style="font-size:28px; font-weight:800; letter-spacing:-1px; margin-bottom:15px;">${w.price.toFixed(0)} €</div><div class="prog-bar-bg" style="height:10px; margin-bottom:12px;"><div class="prog-bar-fill" style="width:${prog}%; background:${prog>=100?'var(--green)':'var(--accent)'}"></div></div><div style="font-size:13px;">${stat}</div></div>`;
+
+            return `
+            <div class="card" style="padding:20px; cursor:pointer;" onclick="openWishlistModal(${w.id})">
+                <div style="font-weight:800; font-size:18px; margin-bottom:6px; letter-spacing:-0.5px;">${escapeHTML(w.name)}</div>
+                <div style="font-size:28px; font-weight:800; letter-spacing:-1px; margin-bottom:15px;">${w.price.toFixed(0)} €</div>
+                <div class="prog-bar-bg" style="height:10px; margin-bottom:12px;"><div class="prog-bar-fill" style="width:${prog}%; background:${prog>=100?'var(--green)':'var(--accent)'}"></div></div>
+                <div style="font-size:13px;">${stat}</div>
+            </div>`;
         }).join('');
     }
 
     function updateAllViews() {
         const tY = viewDate.getFullYear(); const tM = viewDate.getMonth(); const nowR = new Date();
         const accBalances = {}; accounts.forEach(a => accBalances[a.id] = a.initBalance); globalRealBalance = 0;
-        expenses.forEach(e => { if(accBalances[e.accountId] !== undefined) accBalances[e.accountId] += (e.type === 'income' ? 1 : -1) * (e.amount * getPastOccurrencesCount(e, nowR)); });
+
+        expenses.forEach(e => {
+            if(accBalances[e.accountId] === undefined) return;
+            accBalances[e.accountId] += (e.type === 'income' ? 1 : -1) * (e.amount * getPastOccurrencesCount(e, nowR));
+        });
 
         document.getElementById('accounts-container').innerHTML = accounts.map(a => {
             globalRealBalance += accBalances[a.id];
-            return `<div class="bank-card ${a.color}"><div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:2;"><div class="acc-name">${escapeHTML(a.name)}</div><button onclick="adjustBalance('${escapeHTML(a.id)}')" style="background:rgba(0,0,0,0.2); border:none; color:white; border-radius:12px; font-size:12px; padding:6px 12px; cursor:pointer; font-weight:700;">Ajuster</button></div><div class="acc-val blur-val" id="acc-val-${a.id}">${accBalances[a.id].toFixed(2)} €</div></div>`;
+            return `
+            <div class="bank-card ${a.color}">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:2;">
+                    <div class="acc-name">${escapeHTML(a.name)}</div>
+                    <button onclick="adjustBalance('${escapeHTML(a.id)}')" style="background:rgba(0,0,0,0.2); border:none; color:white; border-radius:12px; font-size:12px; padding:6px 12px; cursor:pointer; font-weight:700;">Ajuster</button>
+                </div>
+                <div class="acc-val blur-val" id="acc-val-${a.id}">${accBalances[a.id].toFixed(2)} €</div>
+            </div>`;
         }).join('');
 
         const curData = expandExpensesForMonth(tY, tM);
-        const mInc = curData.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0); const mExp = curData.filter(e => e.type === 'expense').reduce((s, e) => s + e.amount, 0);
-        const mainAccId = accounts[0] ? accounts[0].id : null; const mainData = curData.filter(e => e.accountId === mainAccId);
+        const mInc = curData.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0); 
+        const mExp = curData.filter(e => e.type === 'expense').reduce((s, e) => s + e.amount, 0);
+        
+        const mainAccId = accounts[0] ? accounts[0].id : null; 
+        const mainData = curData.filter(e => e.accountId === mainAccId);
         const rAV = mainData.filter(e=>e.type==='income').reduce((s,e)=>s+e.amount,0) - mainData.filter(e=>e.type==='expense').reduce((s,e)=>s+e.amount,0);
         
         animateValue(document.getElementById('dash-inc'), 0, mInc, 800, v => "+" + v.toFixed(0) + " €");
@@ -762,22 +1475,40 @@
         animateValue(document.getElementById('dash-remaining'), 0, rAV, 800, v => v.toFixed(0) + " €");
         
         document.getElementById('dash-goal-text').innerText = savingsGoal.toFixed(0);
-        const safe = Math.max(0, mInc - savingsGoal); document.getElementById('prog-label').innerText = mExp.toFixed(0) + " € / " + safe.toFixed(0) + " €";
+        const safe = Math.max(0, mInc - savingsGoal); 
+        document.getElementById('prog-label').innerText = mExp.toFixed(0) + " € / " + safe.toFixed(0) + " €";
+        
         let pct = safe > 0 ? (mExp / safe) * 100 : (mExp > 0 ? 100 : 0);
-        document.getElementById('prog-fill').style.width = Math.min(pct, 100) + "%"; document.getElementById('prog-fill').style.background = pct >= 100 ? 'var(--red)' : (pct > 85 ? 'var(--orange)' : 'var(--accent)');
+        document.getElementById('prog-fill').style.width = Math.min(pct, 100) + "%"; 
+        document.getElementById('prog-fill').style.background = pct >= 100 ? 'var(--red)' : (pct > 85 ? 'var(--orange)' : 'var(--accent)');
 
-        const todayD = nowR.getDate(); const up = curData.filter(e => e.recurring && e.type === 'expense' && e.displayDay > todayD).sort((a,b) => a.displayDay - b.displayDay);
-        document.getElementById('upcoming-list').innerHTML = (tY !== nowR.getFullYear() || tM !== nowR.getMonth()) ? "<div style='text-align:center; padding:10px;'>Mois en cours uniquement.</div>" : (up.length === 0 ? "<div style='text-align:center; padding:10px;'>Tout est payé ! 🎉</div>" : up.map(e => `<div class="upcoming-item"><div style="display:flex; align-items:center; gap:12px;"><div style="background:var(--input-bg); color:var(--text-main); width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:18px;">${e.displayDay}</div><span style="font-weight:700; font-size:16px;">${escapeHTML(e.label)}</span></div><div class="blur-val" style="font-weight:800; font-size:18px; letter-spacing:-0.5px;">${e.amount.toFixed(0)} €</div></div>`).join(''));
+        const todayD = nowR.getDate(); 
+        const up = curData.filter(e => e.recurring && e.type === 'expense' && e.displayDay > todayD).sort((a,b) => a.displayDay - b.displayDay);
+        
+        const upList = document.getElementById('upcoming-list');
+        if (tY !== nowR.getFullYear() || tM !== nowR.getMonth()) {
+            upList.innerHTML = "<div style='text-align:center; padding:10px;'>Mois en cours uniquement.</div>";
+        } else if(up.length === 0) {
+            upList.innerHTML = "<div style='text-align:center; padding:10px;'>Tout est payé ! 🎉</div>";
+        } else {
+            upList.innerHTML = up.map(e => `
+            <div class="upcoming-item">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="background:var(--input-bg); color:var(--text-main); width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:18px;">${e.displayDay}</div>
+                    <span style="font-weight:700; font-size:16px;">${escapeHTML(e.label)}</span>
+                </div>
+                <div class="blur-val" style="font-weight:800; font-size:18px; letter-spacing:-0.5px;">${e.amount.toFixed(0)} €</div>
+            </div>`).join('');
+        }
+
         renderWishlist(mInc - mExp, accBalances);
     }
-
-    function renderFilters() { document.getElementById('filter-bar').innerHTML = `<div class="filter-pill active" onclick="setFilter('all', this)">Tout</div><div class="filter-pill" onclick="setFilter('income', this)">Revenus</div>` + categories.map(c => `<div class="filter-pill" onclick="setFilter('${c.id}', this)">${escapeHTML(c.label)}</div>`).join(''); }
-    function setFilter(f, el) { hapticTap(); currentFilter = f; document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active')); el.classList.add('active'); renderTransactions(); }
 
     function renderTransactions() {
         const list = document.getElementById('tx-list'); const search = document.getElementById('tx-search').value.toLowerCase(); 
         const activeExps = expandExpensesForMonth(viewDate.getFullYear(), viewDate.getMonth());
         const filtered = activeExps.filter(e => (currentFilter === 'all' || (currentFilter === 'income' ? e.type === 'income' : e.cat === currentFilter)) && (e.label.toLowerCase().includes(search) || (e.note && e.note.toLowerCase().includes(search))));
+        
         if(filtered.length === 0) { list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🍃</div><div class="empty-state-title">Aucune opération</div><div style="font-size:14px;">Vous n'avez rien dépensé.</div></div>`; return; }
         
         let html = ''; let lastDate = '';
@@ -785,7 +1516,18 @@
             if (e.date !== lastDate) { html += `<div class="tx-date-header">${formatRelativeDate(e.date)}</div>`; lastDate = e.date; }
             const catObj = categories.find(c => c.id === e.cat) || categories.find(c => c.id === 'autre');
             const isInc = e.type === 'income'; const icon = isInc ? '💰' : catObj.icon;
-            html += `<div class="tx-swipe-container"><div class="tx-delete-btn" onclick="deleteTx(${e.originalId})">Suppr.</div><div class="tx-item-content" onclick="openEditModal(${e.originalId})" ontouchstart="handleTouchStart(event, this)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)"><div style="display:flex; align-items:center;"><div class="tx-icon-box">${icon}</div><div><div class="tx-title">${escapeHTML(e.label)} ${e.recurring ? '🔄' : ''}</div><div class="tx-subtitle">${escapeHTML(accounts.find(a => a.id === e.accountId)?.name || "")}</div></div></div><div class="blur-val" style="font-weight:800; font-size:18px; letter-spacing:-0.5px; color:${isInc ? 'var(--green)' : 'var(--text-main)'}">${isInc ? '+' : '-'}${e.amount.toFixed(2)} €</div></div></div>`;
+            
+            html += `
+            <div class="tx-swipe-container">
+                <div class="tx-delete-btn" onclick="deleteTx(${e.originalId})">Suppr.</div>
+                <div class="tx-item-content" onclick="openEditModal(${e.originalId})" ontouchstart="handleTouchStart(event, this)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">
+                    <div style="display:flex; align-items:center;">
+                        <div class="tx-icon-box">${icon}</div>
+                        <div><div class="tx-title">${escapeHTML(e.label)} ${e.recurring ? '🔄' : ''}</div><div class="tx-subtitle">${escapeHTML(accounts.find(a => a.id === e.accountId)?.name || "")}</div></div>
+                    </div>
+                    <div class="blur-val" style="font-weight:800; font-size:18px; letter-spacing:-0.5px; color:${isInc ? 'var(--green)' : 'var(--text-main)'}">${isInc ? '+' : '-'}${e.amount.toFixed(2)} €</div>
+                </div>
+            </div>`;
         });
         list.innerHTML = html;
     }
@@ -794,34 +1536,55 @@
         const grid = document.getElementById('cal-grid'); while (grid.childNodes.length > 7) grid.removeChild(grid.lastChild);
         const y = viewDate.getFullYear(); const m = viewDate.getMonth(); const fD = new Date(y, m, 1).getDay(); const dIM = new Date(y, m + 1, 0).getDate(); const sD = fD === 0 ? 6 : fD - 1;
         const activeExps = expandExpensesForMonth(y, m);
+        
         for(let i=0; i<sD; i++) { const div = document.createElement('div'); div.className = 'cal-cell empty'; grid.appendChild(div); }
+        
         for(let day=1; day<=dIM; day++) {
             const hasTx = activeExps.some(e => e.displayDay === day);
-            const div = document.createElement('div'); div.className = `cal-cell ${hasTx ? 'has-tx' : ''}`; div.innerText = day; div.onclick = () => { hapticTap();
-                const dE = activeExps.filter(e => e.displayDay === day); document.getElementById('cal-details-title').innerText = `${day}/${m+1}/${y}`;
+            const div = document.createElement('div'); div.className = `cal-cell ${hasTx ? 'has-tx' : ''}`; div.innerText = day; 
+            div.onclick = () => { 
+                hapticTap();
+                const dE = activeExps.filter(e => e.displayDay === day); 
+                document.getElementById('cal-details-title').innerText = `${day}/${m+1}/${y}`;
                 document.getElementById('cal-details-list').innerHTML = dE.length > 0 ? dE.map(e => `<div class="tx-item" onclick="openEditModal(${e.originalId})"><span style="display:flex; align-items:center; gap:12px;"><div class="tx-icon-box" style="width:40px; height:40px; border-radius:12px; margin:0;">${e.type==='income'?'💰':(categories.find(c=>c.id===e.cat)||{}).icon}</div> <b>${escapeHTML(e.label)}</b></span><span class="blur-val" style="font-weight:800; font-size:16px; color:${e.type==='income'?'var(--green)':'var(--text-main)'}">${e.type==='income'?'+':'-'}${e.amount.toFixed(2)} €</span></div>`).join('') : '<div style="color:var(--text-muted); font-size:14px; padding:10px 0;">Rien ce jour.</div>';
                 document.getElementById('cal-details').style.display = 'block';
-            }; grid.appendChild(div);
+            }; 
+            grid.appendChild(div);
         }
     }
 
     function renderSubRadar() {
         const list = document.getElementById('sub-radar-list'); const subs = expenses.filter(e => e.recurring && e.type === 'expense');
         if(subs.length === 0) { list.innerHTML = "<div class='empty-state' style='padding:20px;'><div class='empty-state-icon' style='font-size:40px;'>📡</div><div class='empty-state-title' style='font-size:16px;'>Aucun abonnement</div></div>"; return; }
+        
         let total = 0; let html = '';
         subs.forEach(sub => {
             let mC = sub.amount; let fT = "Mensuel";
             if(sub.frequency === 'weekly') { mC *= 4.33; fT = "Hebdo"; } else if(sub.frequency === '2weeks') { mC *= 2.16; fT = "2 sem."; } else if(sub.frequency === '4weeks') { mC *= 1.08; fT = "4 sem."; }
             total += mC; const icon = (categories.find(c => c.id === sub.cat)||{}).icon || '💸';
-            html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:16px 0; border-bottom:1px solid var(--border);"><div style="display:flex; align-items:center; gap:15px;"><div class="tx-icon-box">${icon}</div><div><div style="font-weight:700; font-size:16px;">${escapeHTML(sub.label)}</div><div style="font-size:13px; color:var(--text-muted); margin-top:2px;">${fT}</div></div></div><div style="font-weight:800; color:var(--red); font-size:18px;">- ${mC.toFixed(0)} € <span style="font-size:11px; color:var(--text-muted);">/m</span></div></div>`;
+            
+            html += `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 0; border-bottom:1px solid var(--border);">
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <div class="tx-icon-box">${icon}</div>
+                    <div><div style="font-weight:700; font-size:16px;">${escapeHTML(sub.label)}</div><div style="font-size:13px; color:var(--text-muted); margin-top:2px;">${fT}</div></div>
+                </div>
+                <div style="font-weight:800; color:var(--red); font-size:18px;">- ${mC.toFixed(0)} € <span style="font-size:11px; color:var(--text-muted);">/m</span></div>
+            </div>`;
         });
-        list.innerHTML = `<div style="background:linear-gradient(135deg, #ff3b30 0%, #ff9500 100%); color:white; padding:25px; border-radius:24px; margin-bottom:25px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 10px 30px rgba(255,59,48,0.3);"><div><div style="font-size:13px; text-transform:uppercase; font-weight:800; letter-spacing:1px; margin-bottom:4px; opacity:0.9;">Total fixe</div><div style="font-size:38px; font-weight:800; letter-spacing:-1.5px;">${total.toFixed(0)} € <span style="font-size:16px; font-weight:600; opacity:0.8;">/mois</span></div></div><div style="font-size:52px; opacity:0.9;">📡</div></div>` + html;
+        
+        list.innerHTML = `
+        <div style="background:linear-gradient(135deg, #ff3b30 0%, #ff9500 100%); color:white; padding:25px; border-radius:24px; margin-bottom:25px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 10px 30px rgba(255,59,48,0.3);">
+            <div><div style="font-size:13px; text-transform:uppercase; font-weight:800; letter-spacing:1px; margin-bottom:4px; opacity:0.9;">Total fixe</div><div style="font-size:38px; font-weight:800; letter-spacing:-1.5px;">${total.toFixed(0)} € <span style="font-size:16px; font-weight:600; opacity:0.8;">/mois</span></div></div>
+            <div style="font-size:52px; opacity:0.9;">📡</div>
+        </div>` + html;
     }
 
     function renderStats() {
         const list = document.getElementById('stats-list'); const cMD = expandExpensesForMonth(viewDate.getFullYear(), viewDate.getMonth());
         const mInc = cMD.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0); const cME = cMD.filter(e => e.type === 'expense'); const total = cME.reduce((s, e) => s + e.amount, 0);
         const types = { fixe: 0, vie: 0, loisirs: 0 }; const cTot = {};
+        
         cME.forEach(e => { const cI = categories.find(c => c.id === e.cat) || categories.find(c => c.id === 'autre'); if(cI) types[cI.type] += e.amount; cTot[e.cat] = (cTot[e.cat] || 0) + e.amount; });
 
         const ep = mInc - total;
@@ -829,6 +1592,7 @@
         let score = 0; let uS = emergencyGoal > 0 ? Math.min((globalRealBalance / emergencyGoal) * 30, 30) : 30;
         let eS = savingsGoal > 0 ? Math.min((Math.max(ep, 0) / savingsGoal) * 40, 40) : 40; let mS = ep >= 0 ? 30 : 0;
         score = Math.round(uS + eS + mS); if(mInc === 0 && total === 0) score = 0;
+        
         let sC = "var(--red)"; let sT = "Alerte 🚨"; if(score >= 50) { sC = "var(--orange)"; sT = "Moyen ⚠️"; } if(score >= 70) { sC = "var(--accent)"; sT = "Bon 👍"; } if(score >= 90) { sC = "var(--green)"; sT = "Excellent 🌟"; }
 
         animateValue(document.getElementById('score-text'), 0, score, 1500, v => Math.round(v)); document.getElementById('score-text').style.color = sC; document.getElementById('score-circle').style.stroke = sC;
@@ -853,10 +1617,13 @@
         renderSubRadar();
 
         if(total === 0) { list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">✉️</div><div class="empty-state-title">Enveloppes vides</div></div>`; return; }
+        
         list.innerHTML = Object.keys(cTot).sort((a, b) => cTot[b] - cTot[a]).map(cId => {
             const cat = categories.find(c => c.id === cId) || categories.find(c => c.id === 'autre'); const val = cTot[cId]; const lim = catBudgets[cId];
             let lT = ""; let pct = (val/total)*100; let col = "var(--accent)";
+            
             if (lim) { lT = `<span style="font-size:12px; color:var(--text-muted); font-weight:600;">/ ${lim}€</span>`; pct = (val/lim)*100; if(pct > 100) col = "var(--red)"; }
+            
             return `
             <div class="stats-row">
                 <div class="stats-info"><span style="display:flex; align-items:center; gap:12px;"><div class="tx-icon-box" style="width:36px; height:36px; border-radius:10px; margin:0;">${cat.icon}</div> <span style="font-weight:700; color:var(--text-main); font-size:16px;">${escapeHTML(cat.label)}</span></span><span class="blur-val" style="font-weight:800; font-size:16px; display:flex; align-items:center; gap:6px;">${val.toFixed(0)} € ${lT}</span></div>
@@ -865,12 +1632,6 @@
         }).join('');
     }
 
-    function saveSettingsLocally() { 
-        displayName = document.getElementById('set-displayname').value.trim(); savingsGoal = parseFloat(document.getElementById('set-savings-goal').value) || 0; emergencyGoal = parseFloat(document.getElementById('set-emergency').value) || 0;
-        localStorage.setItem('apple_clean_name_v5', displayName); localStorage.setItem('apple_clean_savings_v5', savingsGoal); localStorage.setItem('apple_clean_emergency_v5', emergencyGoal);
-        saveToCloud(); applyAppSettings(); 
-    }
-    
     function exportCSV() {
         let csv = "Type,Compte,Date,Libelle,Montant,Categorie,Recurrent,Frequence,Date_Fin,Note,URL\n";
         expenses.forEach(e => { csv += `${e.type},${escapeHTML(accounts.find(a=>a.id===e.accountId)?.name||'N/A')},${e.date},${escapeHTML(e.label).replace(/,/g, ' ')},${e.amount},${(categories.find(c=>c.id===e.cat)||{}).label||e.cat},${e.recurring?'Oui':'Non'},${e.frequency||''},${e.endDate||''},${escapeHTML(e.note).replace(/,/g, ' ')},${escapeHTML(e.url||'')}\n`; });
@@ -878,6 +1639,7 @@
     }
     
     function clearData() { if(confirm("Irréversible ! Continuer ?")) { expenses = []; accounts = []; wishlist = []; categories = [...DEFAULT_CATEGORIES]; saveToCloud(); } }
+
 </script>
 </body>
 </html>
