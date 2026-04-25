@@ -421,6 +421,12 @@
 
     <div id="tab-stats" class="section">
         
+        <div class="card">
+            <h2 style="font-size:16px; margin-top:0;">📡 Radar à Abonnements</h2>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:15px;">Vos charges fixes récurrentes détectées.</p>
+            <div id="sub-radar-list"></div>
+        </div>
+
         <div class="advice-box">
             <div class="advice-icon">💡</div>
             <div class="advice-text" id="advice-text">Calcul en cours...</div>
@@ -529,6 +535,15 @@
             <h2 style="font-size:16px;">Mes Comptes</h2>
             <div id="settings-accounts-list"></div>
             <button class="btn-export" style="width:100%; justify-content:center; margin-top:10px;" onclick="addAccount()">+ Ajouter un compte</button>
+        </div>
+
+        <div class="card">
+            <h2 style="font-size:16px;">📥 Import Bancaire CSV</h2>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Importez le relevé CSV de votre banque pour catégoriser automatiquement vos opérations récentes.</p>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-export" onclick="document.getElementById('csv-file-input').click()" style="background:var(--accent); color:white; border:none; width:100%; justify-content:center;">Importer un relevé CSV</button>
+                <input type="file" id="csv-file-input" style="display:none" accept=".csv" onchange="importCSV(event)">
+            </div>
         </div>
 
         <div class="card">
@@ -651,7 +666,6 @@
         }
     }
 
-
     // ==========================================
     // 2. LOGIQUE DE SYNCHRONISATION CLOUD
     // ==========================================
@@ -735,7 +749,6 @@
         if (document.getElementById('journal-cal-view').style.display === 'block') renderCalendar();
     }
 
-
     // ==========================================
     // 3. LE MOTEUR DE L'APPLICATION
     // ==========================================
@@ -746,14 +759,14 @@
     }
 
     const KEYWORDS = {
-        'alim': ['leclerc', 'carrefour', 'auchan', 'intermarche', 'lidl', 'courses', 'boulangerie', 'aldi', 'super u', 'grand frais'],
-        'transp': ['sncf', 'total', 'esso', 'uber', 'taxi', 'ratp', 'essence', 'peage', 'navigo', 'avion', 'train'],
-        'loisirs': ['netflix', 'spotify', 'cinema', 'ugc', 'apple', 'psn', 'xbox', 'amazon prime', 'disney', 'salle de sport'],
-        'logement': ['loyer', 'edf', 'engie', 'eau', 'assurance', 'internet', 'bricolage'],
-        'resto': ['mcdonalds', 'kfc', 'burger king', 'deliveroo', 'ubereats', 'pizzeria', 'restaurant', 'bar', 'cafe'],
-        'tech': ['amazon', 'fnac', 'darty', 'boulanger', 'free', 'orange', 'sfr', 'bouygues']
+        'alim': ['leclerc', 'carrefour', 'auchan', 'intermarche', 'lidl', 'courses', 'boulangerie', 'aldi', 'super u', 'grand frais', 'monoprix'],
+        'transp': ['sncf', 'total', 'esso', 'uber', 'taxi', 'ratp', 'essence', 'peage', 'navigo', 'avion', 'train', 'bolt'],
+        'loisirs': ['netflix', 'spotify', 'cinema', 'ugc', 'apple', 'psn', 'xbox', 'amazon prime', 'disney', 'salle de sport', 'basic fit', 'fitness park'],
+        'logement': ['loyer', 'edf', 'engie', 'eau', 'assurance', 'internet', 'bricolage', 'ikea', 'leroy merlin'],
+        'resto': ['mcdonalds', 'kfc', 'burger king', 'deliveroo', 'ubereats', 'pizzeria', 'restaurant', 'bar', 'cafe', 'bistro'],
+        'tech': ['amazon', 'fnac', 'darty', 'boulanger', 'free', 'orange', 'sfr', 'bouygues', 'ldlc']
     };
-    const RECURRING_KEYWORDS = ['netflix', 'spotify', 'loyer', 'edf', 'engie', 'free', 'orange', 'sfr', 'bouygues', 'apple', 'amazon prime', 'disney', 'navigo'];
+    const RECURRING_KEYWORDS = ['netflix', 'spotify', 'loyer', 'edf', 'engie', 'free', 'orange', 'sfr', 'bouygues', 'apple', 'amazon prime', 'disney', 'navigo', 'basic fit'];
 
     const CATEGORIES = [
         { id: 'alim', label: 'Alimentation', icon: '🛒', type: 'vie' },
@@ -906,7 +919,99 @@
     }
     function toggleRecOptions() { document.getElementById('rec-options').style.display = document.getElementById('inp-recurring').checked ? 'block' : 'none'; }
 
-    // --- FONCTIONS WISHLIST (AVEC COMPTE CIBLÉ) ---
+    // --- IMPORT CSV ---
+    function importCSV(event) {
+        hapticTap();
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        if (accounts.length === 0) return alert("Veuillez d'abord créer un compte bancaire.");
+        
+        let accountId = accounts[0].id;
+        if (accounts.length > 1) {
+            const accNames = accounts.map((a, i) => `${i + 1}. ${a.name}`).join('\n');
+            const choice = prompt("Sur quel compte importer ces données ? Entrez le numéro du compte :\n\n" + accNames);
+            const idx = parseInt(choice) - 1;
+            if (!isNaN(idx) && accounts[idx]) {
+                accountId = accounts[idx].id;
+            } else {
+                event.target.value = '';
+                return alert("Import annulé : Compte non reconnu.");
+            }
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const text = e.target.result;
+            const lines = text.split('\n');
+            let count = 0;
+
+            lines.forEach((line, index) => {
+                if (index === 0) return; // Ignore l'en-tête (header)
+                const cols = line.split(/[;,]/); 
+                if (cols.length < 2) return;
+
+                let dateStr = '', amount = 0, label = '';
+                
+                cols.forEach(c => {
+                    c = c.replace(/["']/g, '').trim();
+                    // Date Format FR ou EN
+                    if (c.match(/^\d{2}\/\d{2}\/\d{4}$/) || c.match(/^\d{4}-\d{2}-\d{2}$/)) dateStr = c;
+                    // Montant (positif ou négatif, virgule ou point)
+                    else if (c.match(/^-?\d+([.,]\d+)?$/)) amount = parseFloat(c.replace(',', '.'));
+                    // Libellé (la plus longue chaîne de texte)
+                    else if (c.length > label.length && !c.match(/^\d+$/)) label = c;
+                });
+
+                if (dateStr && label && amount !== 0) {
+                    let isoDate = dateStr;
+                    if (dateStr.includes('/')) {
+                        const parts = dateStr.split('/');
+                        isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                    }
+                    
+                    let isInc = amount > 0;
+                    let guessedCat = 'autre';
+                    
+                    if (!isInc) {
+                        const lowerLabel = label.toLowerCase();
+                        for(const [cat, words] of Object.entries(KEYWORDS)) {
+                            if(words.some(w => lowerLabel.includes(w))) {
+                                guessedCat = cat;
+                                break;
+                            }
+                        }
+                    }
+
+                    expenses.unshift({
+                        id: Date.now() + Math.random(),
+                        accountId: accountId,
+                        amount: Math.abs(amount),
+                        date: isoDate,
+                        label: label,
+                        note: 'Import CSV',
+                        url: '',
+                        type: isInc ? 'income' : 'expense',
+                        cat: isInc ? 'income' : guessedCat,
+                        recurring: false
+                    });
+                    count++;
+                }
+            });
+            
+            if (count > 0) {
+                saveToCloud();
+                updateSuggestions();
+                updateAllViews();
+                alert(`✅ Importation réussie !\n${count} opérations ont été ajoutées et auto-catégorisées.`);
+            } else {
+                alert("❌ Erreur d'import : Aucune opération valide détectée. Assurez-vous que votre fichier contient bien des dates, libellés et montants séparés par des virgules ou points-virgules.");
+            }
+            event.target.value = ''; // Reset input pour un futur import
+        };
+        reader.readAsText(file);
+    }
+
     function openWishlistModal(id = null) {
         hapticTap();
         editingWishId = id;
@@ -1386,7 +1491,55 @@
         } else details.style.display = 'none';
     }
 
-    // --- STATS ET ASSISTANT ---
+    // --- STATISTIQUES ET NOUVEAU RADAR ---
+    function renderSubRadar() {
+        const list = document.getElementById('sub-radar-list');
+        const subs = expenses.filter(e => e.recurring === true && e.type === 'expense');
+        
+        if(subs.length === 0) {
+            list.innerHTML = "<p style='color:var(--text-muted); font-size:13px; text-align:center;'>Aucun abonnement détecté. Cochez 'Opération récurrente' lors d'un ajout.</p>";
+            return;
+        }
+
+        let totalMonthly = 0;
+        let html = '';
+        
+        subs.forEach(sub => {
+            let monthlyCost = sub.amount;
+            let freqText = "Mensuel";
+            if(sub.frequency === 'weekly') { monthlyCost = sub.amount * 4.33; freqText = "Hebdomadaire"; }
+            else if(sub.frequency === '2weeks') { monthlyCost = sub.amount * 2.16; freqText = "Toutes les 2 sem."; }
+            else if(sub.frequency === '4weeks') { monthlyCost = sub.amount * 1.08; freqText = "Toutes les 4 sem."; }
+            
+            totalMonthly += monthlyCost;
+            const catIcon = CATEGORIES.find(c => c.id === sub.cat)?.icon || '💸';
+
+            html += `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--border);">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:20px; background:var(--input-bg); width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:10px;">${catIcon}</span>
+                        <div>
+                            <div style="font-weight:600; font-size:14px;">${escapeHTML(sub.label)}</div>
+                            <div style="font-size:11px; color:var(--text-muted);">${freqText} (${sub.amount.toFixed(2)}€)</div>
+                        </div>
+                    </div>
+                    <div style="font-weight:700; color:var(--red);">- ${monthlyCost.toFixed(2)} € <span style="font-size:10px; color:var(--text-muted); font-weight:normal;">/mois</span></div>
+                </div>`;
+        });
+
+        html = `
+            <div style="background:linear-gradient(135deg, #ff453a 0%, #ff9f0a 100%); color:white; padding:15px; border-radius:12px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 4px 15px rgba(255,69,58,0.3);">
+                <div>
+                    <div style="font-size:12px; opacity:0.9; text-transform:uppercase; font-weight:600; letter-spacing:0.5px;">Coût Total</div>
+                    <div style="font-size:24px; font-weight:700;">${totalMonthly.toFixed(2)} € <span style="font-size:14px; font-weight:500;">/mois</span></div>
+                </div>
+                <div style="font-size:32px; opacity:0.8;">📡</div>
+            </div>
+        ` + html;
+
+        list.innerHTML = html;
+    }
+
     function renderStats() {
         const list = document.getElementById('stats-list'); 
         const currentMonthData = expandExpensesForMonth(viewDate.getFullYear(), viewDate.getMonth());
@@ -1439,6 +1592,9 @@
         document.getElementById('ring-fixe').style.strokeDashoffset = 251.2 - (Math.min(types.fixe / (budget*0.5||1), 1) * 251.2);
         document.getElementById('ring-vie').style.strokeDashoffset = 251.2 - (Math.min(types.vie / (budget*0.3||1), 1) * 251.2);
         document.getElementById('ring-loisirs').style.strokeDashoffset = 251.2 - (Math.min(types.loisirs / (budget*0.2||1), 1) * 251.2);
+
+        // Appel du Radar à abonnements
+        renderSubRadar();
 
         if(total === 0) { list.innerHTML = "<p style='color:var(--text-muted); text-align:center; margin-top:20px;'>Aucune dépense ce mois-ci</p>"; return; }
         const sortedCats = Object.keys(catTotals).sort((a, b) => catTotals[b] - catTotals[a]);
