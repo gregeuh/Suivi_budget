@@ -47,7 +47,7 @@
         .btn-add { background: var(--accent); color: white; border: none; padding: 0 20px; height: 40px; border-radius: 20px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background-color 0.3s, transform 0.2s; }
         .btn-add:active { transform: scale(0.95); opacity: 0.8; }
 
-        /* 4 ONGLETS AVEC CORRECTION RESPONSIVE MOBILE */
+        /* 4 ONGLETS */
         .tab-bar { 
             display: flex; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; 
             scrollbar-width: none; background: var(--card-bg); padding: 6px; border-radius: 14px; 
@@ -140,10 +140,6 @@
         .cal-cell:hover { background: var(--border); }
         .cal-cell.has-tx::after { content: ''; width: 5px; height: 5px; background: var(--accent); border-radius: 50%; position: absolute; bottom: 6px; }
         
-        /* Clic sur le calendrier */
-        .tx-item { cursor: pointer; padding: 12px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .tx-item:last-child { border-bottom: none; }
-
         /* VUE 3: STATISTIQUES */
         .rings-container { display: flex; justify-content: space-around; align-items: center; padding: 20px 0; }
         .ring-box { position: relative; width: 100px; height: 100px; }
@@ -171,7 +167,6 @@
         .section.active { display: block; }
         input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); cursor: pointer; }
 
-        /* RESPONSIVE POUR MOBILE */
         @media (max-width: 600px) {
             .inputs-grid { grid-template-columns: 1fr; gap: 12px; }
             .category-grid { gap: 5px; }
@@ -207,9 +202,9 @@
             <div class="input-group"><label>Lien web (URL optionnelle)</label><input type="url" id="inp-url" class="input-control" placeholder="https://..."></div>
         </div>
 
-        <div id="expense-options">
+        <div id="recurring-block">
             <div style="display: flex; justify-content: space-between; align-items: center; background: var(--input-bg); padding: 12px 15px; border-radius: 12px; margin-bottom: 10px;">
-                <span style="font-size:14px; font-weight:500;">Dépense récurrente</span>
+                <span style="font-size:14px; font-weight:500;">Opération récurrente</span>
                 <input type="checkbox" id="inp-recurring" onchange="toggleRecOptions()" style="width:18px; height:18px; accent-color:var(--accent);">
             </div>
             
@@ -217,6 +212,7 @@
                 <label style="font-size: 13px; font-weight:500; color: var(--text-muted); display:block; margin-bottom: 8px;">Fréquence</label>
                 <select id="inp-frequency" class="input-control" style="margin-bottom:15px; font-weight:600;">
                     <option value="monthly">Tous les mois (le même jour)</option>
+                    <option value="last_working_day">Dernier jour ouvré du mois (Salaire)</option>
                     <option value="4weeks">Toutes les 4 semaines</option>
                     <option value="2weeks">Toutes les 2 semaines</option>
                     <option value="weekly">Toutes les semaines</option>
@@ -225,12 +221,14 @@
                 <label style="font-size: 13px; font-weight:500; margin-bottom: 8px; color: var(--text-muted); display:block;">Date de fin (Optionnel)</label>
                 <input type="date" id="inp-rec-end" class="input-control">
             </div>
+        </div>
 
+        <div id="category-block">
             <div style="font-size: 13px; font-weight: 600; margin-bottom: 10px; color: var(--text-muted); text-transform: uppercase;">Catégorie</div>
             <div class="category-grid" id="cat-container"></div>
         </div>
 
-        <div style="display:flex; gap:10px;">
+        <div style="display:flex; gap:10px; margin-top:10px;">
             <button id="btn-delete-tx" style="display:none; background:var(--red); color:white; border:none; padding:18px; border-radius:14px; font-weight:600; cursor:pointer; transition:0.2s;" onclick="deleteTxFromModal()">Supprimer</button>
             <button id="btn-submit-tx" class="btn-submit" style="flex:1;" onclick="addExpense()">Enregistrer l'opération</button>
         </div>
@@ -452,14 +450,10 @@
     let selectedCat = 'alim'; let currentFilter = 'all'; let calDate = new Date();
     let currentType = 'expense'; let privacyMode = false;
     let globalRealBalance = 0;
-    
-    // Variable pour suivre si on est en train de modifier une transaction
     let editingTxId = null;
 
-    // --- HAPTIQUE ---
     function hapticTap() { if (navigator.vibrate) navigator.vibrate(15); }
 
-    // --- ANIMATION DES NOMBRES (EASE OUT) ---
     function animateValue(obj, start, end, duration, formatFn) {
         let startTimestamp = null;
         const step = (timestamp) => {
@@ -473,7 +467,6 @@
         window.requestAnimationFrame(step);
     }
 
-    // --- COULEUR D'ACCENTUATION ---
     const ACCENT_COLORS = {
         'blue': { main: '#007aff', light: 'rgba(0, 122, 255, 0.15)' },
         'purple': { main: '#af52de', light: 'rgba(175, 82, 222, 0.15)' },
@@ -500,14 +493,12 @@
         renderCats(); renderFilters(); updateAccountsSelectors(); updateAllViews(); renderSettingsAccounts();
     }
 
-    // --- THEMES ---
     function changeTheme(t) { localStorage.setItem('apple_clean_theme_v4', t); applyTheme(t); }
     function applyTheme(t) {
         if(t === 'auto') document.body.setAttribute('data-theme', window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         else document.body.setAttribute('data-theme', t);
     }
 
-    // --- SAUVEGARDE ET RESTAURATION ---
     function exportBackup() {
         hapticTap();
         const dataToSave = {
@@ -546,7 +537,6 @@
         reader.readAsText(file);
     }
 
-    // --- AUTO-CATEGORISATION ---
     function autoCategorize(text) {
         if(!text) return;
         const lower = text.toLowerCase();
@@ -562,15 +552,13 @@
         }
     }
 
-    // --- MODAL & NAVIGATION (AVEC GESTION DE LA MODIFICATION) ---
     function openAddModal() { 
         hapticTap(); 
-        editingTxId = null; // On est en mode création
+        editingTxId = null; 
         document.getElementById('modal-title').innerText = "Nouvelle opération";
         document.getElementById('btn-submit-tx').innerText = "Enregistrer l'opération";
         document.getElementById('btn-delete-tx').style.display = 'none';
 
-        // Remise à zéro des champs
         document.getElementById('inp-amount').value = ''; 
         document.getElementById('inp-label').value = ''; 
         document.getElementById('inp-note').value = ''; 
@@ -580,9 +568,7 @@
         document.getElementById('inp-frequency').value = 'monthly';
         document.getElementById('inp-rec-end').value = '';
         
-        setOpType('expense');
-        toggleRecOptions();
-        
+        setOpType('expense'); toggleRecOptions();
         document.getElementById('add-modal').style.display = 'block'; 
     }
 
@@ -591,12 +577,11 @@
         const tx = expenses.find(e => e.id === id);
         if (!tx) return;
 
-        editingTxId = id; // On bascule en mode édition
+        editingTxId = id; 
         document.getElementById('modal-title').innerText = "Modifier l'opération";
         document.getElementById('btn-submit-tx').innerText = "Mettre à jour";
         document.getElementById('btn-delete-tx').style.display = 'block';
 
-        // Pré-remplissage des champs avec les données existantes
         setOpType(tx.type);
         document.getElementById('inp-account').value = tx.accountId;
         document.getElementById('inp-amount').value = tx.amount;
@@ -605,7 +590,7 @@
         document.getElementById('inp-note').value = tx.note || '';
         document.getElementById('inp-url').value = tx.url || '';
         
-        selectCat(tx.cat);
+        if (tx.type === 'expense') selectCat(tx.cat);
 
         document.getElementById('inp-recurring').checked = tx.recurring || false;
         if(tx.recurring) {
@@ -613,7 +598,6 @@
             document.getElementById('inp-rec-end').value = tx.endDate || '';
         }
         toggleRecOptions();
-
         document.getElementById('add-modal').style.display = 'block';
     }
 
@@ -624,7 +608,7 @@
         hapticTap(); currentType = t;
         document.getElementById('tab-type-exp').classList.toggle('active', t==='expense');
         document.getElementById('tab-type-inc').classList.toggle('active', t==='income');
-        document.getElementById('expense-options').style.display = t==='expense' ? 'block' : 'none';
+        document.getElementById('category-block').style.display = t==='expense' ? 'block' : 'none';
     }
     function toggleRecOptions() { document.getElementById('rec-options').style.display = document.getElementById('inp-recurring').checked ? 'block' : 'none'; }
 
@@ -645,7 +629,6 @@
         if(id === 'dash') updateAllViews(); if(id === 'tx') renderTransactions(); if(id === 'stats') renderStats();
     }
 
-    // --- COMPTES BANCAIRES ---
     function updateAccountsSelectors() { document.getElementById('inp-account').innerHTML = accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join(''); }
     
     function addAccount() {
@@ -689,7 +672,17 @@
             </div>`).join('');
     }
 
-    // --- MOTEUR RÉCURRENCE ---
+    // --- ALGORITHME DERNIER JOUR OUVRÉ ---
+    function getLastWorkingDay(year, month) {
+        let lastDay = new Date(year, month + 1, 0); // Dernier jour du mois cible
+        if (lastDay.getDay() === 0) { // Dimanche
+            lastDay.setDate(lastDay.getDate() - 2); // Devient Vendredi
+        } else if (lastDay.getDay() === 6) { // Samedi
+            lastDay.setDate(lastDay.getDate() - 1); // Devient Vendredi
+        }
+        return lastDay.getDate();
+    }
+
     function getOccurrences(exp, year, month) {
         const occurrences = [];
         const startDate = new Date(exp.date); startDate.setHours(0,0,0,0);
@@ -712,7 +705,13 @@
                 if (curr >= targetStart && curr.getFullYear() === year && curr.getMonth() === month) occurrences.push(curr.getDate());
                 curr.setDate(curr.getDate() + freqDays);
             }
+        } else if (exp.frequency === 'last_working_day') {
+            // Algorithme "Dernier jour ouvré"
+            let occDay = getLastWorkingDay(year, month);
+            let occDate = new Date(year, month, occDay);
+            if (occDate >= startDate && occDate <= endDate) occurrences.push(occDay);
         } else {
+            // Mensuel classique
             if (startDate <= targetEnd && targetStart <= endDate) {
                 let d = startDate.getDate(); let maxDays = targetEnd.getDate();
                 if (d > maxDays) d = maxDays;
@@ -727,9 +726,10 @@
         const sd = new Date(exp.date); if (sd > now) return 0; if (!exp.recurring) return 1;
         let ed = exp.endDate ? new Date(exp.endDate) : now; if (ed > now) ed = now;
 
-        if (!exp.frequency || exp.frequency === 'monthly') {
+        if (!exp.frequency || exp.frequency === 'monthly' || exp.frequency === 'last_working_day') {
             let count = (ed.getFullYear() - sd.getFullYear()) * 12 + (ed.getMonth() - sd.getMonth());
-            if (ed.getDate() >= sd.getDate()) count++;
+            let occDay = exp.frequency === 'last_working_day' ? getLastWorkingDay(ed.getFullYear(), ed.getMonth()) : sd.getDate();
+            if (ed.getDate() >= occDay) count++;
             return count;
         } else {
             let freqDays = exp.frequency === 'weekly' ? 7 : (exp.frequency === '2weeks' ? 14 : 28);
@@ -763,10 +763,10 @@
 
         const txData = {
             amount: amt, label: lbl, note: document.getElementById('inp-note').value, url: urlField, date: document.getElementById('inp-date').value, type: currentType,
-            cat: currentType === 'expense' ? selectedCat : 'income', accountId: accId, recurring: currentType === 'expense' ? isRecurring : false,
+            cat: currentType === 'expense' ? selectedCat : 'income', accountId: accId, recurring: isRecurring,
             frequency: isRecurring ? document.getElementById('inp-frequency').value : null,
             endDate: isRecurring ? document.getElementById('inp-rec-end').value : null, 
-            id: editingTxId ? editingTxId : Date.now() // Conserve le même ID si on modifie
+            id: editingTxId ? editingTxId : Date.now() 
         };
 
         if (editingTxId) {
@@ -794,7 +794,6 @@
         updateAllViews(); renderTransactions();
     }
 
-    // --- SWIPE TO DELETE ---
     let touchStartX = 0; let swipedElement = null;
     function handleTouchStart(e, element) { touchStartX = e.touches[0].clientX; swipedElement = element; element.style.transition = 'none'; }
     function handleTouchMove(e) {
@@ -892,6 +891,7 @@
                 if (e.frequency === '4weeks') freqBadge = 'Toutes les 4 sem.';
                 else if (e.frequency === '2weeks') freqBadge = 'Toutes les 2 sem.';
                 else if (e.frequency === 'weekly') freqBadge = 'Hebdo.';
+                else if (e.frequency === 'last_working_day') freqBadge = 'Dernier jr ouvré';
                 else freqBadge = 'Mensuel';
                 freqBadge = `<span class="tag-badge" style="color:var(--orange)">${freqBadge}</span>`;
             }
