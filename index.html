@@ -488,7 +488,6 @@
 
 <script>
     // --- SANITIZATION (SÉCURITÉ ANTI-XSS) ---
-    // Cette fonction rend inoffensif tout texte tapé par l'utilisateur
     function escapeHTML(str) {
         if(!str) return '';
         return String(str).replace(/[&<>'"]/g, match => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[match]);
@@ -515,7 +514,6 @@
         { id: 'autre', label: 'Autre', icon: '📦', type: 'loisirs' }
     ];
 
-    // Migration automatique ou création V5
     let expenses = JSON.parse(localStorage.getItem('apple_clean_v5') || localStorage.getItem('apple_clean_v4') || '[]');
     let accounts = JSON.parse(localStorage.getItem('apple_clean_acc_v5') || localStorage.getItem('apple_clean_acc_v4') || '[{"id":"acc1","name":"COMPTE COURANT","initBalance":2000,"color":""}]');
     let budget = parseFloat(localStorage.getItem('apple_clean_budget_v5') || localStorage.getItem('apple_clean_budget_v4')) || 2000;
@@ -565,7 +563,6 @@
     }
 
     function init() {
-        // Sauvegarde immédiate en V5 pour éviter les soucis
         localStorage.setItem('apple_clean_v5', JSON.stringify(expenses));
         localStorage.setItem('apple_clean_acc_v5', JSON.stringify(accounts));
         
@@ -702,7 +699,7 @@
         document.getElementById('inp-account').value = tx.accountId;
         document.getElementById('inp-amount').value = tx.amount;
         document.getElementById('inp-date').value = tx.date;
-        document.getElementById('inp-label').value = tx.label; // Pas besoin de escapeHTML dans le champ .value directement, le navigateur gère
+        document.getElementById('inp-label').value = tx.label; 
         document.getElementById('inp-note').value = tx.note || '';
         document.getElementById('inp-url').value = tx.url || '';
         
@@ -783,13 +780,12 @@
             <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid var(--border)">
                 <div><strong style="font-size:14px;">${escapeHTML(a.name)}</strong><br><small style="color:var(--text-muted)">Initial: ${a.initBalance.toFixed(2)} €</small></div>
                 <div style="display:flex; gap:15px;">
-                    <button onclick="editAccount('${escapeHTML(a.id}')" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:14px; font-weight:600;">Modifier</button>
+                    <button onclick="editAccount('${escapeHTML(a.id)}')" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:14px; font-weight:600;">Modifier</button>
                     <button onclick="deleteAccount('${escapeHTML(a.id}')" style="background:none; border:none; color:var(--red); cursor:pointer; font-size:18px;">✕</button>
                 </div>
             </div>`).join('');
     }
 
-    // --- PARAMETRAGE DES ENVELOPPES ---
     function renderSettingsCatBudgets() {
         const container = document.getElementById('settings-cat-budgets');
         container.innerHTML = CATEGORIES.map(c => `
@@ -891,7 +887,6 @@
         let amtInput = document.getElementById('inp-amount').value;
         if(amtInput) amtInput = amtInput.replace(',', '.');
         const amt = parseFloat(amtInput); 
-        // SANITIZATION ICI : On ne stocke pas de code HTML malveillant
         const lbl = document.getElementById('inp-label').value.trim(); 
         const noteRaw = document.getElementById('inp-note').value.trim();
         const urlRaw = document.getElementById('inp-url').value.trim();
