@@ -13,7 +13,9 @@
     <style>
         /* THEMES ET VARIABLES */
         :root {
-            --blue: #007aff; --blue-light: rgba(0, 122, 255, 0.15);
+            /* On utilise --accent comme variable dynamique modifiable en JS, par défaut bleu */
+            --accent: #007aff; 
+            --accent-light: rgba(0, 122, 255, 0.15);
             --red: #ff453a; --green: #32d74b; --orange: #ff9f0a; --radius: 16px;
         }
 
@@ -44,10 +46,10 @@
         
         .btn-privacy { background: var(--input-bg); color: var(--text-main); border: none; width: 40px; height: 40px; border-radius: 12px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .btn-privacy:active { transform: scale(0.95); }
-        .btn-add { background: var(--blue); color: white; border: none; padding: 0 20px; height: 40px; border-radius: 20px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
-        .btn-add:active { transform: scale(0.95); background: #0062cc; }
+        .btn-add { background: var(--accent); color: white; border: none; padding: 0 20px; height: 40px; border-radius: 20px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background-color 0.3s, transform 0.2s; }
+        .btn-add:active { transform: scale(0.95); opacity: 0.8; }
 
-        /* 4 ONGLETS */
+        /* 4 ONGLETS AVEC CORRECTION RESPONSIVE MOBILE */
         .tab-bar { 
             display: flex; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; 
             scrollbar-width: none; background: var(--card-bg); padding: 6px; border-radius: 14px; 
@@ -60,7 +62,7 @@
             padding: 10px 15px; font-size: 14px; font-weight: 600; border-radius: 10px; cursor: pointer; 
             transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; 
         }
-        .tab-btn.active { background: var(--input-bg); color: var(--text-main); }
+        .tab-btn.active { background: var(--input-bg); color: var(--accent); } /* Texte actif coloré */
         .tab-icon { font-size: 16px; }
 
         .card { background-color: var(--card-bg); border-radius: var(--radius); padding: 25px; margin-bottom: 20px; border: 1px solid var(--border); }
@@ -68,7 +70,7 @@
         /* VUE 1 : DASHBOARD */
         .accounts-scroll { display: flex; gap: 15px; overflow-x: auto; margin-bottom: 20px; scrollbar-width: none; }
         .accounts-scroll::-webkit-scrollbar { display: none; }
-        .bank-card { min-width: 280px; padding: 25px; border-radius: 16px; background: linear-gradient(135deg, #007aff 0%, #0056b3 100%); color: white; position: relative; overflow: hidden; }
+        .bank-card { min-width: 280px; padding: 25px; border-radius: 16px; background: var(--accent); color: white; position: relative; overflow: hidden; transition: background 0.3s; }
         .bank-card::after { content:''; position:absolute; top:-50%; right:-20%; width:150px; height:150px; background:rgba(255,255,255,0.1); border-radius:50%; }
         .bank-card.alt-color { background: linear-gradient(135deg, #1c1c1e 0%, #3a3a3c 100%); border: 1px solid var(--border); }
         .bank-card.alt-color-2 { background: linear-gradient(135deg, #ff9f0a 0%, #ff453a 100%); border: 1px solid var(--border); }
@@ -84,14 +86,14 @@
         
         .prog-header { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; margin-bottom: 15px; }
         .prog-bar-bg { height: 8px; background: var(--input-bg); border-radius: 10px; overflow: hidden; }
-        .prog-bar-fill { height: 100%; background: var(--blue); transition: 0.5s; width: 0%; }
+        .prog-bar-fill { height: 100%; background: var(--accent); transition: width 0.8s ease-out, background 0.3s; width: 0%; }
 
         .upcoming-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
         .upcoming-item:last-child { border-bottom: none; padding-bottom: 0; }
 
         .sim-box { display: flex; gap: 15px; margin-top: 15px; }
         .sim-input { flex: 1; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); padding: 14px; border-radius: 12px; font-size: 14px; outline: none; }
-        .sim-btn { background: var(--blue); color: white; border: none; padding: 0 20px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .sim-btn { background: var(--accent); color: white; border: none; padding: 0 20px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .sim-btn:active { transform: scale(0.96); }
 
         /* MODAL D'AJOUT RESPONSIVE */
@@ -109,27 +111,27 @@
         .input-group { display: flex; flex-direction: column; gap: 8px;}
         .input-group label { font-size: 13px; font-weight: 500; color: var(--text-muted); }
         .input-control { background-color: var(--input-bg); color: var(--text-main); border: 1px solid transparent; padding: 14px; border-radius: 12px; width: 100%; box-sizing: border-box; font-size: 15px; outline: none; }
-        .input-control:focus { border-color: var(--blue); }
+        .input-control:focus { border-color: var(--accent); }
         
         .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
         .category-item { display: flex; flex-direction: column; align-items: center; background-color: var(--input-bg); border: 2px solid transparent; border-radius: 12px; padding: 15px 5px; cursor: pointer; transition: 0.2s; }
-        .category-item.selected { border-color: var(--blue); background-color: var(--blue-light); }
+        .category-item.selected { border-color: var(--accent); background-color: var(--accent-light); }
         
-        .btn-submit { background-color: var(--blue); color: white; border: none; width: 100%; padding: 18px; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-submit { background-color: var(--accent); color: white; border: none; width: 100%; padding: 18px; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .btn-submit:active { transform: scale(0.98); }
 
         /* VUE 2: JOURNAL & SWIPE TO DELETE */
         .filter-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 15px; scrollbar-width: none;}
         .filter-bar::-webkit-scrollbar { display: none; }
-        .filter-pill { padding: 8px 16px; background: var(--input-bg); border-radius: 50px; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; white-space: nowrap; border: 1px solid transparent; }
-        .filter-pill.active { background: var(--blue-light); color: var(--blue); border-color: var(--blue); }
+        .filter-pill { padding: 8px 16px; background: var(--input-bg); border-radius: 50px; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; white-space: nowrap; border: 1px solid transparent; transition: 0.3s;}
+        .filter-pill.active { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
         
         .tx-swipe-container { position: relative; overflow: hidden; border-bottom: 1px solid var(--border); }
         .tx-swipe-container:last-child { border-bottom: none; }
         .tx-delete-btn { position: absolute; right: 0; top: 0; bottom: 0; width: 80px; background: var(--red); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; cursor: pointer; z-index: 1; }
         .tx-item-content { position: relative; z-index: 2; background: var(--card-bg); display: flex; justify-content: space-between; align-items: center; padding: 15px 0; transition: transform 0.2s ease-out; }
         
-        .tag-badge { background: var(--border); color: var(--blue); padding: 4px 8px; border-radius: 6px; font-size: 11px; margin-left: 6px; display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
+        .tag-badge { background: var(--border); color: var(--accent); padding: 4px 8px; border-radius: 6px; font-size: 11px; margin-left: 6px; display: inline-flex; align-items: center; gap: 4px; font-weight: 600; transition: 0.3s; }
         a.tag-badge { text-decoration: none; cursor: pointer; }
         a.tag-badge:hover { opacity: 0.8; }
 
@@ -138,7 +140,7 @@
         .cal-day-label { text-align: center; font-size: 12px; font-weight: 600; color: var(--text-muted); padding-bottom: 10px; }
         .cal-cell { aspect-ratio: 1; background: var(--input-bg); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 500; position: relative; cursor: pointer; transition: 0.2s; }
         .cal-cell:hover { background: var(--border); }
-        .cal-cell.has-tx::after { content: ''; width: 5px; height: 5px; background: var(--blue); border-radius: 50%; position: absolute; bottom: 6px; }
+        .cal-cell.has-tx::after { content: ''; width: 5px; height: 5px; background: var(--accent); border-radius: 50%; position: absolute; bottom: 6px; }
 
         /* VUE 3: STATISTIQUES */
         .rings-container { display: flex; justify-content: space-around; align-items: center; padding: 20px 0; }
@@ -158,6 +160,11 @@
         
         .btn-danger-outline { background: transparent; border: 1px solid var(--red); color: var(--red); width: 100%; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; gap: 8px; transition: 0.2s; }
         .btn-danger-outline:active { background: rgba(255, 69, 58, 0.1); transform: scale(0.98); }
+
+        /* SÉLECTEUR DE COULEURS (NOUVEAU) */
+        .color-picker { display: flex; gap: 12px; }
+        .color-swatch { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: 0.2s; box-sizing: border-box; }
+        .color-swatch.active { border-color: var(--text-main); transform: scale(1.15); }
 
         .section { display: none; }
         .section.active { display: block; }
@@ -202,7 +209,7 @@
         <div id="expense-options">
             <div style="display: flex; justify-content: space-between; align-items: center; background: var(--input-bg); padding: 12px 15px; border-radius: 12px; margin-bottom: 10px;">
                 <span style="font-size:14px; font-weight:500;">Dépense récurrente</span>
-                <input type="checkbox" id="inp-recurring" onchange="toggleRecOptions()" style="width:18px; height:18px; accent-color:var(--blue);">
+                <input type="checkbox" id="inp-recurring" onchange="toggleRecOptions()" style="width:18px; height:18px; accent-color:var(--accent);">
             </div>
             
             <div id="rec-options" style="background: var(--bg-color); border: 1px solid var(--border); padding: 15px; border-radius: 12px; margin-bottom: 20px; display: none;">
@@ -334,7 +341,7 @@
                     <div class="ring-icon">🛒</div>
                 </div>
                 <div class="ring-box">
-                    <svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="40"/><circle id="ring-loisirs" class="ring-fill" cx="50" cy="50" r="40" stroke="#007aff" stroke-dasharray="251.2" stroke-dashoffset="251.2"/></svg>
+                    <svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="40"/><circle id="ring-loisirs" class="ring-fill" cx="50" cy="50" r="40" stroke="var(--accent)" stroke-dasharray="251.2" stroke-dashoffset="251.2" style="transition: stroke 0.3s;"/></svg>
                     <div class="ring-icon">🎬</div>
                 </div>
             </div>
@@ -357,8 +364,20 @@
                     <option value="auto">Automatique</option><option value="dark">Sombre</option><option value="light">Clair</option>
                 </select>
             </div>
+            
             <div class="settings-row">
-                <div class="settings-info"><h4>Budget mensuel</h4><p>Cible de dépenses mensuelles</p></div>
+                <div class="settings-info"><h4>Couleur de l'application</h4><p>Personnalisez le style</p></div>
+                <div class="color-picker">
+                    <div id="color-blue" class="color-swatch" style="background:#007aff;" onclick="applyColor('blue')"></div>
+                    <div id="color-purple" class="color-swatch" style="background:#af52de;" onclick="applyColor('purple')"></div>
+                    <div id="color-pink" class="color-swatch" style="background:#ff2d55;" onclick="applyColor('pink')"></div>
+                    <div id="color-green" class="color-swatch" style="background:#32d74b;" onclick="applyColor('green')"></div>
+                    <div id="color-orange" class="color-swatch" style="background:#ff9f0a;" onclick="applyColor('orange')"></div>
+                </div>
+            </div>
+
+            <div class="settings-row">
+                <div class="settings-info"><h4>Budget mensuel</h4><p>Cible de dépenses</p></div>
                 <input type="number" id="set-budget" class="input-control" style="width:100px; text-align:right" onchange="saveSettings()">
             </div>
         </div>
@@ -376,7 +395,7 @@
             <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Indispensable pour changer de téléphone ou ne jamais perdre vos données. Créez une sauvegarde de sécurité sur votre appareil.</p>
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
                 <button class="btn-export" onclick="exportBackup()">💾 Sauvegarder</button>
-                <button class="btn-export" style="background:var(--blue); color:white; border-color:var(--blue);" onclick="triggerImport()">🔄 Restaurer</button>
+                <button class="btn-export" style="background:var(--accent); color:white; border-color:var(--accent);" onclick="triggerImport()">🔄 Restaurer</button>
                 <input type="file" id="backup-file-input" style="display:none" accept=".json" onchange="importBackup(event)">
             </div>
         </div>
@@ -420,11 +439,12 @@
         { id: 'autre', label: 'Autre', icon: '📦', type: 'loisirs' }
     ];
 
-    // Maintien des clés de la v4 pour la rétrocompatibilité des données
+    // Variables de données maintenues pour pas perdre l'historique
     let expenses = JSON.parse(localStorage.getItem('apple_clean_v4') || '[]');
     let accounts = JSON.parse(localStorage.getItem('apple_clean_acc_v4') || '[{"id":"acc1","name":"COMPTE COURANT","initBalance":2000,"color":""}]');
     let budget = parseFloat(localStorage.getItem('apple_clean_budget_v4')) || 2000;
     let savedTheme = localStorage.getItem('apple_clean_theme_v4') || 'auto';
+    let savedColor = localStorage.getItem('apple_clean_color_v1') || 'blue'; // Nouvelle clé couleur
     
     let selectedCat = 'alim'; let currentFilter = 'all'; let calDate = new Date();
     let currentType = 'expense'; let privacyMode = false;
@@ -433,8 +453,45 @@
     // --- HAPTIQUE ---
     function hapticTap() { if (navigator.vibrate) navigator.vibrate(15); }
 
+    // --- ANIMATION DES NOMBRES (EASE OUT) ---
+    function animateValue(obj, start, end, duration, formatFn) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            // Formule EaseOutQuart pour ralentir vers la fin
+            const easeProgress = 1 - Math.pow(1 - progress, 4);
+            const current = start + easeProgress * (end - start);
+            obj.innerHTML = formatFn(current);
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    // --- COULEUR D'ACCENTUATION ---
+    const ACCENT_COLORS = {
+        'blue': { main: '#007aff', light: 'rgba(0, 122, 255, 0.15)' },
+        'purple': { main: '#af52de', light: 'rgba(175, 82, 222, 0.15)' },
+        'pink': { main: '#ff2d55', light: 'rgba(255, 45, 85, 0.15)' },
+        'green': { main: '#32d74b', light: 'rgba(50, 215, 75, 0.15)' },
+        'orange': { main: '#ff9f0a', light: 'rgba(255, 159, 10, 0.15)' }
+    };
+
+    function applyColor(c) {
+        savedColor = c;
+        localStorage.setItem('apple_clean_color_v1', c);
+        document.documentElement.style.setProperty('--accent', ACCENT_COLORS[c].main);
+        document.documentElement.style.setProperty('--accent-light', ACCENT_COLORS[c].light);
+        
+        document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+        if(document.getElementById('color-' + c)) document.getElementById('color-' + c).classList.add('active');
+    }
+
     function init() {
         applyTheme(savedTheme); document.getElementById('set-theme').value = savedTheme;
+        applyColor(savedColor);
         document.getElementById('inp-date').valueAsDate = new Date(); document.getElementById('set-budget').value = budget;
         
         renderCats(); renderFilters(); updateAccountsSelectors(); updateAllViews(); renderSettingsAccounts();
@@ -454,49 +511,34 @@
             expenses: localStorage.getItem('apple_clean_v4') || '[]',
             accounts: localStorage.getItem('apple_clean_acc_v4') || '[]',
             budget: localStorage.getItem('apple_clean_budget_v4') || '2000',
-            theme: localStorage.getItem('apple_clean_theme_v4') || 'auto'
+            theme: localStorage.getItem('apple_clean_theme_v4') || 'auto',
+            color: localStorage.getItem('apple_clean_color_v1') || 'blue'
         };
-        
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToSave));
-        const downloadAnchorNode = document.createElement('a');
-        downloadAnchorNode.setAttribute("href", dataStr);
-        // Ajout de la date dans le nom du fichier pour s'y retrouver
+        const downloadAnchorNode = document.createElement('a'); downloadAnchorNode.setAttribute("href", dataStr);
         const dateIso = new Date().toISOString().split('T')[0];
         downloadAnchorNode.setAttribute("download", `sauvegarde_budget_pro_${dateIso}.json`);
-        document.body.appendChild(downloadAnchorNode);
-        downloadAnchorNode.click();
-        downloadAnchorNode.remove();
+        document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); downloadAnchorNode.remove();
     }
 
-    function triggerImport() {
-        hapticTap();
-        document.getElementById('backup-file-input').click();
-    }
+    function triggerImport() { hapticTap(); document.getElementById('backup-file-input').click(); }
 
     function importBackup(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        
+        const file = event.target.files[0]; if (!file) return;
         const reader = new FileReader();
         reader.onload = function(e) {
             try {
                 const data = JSON.parse(e.target.result);
-                
-                // Vérification simple pour s'assurer que c'est bien notre fichier
                 if(data.expenses && data.accounts) {
                     localStorage.setItem('apple_clean_v4', data.expenses);
                     localStorage.setItem('apple_clean_acc_v4', data.accounts);
                     if (data.budget) localStorage.setItem('apple_clean_budget_v4', data.budget);
                     if (data.theme) localStorage.setItem('apple_clean_theme_v4', data.theme);
-                    
+                    if (data.color) localStorage.setItem('apple_clean_color_v1', data.color);
                     alert("✅ Sauvegarde restaurée avec succès ! L'application va redémarrer.");
-                    location.reload(); // On recharge la page pour appliquer la restauration
-                } else {
-                    alert("❌ Erreur : Ce fichier ne semble pas être une sauvegarde Budget Pro valide.");
-                }
-            } catch(err) {
-                alert("❌ Erreur lors de la lecture du fichier. Fichier corrompu.");
-            }
+                    location.reload(); 
+                } else { alert("❌ Erreur : Ce fichier ne semble pas être une sauvegarde valide."); }
+            } catch(err) { alert("❌ Erreur lors de la lecture du fichier. Fichier corrompu."); }
         };
         reader.readAsText(file);
     }
@@ -552,36 +594,21 @@
     
     function addAccount() {
         hapticTap();
-        const name = prompt("Nom du compte (ex: Livret A) :"); 
-        if(!name) return;
-        let balInput = prompt("Solde initial (€) :");
-        if (balInput === null) return;
-        balInput = balInput.replace(',', '.'); 
-        const bal = parseFloat(balInput) || 0;
+        const name = prompt("Nom du compte (ex: Livret A) :"); if(!name) return;
+        let balInput = prompt("Solde initial (€) :"); if (balInput === null) return;
+        balInput = balInput.replace(',', '.'); const bal = parseFloat(balInput) || 0;
         
-        const colors = ['', 'alt-color', 'alt-color-2']; 
-        const color = colors[accounts.length % 3];
-        accounts.push({ id: 'acc_'+Date.now(), name: name.toUpperCase(), initBalance: bal, color: color }); 
-        saveAccounts();
+        const colors = ['', 'alt-color', 'alt-color-2']; const color = colors[accounts.length % 3];
+        accounts.push({ id: 'acc_'+Date.now(), name: name.toUpperCase(), initBalance: bal, color: color }); saveAccounts();
     }
 
     function editAccount(id) {
         hapticTap();
-        const accIndex = accounts.findIndex(a => a.id === id);
-        if (accIndex === -1) return;
-        
+        const accIndex = accounts.findIndex(a => a.id === id); if (accIndex === -1) return;
         let balInput = prompt(`Nouveau solde initial pour ${accounts[accIndex].name} (€) :`, accounts[accIndex].initBalance);
         if (balInput === null) return;
-        
-        balInput = balInput.replace(',', '.'); 
-        const bal = parseFloat(balInput);
-        
-        if (!isNaN(bal)) {
-            accounts[accIndex].initBalance = bal;
-            saveAccounts();
-        } else {
-            alert("Montant invalide.");
-        }
+        balInput = balInput.replace(',', '.'); const bal = parseFloat(balInput);
+        if (!isNaN(bal)) { accounts[accIndex].initBalance = bal; saveAccounts(); } else { alert("Montant invalide."); }
     }
 
     function deleteAccount(id) {
@@ -598,25 +625,20 @@
     function renderSettingsAccounts() {
         document.getElementById('settings-accounts-list').innerHTML = accounts.map(a => `
             <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid var(--border)">
-                <div>
-                    <strong style="font-size:14px;">${a.name}</strong><br>
-                    <small style="color:var(--text-muted)">Initial: ${a.initBalance.toFixed(2)} €</small>
-                </div>
+                <div><strong style="font-size:14px;">${a.name}</strong><br><small style="color:var(--text-muted)">Initial: ${a.initBalance.toFixed(2)} €</small></div>
                 <div style="display:flex; gap:15px;">
-                    <button onclick="editAccount('${a.id}')" style="background:none; border:none; color:var(--blue); cursor:pointer; font-size:14px; font-weight:600;">Modifier</button>
+                    <button onclick="editAccount('${a.id}')" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:14px; font-weight:600;">Modifier</button>
                     <button onclick="deleteAccount('${a.id}')" style="background:none; border:none; color:var(--red); cursor:pointer; font-size:18px;">✕</button>
                 </div>
             </div>`).join('');
     }
 
-    // --- LE MOTEUR INTELLIGENT DE RÉCURRENCE ---
+    // --- MOTEUR RÉCURRENCE ---
     function getOccurrences(exp, year, month) {
         const occurrences = [];
         const startDate = new Date(exp.date); startDate.setHours(0,0,0,0);
-        const targetStart = new Date(year, month, 1);
-        const targetEnd = new Date(year, month + 1, 0);
-        let endDate = exp.endDate ? new Date(exp.endDate) : new Date(2100, 0, 1);
-        endDate.setHours(23,59,59,999);
+        const targetStart = new Date(year, month, 1); const targetEnd = new Date(year, month + 1, 0);
+        let endDate = exp.endDate ? new Date(exp.endDate) : new Date(2100, 0, 1); endDate.setHours(23,59,59,999);
 
         if (!exp.recurring) {
             if (startDate.getFullYear() === year && startDate.getMonth() === month) occurrences.push(startDate.getDate());
@@ -646,12 +668,8 @@
     }
 
     function getPastOccurrencesCount(exp, now) {
-        const sd = new Date(exp.date);
-        if (sd > now) return 0;
-        if (!exp.recurring) return 1;
-
-        let ed = exp.endDate ? new Date(exp.endDate) : now;
-        if (ed > now) ed = now;
+        const sd = new Date(exp.date); if (sd > now) return 0; if (!exp.recurring) return 1;
+        let ed = exp.endDate ? new Date(exp.endDate) : now; if (ed > now) ed = now;
 
         if (!exp.frequency || exp.frequency === 'monthly') {
             let count = (ed.getFullYear() - sd.getFullYear()) * 12 + (ed.getMonth() - sd.getMonth());
@@ -660,8 +678,7 @@
         } else {
             let freqDays = exp.frequency === 'weekly' ? 7 : (exp.frequency === '2weeks' ? 14 : 28);
             const diffTime = ed.getTime() - sd.getTime();
-            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            return Math.floor(diffDays / freqDays) + 1;
+            return Math.floor(Math.floor(diffTime / (1000 * 60 * 60 * 24)) / freqDays) + 1;
         }
     }
 
@@ -682,11 +699,7 @@
         hapticTap();
         let amtInput = document.getElementById('inp-amount').value;
         if(amtInput) amtInput = amtInput.replace(',', '.');
-        
-        const amt = parseFloat(amtInput); 
-        const lbl = document.getElementById('inp-label').value; 
-        const accId = document.getElementById('inp-account').value;
-        
+        const amt = parseFloat(amtInput); const lbl = document.getElementById('inp-label').value; const accId = document.getElementById('inp-account').value;
         if(!amt || !lbl || !accId) return alert("Montant, Libellé et Compte requis.");
 
         const isRecurring = document.getElementById('inp-recurring').checked;
@@ -727,7 +740,7 @@
         swipedElement = null;
     }
 
-    // --- DASHBOARD ---
+    // --- DASHBOARD AVEC ANIMATION ---
     function updateAllViews() {
         const now = new Date(); const tY = now.getFullYear(); const tM = now.getMonth();
         const accBalances = {}; accounts.forEach(a => accBalances[a.id] = a.initBalance); globalRealBalance = 0;
@@ -738,22 +751,32 @@
             accBalances[e.accountId] += (e.type === 'income' ? 1 : -1) * (e.amount * pastCount);
         });
 
+        // Régénération du HTML des comptes
         document.getElementById('accounts-container').innerHTML = accounts.map(a => {
             globalRealBalance += accBalances[a.id];
-            return `<div class="bank-card ${a.color}"><div class="acc-name">${a.name}</div><div class="acc-val blur-val">${accBalances[a.id].toFixed(2)} €</div></div>`;
+            return `<div class="bank-card ${a.color}"><div class="acc-name">${a.name}</div><div class="acc-val blur-val" id="acc-val-${a.id}">0.00 €</div></div>`;
         }).join('');
+
+        // Animation des valeurs des comptes
+        accounts.forEach(a => {
+            if(document.getElementById(`acc-val-${a.id}`)) {
+                animateValue(document.getElementById(`acc-val-${a.id}`), 0, accBalances[a.id], 800, val => val.toFixed(2) + " €");
+            }
+        });
 
         const currentMonthData = expandExpensesForMonth(tY, tM);
         const monthInc = currentMonthData.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0);
         const monthExp = currentMonthData.filter(e => e.type === 'expense').reduce((s, e) => s + e.amount, 0);
         
-        document.getElementById('dash-inc').innerText = "+" + monthInc.toFixed(0) + " €"; document.getElementById('dash-exp').innerText = "-" + monthExp.toFixed(0) + " €";
-        document.getElementById('dash-remaining').innerText = (monthInc - monthExp).toFixed(0) + " €";
+        // Animation des stats globales
+        animateValue(document.getElementById('dash-inc'), 0, monthInc, 800, val => "+" + val.toFixed(0) + " €");
+        animateValue(document.getElementById('dash-exp'), 0, monthExp, 800, val => "-" + val.toFixed(0) + " €");
+        animateValue(document.getElementById('dash-remaining'), 0, (monthInc - monthExp), 800, val => val.toFixed(0) + " €");
         
         if (budget > 0) {
             document.getElementById('prog-label').innerText = monthExp.toFixed(0) + " € / " + budget + " €";
             document.getElementById('prog-fill').style.width = Math.min((monthExp/budget)*100, 100) + "%";
-            document.getElementById('prog-fill').style.background = monthExp > budget ? 'var(--red)' : 'var(--blue)';
+            document.getElementById('prog-fill').style.background = monthExp > budget ? 'var(--red)' : 'var(--accent)';
         }
 
         const todayDay = now.getDate();
@@ -763,7 +786,7 @@
         if(upcoming.length === 0) upList.innerHTML = "<p style='color:var(--text-muted); font-size:14px; margin:0;'>Tout est payé pour ce mois-ci ! 🎉</p>";
         else upList.innerHTML = upcoming.map(e => {
             const urlBadge = e.url ? `<a href="${e.url}" target="_blank" class="tag-badge" style="text-decoration:none; margin-right:10px;" onclick="event.stopPropagation()">🔗</a>` : '';
-            return `<div class="upcoming-item"><div><span class="upcoming-date">Le ${e.displayDay}</span><span style="font-weight:600; font-size:14px;">${urlBadge}${e.label}</span></div><div class="blur-val" style="font-weight:700;">${e.amount.toFixed(2)} €</div></div>`;
+            return `<div class="upcoming-item"><div><span class="upcoming-date" style="background:var(--input-bg); color:var(--accent); padding:4px 8px; border-radius:6px; font-size:11px; font-weight:700; margin-right:12px;">Le ${e.displayDay}</span><span style="font-weight:600; font-size:14px;">${urlBadge}${e.label}</span></div><div class="blur-val" style="font-weight:700;">${e.amount.toFixed(2)} €</div></div>`;
         }).join('');
     }
 
@@ -868,7 +891,7 @@
         document.getElementById('ring-vie').style.strokeDashoffset = 251.2 - (Math.min(types.vie / (budget*0.3||1), 1) * 251.2);
         document.getElementById('ring-loisirs').style.strokeDashoffset = 251.2 - (Math.min(types.loisirs / (budget*0.2||1), 1) * 251.2);
 
-        if(total === 0) { list.innerHTML = "<div style='color:var(--text-muted)'>Aucune dépense</div>"; return; }
+        if(total === 0) { list.innerHTML = "<p style='color:var(--text-muted); text-align:center; margin-top:20px;'>Aucune dépense ce mois-ci</p>"; return; }
         const sortedCats = Object.keys(catTotals).sort((a, b) => catTotals[b] - catTotals[a]);
         list.innerHTML = sortedCats.map(cId => {
             const cat = CATEGORIES.find(c => c.id === cId); const val = catTotals[cId];
