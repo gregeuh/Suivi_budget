@@ -22,17 +22,20 @@
         /* THEMES ET VARIABLES */
         :root {
             --accent: #007aff; --accent-light: rgba(0, 122, 255, 0.15);
-            --red: #ff453a; --green: #32d74b; --orange: #ff9f0a; --radius: 16px;
+            --red: #ff453a; --green: #32d74b; --orange: #ff9f0a; 
+            --radius-card: 20px; --radius-btn: 14px;
         }
 
         body[data-theme="dark"] {
             --bg-color: #000000; --card-bg: #1c1c1e; --text-main: #ffffff;
             --text-muted: #8e8e93; --input-bg: #2c2c2e; --border: #3a3a3c;
+            --shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         body[data-theme="light"] {
             --bg-color: #f2f2f7; --card-bg: #ffffff; --text-main: #000000;
-            --text-muted: #8e8e93; --input-bg: #e5e5ea; --border: #d1d1d6;
+            --text-muted: #8e8e93; --input-bg: #e5e5ea; --border: rgba(0,0,0,0.05);
+            --shadow: 0 4px 20px rgba(0,0,0,0.04);
         }
 
         body {
@@ -50,17 +53,18 @@
         }
         .auth-box {
             background: var(--card-bg); border: 1px solid var(--border); padding: 40px;
-            border-radius: 24px; width: 100%; max-width: 400px; text-align: center;
+            border-radius: var(--radius-card); width: 100%; max-width: 400px; text-align: center;
+            box-shadow: var(--shadow);
         }
-        .auth-logo { font-size: 48px; margin-bottom: 20px; }
+        .auth-logo { font-size: 56px; margin-bottom: 20px; }
         .auth-input {
-            width: 100%; padding: 16px; border-radius: 12px; border: 1px solid transparent;
+            width: 100%; padding: 16px; border-radius: var(--radius-btn); border: 1px solid transparent;
             background: var(--input-bg); color: var(--text-main); margin-bottom: 15px;
             font-size: 16px; outline: none; box-sizing: border-box;
         }
         .auth-input:focus { border-color: var(--accent); }
         .auth-btn {
-            width: 100%; padding: 18px; border-radius: 14px; background: var(--accent);
+            width: 100%; padding: 18px; border-radius: var(--radius-btn); background: var(--accent);
             color: white; border: none; font-weight: 700; font-size: 16px; cursor: pointer;
             margin-bottom: 15px; transition: 0.2s;
         }
@@ -68,150 +72,160 @@
         .auth-link { color: var(--text-muted); font-size: 14px; cursor: pointer; text-decoration: underline; }
         .auth-error { color: var(--red); font-size: 14px; margin-bottom: 15px; font-weight: 500; min-height: 20px; }
 
-        .app-wrapper { width: 100%; max-width: 900px; padding: 20px; display: none; }
+        .app-wrapper { width: 100%; max-width: 900px; padding: 25px 20px; display: none; box-sizing: border-box; }
         .privacy-active .blur-val { filter: blur(8px); pointer-events: none; transition: 0.2s; }
 
         /* HEADER & ACTIONS */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .header h1 { font-size: 32px; font-weight: 700; margin: 0; transition: 0.3s; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header h1 { font-size: 34px; font-weight: 700; margin: 0; letter-spacing: -0.5px; transition: 0.3s; }
         .header-actions { display: flex; gap: 12px; align-items: center; }
         
-        .btn-privacy { background: var(--input-bg); color: var(--text-main); border: none; width: 40px; height: 40px; border-radius: 12px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn-privacy { background: var(--input-bg); color: var(--text-main); border: none; width: 44px; height: 44px; border-radius: 14px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .btn-privacy:active { transform: scale(0.95); }
-        .btn-add { background: var(--accent); color: white; border: none; padding: 0 20px; height: 40px; border-radius: 20px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background-color 0.3s, transform 0.2s; }
-        .btn-add:active { transform: scale(0.95); opacity: 0.8; }
+        .btn-add { background: var(--accent); color: white; border: none; padding: 0 20px; height: 44px; border-radius: 22px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background-color 0.3s, transform 0.2s; box-shadow: 0 4px 10px var(--accent-light); }
+        .btn-add:active { transform: scale(0.95); opacity: 0.9; }
 
         /* ONGLETS */
-        .tab-bar { display: flex; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; background: var(--card-bg); padding: 6px; border-radius: 14px; margin-bottom: 20px; border: 1px solid var(--border); }
+        .tab-bar { display: flex; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; background: var(--card-bg); padding: 8px; border-radius: 18px; margin-bottom: 25px; border: 1px solid var(--border); box-shadow: var(--shadow); }
         .tab-bar::-webkit-scrollbar { display: none; } 
-        .tab-btn { flex: 1 0 auto; white-space: nowrap; background: none; border: none; color: var(--text-muted); padding: 10px 15px; font-size: 14px; font-weight: 600; border-radius: 10px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .tab-btn { flex: 1 0 auto; white-space: nowrap; background: none; border: none; color: var(--text-muted); padding: 12px 18px; font-size: 14px; font-weight: 600; border-radius: 12px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .tab-btn.active { background: var(--input-bg); color: var(--accent); }
         .tab-icon { font-size: 16px; }
 
         /* SÉLECTEUR DE MOIS GLOBAL */
-        .month-selector { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); border-radius: 14px; padding: 10px 15px; margin-bottom: 20px; border: 1px solid var(--border); }
-        .month-btn { background: var(--input-bg); color: var(--accent); border: none; width: 36px; height: 36px; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .month-selector { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); border-radius: 18px; padding: 12px 20px; margin-bottom: 25px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+        .month-btn { background: var(--input-bg); color: var(--accent); border: none; width: 40px; height: 40px; border-radius: 12px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
         .month-btn:active { transform: scale(0.9); }
-        .month-label { font-size: 16px; font-weight: 700; text-transform: capitalize; color: var(--text-main); }
+        .month-label { font-size: 17px; font-weight: 700; text-transform: capitalize; color: var(--text-main); }
 
-        .card { background-color: var(--card-bg); border-radius: var(--radius); padding: 25px; margin-bottom: 20px; border: 1px solid var(--border); }
+        .card { background-color: var(--card-bg); border-radius: var(--radius-card); padding: 25px; margin-bottom: 25px; border: 1px solid var(--border); box-shadow: var(--shadow); }
 
         /* VUE 1 : DASHBOARD */
-        .accounts-scroll { display: flex; gap: 15px; overflow-x: auto; margin-bottom: 20px; scrollbar-width: none; }
+        .accounts-scroll { display: flex; gap: 15px; overflow-x: auto; margin-bottom: 25px; scrollbar-width: none; padding-bottom: 5px; }
         .accounts-scroll::-webkit-scrollbar { display: none; }
-        .bank-card { min-width: 280px; padding: 25px; border-radius: 16px; background: var(--accent); color: white; position: relative; overflow: hidden; transition: background 0.3s; }
+        .bank-card { min-width: 280px; padding: 25px; border-radius: 20px; background: var(--accent); color: white; position: relative; overflow: hidden; transition: background 0.3s; box-shadow: 0 8px 20px var(--accent-light); }
         .bank-card::after { content:''; position:absolute; top:-50%; right:-20%; width:150px; height:150px; background:rgba(255,255,255,0.1); border-radius:50%; }
-        .bank-card.alt-color { background: linear-gradient(135deg, #1c1c1e 0%, #3a3a3c 100%); border: 1px solid var(--border); }
-        .bank-card.alt-color-2 { background: linear-gradient(135deg, #ff9f0a 0%, #ff453a 100%); border: 1px solid var(--border); }
-        .acc-name { font-size: 11px; font-weight: 600; text-transform: uppercase; opacity: 0.9; margin-bottom: 10px; letter-spacing: 0.5px; }
-        .acc-val { font-size: 32px; font-weight: 700; }
+        .bank-card.alt-color { background: linear-gradient(135deg, #1c1c1e 0%, #3a3a3c 100%); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+        .bank-card.alt-color-2 { background: linear-gradient(135deg, #ff9f0a 0%, #ff453a 100%); border: none; box-shadow: 0 8px 20px rgba(255,69,58,0.2); }
+        .acc-name { font-size: 12px; font-weight: 600; text-transform: uppercase; opacity: 0.9; margin-bottom: 12px; letter-spacing: 0.5px; }
+        .acc-val { font-size: 34px; font-weight: 700; letter-spacing: -0.5px; }
 
-        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
-        .stat-card { padding: 20px; border-radius: 14px; background: var(--card-bg); border: 1px solid var(--border); }
-        .stat-label { font-size: 10px; font-weight: 600; text-transform: uppercase; margin-bottom: 10px; color: var(--text-muted); letter-spacing: 0.5px; line-height: 1.2; }
-        .stat-value { font-size: 24px; font-weight: 700; }
+        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
+        .stat-card { padding: 20px; border-radius: 18px; background: var(--card-bg); border: 1px solid var(--border); box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: center; }
+        .stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; color: var(--text-muted); letter-spacing: 0.5px; line-height: 1.3; }
+        .stat-value { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
         .stat-value.green { color: var(--green); }
         .stat-value.red { color: var(--red); }
         
         .prog-header { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; margin-bottom: 15px; }
-        .prog-bar-bg { height: 8px; background: var(--input-bg); border-radius: 10px; overflow: hidden; }
-        .prog-bar-fill { height: 100%; background: var(--accent); transition: width 0.8s ease-out, background 0.3s; width: 0%; }
+        .prog-bar-bg { height: 10px; background: var(--input-bg); border-radius: 10px; overflow: hidden; }
+        .prog-bar-fill { height: 100%; background: var(--accent); transition: width 0.8s ease-out, background 0.3s; width: 0%; border-radius: 10px; }
 
-        .upcoming-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+        .upcoming-item { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid var(--border); }
         .upcoming-item:last-child { border-bottom: none; padding-bottom: 0; }
 
         /* MODAL RESPONSIVE */
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); padding: 15px; box-sizing: border-box; }
-        .modal-content { background-color: var(--card-bg); margin: 2vh auto; padding: 25px; border-radius: 20px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; border: 1px solid var(--border); animation: slideUp 0.3s; box-sizing: border-box; }
-        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .close-btn { position: absolute; top: 20px; right: 20px; font-size: 24px; color: var(--text-muted); cursor: pointer; background: none; border: none; z-index: 10; }
+        .modal-content { background-color: var(--card-bg); margin: 5vh auto; padding: 30px; border-radius: 24px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-sizing: border-box; }
+        @keyframes slideUp { from { transform: translateY(40px) scale(0.98); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+        .close-btn { position: absolute; top: 25px; right: 25px; font-size: 24px; background: var(--input-bg); color: var(--text-muted); width: 36px; height: 36px; border-radius: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; z-index: 10; transition: 0.2s;}
+        .close-btn:active { transform: scale(0.9); }
 
-        .segmented-control { display: flex; background: var(--input-bg); border-radius: 12px; padding: 4px; margin-bottom: 25px; }
+        .segmented-control { display: flex; background: var(--input-bg); border-radius: 14px; padding: 4px; margin-bottom: 25px; }
         .segment { flex: 1; text-align: center; padding: 12px; font-size: 14px; font-weight: 600; border-radius: 10px; cursor: pointer; color: var(--text-muted); transition: 0.2s; }
-        .segment.active { background: var(--border); color: var(--text-main); }
+        .segment.active { background: var(--card-bg); color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .segment.active.income-tab { color: var(--green); }
 
         .inputs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .input-group { display: flex; flex-direction: column; gap: 8px;}
-        .input-group label { font-size: 13px; font-weight: 500; color: var(--text-muted); }
-        .input-control { background-color: var(--input-bg); color: var(--text-main); border: 1px solid transparent; padding: 14px; border-radius: 12px; width: 100%; box-sizing: border-box; font-size: 15px; outline: none; }
-        .input-control:focus { border-color: var(--accent); }
+        .input-group label { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-left: 4px; }
+        .input-control { background-color: var(--input-bg); color: var(--text-main); border: 1px solid transparent; padding: 16px; border-radius: 14px; width: 100%; box-sizing: border-box; font-size: 15px; outline: none; transition: 0.2s; }
+        .input-control:focus { border-color: var(--accent); background-color: var(--card-bg); box-shadow: 0 0 0 4px var(--accent-light); }
         
-        .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
-        .category-item { display: flex; flex-direction: column; align-items: center; background-color: var(--input-bg); border: 2px solid transparent; border-radius: 12px; padding: 15px 5px; cursor: pointer; transition: 0.2s; text-align: center; }
-        .category-item.selected { border-color: var(--accent); background-color: var(--accent-light); }
+        .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 25px; }
+        .category-item { display: flex; flex-direction: column; align-items: center; background-color: var(--input-bg); border: 2px solid transparent; border-radius: 16px; padding: 15px 5px; cursor: pointer; transition: 0.2s; text-align: center; }
+        .category-item.selected { border-color: var(--accent); background-color: var(--accent-light); transform: scale(0.98); }
         
-        .btn-submit { background-color: var(--accent); color: white; border: none; width: 100%; padding: 18px; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-submit { background-color: var(--accent); color: white; border: none; width: 100%; padding: 18px; border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px var(--accent-light); }
         .btn-submit:active { transform: scale(0.98); }
 
         /* VUE 2: JOURNAL */
         .filter-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 15px; scrollbar-width: none;}
         .filter-bar::-webkit-scrollbar { display: none; }
-        .filter-pill { padding: 8px 16px; background: var(--input-bg); border-radius: 50px; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; white-space: nowrap; border: 1px solid transparent; transition: 0.3s;}
+        .filter-pill { padding: 10px 18px; background: var(--input-bg); border-radius: 50px; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; white-space: nowrap; border: 1px solid transparent; transition: 0.3s;}
         .filter-pill.active { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
         
         .tx-swipe-container { position: relative; overflow: hidden; border-bottom: 1px solid var(--border); }
         .tx-swipe-container:last-child { border-bottom: none; }
         .tx-delete-btn { position: absolute; right: 0; top: 0; bottom: 0; width: 80px; background: var(--red); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; cursor: pointer; z-index: 1; }
-        .tx-item-content { position: relative; z-index: 2; background: var(--card-bg); display: flex; justify-content: space-between; align-items: center; padding: 15px 0; transition: transform 0.2s ease-out; cursor: pointer; }
+        .tx-item-content { position: relative; z-index: 2; background: var(--card-bg); display: flex; justify-content: space-between; align-items: center; padding: 18px 0; transition: transform 0.2s ease-out; cursor: pointer; }
         
-        .tag-badge { background: var(--border); color: var(--accent); padding: 4px 8px; border-radius: 6px; font-size: 11px; margin-left: 6px; display: inline-flex; align-items: center; gap: 4px; font-weight: 600; transition: 0.3s; }
+        .tag-badge { background: var(--input-bg); color: var(--accent); padding: 4px 8px; border-radius: 6px; font-size: 11px; margin-left: 6px; display: inline-flex; align-items: center; gap: 4px; font-weight: 600; transition: 0.3s; }
         a.tag-badge { text-decoration: none; cursor: pointer; }
-        a.tag-badge:hover { opacity: 0.8; }
+        a.tag-badge:hover { background: var(--border); }
         
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
         .cal-day-label { text-align: center; font-size: 12px; font-weight: 600; color: var(--text-muted); padding-bottom: 10px; }
-        .cal-cell { aspect-ratio: 1; background: var(--input-bg); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 500; position: relative; cursor: pointer; transition: 0.2s; }
+        .cal-cell { aspect-ratio: 1; background: var(--input-bg); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; position: relative; cursor: pointer; transition: 0.2s; }
         .cal-cell:hover { background: var(--border); }
-        .cal-cell.has-tx::after { content: ''; width: 5px; height: 5px; background: var(--accent); border-radius: 50%; position: absolute; bottom: 6px; }
-        .tx-item { cursor: pointer; padding: 12px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .cal-cell.has-tx { background: var(--accent-light); color: var(--accent); }
+        .cal-cell.has-tx::after { content: ''; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; position: absolute; bottom: 8px; }
+        .tx-item { cursor: pointer; padding: 15px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
 
         /* VUE 3: STATISTIQUES */
-        .rings-container { display: flex; justify-content: space-around; align-items: center; padding: 20px 0; }
+        .rings-container { display: flex; justify-content: space-around; align-items: center; padding: 25px 0; }
         .ring-box { position: relative; width: 100px; height: 100px; }
-        .ring-box svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+        .ring-box svg { transform: rotate(-90deg); width: 100%; height: 100%; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
         .ring-bg { fill: none; stroke: var(--input-bg); stroke-width: 8; }
-        .ring-fill { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
-        .ring-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px; }
-        .stats-row { margin-bottom: 18px; }
-        .stats-info { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; color: var(--text-muted); }
+        .ring-fill { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s cubic-bezier(0.16, 1, 0.3, 1); }
+        .ring-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 22px; }
+        .stats-row { margin-bottom: 20px; }
+        .stats-info { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 10px; color: var(--text-muted); }
         .stats-info span:last-child { color: var(--text-main); font-weight: 600; }
 
-        .advice-box { background: var(--accent-light); border: 1px solid var(--accent); padding: 15px; border-radius: 14px; margin-bottom: 25px; display: flex; gap: 15px; align-items: flex-start; }
-        .advice-icon { font-size: 24px; }
-        .advice-text { font-size: 14px; line-height: 1.5; color: var(--text-main); }
+        .advice-box { background: var(--accent-light); border: 1px solid transparent; padding: 18px; border-radius: 18px; margin-bottom: 25px; display: flex; gap: 15px; align-items: flex-start; }
+        .advice-icon { font-size: 28px; }
+        .advice-text { font-size: 14px; line-height: 1.6; color: var(--text-main); }
         
         .projection-box { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
-        .proj-card { background: var(--input-bg); padding: 15px; border-radius: 12px; text-align: center; }
-        .proj-title { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: 5px; }
-        .proj-val { font-size: 20px; font-weight: 700; color: var(--green); }
+        .proj-card { background: var(--input-bg); padding: 18px; border-radius: 16px; text-align: center; }
+        .proj-title { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 0.5px;}
+        .proj-val { font-size: 22px; font-weight: 700; color: var(--green); letter-spacing: -0.5px;}
 
         /* VUE 4: PROFIL */
-        .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--border); }
+        .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid var(--border); }
         .settings-row:last-child { border-bottom: none; }
-        .btn-export { background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); padding: 10px 16px; border-radius: 10px; font-size: 14px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-danger-outline { background: transparent; border: 1px solid var(--red); color: var(--red); width: 100%; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; gap: 8px; transition: 0.2s; }
+        .btn-export { background: var(--input-bg); border: 1px solid transparent; color: var(--text-main); padding: 12px 20px; border-radius: 14px; font-size: 14px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s;}
+        .btn-export:active { transform: scale(0.97); background: var(--border); }
+        
+        .btn-danger-outline { background: transparent; border: 2px solid var(--red); color: var(--red); width: 100%; padding: 16px; border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; justify-content: center; gap: 8px; transition: 0.2s; }
         .btn-danger-outline:active { background: rgba(255, 69, 58, 0.1); transform: scale(0.98); }
 
         .color-picker { display: flex; gap: 12px; }
-        .color-swatch { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: 0.2s; box-sizing: border-box; }
+        .color-swatch { width: 36px; height: 36px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: 0.2s; box-sizing: border-box; }
         .color-swatch.active { border-color: var(--text-main); transform: scale(1.15); }
 
-        .profile-header-card { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
-        .profile-avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; }
+        .profile-header-card { display: flex; align-items: center; gap: 18px; margin-bottom: 15px; }
+        .profile-avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; box-shadow: 0 4px 15px var(--accent-light); }
 
-        .section { display: none; }
+        .section { display: none; animation: fadeIn 0.3s; }
         .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
         input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); cursor: pointer; }
 
         @media (max-width: 600px) {
+            .app-wrapper { padding: 15px 15px 80px 15px; }
             .inputs-grid { grid-template-columns: 1fr; gap: 12px; }
-            .category-grid { gap: 5px; grid-template-columns: repeat(4, 1fr); }
-            .category-item { padding: 10px 2px; }
-            .modal-content { padding: 20px 15px; margin: 5vh auto; }
+            .category-grid { gap: 8px; grid-template-columns: repeat(4, 1fr); }
+            .category-item { padding: 12px 2px; }
+            .modal-content { padding: 25px 20px; margin: 2vh auto; border-radius: 20px;}
             .close-btn { top: 15px; right: 15px; }
             .header h1 { font-size: 28px; }
             .tab-btn { font-size: 13px; padding: 10px 8px; } 
+            /* Sticky Tab Bar for mobile */
+            .tab-bar { position: fixed; bottom: 15px; left: 15px; right: 15px; margin-bottom: 0; z-index: 1000; backdrop-filter: blur(10px); background: rgba(var(--card-bg-rgb, 255,255,255), 0.85); border-radius: 20px; padding: 10px;}
+            body[data-theme="dark"] .tab-bar { background: rgba(28,28,30, 0.85); }
         }
     </style>
 </head>
@@ -264,13 +278,13 @@
         </div>
 
         <div id="recurring-block">
-            <div style="display: flex; justify-content: space-between; align-items: center; background: var(--input-bg); padding: 12px 15px; border-radius: 12px; margin-bottom: 10px;">
-                <span style="font-size:14px; font-weight:500;">Opération récurrente</span>
-                <input type="checkbox" id="inp-recurring" onchange="toggleRecOptions()" style="width:18px; height:18px; accent-color:var(--accent);">
+            <div style="display: flex; justify-content: space-between; align-items: center; background: var(--input-bg); padding: 12px 15px; border-radius: 14px; margin-bottom: 10px;">
+                <span style="font-size:14px; font-weight:600;">Opération récurrente</span>
+                <input type="checkbox" id="inp-recurring" onchange="toggleRecOptions()" style="width:20px; height:20px; accent-color:var(--accent); cursor:pointer;">
             </div>
             
-            <div id="rec-options" style="background: var(--bg-color); border: 1px solid var(--border); padding: 15px; border-radius: 12px; margin-bottom: 20px; display: none;">
-                <label style="font-size: 13px; font-weight:500; color: var(--text-muted); display:block; margin-bottom: 8px;">Fréquence</label>
+            <div id="rec-options" style="background: var(--bg-color); border: 1px solid var(--border); padding: 18px; border-radius: 14px; margin-bottom: 20px; display: none;">
+                <label style="font-size: 13px; font-weight:600; color: var(--text-muted); display:block; margin-bottom: 8px;">Fréquence</label>
                 <select id="inp-frequency" class="input-control" style="margin-bottom:15px; font-weight:600;">
                     <option value="monthly">Tous les mois (le même jour)</option>
                     <option value="last_working_day">Dernier jour ouvré du mois</option>
@@ -279,20 +293,20 @@
                     <option value="weekly">Toutes les semaines</option>
                 </select>
                 
-                <label style="font-size: 13px; font-weight:500; margin-bottom: 8px; color: var(--text-muted); display:block;">Date de fin (Optionnel)</label>
+                <label style="font-size: 13px; font-weight:600; margin-bottom: 8px; color: var(--text-muted); display:block;">Date de fin (Optionnel)</label>
                 <input type="date" id="inp-rec-end" class="input-control">
             </div>
         </div>
 
         <div id="category-block">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
-                <span style="font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Catégorie</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+                <span style="font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Catégorie</span>
             </div>
             <div class="category-grid" id="cat-container"></div>
         </div>
 
-        <div style="display:flex; gap:10px; margin-top:10px;">
-            <button id="btn-delete-tx" style="display:none; background:var(--red); color:white; border:none; padding:18px; border-radius:14px; font-weight:600; cursor:pointer; transition:0.2s;" onclick="deleteTxFromModal()">Supprimer</button>
+        <div style="display:flex; gap:12px; margin-top:15px;">
+            <button id="btn-delete-tx" style="display:none; background:var(--red); color:white; border:none; padding:18px; border-radius:16px; font-weight:700; cursor:pointer; transition:0.2s;" onclick="deleteTxFromModal()">Supprimer</button>
             <button id="btn-submit-tx" class="btn-submit" style="flex:1;" onclick="addExpense()">Enregistrer l'opération</button>
         </div>
     </div>
@@ -320,8 +334,8 @@
             <input type="url" id="inp-wish-url" class="input-control" placeholder="https://www.apple.com...">
         </div>
 
-        <div style="display:flex; gap:10px;">
-            <button id="btn-delete-wish" style="display:none; background:var(--red); color:white; border:none; padding:18px; border-radius:14px; font-weight:600; cursor:pointer; transition:0.2s;" onclick="deleteWishFromModal()">Supprimer</button>
+        <div style="display:flex; gap:12px;">
+            <button id="btn-delete-wish" style="display:none; background:var(--red); color:white; border:none; padding:18px; border-radius:16px; font-weight:700; cursor:pointer; transition:0.2s;" onclick="deleteWishFromModal()">Supprimer</button>
             <button id="btn-submit-wish" class="btn-submit" style="flex:1;" onclick="saveWishlistItem()">Enregistrer</button>
         </div>
     </div>
@@ -363,8 +377,8 @@
                     <div class="stat-label" id="label-dash-exp">Dépenses (Mois)</div>
                     <div class="stat-value red blur-val" id="dash-exp">-0 €</div>
                 </div>
-                <div class="stat-card" style="background:var(--accent-light); border-color:var(--accent);">
-                    <div class="stat-label" style="color:var(--accent);">Reste à vivre <br><span style="font-size:8px; opacity:0.8;">(Compte Princ.)</span></div>
+                <div class="stat-card" style="background:var(--accent-light); border-color:transparent;">
+                    <div class="stat-label" style="color:var(--accent);">Reste à vivre <br><span style="font-size:9px; opacity:0.8;">(Compte Princ.)</span></div>
                     <div class="stat-value blur-val" id="dash-remaining" style="color:var(--accent);">0 €</div>
                 </div>
             </div>
@@ -378,7 +392,7 @@
             </div>
 
             <div class="card">
-                <h2 style="font-size:16px;">⏳ À venir ce mois-ci</h2>
+                <h2 style="font-size:16px; margin-top:0;">⏳ À venir ce mois-ci</h2>
                 <div id="upcoming-list" style="font-size:14px; color:var(--text-muted);">
                     Tout est payé pour ce mois-ci ! 🎉
                 </div>
@@ -387,7 +401,7 @@
             <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                     <h2 style="font-size:16px; margin:0;">🎯 Mes Projets & Envies</h2>
-                    <button class="btn-export" onclick="openWishlistModal()" style="padding:6px 12px; font-size:12px;">+ Ajouter</button>
+                    <button class="btn-export" onclick="openWishlistModal()" style="padding:8px 14px; font-size:13px; margin:0;">+ Ajouter</button>
                 </div>
                 <div id="wishlist-container">
                     </div>
@@ -403,7 +417,7 @@
             </div>
 
             <div id="journal-list-view">
-                <input type="text" id="tx-search" placeholder="🔍 Rechercher (ex: #Vacances, Loyer...)" class="sim-input" style="width:100%; box-sizing:border-box; margin-bottom:15px;" oninput="renderTransactions()">
+                <input type="text" id="tx-search" placeholder="🔍 Rechercher (ex: #Vacances, Loyer...)" class="sim-input" style="width:100%; box-sizing:border-box; margin-bottom:15px; background:var(--bg-color); padding:16px;" oninput="renderTransactions()">
                 <div class="filter-bar" id="filter-bar"></div>
                 <div id="tx-list"></div>
             </div>
@@ -413,8 +427,8 @@
                     <div class="cal-day-label">Lun</div><div class="cal-day-label">Mar</div><div class="cal-day-label">Mer</div>
                     <div class="cal-day-label">Jeu</div><div class="cal-day-label">Ven</div><div class="cal-day-label">Sam</div><div class="cal-day-label">Dim</div>
                 </div>
-                <div id="cal-details" style="margin-top:20px; border-top:1px solid var(--border); padding-top:15px; display:none;">
-                    <h4 id="cal-details-title" style="margin-top:0;">Dépenses du jour</h4>
+                <div id="cal-details" style="margin-top:20px; border-top:1px solid var(--border); padding-top:20px; display:none;">
+                    <h4 id="cal-details-title" style="margin-top:0; font-size:16px;">Dépenses du jour</h4>
                     <div id="cal-details-list"></div>
                 </div>
             </div>
@@ -425,7 +439,7 @@
         
         <div class="card">
             <h2 style="font-size:16px; margin-top:0;">📡 Radar à Abonnements</h2>
-            <p style="font-size:13px; color:var(--text-muted); margin-bottom:15px;">Vos charges fixes récurrentes détectées.</p>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">Vos charges fixes récurrentes détectées.</p>
             <div id="sub-radar-list"></div>
         </div>
 
@@ -436,10 +450,10 @@
 
         <div class="card">
             <h2 style="font-size:16px; margin-top:0;">📈 Projections & Épargne</h2>
-            <p style="font-size:13px; color:var(--text-muted); margin-bottom:5px;">Basé sur votre capacité d'épargne du mois affiché.</p>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:15px;">Basé sur votre capacité d'épargne du mois affiché.</p>
             <div class="prog-header" style="margin-top:15px; margin-bottom:8px;">
                 <span>Fonds d'urgence</span>
-                <span id="emergency-label" style="color:var(--text-muted); font-weight:500;" class="blur-val">0 € / 0 €</span>
+                <span id="emergency-label" style="color:var(--text-muted); font-weight:600;" class="blur-val">0 € / 0 €</span>
             </div>
             <div class="prog-bar-bg"><div class="prog-bar-fill" id="emergency-fill" style="background:var(--green)"></div></div>
             
@@ -480,8 +494,8 @@
         </div>
         
         <div class="card">
-            <h2 style="font-size:16px;">Budgets par catégorie (Enveloppes)</h2>
-            <p style="font-size:13px; color:var(--text-muted); margin-bottom:15px;">Configurez vos limites dans l'onglet Profil.</p>
+            <h2 style="font-size:16px; margin-top:0;">Budgets par catégorie (Enveloppes)</h2>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">Configurez vos limites dans l'onglet Profil.</p>
             <div id="stats-list"></div>
         </div>
     </div>
@@ -492,22 +506,22 @@
             <div class="profile-header-card">
                 <div class="profile-avatar">👤</div>
                 <div>
-                    <h2 style="margin:0; font-size:18px;" id="profile-name-display">Mon Profil</h2>
+                    <h2 style="margin:0; font-size:20px;" id="profile-name-display">Mon Profil</h2>
                     <p style="margin:0; font-size:13px; color:var(--text-muted);" id="profile-email-display">Connecté</p>
                 </div>
             </div>
             
             <div class="settings-row">
                 <div class="settings-info"><h4>Prénom / Pseudo</h4><p>Pour le message d'accueil</p></div>
-                <input type="text" id="set-displayname" class="input-control" style="width:140px; text-align:right" onchange="saveSettingsLocally()" placeholder="ex: Maxime">
+                <input type="text" id="set-displayname" class="input-control" style="width:140px; text-align:right; background:var(--bg-color);" onchange="saveSettingsLocally()" placeholder="ex: Maxime">
             </div>
         </div>
 
         <div class="card">
-            <h2 style="font-size:16px;">Épargne & Style</h2>
+            <h2 style="font-size:16px; margin-top:0;">Épargne & Style</h2>
             <div class="settings-row">
                 <div class="settings-info"><h4>Thème visuel</h4><p>S'adapte à votre système</p></div>
-                <select class="input-control" style="width:130px; font-weight:600;" onchange="changeTheme(this.value)" id="set-theme">
+                <select class="input-control" style="width:130px; font-weight:600; background:var(--bg-color);" onchange="changeTheme(this.value)" id="set-theme">
                     <option value="auto">Automatique</option><option value="dark">Sombre</option><option value="light">Clair</option>
                 </select>
             </div>
@@ -525,66 +539,66 @@
 
             <div class="settings-row">
                 <div class="settings-info"><h4>Objectif d'épargne mensuel</h4><p>Solde cible en fin de mois</p></div>
-                <input type="number" id="set-savings-goal" class="input-control" style="width:100px; text-align:right" onchange="saveSettingsLocally()" placeholder="ex: 500">
+                <input type="number" id="set-savings-goal" class="input-control" style="width:100px; text-align:right; background:var(--bg-color);" onchange="saveSettingsLocally()" placeholder="ex: 500">
             </div>
             
             <div class="settings-row">
                 <div class="settings-info"><h4>Fonds d'Urgence</h4><p>Objectif d'épargne sécurité totale</p></div>
-                <input type="number" id="set-emergency" class="input-control" style="width:100px; text-align:right" onchange="saveSettingsLocally()" placeholder="ex: 5000">
+                <input type="number" id="set-emergency" class="input-control" style="width:100px; text-align:right; background:var(--bg-color);" onchange="saveSettingsLocally()" placeholder="ex: 5000">
             </div>
         </div>
 
         <div class="card">
-            <h2 style="font-size:16px;">Mes Comptes</h2>
+            <h2 style="font-size:16px; margin-top:0;">Mes Comptes</h2>
             <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Note : Le 1er compte de la liste est votre "Compte Principal". Il sert au calcul du "Reste à vivre".</p>
             <div id="settings-accounts-list"></div>
-            <button class="btn-export" style="width:100%; justify-content:center; margin-top:10px;" onclick="addAccount()">+ Ajouter un compte</button>
+            <button class="btn-export" style="width:100%; justify-content:center; margin-top:15px;" onclick="addAccount()">+ Ajouter un compte</button>
         </div>
 
         <div class="card">
-            <h2 style="font-size:16px;">Mes Catégories</h2>
+            <h2 style="font-size:16px; margin-top:0;">Mes Catégories</h2>
             <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Ajoutez des catégories personnalisées avec la règle correspondante (Fixe, Quotidien, Loisirs).</p>
             <div id="settings-custom-cats-list"></div>
-            <button class="btn-export" style="width:100%; justify-content:center; margin-top:10px;" onclick="addCustomCategory()">+ Créer une catégorie</button>
+            <button class="btn-export" style="width:100%; justify-content:center; margin-top:15px;" onclick="addCustomCategory()">+ Créer une catégorie</button>
         </div>
 
         <div class="card">
-            <h2 style="font-size:16px;">Enveloppes (Limites par catégorie)</h2>
+            <h2 style="font-size:16px; margin-top:0;">Enveloppes (Limites par catégorie)</h2>
             <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Fixez un budget maximum par catégorie. Laissez vide pour ignorer.</p>
             <div id="settings-cat-budgets"></div>
         </div>
 
         <div class="card">
-            <h2 style="font-size:16px;">📥 Import Bancaire CSV</h2>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Importez le relevé CSV de votre banque pour catégoriser automatiquement vos opérations récentes.</p>
+            <h2 style="font-size:16px; margin-top:0;">📥 Import Bancaire CSV</h2>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Importez le relevé CSV de votre banque pour catégoriser automatiquement vos opérations récentes.</p>
             <div style="display:flex; gap:10px;">
-                <button class="btn-export" onclick="document.getElementById('csv-file-input').click()" style="background:var(--accent); color:white; border:none; width:100%; justify-content:center;">Importer un relevé CSV</button>
+                <button class="btn-submit" onclick="document.getElementById('csv-file-input').click()" style="width:100%; justify-content:center;">Importer un relevé CSV</button>
                 <input type="file" id="csv-file-input" style="display:none" accept=".csv" onchange="importCSV(event)">
             </div>
         </div>
 
-        <div class="card" style="border-color: var(--orange); background: rgba(255, 159, 10, 0.05);">
+        <div class="card" style="border-color: var(--orange); background: rgba(255, 159, 10, 0.08);">
             <h2 style="font-size:16px; color:var(--orange); margin-top:0;">🧹 Nouveau Départ</h2>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Efface tout l'historique des opérations mais <strong>conserve vos comptes et fige leur solde actuel</strong>. Parfait pour débuter un nouveau mois.</p>
+            <p style="font-size: 13px; color: var(--text-main); opacity:0.8; margin-bottom: 20px;">Efface tout l'historique des opérations mais <strong>conserve vos comptes et fige leur solde actuel</strong>. Parfait pour débuter un nouveau mois.</p>
             <button class="btn-danger-outline" style="border-color:var(--orange); color:var(--orange);" onclick="freshStart()">Nettoyer l'historique</button>
         </div>
 
         <div class="card">
-            <h2 style="font-size:16px;">Export Manuel (Lecture seule)</h2>
-            <div style="display:flex; gap:10px; margin-top: 15px;">
-                <button class="btn-export" onclick="exportPDF()">📄 Exporter en PDF</button>
-                <button class="btn-export" onclick="exportCSV()">⬇ Exporter en CSV</button>
+            <h2 style="font-size:16px; margin-top:0;">Export Manuel (Lecture seule)</h2>
+            <div style="display:flex; gap:12px; margin-top: 20px;">
+                <button class="btn-export" style="flex:1; justify-content:center;" onclick="exportPDF()">📄 PDF</button>
+                <button class="btn-export" style="flex:1; justify-content:center;" onclick="exportCSV()">⬇ CSV</button>
             </div>
         </div>
 
-        <div class="card" style="border-color: rgba(255, 69, 58, 0.3); background: rgba(255, 69, 58, 0.05);">
+        <div class="card" style="border-color: rgba(255, 69, 58, 0.4); background: rgba(255, 69, 58, 0.05);">
             <h2 style="font-size:16px; color:var(--red); margin-top:0;">Session</h2>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Déconnectez-vous pour fermer votre session sur cet appareil.</p>
+            <p style="font-size: 13px; color: var(--text-main); opacity: 0.8; margin-bottom: 20px;">Déconnectez-vous pour fermer votre session sur cet appareil.</p>
             <button class="btn-danger-outline" onclick="logoutUser()">Se déconnecter</button>
         </div>
         
-        <div style="text-align:center; padding-bottom:30px;">
-            <button onclick="clearData()" style="background:none; border:none; color:var(--text-muted); text-decoration:underline; font-size:12px; cursor:pointer;">Réinitialiser l'application entière (Irréversible)</button>
+        <div style="text-align:center; padding-bottom:40px;">
+            <button onclick="clearData()" style="background:none; border:none; color:var(--text-muted); text-decoration:underline; font-size:13px; cursor:pointer; padding:10px;">Réinitialiser l'application entière (Irréversible)</button>
         </div>
     </div>
 </div>
@@ -603,8 +617,19 @@
     };
 
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
     const db = firebase.firestore();
+
+    // NOUVEAU : ACTIVATION DU MODE HORS-LIGNE
+    db.enablePersistence()
+      .catch(function(err) {
+          if (err.code == 'failed-precondition') {
+              console.log("Le mode hors-ligne ne peut être activé que sur un seul onglet à la fois.");
+          } else if (err.code == 'unimplemented') {
+              console.log("Le navigateur ne supporte pas le mode hors-ligne de Firebase.");
+          }
+      });
+
+    const auth = firebase.auth();
 
     let cloudDocRef = null;
     let isRegisterMode = false;
@@ -615,7 +640,7 @@
     let expenses = [];
     let accounts = [];
     let wishlist = [];
-    let categories = []; // La liste dynamique des catégories
+    let categories = []; 
     
     let savingsGoal = 500; 
     let emergencyGoal = 5000;
@@ -711,7 +736,6 @@
 
                 applyAppSettings();
             } else {
-                console.log("Premier lancement : Migration des données locales vers le Cloud...");
                 displayName = localStorage.getItem('apple_clean_name_v5') || '';
                 expenses = JSON.parse(localStorage.getItem('apple_clean_v5') || localStorage.getItem('apple_clean_v4') || '[]');
                 accounts = JSON.parse(localStorage.getItem('apple_clean_acc_v5') || localStorage.getItem('apple_clean_acc_v4') || '[{"id":"acc1","name":"COMPTE COURANT","initBalance":2000,"color":""}]');
@@ -773,19 +797,6 @@
         return String(str).replace(/[&<>'"]/g, match => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[match]);
     }
 
-    const KEYWORDS = {
-        'alim': ['leclerc', 'carrefour', 'auchan', 'intermarche', 'lidl', 'courses', 'boulangerie', 'aldi', 'super u', 'grand frais', 'monoprix'],
-        'transp': ['sncf', 'total', 'esso', 'uber', 'taxi', 'ratp', 'essence', 'peage', 'navigo', 'avion', 'train', 'bolt'],
-        'loisirs': ['netflix', 'spotify', 'cinema', 'ugc', 'apple', 'psn', 'xbox', 'amazon prime', 'disney', 'salle de sport', 'basic fit', 'fitness park'],
-        'logement': ['loyer', 'edf', 'engie', 'eau', 'assurance', 'internet', 'bricolage', 'ikea', 'leroy merlin'],
-        'vetements': ['zara', 'h&m', 'uniqlo', 'nike', 'adidas', 'zalando', 'asos', 'shein', 'boutique', 'vetements', 'mango', 'primark'],
-        'beaute': ['sephora', 'nocibe', 'coiffeur', 'barbier', 'maquillage', 'soin', 'rituals', 'yves rocher'],
-        'cadeaux': ['cadeau', 'anniversaire', 'noel', 'offrir'],
-        'resto': ['mcdonalds', 'kfc', 'burger king', 'deliveroo', 'ubereats', 'pizzeria', 'restaurant', 'bar', 'cafe', 'bistro'],
-        'tech': ['amazon', 'fnac', 'darty', 'boulanger', 'free', 'orange', 'sfr', 'bouygues', 'ldlc']
-    };
-    const RECURRING_KEYWORDS = ['netflix', 'spotify', 'loyer', 'edf', 'engie', 'free', 'orange', 'sfr', 'bouygues', 'apple', 'amazon prime', 'disney', 'navigo', 'basic fit'];
-
     function hapticTap() { if (navigator.vibrate) navigator.vibrate(15); }
 
     function animateValue(obj, start, end, duration, formatFn) {
@@ -800,14 +811,6 @@
         };
         window.requestAnimationFrame(step);
     }
-
-    const ACCENT_COLORS = {
-        'blue': { main: '#007aff', light: 'rgba(0, 122, 255, 0.15)' },
-        'purple': { main: '#af52de', light: 'rgba(175, 82, 222, 0.15)' },
-        'pink': { main: '#ff2d55', light: 'rgba(255, 45, 85, 0.15)' },
-        'green': { main: '#32d74b', light: 'rgba(50, 215, 75, 0.15)' },
-        'orange': { main: '#ff9f0a', light: 'rgba(255, 159, 10, 0.15)' }
-    };
 
     function applyColor(c) {
         savedColor = c;
@@ -857,7 +860,6 @@
             return; 
         }
 
-        // Check base keywords
         for(const [cat, words] of Object.entries(KEYWORDS)) {
             if(words.some(w => lower.includes(w))) {
                 if(currentType === 'expense') selectCat(cat);
@@ -865,7 +867,6 @@
             }
         }
         
-        // Check custom categories matching exactly the label
         const customMatch = categories.find(c => c.isCustom && lower.includes(c.label.toLowerCase()));
         if (customMatch && currentType === 'expense') selectCat(customMatch.id);
 
@@ -1204,7 +1205,7 @@
             return `
             <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid var(--border)">
                 <div style="display:flex; align-items:center; gap:10px;">
-                    <span style="font-size:24px;">${c.icon}</span>
+                    <span style="font-size:24px; background:var(--input-bg); width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:10px;">${c.icon}</span>
                     <div><strong style="font-size:14px;">${escapeHTML(c.label)}</strong><br><small style="color:var(--text-muted)">Règle: ${typeStr}</small></div>
                 </div>
                 <button onclick="deleteCategory('${escapeHTML(c.id)}')" style="background:none; border:none; color:var(--red); cursor:pointer; font-size:18px;">✕</button>
@@ -1217,10 +1218,10 @@
         container.innerHTML = categories.map(c => `
             <div class="settings-row" style="padding: 12px 0;">
                 <div class="settings-info" style="display:flex; align-items:center; gap:10px;">
-                    <span style="font-size:20px;">${c.icon}</span>
-                    <h4 style="margin:0;">${c.label}</h4>
+                    <span style="font-size:20px; background:var(--input-bg); width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:10px;">${c.icon}</span>
+                    <h4 style="margin:0;">${escapeHTML(c.label)}</h4>
                 </div>
-                <input type="number" class="input-control" style="width:90px; text-align:right; padding:10px;"
+                <input type="number" class="input-control" style="width:90px; text-align:right; padding:10px; background:var(--bg-color);"
                        placeholder="Illimité" value="${catBudgets[c.id] || ''}"
                        onchange="saveCatBudget('${c.id}', this.value)">
             </div>
@@ -1369,54 +1370,7 @@
         swipedElement = null;
     }
 
-    function renderWishlist(epargneMois, accBalances) {
-        const container = document.getElementById('wishlist-container');
-        if (wishlist.length === 0) {
-            container.innerHTML = "<p style='color:var(--text-muted); font-size:13px; text-align:center; padding:10px 0;'>Aucun projet. Cliquez sur Ajouter pour suivre une nouvelle envie !</p>";
-            return;
-        }
-
-        container.innerHTML = wishlist.map(w => {
-            const accId = w.accountId;
-            const accBalance = accId ? (accBalances[accId] || 0) : globalRealBalance;
-            const accObj = accounts.find(a => a.id === accId);
-            const accName = accObj ? escapeHTML(accObj.name) : 'Tous les comptes';
-
-            const missing = w.price - accBalance;
-            const progress = Math.min((accBalance / w.price) * 100, 100);
-            let status = "";
-            let barColor = "var(--accent)";
-
-            if (progress >= 100) {
-                status = `<span style="color:var(--green); font-weight:600;">✅ Financement atteint sur ${accName} !</span>`;
-                barColor = "var(--green)";
-            } else {
-                let timeEstimate = "";
-                if (epargneMois > 0) {
-                    const months = Math.ceil(missing / epargneMois);
-                    timeEstimate = `(Accessible dans ~${months} mois)`;
-                }
-                status = `<span style="color:var(--orange); font-weight:600;">⚠️ Il manque ${missing.toFixed(0)} €</span> <span style="color:var(--text-muted)">sur ${accName} ${timeEstimate}</span>`;
-            }
-
-            const safeUrl = escapeHTML(w.url);
-            const linkHtml = safeUrl ? `<a href="${safeUrl}" target="_blank" class="tag-badge" style="text-decoration:none; display:inline-flex; align-items:center; margin-left:8px;" onclick="event.stopPropagation()">🔗 Lien</a>` : '';
-
-            return `
-            <div style="background:var(--input-bg); padding:15px; border-radius:12px; margin-bottom:10px; position:relative; cursor:pointer; transition:0.2s;" onclick="openWishlistModal(${w.id})">
-                <div style="font-weight:600; font-size:14px; margin-bottom:5px;">
-                    ${escapeHTML(w.name)} ${linkHtml}
-                </div>
-                <div style="font-size:16px; font-weight:700; margin-bottom:10px;">${w.price.toFixed(2)} €</div>
-                <div class="prog-bar-bg" style="height:6px; margin-bottom:8px;">
-                    <div class="prog-bar-fill" style="width:${progress}%; background:${barColor}"></div>
-                </div>
-                <div style="font-size:12px;">${status}</div>
-            </div>`;
-        }).join('');
-    }
-
-    // --- DASHBOARD ---
+    // --- DASHBOARD (CIBLAGE COMPTE PRINCIPAL POUR RESTE A VIVRE) ---
     function updateAllViews() {
         const nowReal = new Date(); 
         const tY = viewDate.getFullYear(); 
@@ -1436,7 +1390,7 @@
             <div class="bank-card ${a.color}">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:2;">
                     <div class="acc-name">${escapeHTML(a.name)}</div>
-                    <button onclick="adjustBalance('${escapeHTML(a.id)}')" style="background:rgba(255,255,255,0.2); border:none; color:white; border-radius:6px; font-size:10px; padding:4px 8px; cursor:pointer; font-weight:600; transition:0.2s;">⚖️ Ajuster</button>
+                    <button onclick="adjustBalance('${escapeHTML(a.id)}')" style="background:rgba(255,255,255,0.2); border:none; color:white; border-radius:8px; font-size:11px; padding:6px 10px; cursor:pointer; font-weight:700; transition:0.2s; backdrop-filter: blur(5px);">⚖️ Ajuster</button>
                 </div>
                 <div class="acc-val blur-val" id="acc-val-${a.id}">0.00 €</div>
             </div>`;
@@ -1448,12 +1402,9 @@
 
         const currentMonthData = expandExpensesForMonth(tY, tM);
         
-        // Stats générales (pour jauges et projections)
         const monthInc = currentMonthData.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0);
         const monthExp = currentMonthData.filter(e => e.type === 'expense').reduce((s, e) => s + e.amount, 0);
-        const epargneMois = monthInc - monthExp;
-
-        // CIBLAGE : Calculs UNIQUEMENT pour le Compte Principal (accounts[0])
+        
         const defaultAccId = accounts[0] ? accounts[0].id : null;
         const mainAccData = currentMonthData.filter(e => e.accountId === defaultAccId);
         const mainInc = mainAccData.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0);
@@ -1462,7 +1413,6 @@
         
         animateValue(document.getElementById('dash-inc'), 0, monthInc, 800, val => "+" + val.toFixed(0) + " €");
         animateValue(document.getElementById('dash-exp'), 0, monthExp, 800, val => "-" + val.toFixed(0) + " €");
-        // Le Reste à vivre se base maintenant sur le compte principal
         animateValue(document.getElementById('dash-remaining'), 0, resteAVivreMain, 800, val => val.toFixed(0) + " €");
         
         document.getElementById('dash-goal-text').innerText = savingsGoal.toFixed(0);
@@ -1481,19 +1431,19 @@
 
         const upList = document.getElementById('upcoming-list');
         if (tY !== nowReal.getFullYear() || tM !== nowReal.getMonth()) {
-            upList.innerHTML = "<p style='color:var(--text-muted); font-size:14px; margin:0;'>L'échéancier n'est disponible que pour le mois en cours.</p>";
+            upList.innerHTML = "<p style='color:var(--text-muted); font-size:14px; margin:0; text-align:center; padding:10px;'>L'échéancier n'est disponible que pour le mois en cours.</p>";
         } else if(upcoming.length === 0) {
-            upList.innerHTML = "<p style='color:var(--text-muted); font-size:14px; margin:0;'>Tout est payé pour ce mois-ci ! 🎉</p>";
+            upList.innerHTML = "<p style='color:var(--text-muted); font-size:14px; margin:0; text-align:center; padding:10px;'>Tout est payé pour ce mois-ci ! 🎉</p>";
         } else {
             upList.innerHTML = upcoming.map(e => {
                 const safeUrl = escapeHTML(e.url);
                 const safeLabel = escapeHTML(e.label);
                 const urlBadge = safeUrl ? `<a href="${safeUrl}" target="_blank" class="tag-badge" style="text-decoration:none; margin-right:10px;" onclick="event.stopPropagation()">🔗</a>` : '';
-                return `<div class="upcoming-item"><div><span class="upcoming-date" style="background:var(--input-bg); color:var(--accent); padding:4px 8px; border-radius:6px; font-size:11px; font-weight:700; margin-right:12px;">Le ${e.displayDay}</span><span style="font-weight:600; font-size:14px;">${urlBadge}${safeLabel}</span></div><div class="blur-val" style="font-weight:700;">${e.amount.toFixed(2)} €</div></div>`;
+                return `<div class="upcoming-item"><div><span class="upcoming-date" style="background:var(--input-bg); color:var(--accent); padding:6px 10px; border-radius:8px; font-size:11px; font-weight:700; margin-right:12px;">Le ${e.displayDay}</span><span style="font-weight:600; font-size:14px;">${urlBadge}${safeLabel}</span></div><div class="blur-val" style="font-weight:700;">${e.amount.toFixed(2)} €</div></div>`;
             }).join('');
         }
 
-        renderWishlist(epargneMois, accBalances);
+        renderWishlist(monthInc - monthExp, accBalances);
     }
 
     // --- JOURNAL ---
@@ -1536,11 +1486,11 @@
             <div class="tx-swipe-container">
                 <div class="tx-delete-btn" onclick="deleteTx(${e.originalId})">Suppr.</div>
                 <div class="tx-item-content" onclick="openEditModal(${e.originalId})" ontouchstart="handleTouchStart(event, this)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">
-                    <div style="display:flex; align-items:center; gap:15px;"><span style="font-size:24px;">${icon}</span>
+                    <div style="display:flex; align-items:center; gap:15px;"><span style="font-size:24px; background:var(--input-bg); width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:14px;">${icon}</span>
                         <div><div style="font-weight:600;">${safeLabel} ${tags.map(t => `<span class="tag-badge">${escapeHTML(t)}</span>`).join('')} ${freqBadge} ${urlBadge}</div>
-                        <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">${e.displayDateStr} • ${accName}</div></div>
+                        <div style="font-size:12px; color:var(--text-muted); margin-top:6px;">${e.displayDateStr} • ${accName}</div></div>
                     </div>
-                    <div class="blur-val" style="font-weight:700; color:${isInc ? 'var(--green)' : 'var(--text-main)'}">${isInc ? '+' : '-'}${e.amount.toFixed(2)} €</div>
+                    <div class="blur-val" style="font-weight:700; color:${isInc ? 'var(--green)' : 'var(--text-main)'}; font-size:16px;">${isInc ? '+' : '-'}${e.amount.toFixed(2)} €</div>
                 </div>
             </div>`;
         }).join('');
@@ -1571,7 +1521,7 @@
                 const safeLabel = escapeHTML(e.label);
                 const catObj = categories.find(c => c.id === e.cat) || categories.find(c => c.id === 'autre');
                 const urlBadge = safeUrl ? `<a href="${safeUrl}" target="_blank" class="tag-badge" style="text-decoration:none; margin-right:8px;" onclick="event.stopPropagation()">🔗</a>` : '';
-                return `<div class="tx-item" onclick="openEditModal(${e.originalId})"><span>${e.type==='income'?'💰':catObj.icon} ${urlBadge}${safeLabel}</span><span class="blur-val" style="font-weight:700; color:${e.type==='income'?'var(--green)':'var(--text-main)'}">${e.type==='income'?'+':'-'}${e.amount.toFixed(2)} €</span></div>`;
+                return `<div class="tx-item" onclick="openEditModal(${e.originalId})"><span style="display:flex; align-items:center; gap:10px;"><span style="font-size:20px; background:var(--input-bg); width:36px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:10px;">${e.type==='income'?'💰':catObj.icon}</span> ${urlBadge}${safeLabel}</span><span class="blur-val" style="font-weight:700; color:${e.type==='income'?'var(--green)':'var(--text-main)'}">${e.type==='income'?'+':'-'}${e.amount.toFixed(2)} €</span></div>`;
             }).join(''); 
             details.style.display = 'block'; 
         } else details.style.display = 'none';
@@ -1587,12 +1537,10 @@
             return;
         }
 
-        let totalMonthly = 0;
-        let html = '';
+        let totalMonthly = 0; let html = '';
         
         subs.forEach(sub => {
-            let monthlyCost = sub.amount;
-            let freqText = "Mensuel";
+            let monthlyCost = sub.amount; let freqText = "Mensuel";
             if(sub.frequency === 'weekly') { monthlyCost = sub.amount * 4.33; freqText = "Hebdomadaire"; }
             else if(sub.frequency === '2weeks') { monthlyCost = sub.amount * 2.16; freqText = "Toutes les 2 sem."; }
             else if(sub.frequency === '4weeks') { monthlyCost = sub.amount * 1.08; freqText = "Toutes les 4 sem."; }
@@ -1602,25 +1550,25 @@
             const catIcon = catObj.icon || '💸';
 
             html += `
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--border);">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <span style="font-size:20px; background:var(--input-bg); width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:10px;">${catIcon}</span>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid var(--border);">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <span style="font-size:20px; background:var(--input-bg); width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:14px;">${catIcon}</span>
                         <div>
                             <div style="font-weight:600; font-size:14px;">${escapeHTML(sub.label)}</div>
-                            <div style="font-size:11px; color:var(--text-muted);">${freqText} (${sub.amount.toFixed(2)}€)</div>
+                            <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">${freqText} (${sub.amount.toFixed(2)}€)</div>
                         </div>
                     </div>
-                    <div style="font-weight:700; color:var(--red);">- ${monthlyCost.toFixed(2)} € <span style="font-size:10px; color:var(--text-muted); font-weight:normal;">/mois</span></div>
+                    <div style="font-weight:700; color:var(--red); font-size:16px;">- ${monthlyCost.toFixed(2)} € <span style="font-size:10px; color:var(--text-muted); font-weight:normal;">/mois</span></div>
                 </div>`;
         });
 
         html = `
-            <div style="background:linear-gradient(135deg, #ff453a 0%, #ff9f0a 100%); color:white; padding:15px; border-radius:12px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 4px 15px rgba(255,69,58,0.3);">
+            <div style="background:linear-gradient(135deg, #ff453a 0%, #ff9f0a 100%); color:white; padding:20px; border-radius:18px; margin-bottom:25px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 8px 20px rgba(255,69,58,0.3);">
                 <div>
-                    <div style="font-size:12px; opacity:0.9; text-transform:uppercase; font-weight:600; letter-spacing:0.5px;">Coût Total</div>
-                    <div style="font-size:24px; font-weight:700;">${totalMonthly.toFixed(2)} € <span style="font-size:14px; font-weight:500;">/mois</span></div>
+                    <div style="font-size:12px; opacity:0.9; text-transform:uppercase; font-weight:700; letter-spacing:0.5px;">Coût Total</div>
+                    <div style="font-size:28px; font-weight:700; margin-top:5px;">${totalMonthly.toFixed(2)} € <span style="font-size:14px; font-weight:500;">/mois</span></div>
                 </div>
-                <div style="font-size:32px; opacity:0.8;">📡</div>
+                <div style="font-size:40px; opacity:0.9;">📡</div>
             </div>
         ` + html;
 
@@ -1646,7 +1594,6 @@
         
         document.getElementById('proj-month').innerText = epargneMois > 0 ? `+${epargneMois.toFixed(0)} €` : `${epargneMois.toFixed(0)} €`;
         document.getElementById('proj-month').style.color = epargneMois > 0 ? 'var(--green)' : 'var(--red)';
-        
         document.getElementById('proj-year').innerText = `+${projYear.toFixed(0)} €`;
         
         if(emergencyGoal > 0) {
@@ -1703,8 +1650,8 @@
             }
 
             return `<div class="stats-row">
-                        <div class="stats-info"><span>${cat.icon} ${escapeHTML(cat.label)}</span><span class="blur-val">${val.toFixed(2)} € ${limitText}</span></div>
-                        <div class="prog-bar-bg" style="height:6px; margin-top:5px;"><div class="prog-bar-fill" style="width: ${Math.min(pctBar, 100)}%; background:${barColor}"></div></div>
+                        <div class="stats-info"><span style="display:flex; align-items:center; gap:8px;"><span style="font-size:16px; background:var(--input-bg); width:30px; height:30px; display:flex; align-items:center; justify-content:center; border-radius:8px;">${cat.icon}</span> ${escapeHTML(cat.label)}</span><span class="blur-val" style="display:flex; align-items:center;">${val.toFixed(2)} € ${limitText}</span></div>
+                        <div class="prog-bar-bg" style="height:8px; margin-top:8px;"><div class="prog-bar-fill" style="width: ${Math.min(pctBar, 100)}%; background:${barColor}"></div></div>
                     </div>`;
         }).join('');
     }
