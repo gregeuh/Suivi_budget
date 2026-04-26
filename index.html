@@ -134,7 +134,7 @@
         .amount-input { font-size: 48px; font-weight: 800; background: transparent; border: none; outline: none; color: var(--text-main); width: 100%; text-align: center; margin-bottom: 25px; letter-spacing: -2px;}
         .amount-input::placeholder { color: var(--text-muted); opacity: 0.5; }
         
-        .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 25px; }
+        .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
         .category-item { display: flex; flex-direction: column; align-items: center; background-color: var(--input-bg); border-radius: 20px; padding: 18px 5px; cursor: pointer; transition: 0.2s; text-align: center; }
         .category-item.selected { background: var(--accent-light); color: var(--accent); transform: scale(0.98); }
         .btn-submit { background-color: var(--accent); color: white; border: none; width: 100%; padding: 18px; border-radius: 18px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px var(--accent-light); }
@@ -192,12 +192,21 @@
         .section { display: none; }
         .section.active { display: block; }
         
+
+        .tag-badge { background: var(--input-bg); border-radius: 8px; padding: 3px 8px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+        .stats-row { margin-bottom: 18px; }
+        .stats-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .view-toggle-btn { flex: 1; background: transparent; border: none; color: var(--text-muted); padding: 10px; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; transition: 0.2s; }
+        .view-toggle-btn.active { background: var(--card-bg); color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .cal-cell.empty { background: transparent; cursor: default; }
+        .cal-cell.today { background: var(--accent); color: white; }
         input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); cursor: pointer; }
 
         @media (max-width: 600px) {
             .app-wrapper { padding: 15px 15px 80px 15px; }
             .inputs-grid { grid-template-columns: 1fr; gap: 12px; }
             .category-grid { gap: 8px; grid-template-columns: repeat(3, 1fr); }
+            .category-item { padding: 12px 4px; }
             .header h1 { font-size: 28px; }
             .tab-bar-container { bottom: 15px; }
             .tab-bar { padding: 6px; }
@@ -393,7 +402,34 @@
         <input type="text" id="tx-search" placeholder="🔍 Rechercher (Libellé, #Tag...)" style="width:100%; padding:16px 20px; border-radius:18px; border:none; background:var(--card-bg); box-shadow:var(--shadow); color:var(--text-main); font-size:16px; font-weight:500; outline:none; margin-bottom:20px; box-sizing:border-box;" oninput="renderTransactions()">
         
         <div class="filter-bar" id="filter-bar"></div>
-        <div id="tx-list" style="margin-bottom: 40px;"></div>
+
+        <!-- Vue liste / calendrier -->
+        <div style="display:flex;gap:4px;background:var(--input-bg);border-radius:16px;padding:4px;margin-bottom:20px;">
+            <button id="view-list-btn" class="view-toggle-btn active" onclick="setJournalView('list')">📋 Liste</button>
+            <button id="view-cal-btn" class="view-toggle-btn" onclick="setJournalView('cal')">📅 Calendrier</button>
+        </div>
+
+        <div id="journal-list-view">
+            <div id="tx-list" style="margin-bottom: 40px;"></div>
+        </div>
+
+        <div id="journal-cal-view" style="display:none; margin-bottom:40px;">
+            <div class="card">
+                <div class="cal-grid" id="cal-grid">
+                    <div class="cal-day-label">Lun</div>
+                    <div class="cal-day-label">Mar</div>
+                    <div class="cal-day-label">Mer</div>
+                    <div class="cal-day-label">Jeu</div>
+                    <div class="cal-day-label">Ven</div>
+                    <div class="cal-day-label">Sam</div>
+                    <div class="cal-day-label">Dim</div>
+                </div>
+                <div id="cal-details" style="display:none; margin-top:20px; border-top:1px solid var(--input-bg); padding-top:15px;">
+                    <div id="cal-details-title" style="font-size:14px; font-weight:700; margin-bottom:10px;"></div>
+                    <div id="cal-details-list"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="tab-stats" class="section">
@@ -456,7 +492,7 @@
         <div class="card" style="display:flex; align-items:center; gap:20px;">
             <div style="width: 70px; height: 70px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 32px; color: white;">👤</div>
             <div style="flex:1;">
-                <input type="text" id="set-displayname" placeholder="Votre Prénom" onblur="saveSettingsLocally()" style="background:transparent; border:none; color:var(--text-main); font-size:22px; font-weight:700; width:100%; outline:none; padding:0; margin-bottom:4px;">
+                <input type="text" id="set-displayname" placeholder="Votre Prénom" oninput="saveDisplayName()" style="background:transparent; border:none; color:var(--text-main); font-size:22px; font-weight:700; width:100%; outline:none; padding:0; margin-bottom:4px;" placeholder="Votre prénom">
                 <div id="profile-email-display" style="font-size:13px; color:var(--text-muted);">Connecté</div>
             </div>
         </div>
@@ -576,6 +612,30 @@
     
     window.isSwiping = false;
 
+    const ACCENT_COLORS = {
+        blue:   { main: '#007aff', light: 'rgba(0,122,255,0.15)' },
+        purple: { main: '#af52de', light: 'rgba(175,82,222,0.15)' },
+        pink:   { main: '#ff2d55', light: 'rgba(255,45,85,0.15)' },
+        green:  { main: '#34c759', light: 'rgba(52,199,89,0.15)' },
+        orange: { main: '#ff9500', light: 'rgba(255,149,0,0.15)' }
+    };
+
+    const KEYWORDS = {
+        'alim':    ['leclerc','carrefour','auchan','intermarche','lidl','courses','boulangerie','aldi','monoprix','super u'],
+        'transp':  ['sncf','total','esso','uber','taxi','ratp','essence','peage','navigo','avion','bolt'],
+        'loisirs': ['netflix','spotify','cinema','ugc','apple','psn','xbox','prime','disney','salle de sport','basic fit'],
+        'logement':['loyer','edf','engie','eau','assurance','internet','ikea','leroy merlin'],
+        'vetements':['zara','h&m','uniqlo','nike','adidas','zalando','asos','shein','mango','primark'],
+        'beaute':  ['sephora','nocibe','coiffeur','barbier','maquillage','yves rocher'],
+        'cadeaux': ['cadeau','anniversaire'],
+        'resto':   ['mcdonalds','kfc','burger','deliveroo','ubereats','pizzeria','restaurant','bar'],
+        'tech':    ['amazon','fnac','darty','boulanger','free','orange','sfr','bouygues'],
+        'sante':   ['pharmacie','medecin','dentiste','mutuelle','hopital','doctolib']
+    };
+
+    const RECURRING_KEYWORDS = ['netflix','spotify','loyer','edf','engie','free','orange','sfr','bouygues',
+        'apple','amazon prime','disney','navigo','assurance','mutuelle','abonnement'];
+
     const DEFAULT_CATEGORIES = [
         { id: 'alim', label: 'Alimentation', icon: '🛒', type: 'vie', isCustom: false },
         { id: 'transp', label: 'Transport', icon: '🚗', type: 'vie', isCustom: false },
@@ -661,9 +721,14 @@
                     
                     wishlist = Array.isArray(data.wishlist) ? data.wishlist.filter(w=>w) : [];
                     
+                    // Rebuild: always start from DEFAULT_CATEGORIES + any saved custom ones
                     const savedCats = Array.isArray(data.categories) ? data.categories : [];
-                    const customCatsOnly = savedCats.filter(c => c && c.isCustom);
-                    categories = [...DEFAULT_CATEGORIES, ...customCatsOnly];
+                    // Handle both old format (full list) and new format (custom only)
+                    const customCatsOnly = savedCats.filter(c => c && c.isCustom === true);
+                    // Deduplicate: remove any custom that has same id as a default
+                    const defaultIds = DEFAULT_CATEGORIES.map(d => d.id);
+                    const uniqueCustom = customCatsOnly.filter(c => !defaultIds.includes(c.id));
+                    categories = [...DEFAULT_CATEGORIES, ...uniqueCustom];
                     
                     savingsGoal = data.savingsGoal !== undefined ? data.savingsGoal : 500;
                     emergencyGoal = data.emergencyGoal !== undefined ? data.emergencyGoal : 5000;
@@ -699,12 +764,14 @@
 
     function saveToCloud() {
         if (!cloudDocRef) return;
+        // Only persist custom categories - defaults are always rebuilt from DEFAULT_CATEGORIES
+        const customCatsToSave = categories.filter(c => c.isCustom);
         cloudDocRef.set({
             displayName: displayName,
             expenses: expenses,
             accounts: accounts,
             wishlist: wishlist,
-            categories: categories,
+            categories: customCatsToSave,
             savingsGoal: savingsGoal,
             emergencyGoal: emergencyGoal,
             catBudgets: catBudgets,
@@ -714,12 +781,12 @@
     }
 
     function applyAppSettings() {
-        document.getElementById('set-displayname').value = displayName;
-        if(displayName) {
-            document.getElementById('welcome-title').innerText = `Bonjour ${displayName}`;
-        } else {
-            document.getElementById('welcome-title').innerText = "Budget";
+        // Only update name field if it's not currently focused (user might be typing)
+        const nameField = document.getElementById('set-displayname');
+        if (nameField && document.activeElement !== nameField) {
+            nameField.value = displayName;
         }
+        document.getElementById('welcome-title').innerText = displayName ? `Bonjour ${displayName} 👋` : 'Budget';
 
         applyTheme(savedTheme); 
         document.getElementById('set-theme').value = savedTheme;
@@ -856,7 +923,9 @@
 
     function openAddModal() { 
         hapticTap();
-        editingTxId = null; 
+        editingTxId = null;
+        // Ensure categories array has at least DEFAULT_CATEGORIES
+        if (!categories || categories.length === 0) categories = [...DEFAULT_CATEGORIES]; 
         
         document.getElementById('modal-title').innerText = "Nouvelle opération";
         document.getElementById('btn-submit-tx').innerText = "Valider";
@@ -875,7 +944,8 @@
         document.getElementById('inp-frequency').value = 'monthly';
         document.getElementById('inp-rec-end').value = '';
         
-        setOpType('expense'); 
+        setOpType('expense');
+        renderCats();
         toggleRecOptions();
         
         document.getElementById('advanced-options').style.display = 'none';
@@ -940,6 +1010,7 @@
         document.getElementById('type-inc-btn').style.opacity = t==='income' ? '1' : '0.4';
         document.getElementById('type-inc-btn').style.color = t==='income' ? 'var(--green)' : 'var(--text-muted)';
         document.getElementById('category-block').style.display = t==='expense' ? 'block' : 'none';
+        if (t === 'expense') renderCats();
     }
 
     function toggleRecOptions() { 
@@ -983,8 +1054,10 @@
             expenses.unshift(txData);
         }
 
-        saveToCloud(); 
-        closeAddModal(); 
+        saveToCloud();
+        closeAddModal();
+        updateAllViews();
+        if(document.getElementById('tab-tx').classList.contains('active')) renderTransactions();
     }
 
     function deleteTxFromModal() {
@@ -997,7 +1070,9 @@
     function deleteTx(id) {
         hapticTap();
         expenses = expenses.filter(e => String(e.id) !== String(id));
-        saveToCloud(); 
+        saveToCloud();
+        updateAllViews();
+        if(document.getElementById('tab-tx').classList.contains('active')) renderTransactions();
     }
 
 
@@ -1188,6 +1263,7 @@
 
         saveToCloud();
         closeWishlistModal();
+        updateAllViews();
     }
 
     function deleteWishFromModal() {
@@ -1196,6 +1272,7 @@
             wishlist = wishlist.filter(w => String(w.id) !== String(editingWishId));
             saveToCloud();
             closeWishlistModal();
+            updateAllViews();
         }
     }
 
@@ -1583,9 +1660,28 @@
         }
 
         renderWishlist(mInc - mExp, accBalances);
+        renderSettingsAccounts();
+        renderSettingsCategories();
+        renderSettingsCatBudgets();
     }
 
-    function renderFilters() {
+    function renderCats() {
+        const container = document.getElementById('cat-container');
+        if (!container) return;
+        container.innerHTML = categories.map(c => `
+            <div class="category-item ${selectedCat === c.id ? 'selected' : ''}" onclick="selectCat('${c.id}')">
+                <span style="font-size:28px; margin-bottom:8px;">${c.icon}</span>
+                <span style="font-size:12px; font-weight:600;">${escapeHTML(c.label)}</span>
+            </div>`).join('');
+    }
+
+    function selectCat(id) {
+        hapticTap();
+        selectedCat = id;
+        renderCats();
+    }
+
+        function renderFilters() {
         document.getElementById('filter-bar').innerHTML = `<div class="filter-pill active" onclick="setFilter('all', this)">Tout</div><div class="filter-pill" onclick="setFilter('income', this)">Revenus</div>` + categories.map(c => `<div class="filter-pill" onclick="setFilter('${c.id}', this)">${escapeHTML(c.label)}</div>`).join('');
     }
 
@@ -1599,6 +1695,7 @@
 
     function renderTransactions() {
         const list = document.getElementById('tx-list');
+        if (!list) return;
         const search = document.getElementById('tx-search').value.toLowerCase(); 
         const activeExps = expandExpensesForMonth(viewDate.getFullYear(), viewDate.getMonth());
         
@@ -1671,7 +1768,8 @@
         for(let day=1; day<=dIM; day++) {
             const hasTx = activeExps.some(e => e.displayDay === day);
             const div = document.createElement('div');
-            div.className = `cal-cell ${hasTx ? 'has-tx' : ''}`;
+            const isToday = y === new Date().getFullYear() && m === new Date().getMonth() && day === new Date().getDate();
+            div.className = `cal-cell ${hasTx ? 'has-tx' : ''} ${isToday ? 'today' : ''}`;
             div.innerText = day;
             div.onclick = () => {
                 hapticTap();
@@ -1851,15 +1949,18 @@
         const name = prompt("Nom du compte :"); if(!name) return;
         const bal = parseFloat(prompt("Solde initial (€) :", "0").replace(',', '.')); if (isNaN(bal)) return;
         const colors = ['blue', 'purple', 'pink', 'green', 'orange', 'alt-color'];
-        accounts.push({ id: 'acc_'+Date.now(), name: name, initBalance: bal, color: colors[accounts.length % colors.length] }); 
+        accounts.push({ id: 'acc_'+Date.now(), name: name, initBalance: bal, color: colors[accounts.length % colors.length] });
         saveToCloud();
+        updateAccountsSelectors();
+        renderSettingsAccounts();
+        updateAllViews();
     }
 
     function editAccount(id) {
         hapticTap();
         const acc = accounts.find(a => String(a.id) === String(id)); if (!acc) return;
         const bal = parseFloat(prompt(`Nouveau solde initial pour ${acc.name} (€) :\n(Ajustez plutôt depuis le dashboard pour la vraie vie)`, acc.initBalance).replace(',', '.'));
-        if (!isNaN(bal)) { acc.initBalance = bal; saveToCloud(); }
+        if (!isNaN(bal)) { acc.initBalance = bal; saveToCloud(); renderSettingsAccounts(); updateAllViews(); }
     }
 
     function deleteAccount(id) {
@@ -1869,6 +1970,9 @@
             accounts = accounts.filter(a => String(a.id) !== String(id));
             expenses = expenses.filter(e => String(e.accountId) !== String(id));
             saveToCloud();
+            updateAccountsSelectors();
+            renderSettingsAccounts();
+            updateAllViews();
         }
     }
     
@@ -1888,22 +1992,43 @@
         const label = prompt("Nom :"); if (!label) return;
         const icon = prompt("Emoji :", "🏷️"); if (!icon) return;
         const typeChoice = prompt("Type :\n1. Fixe\n2. Quotidien\n3. Loisirs", "2");
-        categories.push({
+        const newCat = {
             id: 'cat_' + Date.now(),
-            label,
-            icon,
+            label: label,
+            icon: icon,
             type: typeChoice === '1' ? 'fixe' : (typeChoice === '3' ? 'loisirs' : 'vie'),
             isCustom: true
-        });
+        };
+        categories.push(newCat);
         saveToCloud();
+        renderCats();
+        renderFilters();
+        renderSettingsCategories();
+        renderSettingsCatBudgets();
+        // Confirm to user
+        const confirmEl = document.getElementById('settings-custom-cats-list');
+        if (confirmEl) {
+            const flash = document.createElement('div');
+            flash.style.cssText = 'color:var(--green);font-size:13px;font-weight:600;padding:8px 0;';
+            flash.textContent = '✓ Catégorie "' + label + '" ajoutée';
+            confirmEl.prepend(flash);
+            setTimeout(function(){ flash.remove(); }, 2500);
+        }
     }
 
     function deleteCategory(id) {
         hapticTap();
         if (confirm("Supprimer ? Les op. seront en 'Autre'.")) {
+            // Only allow deleting custom categories
+            const catToDelete = categories.find(c => String(c.id) === String(id));
+            if (catToDelete && !catToDelete.isCustom) { alert('Impossible de supprimer une catégorie par défaut.'); return; }
             categories = categories.filter(c => String(c.id) !== String(id));
             expenses.forEach(e => { if (String(e.cat) === String(id)) e.cat = 'autre'; });
             saveToCloud();
+            renderCats();
+            renderFilters();
+            renderSettingsCategories();
+            renderSettingsCatBudgets();
         }
     }
 
@@ -1941,7 +2066,19 @@
         saveToCloud();
     }
 
-    function saveSettingsLocally() { 
+    function saveDisplayName() {
+        const val = document.getElementById('set-displayname').value.trim();
+        displayName = val;
+        // Update welcome title immediately
+        document.getElementById('welcome-title').innerText = val ? `Bonjour ${val} 👋` : 'Budget';
+        // Debounce cloud save to avoid saving on every keystroke
+        clearTimeout(window._nameTimer);
+        window._nameTimer = setTimeout(function() {
+            if (currentUser) saveToCloud();
+        }, 800);
+    }
+
+        function saveSettingsLocally() { 
         displayName = document.getElementById('set-displayname').value.trim();
         savingsGoal = parseFloat(document.getElementById('set-savings-goal').value) || 0;
         emergencyGoal = parseFloat(document.getElementById('set-emergency').value) || 0;
