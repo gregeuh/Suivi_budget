@@ -166,7 +166,7 @@
             border-radius: 50px; padding: 9px 16px; cursor: pointer;
             transition: border-color .15s; white-space: nowrap;
         }
-        .repeat-chip:hover { border-color: var(--accent); }
+        .repeat-chip:hover, .repeat-chip:active { border-color: var(--accent); }
         /* ── AUTOCOMPLETE ── */
         .suggest-item {
             display: flex; align-items: center; gap: 12px;
@@ -174,7 +174,7 @@
             border-bottom: 1px solid var(--input-bg);
         }
         .suggest-item:last-child { border-bottom: none; }
-        .suggest-item:hover { background: var(--input-bg); }
+        .suggest-item:hover, .suggest-item:active { background: var(--input-bg); }
         .suggest-icon { font-size: 20px; width: 34px; height: 34px; border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
             background: var(--input-bg); flex-shrink: 0; }
@@ -271,7 +271,7 @@
         <h1 style="margin-top:0; font-size:26px; letter-spacing:-0.5px; font-weight:800;">Budget Pro</h1>
         <p style="color:var(--text-muted); font-size:14px; margin-bottom:30px;">Connexion sécurisée au cloud privé.</p>
         
-        <div id="auth-error-msg" class="auth-error" style="display:none;"></div>
+        <div id="auth-error-msg" class="auth-error"></div>
         <input type="email" id="auth-email" class="auth-input" placeholder="Adresse e-mail">
         <input type="password" id="auth-pass" class="auth-input" placeholder="Mot de passe">
         <button class="auth-btn" id="btn-login" onclick="login()">Se connecter</button>
@@ -292,22 +292,20 @@
             <button id="type-inc-btn" style="border:none; background:none; font-size:18px; font-weight:700; color:var(--text-muted); opacity:0.5; transition:0.2s; cursor:pointer;" onclick="setOpType('income')">Revenu</button>
         </div>
 
-        <!-- NUMPAD DISPLAY -->
-        <div id="numpad-display" onclick="openNumpad()" style="cursor:pointer; margin-bottom:20px; text-align:center;">
-            <div id="numpad-value" style="font-size:56px; font-weight:800; letter-spacing:-2px; color:var(--text-main); min-height:65px; line-height:1;">0</div>
-            <div id="numpad-hint" style="font-size:13px; color:var(--text-muted); font-weight:600; margin-top:2px;">Appuyer pour saisir le montant</div>
+        <div id="numpad-display" onclick="openNumpad()" style="cursor:pointer;margin-bottom:20px;text-align:center;">
+            <div id="numpad-value" style="font-size:56px;font-weight:800;letter-spacing:-2px;color:var(--text-main);min-height:65px;line-height:1;">0</div>
+            <div id="numpad-hint" style="font-size:13px;color:var(--text-muted);font-weight:600;margin-top:2px;">Appuyer pour saisir le montant</div>
         </div>
         <input type="hidden" id="inp-amount" value="">
 
-        <!-- NUMPAD OVERLAY -->
-        <div id="numpad-overlay" style="display:none; position:fixed; inset:0; background:var(--bg-color); z-index:9999; flex-direction:column; animation:slideUpSheet .25s;">
-            <div style="flex:1; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:30px 20px 10px;">
-                <div id="numpad-type-label" style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:14px;">Dépense</div>
-                <div id="numpad-screen" style="font-size:72px; font-weight:800; letter-spacing:-3px; color:var(--text-main); min-height:88px; text-align:center; transition:color .15s;">0</div>
-                <div style="font-size:15px; color:var(--text-muted); font-weight:600; margin-top:2px;">€</div>
+        <div id="numpad-overlay" style="display:none;position:fixed;inset:0;background:var(--bg-color);z-index:9999;flex-direction:column;">
+            <div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:30px 20px 10px;">
+                <div id="numpad-type-label" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:14px;">Dépense</div>
+                <div id="numpad-screen" style="font-size:72px;font-weight:800;letter-spacing:-3px;color:var(--text-main);min-height:88px;text-align:center;transition:color .15s;">0</div>
+                <div style="font-size:15px;color:var(--text-muted);font-weight:600;margin-top:2px;">€</div>
             </div>
             <div style="padding:0 16px 40px;">
-                <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:10px;">
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px;">
                     <button class="npbtn" onclick="npPress('7')">7</button>
                     <button class="npbtn" onclick="npPress('8')">8</button>
                     <button class="npbtn" onclick="npPress('9')">9</button>
@@ -321,19 +319,17 @@
                     <button class="npbtn" onclick="npPress('0')">0</button>
                     <button class="npbtn npbtn-del" onclick="npBackspace()">⌫</button>
                 </div>
-                <div style="display:flex; gap:10px;">
-                    <button onclick="closeNumpad()" style="flex:1; padding:20px; border-radius:18px; border:none; background:var(--input-bg); color:var(--text-muted); font-size:16px; font-weight:700; cursor:pointer;">Annuler</button>
-                    <button onclick="confirmNumpad()" style="flex:2; padding:20px; border-radius:18px; border:none; background:var(--accent); color:white; font-size:18px; font-weight:800; cursor:pointer; box-shadow:0 6px 20px var(--accent-shadow,rgba(0,122,255,.35));">Valider ✓</button>
+                <div style="display:flex;gap:10px;">
+                    <button onclick="closeNumpad()" style="flex:1;padding:20px;border-radius:18px;border:none;background:var(--input-bg);color:var(--text-muted);font-size:16px;font-weight:700;cursor:pointer;">Annuler</button>
+                    <button onclick="confirmNumpad()" style="flex:2;padding:20px;border-radius:18px;border:none;background:var(--accent);color:white;font-size:18px;font-weight:800;cursor:pointer;">Valider ✓</button>
                 </div>
             </div>
         </div>
         
-        <!-- REPEAT CHIPS -->
-        <div id="repeat-section" style="margin-bottom:18px; display:none;">
-            <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:var(--text-muted); margin-bottom:10px;">⚡ Fréquentes ce mois</div>
-            <div id="repeat-chips" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none;"></div>
+        <div id="repeat-section" style="margin-bottom:18px;display:none;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);margin-bottom:10px;">⚡ Fréquentes ce mois</div>
+            <div id="repeat-chips" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;"></div>
         </div>
-
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
             <div class="input-group" style="position:relative;">
                 <label>Libellé</label>
@@ -342,12 +338,7 @@
                     onfocus="showSuggestDropdown(this.value)"
                     onblur="setTimeout(hideSuggestDropdown,150)"
                     autocomplete="off">
-                <div id="suggest-dropdown" style="
-                    display:none; position:absolute; left:0; right:0; top:100%;
-                    background:var(--card-bg); border-radius:16px; margin-top:6px;
-                    box-shadow:0 8px 30px rgba(0,0,0,.18); z-index:9000;
-                    max-height:220px; overflow-y:auto; border:1px solid var(--input-bg);
-                "></div>
+                <div id="suggest-dropdown" style="display:none;position:absolute;left:0;right:0;top:100%;background:var(--card-bg);border-radius:16px;margin-top:6px;box-shadow:0 8px 30px rgba(0,0,0,.18);z-index:9000;max-height:220px;overflow-y:auto;border:1px solid var(--input-bg);"></div>
             </div>
             <div class="input-group">
                 <label>Date</label>
@@ -812,50 +803,40 @@
     }
 
     function login() {
-        const email = document.getElementById('auth-email').value.trim();
-        const pass  = document.getElementById('auth-pass').value;
-        if (!email || !pass) return showError('Veuillez remplir tous les champs.');
-        showError('');
-        const btn = document.getElementById('btn-login');
-        if (btn) { btn.textContent = 'Connexion…'; btn.disabled = true; }
-        auth.signInWithEmailAndPassword(email, pass)
-            .catch(function(err) {
-                if (btn) { btn.textContent = 'Se connecter'; btn.disabled = false; }
-                const msgs = {
-                    'auth/user-not-found':         'Aucun compte avec cet email.',
-                    'auth/wrong-password':         'Mot de passe incorrect.',
-                    'auth/invalid-email':          'Adresse email invalide.',
-                    'auth/too-many-requests':      'Trop de tentatives. Réessayez plus tard.',
-                    'auth/network-request-failed': 'Erreur réseau. Vérifiez votre connexion.',
-                    'auth/invalid-credential':     'Email ou mot de passe incorrect.'
-                };
-                showError(msgs[err.code] || ('Erreur : ' + err.message));
-            }); /* replaced catch =>
+        const email = document.getElementById('auth-email').value;
+        const pass = document.getElementById('auth-pass').value;
+        if(!email || !pass) return showError("Veuillez remplir tous les champs.");
+        auth.signInWithEmailAndPassword(email, pass).catch(function(error) {
+            const msgs = {
+                'auth/user-not-found':         'Aucun compte avec cet email.',
+                'auth/wrong-password':         'Mot de passe incorrect.',
+                'auth/invalid-credential':     'Email ou mot de passe incorrect.',
+                'auth/invalid-email':          'Adresse email invalide.',
+                'auth/too-many-requests':      'Trop de tentatives, réessayez plus tard.',
+                'auth/network-request-failed': 'Erreur réseau. Vérifiez votre connexion.'
+            };
+            showError(msgs[error.code] || 'Erreur de connexion. Vérifiez vos identifiants.');
+        });
     }
 
     function register() {
-        const email = document.getElementById('auth-email').value.trim();
-        const pass  = document.getElementById('auth-pass').value;
-        if (!email || !pass) return showError('Veuillez remplir tous les champs.');
-        if (pass.length < 6) return showError('Le mot de passe doit faire au moins 6 caractères.');
-        showError('');
-        const btn = document.getElementById('btn-register');
-        if (btn) { btn.textContent = 'Création…'; btn.disabled = true; }
-        auth.createUserWithEmailAndPassword(email, pass)
-            .catch(function(err) {
-                if (btn) { btn.textContent = 'Créer un compte'; btn.disabled = false; }
-                const msgs = {
-                    'auth/email-already-in-use':   'Un compte existe déjà avec cet email.',
-                    'auth/invalid-email':           'Adresse email invalide.',
-                    'auth/weak-password':           'Mot de passe trop faible (6 car. min).',
-                    'auth/network-request-failed':  'Erreur réseau. Vérifiez votre connexion.'
-                };
-                showError(msgs[err.code] || ('Erreur : ' + err.message));
-            });
+        const email = document.getElementById('auth-email').value;
+        const pass = document.getElementById('auth-pass').value;
+        if(!email || !pass) return showError("Veuillez remplir tous les champs.");
+        if(pass.length < 6) return showError("Le mot de passe doit faire au moins 6 caractères.");
+        auth.createUserWithEmailAndPassword(email, pass).catch(function(error) {
+            var msgs = {
+                'auth/email-already-in-use':   'Un compte existe déjà avec cet email.',
+                'auth/invalid-email':           'Adresse email invalide.',
+                'auth/weak-password':           'Mot de passe trop faible (6 car. min).',
+                'auth/network-request-failed':  'Erreur réseau. Vérifiez votre connexion.'
+            };
+            showError(msgs[error.code] || "Erreur lors de la création du compte.");
+        });
     }
+
     function showError(msg) {
-        const el = document.getElementById('auth-error-msg');
-        if (el) { el.innerText = msg; el.style.display = msg ? 'block' : 'none'; }
+        document.getElementById('auth-error-msg').innerText = msg;
     }
 
     function logoutUser() {
@@ -1860,159 +1841,146 @@
 
     
     // ── AUTOCOMPLETE ──
-    function onLabelInput(val) {
-        autoCategorize(val);
-        showSuggestDropdown(val);
-    }
+    function onLabelInput(val) { autoCategorize(val); showSuggestDropdown(val); }
     function getSuggestions(q) {
         if (!q) return [];
-        const ql = q.toLowerCase();
-        const seen = new Set();
+        const ql = q.toLowerCase(), seen = new Set();
         return expenses.filter(function(e) {
             if (!e.label.toLowerCase().includes(ql)) return false;
             if (seen.has(e.label.toLowerCase())) return false;
             seen.add(e.label.toLowerCase()); return true;
-        }).slice(0, 5);
+        }).slice(0,5);
     }
     function showSuggestDropdown(val) {
         const d = document.getElementById('suggest-dropdown'); if (!d) return;
         const matches = getSuggestions(val);
         if (!matches.length) { d.style.display = 'none'; return; }
         d.innerHTML = matches.map(function(e) {
-            const cat = categories.find(function(c) { return c.id === e.cat; }) || { icon: '📦', label: 'Autre' };
-            const color = e.type === 'income' ? 'var(--income-color,#34c759)' : 'var(--expense-color,#ff3b30)';
-            const sign  = e.type === 'income' ? '+' : '-';
-            const ds    = new Date(e.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-            return '<div class="suggest-item" onmousedown="applySuggestion('' + e.id + '')">'
-                + '<div class="suggest-icon">' + cat.icon + '</div>'
-                + '<div style="flex:1;min-width:0;">'
-                + '<div style="font-size:13px;font-weight:600;">' + escapeHTML(e.label) + '</div>'
-                + '<div style="font-size:11px;color:var(--text-muted);">' + cat.label + ' · ' + ds + '</div>'
-                + '</div>'
-                + '<div style="font-size:13px;font-weight:700;color:' + color + ';margin-left:8px;">' + sign + parseFloat(e.amount).toFixed(2) + ' €</div>'
-                + '</div>';
+            const cat = (categories||[]).find(function(c){ return c.id===e.cat; })||{icon:'📦',label:'Autre'};
+            const color = e.type==='income' ? '#34c759' : '#ff3b30';
+            const sign  = e.type==='income' ? '+' : '-';
+            const ds    = new Date(e.date).toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
+            return '<div class="suggest-item" onmousedown="applySuggestion(''+e.id+')">'
+                +'<div class="suggest-icon">'+cat.icon+'</div>'
+                +'<div style="flex:1;min-width:0;">'
+                +'<div style="font-size:13px;font-weight:600;">'+escapeHTML(e.label)+'</div>'
+                +'<div style="font-size:11px;color:var(--text-muted);">'+cat.label+' · '+ds+'</div>'
+                +'</div>'
+                +'<div style="font-size:13px;font-weight:700;color:'+color+';margin-left:8px;">'+sign+parseFloat(e.amount).toFixed(2)+' €</div>'
+                +'</div>';
         }).join('');
         d.style.display = 'block';
     }
-    function hideSuggestDropdown() {
-        const d = document.getElementById('suggest-dropdown'); if (d) d.style.display = 'none';
-    }
+    function hideSuggestDropdown() { const d=document.getElementById('suggest-dropdown'); if(d) d.style.display='none'; }
     function applySuggestion(id) {
         hapticTap();
-        const e = expenses.find(function(ex) { return String(ex.id) === String(id); }); if (!e) return;
+        const e = expenses.find(function(ex){ return String(ex.id)===String(id); }); if(!e) return;
         document.getElementById('inp-label').value = e.label;
         fillNumpad(e.amount, e.type);
         setOpType(e.type);
-        if (e.type === 'expense') selectCat(e.cat);
+        if (e.type==='expense') selectCat(e.cat);
         if (e.accountId) document.getElementById('inp-account').value = e.accountId;
         hideSuggestDropdown();
     }
 
     // ── REPEAT CHIPS ──
     function renderRepeatChips() {
-        const section = document.getElementById('repeat-section');
-        const container = document.getElementById('repeat-chips');
-        if (!container || !section) return;
-        const key = viewDate.getFullYear() + '-' + String(viewDate.getMonth()+1).padStart(2,'0');
-        const monthExp = expenses.filter(function(e) { return e.date && e.date.startsWith(key); });
-        const freq = {};
-        monthExp.forEach(function(e) { freq[e.label] = (freq[e.label]||0)+1; });
-        const seen = new Set();
-        const top3 = Object.keys(freq)
-            .sort(function(a,b) { return freq[b]-freq[a]; })
-            .slice(0,3)
-            .map(function(lbl) { return expenses.find(function(e) { return e.label===lbl; }); })
-            .filter(Boolean);
-        if (top3.length < 3) {
-            expenses.filter(function(e) { return !e.recurring; }).forEach(function(e) {
-                if (top3.length >= 3 || seen.has(e.label)) return;
-                if (!top3.find(function(x){ return x.label===e.label; })) { seen.add(e.label); top3.push(e); }
+        const section=document.getElementById('repeat-section');
+        const container=document.getElementById('repeat-chips');
+        if (!container||!section) return;
+        const key=viewDate.getFullYear()+'-'+String(viewDate.getMonth()+1).padStart(2,'0');
+        const monthExp=expenses.filter(function(e){ return e.date&&e.date.startsWith(key); });
+        const freq={};
+        monthExp.forEach(function(e){ freq[e.label]=(freq[e.label]||0)+1; });
+        const seen=new Set(), top3=[];
+        Object.keys(freq).sort(function(a,b){ return freq[b]-freq[a]; }).slice(0,3).forEach(function(lbl){
+            const found=expenses.find(function(e){ return e.label===lbl; });
+            if(found){ seen.add(lbl); top3.push(found); }
+        });
+        if(top3.length<3){
+            expenses.filter(function(e){ return !e.recurring; }).forEach(function(e){
+                if(top3.length>=3||seen.has(e.label)) return;
+                seen.add(e.label); top3.push(e);
             });
         }
-        if (!top3.length) { section.style.display = 'none'; return; }
-        section.style.display = 'block';
-        container.innerHTML = top3.map(function(e) {
-            const cat = categories.find(function(c) { return c.id===e.cat; })||{icon:'📦'};
-            const color = e.type==='income' ? 'var(--income-color,#34c759)' : 'var(--expense-color,#ff3b30)';
-            const sign  = e.type==='income' ? '+' : '-';
-            const cnt   = freq[e.label] ? ' · '+freq[e.label]+'×' : '';
+        if(!top3.length){ section.style.display='none'; return; }
+        section.style.display='block';
+        container.innerHTML=top3.map(function(e){
+            const cat=(categories||[]).find(function(c){ return c.id===e.cat; })||{icon:'📦'};
+            const color=e.type==='income'?'#34c759':'#ff3b30';
+            const sign=e.type==='income'?'+':'-';
+            const cnt=freq[e.label]?' · '+freq[e.label]+'×':'';
             return '<button class="repeat-chip" onclick="repeatTx(''+e.id+')">'
-                + '<span style="font-size:17px;">'+cat.icon+'</span>'
-                + '<div><div style="font-size:13px;font-weight:700;max-width:100px;overflow:hidden;text-overflow:ellipsis;">'+escapeHTML(e.label)+'</div>'
-                + '<div style="font-size:11px;font-weight:700;color:'+color+';">'+sign+parseFloat(e.amount).toFixed(2)+' €'+cnt+'</div></div>'
-                + '</button>';
+                +'<span style="font-size:17px;">'+cat.icon+'</span>'
+                +'<div><div style="font-size:13px;font-weight:700;max-width:100px;overflow:hidden;text-overflow:ellipsis;">'+escapeHTML(e.label)+'</div>'
+                +'<div style="font-size:11px;font-weight:700;color:'+color+';">'+sign+parseFloat(e.amount).toFixed(2)+' €'+cnt+'</div></div>'
+                +'</button>';
         }).join('');
     }
     function repeatTx(id) {
         hapticTap();
-        const e = expenses.find(function(ex) { return String(ex.id)===String(id); }); if (!e) return;
+        const e=expenses.find(function(ex){ return String(ex.id)===String(id); }); if(!e) return;
         setOpType(e.type);
-        document.getElementById('inp-label').value = e.label;
-        document.getElementById('inp-date').value  = new Date().toISOString().split('T')[0];
-        fillNumpad(e.amount, e.type);
-        if (e.type==='expense') selectCat(e.cat);
-        if (e.accountId) document.getElementById('inp-account').value = e.accountId;
+        document.getElementById('inp-label').value=e.label;
+        document.getElementById('inp-date').value=new Date().toISOString().split('T')[0];
+        fillNumpad(e.amount,e.type);
+        if(e.type==='expense') selectCat(e.cat);
+        if(e.accountId) document.getElementById('inp-account').value=e.accountId;
     }
 
     // ── NUMPAD ──
-    var _npRaw = '0';
+    var _npRaw='0';
     function fillNumpad(amount, type) {
-        _npRaw = String(parseFloat(amount));
-        document.getElementById('inp-amount').value = parseFloat(amount).toFixed(2);
-        const val = parseFloat(amount);
-        const color = type==='income' ? 'var(--income-color,#34c759)' : 'var(--expense-color,#ff3b30)';
-        document.getElementById('numpad-value').textContent = val.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
-        document.getElementById('numpad-value').style.color = color;
-        document.getElementById('numpad-hint').textContent = 'Appuyer pour modifier';
+        _npRaw=String(parseFloat(amount));
+        document.getElementById('inp-amount').value=parseFloat(amount).toFixed(2);
+        const val=parseFloat(amount);
+        const color=type==='income'?'#34c759':'#ff3b30';
+        document.getElementById('numpad-value').textContent=val.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+        document.getElementById('numpad-value').style.color=color;
+        document.getElementById('numpad-hint').textContent='Appuyer pour modifier';
     }
     function resetNumpad() {
-        _npRaw = '0';
-        document.getElementById('inp-amount').value = '';
-        document.getElementById('numpad-value').textContent = '0';
-        document.getElementById('numpad-value').style.color = 'var(--text-main)';
-        document.getElementById('numpad-hint').textContent = 'Appuyer pour saisir le montant';
+        _npRaw='0';
+        document.getElementById('inp-amount').value='';
+        document.getElementById('numpad-value').textContent='0';
+        document.getElementById('numpad-value').style.color='var(--text-main)';
+        document.getElementById('numpad-hint').textContent='Appuyer pour saisir le montant';
     }
     function openNumpad() {
         hapticTap();
-        _npRaw = document.getElementById('inp-amount').value || '0';
-        const screen = document.getElementById('numpad-screen');
-        screen.textContent = _npRaw;
-        screen.classList.toggle('has-value', _npRaw !== '0');
-        document.getElementById('numpad-type-label').textContent = currentType==='expense' ? 'Dépense' : 'Revenu';
-        const ov = document.getElementById('numpad-overlay');
-        ov.style.display = 'flex';
+        _npRaw=document.getElementById('inp-amount').value||'0';
+        const screen=document.getElementById('numpad-screen');
+        screen.textContent=_npRaw; screen.classList.toggle('has-value',_npRaw!=='0');
+        document.getElementById('numpad-type-label').textContent=currentType==='expense'?'Dépense':'Revenu';
+        const ov=document.getElementById('numpad-overlay');
+        ov.style.display='flex';
     }
-    function closeNumpad() { document.getElementById('numpad-overlay').style.display = 'none'; }
+    function closeNumpad() { document.getElementById('numpad-overlay').style.display='none'; }
     function confirmNumpad() {
         hapticTap();
-        const val = parseFloat(_npRaw);
-        if (!isNaN(val) && val > 0) fillNumpad(val, currentType);
+        const val=parseFloat(_npRaw);
+        if(!isNaN(val)&&val>0) fillNumpad(val,currentType);
         closeNumpad();
     }
     function npPress(ch) {
-        if (navigator.vibrate) navigator.vibrate(5);
-        if (ch==='.' && _npRaw.includes('.')) return;
-        if (_npRaw.includes('.') && _npRaw.split('.')[1].length >= 2) return;
-        if (_npRaw.length >= 9) return;
-        _npRaw = (_npRaw==='0' && ch!=='.') ? ch : _npRaw+ch;
-        const screen = document.getElementById('numpad-screen');
-        screen.textContent = _npRaw;
-        screen.classList.toggle('has-value', _npRaw!=='0');
+        if(navigator.vibrate) navigator.vibrate(5);
+        if(ch==='.'&&_npRaw.includes('.')) return;
+        if(_npRaw.includes('.')&&_npRaw.split('.')[1].length>=2) return;
+        if(_npRaw.length>=9) return;
+        _npRaw=(_npRaw==='0'&&ch!=='.')?ch:_npRaw+ch;
+        const s=document.getElementById('numpad-screen');
+        s.textContent=_npRaw; s.classList.toggle('has-value',_npRaw!=='0');
     }
     function npBackspace() {
-        if (navigator.vibrate) navigator.vibrate(8);
-        _npRaw = _npRaw.length<=1 ? '0' : _npRaw.slice(0,-1);
-        const screen = document.getElementById('numpad-screen');
-        screen.textContent = _npRaw;
-        screen.classList.toggle('has-value', _npRaw!=='0');
+        if(navigator.vibrate) navigator.vibrate(8);
+        _npRaw=_npRaw.length<=1?'0':_npRaw.slice(0,-1);
+        const s=document.getElementById('numpad-screen');
+        s.textContent=_npRaw; s.classList.toggle('has-value',_npRaw!=='0');
     }
-
-    // Escape key closes numpad / modal
-    document.addEventListener('keydown', function(e) {
-        if (e.key==='Escape') {
-            const np = document.getElementById('numpad-overlay');
-            if (np && np.style.display!=='none') { closeNumpad(); return; }
-            closeModal && closeModal(); closeAddModal && closeAddModal();
+    document.addEventListener('keydown',function(e){
+        if(e.key==='Escape'){
+            const np=document.getElementById('numpad-overlay');
+            if(np&&np.style.display!=='none'){ closeNumpad(); return; }
         }
     });
 
