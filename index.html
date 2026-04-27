@@ -148,7 +148,7 @@
         .input-control:focus { background-color: var(--card-bg); box-shadow: 0 0 0 2px var(--accent); }
 
         /* ── NUMPAD ── */
-        .npbtn { padding:0; height:72px; border-radius:18px; border:none; background:var(--card-bg); color:var(--text-main); font-size:24px; font-weight:700; cursor:pointer; transition:transform .1s,background .15s; -webkit-tap-highlight-color:transparent; }
+        .npbtn { padding:0; height:64px; border-radius:16px; border:none; background:var(--card-bg); color:var(--text-main); font-size:24px; font-weight:700; cursor:pointer; transition:transform .1s,background .15s; -webkit-tap-highlight-color:transparent; }
         .npbtn:active { transform:scale(0.88); background:var(--input-bg); }
         .npbtn-del { color:var(--text-muted); font-size:20px; }
         #numpad-screen.has-value { color:var(--accent); }
@@ -275,28 +275,28 @@
         </div>
 
         <div id="numpad-display" onclick="openNumpad()" style="cursor:pointer;margin-bottom:20px;text-align:center;">
-            <div id="numpad-value" style="font-size:56px;font-weight:800;letter-spacing:-2px;color:var(--text-main);min-height:65px;line-height:1;">0</div>
+            <div id="numpad-value" style="font-size:48px;font-weight:800;letter-spacing:-2px;color:var(--text-main);min-height:58px;line-height:1;">0</div>
             <div id="numpad-hint" style="font-size:13px;color:var(--text-muted);font-weight:600;margin-top:2px;">Appuyer pour saisir le montant</div>
         </div>
         <input type="hidden" id="inp-amount" value="">
-        <div id="numpad-overlay" style="display:none;position:fixed;inset:0;background:var(--bg-color);z-index:9999;flex-direction:column;">
-            <div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:30px 20px 10px;">
-                <div id="numpad-type-label" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:14px;">Dépense</div>
-                <div id="numpad-screen" style="font-size:72px;font-weight:800;letter-spacing:-3px;color:var(--text-main);min-height:88px;text-align:center;transition:color .15s;">0</div>
-                <div style="font-size:15px;color:var(--text-muted);font-weight:600;margin-top:2px;">€</div>
-            </div>
-            <div style="padding:0 16px 40px;">
+        <div id="numpad-overlay" onclick="closeNumpadBackdrop(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(6px);z-index:9999;flex-direction:column;align-items:center;justify-content:flex-end;">
+            <div style="width:100%;max-width:420px;background:var(--card-bg);border-radius:24px 24px 0 0;padding:24px 20px 40px;animation:slideUpSheet .25s;">
+                <div style="width:40px;height:4px;background:var(--input-bg);border-radius:50px;margin:0 auto 20px;"></div>
+                <div id="numpad-type-label" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:10px;text-align:center;">Dépense</div>
+                <div id="numpad-screen" style="font-size:56px;font-weight:800;letter-spacing:-2px;color:var(--text-main);min-height:70px;text-align:center;transition:color .15s;margin-bottom:4px;">0</div>
+                <div style="font-size:13px;color:var(--text-muted);font-weight:600;text-align:center;margin-bottom:20px;">€</div>
+            <div style="padding:0;">
                 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px;">
                     <button class="npbtn" onclick="npPress('7')">7</button><button class="npbtn" onclick="npPress('8')">8</button><button class="npbtn" onclick="npPress('9')">9</button>
                     <button class="npbtn" onclick="npPress('4')">4</button><button class="npbtn" onclick="npPress('5')">5</button><button class="npbtn" onclick="npPress('6')">6</button>
                     <button class="npbtn" onclick="npPress('1')">1</button><button class="npbtn" onclick="npPress('2')">2</button><button class="npbtn" onclick="npPress('3')">3</button>
                     <button class="npbtn" onclick="npPress('.')">.</button><button class="npbtn" onclick="npPress('0')">0</button><button class="npbtn npbtn-del" onclick="npBackspace()">&#9003;</button>
                 </div>
-                <div style="display:flex;gap:10px;">
-                    <button onclick="closeNumpad()" style="flex:1;padding:20px;border-radius:18px;border:none;background:var(--input-bg);color:var(--text-muted);font-size:16px;font-weight:700;cursor:pointer;">Annuler</button>
-                    <button onclick="confirmNumpad()" style="flex:2;padding:20px;border-radius:18px;border:none;background:var(--accent);color:white;font-size:18px;font-weight:800;cursor:pointer;">Valider &#10003;</button>
+                <div style="display:flex;gap:10px;margin-top:10px;">
+                    <button onclick="closeNumpad()" style="flex:1;padding:16px;border-radius:14px;border:none;background:var(--input-bg);color:var(--text-muted);font-size:15px;font-weight:700;cursor:pointer;">Annuler</button>
+                    <button onclick="confirmNumpad()" style="flex:2;padding:16px;border-radius:14px;border:none;background:var(--accent);color:white;font-size:16px;font-weight:800;cursor:pointer;">Valider &#10003;</button>
                 </div>
-            </div>
+            </div></div>
         </div>
         
         <div id="repeat-section" style="margin-bottom:18px;display:none;">
@@ -1828,6 +1828,9 @@
 
     function closeNumpad() {
         document.getElementById('numpad-overlay').style.display = 'none';
+    }
+    function closeNumpadBackdrop(e) {
+        if (e.target === document.getElementById('numpad-overlay')) closeNumpad();
     }
 
     function confirmNumpad() {
