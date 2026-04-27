@@ -74,9 +74,54 @@
         .btn-add:active { transform: scale(0.95); opacity: 0.9; }
 
         .tab-bar-container { position: fixed; bottom: 25px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 1000; padding: 0 20px; box-sizing: border-box; pointer-events: none; }
-        .tab-bar { position: relative; pointer-events: auto; display: flex; background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); padding: 6px; border-radius: 32px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid rgba(128,128,128,0.15); width: 100%; max-width: 450px; }
-        .tab-active-pill { position: absolute; top: 8px; bottom: 8px; left: 8px; width: calc((100% - 16px) / 4); background: var(--card-bg); border-radius: 24px; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 0; }
-        .tab-btn { position: relative; z-index: 1; flex: 1; background: none; border: none; color: var(--text-muted); padding: 8px 0; border-radius: 20px; cursor: pointer; transition: color 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+        .tab-bar {
+            position: relative; pointer-events: auto; display: flex;
+            /* Liquid Glass base */
+            background: rgba(255,255,255,0.18);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            padding: 6px; border-radius: 32px;
+            /* Multi-layer border for glass edge */
+            border: 1px solid rgba(255,255,255,0.45);
+            box-shadow:
+                0 8px 32px rgba(0,0,0,0.18),
+                0 2px 8px rgba(0,0,0,0.10),
+                inset 0 1px 0 rgba(255,255,255,0.55),
+                inset 0 -1px 0 rgba(0,0,0,0.06);
+            width: 100%; max-width: 460px;
+        }
+        body[data-theme="dark"] .tab-bar {
+            background: rgba(28,28,32,0.72);
+            border-color: rgba(255,255,255,0.12);
+            box-shadow:
+                0 8px 32px rgba(0,0,0,0.45),
+                0 2px 8px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.10),
+                inset 0 -1px 0 rgba(0,0,0,0.2);
+        }
+        .tab-active-pill {
+            position: absolute; top: 6px; bottom: 6px; left: 6px;
+            width: calc((100% - 12px) / 5);
+            /* Pill liquid glass */
+            background: rgba(255,255,255,0.72);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 26px;
+            transition: transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s;
+            box-shadow:
+                0 4px 16px rgba(0,0,0,0.10),
+                inset 0 1px 0 rgba(255,255,255,0.9),
+                inset 0 -1px 0 rgba(0,0,0,0.04);
+            z-index: 0;
+        }
+        body[data-theme="dark"] .tab-active-pill {
+            background: rgba(60,60,68,0.85);
+            box-shadow:
+                0 4px 16px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.08),
+                inset 0 -1px 0 rgba(0,0,0,0.15);
+        }
+        .tab-btn { position: relative; z-index: 1; flex: 1; background: none; border: none; color: var(--text-muted); padding: 8px 0; border-radius: 20px; cursor: pointer; transition: color 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
         .tab-btn.active { color: var(--accent); }
         .tab-icon { font-size: 22px; transition: transform 0.2s; }
         .tab-btn.active .tab-icon { transform: scale(1.1); }
@@ -153,17 +198,34 @@
         .input-control:focus { background-color: var(--card-bg); box-shadow: 0 0 0 2px var(--accent); }
 
 
-        /* ── QUICK ADD ── */
-        #quick-add-bar { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); z-index: 800; display: flex; align-items: center; gap: 10px; background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 8px 12px 8px 16px; border-radius: 50px; box-shadow: 0 8px 30px rgba(0,0,0,0.18); border: 1px solid var(--border); }
-        #quick-add-bar input { background: none; border: none; outline: none; font-family: inherit; font-size: 22px; font-weight: 800; color: var(--text-main); width: 110px; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
-        #quick-add-bar input::placeholder { color: var(--text-muted); font-weight: 600; font-size: 16px; }
-        .qa-cat-row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; max-width: 200px; }
-        .qa-cat-row::-webkit-scrollbar { display: none; }
-        .qa-cat-dot { width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; display: flex; align-items: center; justify-content: center; font-size: 15px; cursor: pointer; background: var(--input-bg); transition: .15s; flex-shrink: 0; }
-        .qa-cat-dot.sel { border-color: var(--accent); background: var(--accent-light); }
-        .qa-submit { width: 38px; height: 38px; border-radius: 50%; background: var(--accent); border: none; color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform .15s; }
-        .qa-submit:active { transform: scale(0.88); }
 
+
+
+        /* ── ADVICE TAB ── */
+        .adv-rule-row { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--input-bg); }
+        .adv-rule-row:last-child { border-bottom:none; }
+        .adv-rule-icon { font-size:22px; width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .adv-rule-info { flex:1; min-width:0; }
+        .adv-rule-title { font-size:13px; font-weight:700; margin-bottom:2px; }
+        .adv-rule-sub { font-size:11px; color:var(--text-muted); }
+        .adv-rule-bar-wrap { margin-top:6px; height:5px; background:var(--input-bg); border-radius:50px; overflow:hidden; }
+        .adv-rule-bar { height:100%; border-radius:50px; transition:width .8s cubic-bezier(0.16,1,0.3,1); }
+        .adv-rule-badge { font-size:11px; font-weight:700; padding:3px 9px; border-radius:50px; white-space:nowrap; flex-shrink:0; }
+
+        .adv-tip { display:flex; gap:12px; background:var(--card-bg); border-radius:16px; padding:14px 16px; margin-bottom:10px; border:1px solid var(--border); border-left:4px solid transparent; align-items:flex-start; }
+        .adv-tip.ok    { border-left-color:#4caf82; }
+        .adv-tip.warn  { border-left-color:#f0944d; }
+        .adv-tip.bad   { border-left-color:#e05c5c; }
+        .adv-tip.info  { border-left-color:var(--accent); }
+        .adv-tip-icon  { font-size:20px; flex-shrink:0; margin-top:1px; }
+        .adv-tip-title { font-size:13px; font-weight:700; margin-bottom:3px; }
+        .adv-tip-desc  { font-size:12px; color:var(--text-muted); line-height:1.5; }
+        .adv-tip-val   { font-size:13px; font-weight:700; margin-top:5px; }
+
+        .adv-goal-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--input-bg); }
+        .adv-goal-row:last-child { border-bottom:none; }
+        .adv-proj-row { display:flex; justify-content:space-between; align-items:center; padding:10px 12px; background:var(--input-bg); border-radius:10px; margin-bottom:8px; }
+        .adv-proj-row:last-child { margin-bottom:0; }
         /* ── TRENDS ── */
         .trend-card { background: var(--card-bg); border-radius: 18px; padding: 16px 18px; margin-bottom: 10px; border: 1px solid var(--border); display: flex; align-items: center; gap: 14px; }
         .trend-icon { font-size: 22px; width: 44px; height: 44px; background: var(--input-bg); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -446,7 +508,8 @@
             <button class="tab-btn active" onclick="switchTab('dash', this, 0)"><span class="tab-icon">🏠</span><span class="tab-text">Accueil</span></button>
             <button class="tab-btn" onclick="switchTab('tx', this, 1)"><span class="tab-icon">📝</span><span class="tab-text">Journal</span></button>
             <button class="tab-btn" onclick="switchTab('stats', this, 2)"><span class="tab-icon">📊</span><span class="tab-text">Analyses</span></button>
-            <button class="tab-btn" onclick="switchTab('settings', this, 3)"><span class="tab-icon">👤</span><span class="tab-text">Profil</span></button>
+            <button class="tab-btn" onclick="switchTab('advice', this, 3)"><span class="tab-icon">💡</span><span class="tab-text">Conseils</span></button>
+            <button class="tab-btn" onclick="switchTab('settings', this, 4)"><span class="tab-icon">👤</span><span class="tab-text">Profil</span></button>
         </div>
     </div>
 
@@ -615,6 +678,42 @@
             <div id="stats-list"></div>
         </div>
     </div>
+
+    <div id="tab-advice" class="section">
+        <h1 style="font-size:34px;font-weight:800;letter-spacing:-1px;margin-bottom:6px;">💡 Conseils</h1>
+        <p style="font-size:14px;color:var(--text-muted);margin-bottom:24px;">Personnalisés selon vos habitudes.</p>
+
+        <!-- SCORE + CONSEIL PRINCIPAL -->
+        <div id="advice-hero" style="background:linear-gradient(135deg,var(--accent),#2d5fd4);border-radius:24px;padding:24px;margin-bottom:16px;color:white;">
+            <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.75;margin-bottom:8px;">Votre situation</div>
+            <div id="adv-score-line" style="font-size:28px;font-weight:800;letter-spacing:-1px;margin-bottom:8px;">–</div>
+            <div id="adv-main-tip" style="font-size:14px;opacity:.9;line-height:1.5;">Chargement...</div>
+        </div>
+
+        <!-- RÈGLE 50/30/20 -->
+        <div class="card" id="adv-rule-card" style="margin-bottom:16px;">
+            <div style="font-size:16px;font-weight:800;margin-bottom:4px;">Règle 50 / 30 / 20</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:18px;">Répartition idéale de vos revenus</div>
+            <div id="adv-rule-rows"></div>
+        </div>
+
+        <!-- CONSEILS PERSONNALISÉS -->
+        <div style="font-size:18px;font-weight:800;margin-bottom:12px;letter-spacing:-0.5px;">📋 Actions concrètes</div>
+        <div id="adv-tips-list" style="margin-bottom:24px;"></div>
+
+        <!-- OBJECTIFS D'ÉPARGNE -->
+        <div style="font-size:18px;font-weight:800;margin-bottom:12px;letter-spacing:-0.5px;">🎯 Vos objectifs</div>
+        <div class="card" style="margin-bottom:16px;">
+            <div id="adv-goals-content"></div>
+        </div>
+
+        <!-- PROJECTIONS -->
+        <div style="font-size:18px;font-weight:800;margin-bottom:12px;letter-spacing:-0.5px;">📈 Projections d'épargne</div>
+        <div class="card" style="margin-bottom:32px;">
+            <div id="adv-projections"></div>
+        </div>
+    </div>
+
 
     <div id="tab-settings" class="section">
         <h1 style="font-size: 34px; font-weight: 800; letter-spacing: -1px; margin-bottom: 20px;">Réglages</h1>
@@ -1492,7 +1591,8 @@
         btn.classList.add('active');
         window.scrollTo(0,0);
         
-        if(id === 'dash') updateAllViews(); 
+        if(id === 'dash') updateAllViews();
+        if(id === 'advice') renderAdvice();
         if(id === 'tx') renderTransactions(); 
         if(id === 'stats') renderStats();
     }
@@ -1988,52 +2088,207 @@
     }
 
 
+
     // ════════════════════════════════════════════════════
-    // QUICK ADD BAR
+    // ONGLET CONSEILS
     // ════════════════════════════════════════════════════
-    var _qaSelCat = 'alim';
+    function renderAdvice() {
+        var tab = document.getElementById('tab-advice');
+        if (!tab || !tab.classList.contains('active')) return;
 
-    function buildQuickAddBar() {
-        var row = document.getElementById('qa-cat-row');
-        if (!row) return;
-        var topCats = (categories || []).slice(0, 6);
-        row.innerHTML = topCats.map(function(c) {
-            return '<div class="qa-cat-dot' + (c.id === _qaSelCat ? ' sel' : '') + '" title="' + c.label + '" onclick="qaSelCat(\'' + c.id + '\')">' + c.icon + '</div>';
-        }).join('');
-    }
+        var now = new Date();
+        var curData = expandExpensesForMonth(now.getFullYear(), now.getMonth());
+        var mExp  = curData.filter(function(e){ return e.type==='expense'; });
+        var mInc  = curData.filter(function(e){ return e.type==='income'; }).reduce(function(s,e){ return s+e.amount; },0);
+        var mTotal = mExp.reduce(function(s,e){ return s+e.amount; },0);
+        var mSave  = mInc - mTotal;
+        var saveRate = mInc > 0 ? Math.round(mSave / mInc * 100) : 0;
 
-    function qaSelCat(id) {
-        _qaSelCat = id;
-        buildQuickAddBar();
-    }
+        // Cat breakdown
+        var byType = { fixe:0, vie:0, loisirs:0 };
+        var byCat = {};
+        mExp.forEach(function(e) {
+            var ci = (categories||[]).find(function(c){ return c.id===e.cat; }) || {type:'loisirs'};
+            byType[ci.type] = (byType[ci.type]||0) + e.amount;
+            byCat[e.cat] = (byCat[e.cat]||0) + e.amount;
+        });
 
-    function quickAddSubmit() {
-        var amt = parseFloat(document.getElementById('qa-quick-amt').value);
-        if (!amt || amt <= 0) {
-            document.getElementById('qa-quick-amt').focus();
-            return;
+        // ── HERO ──
+        var heroScore = document.getElementById('adv-score-line');
+        var heroTip   = document.getElementById('adv-main-tip');
+        if (heroScore && heroTip) {
+            if (mInc === 0) {
+                heroScore.textContent = 'Ajoutez vos revenus';
+                heroTip.textContent   = 'Enregistrez un revenu ce mois pour obtenir des conseils personnalisés.';
+            } else if (saveRate >= 20) {
+                heroScore.textContent = '🌟 Excellent — ' + saveRate + '% épargnés';
+                heroTip.textContent   = 'Vous épargnez ' + mSave.toFixed(0) + ' € ce mois. Pensez à placer l\'excédent sur un livret ou PEA.';
+            } else if (saveRate >= 10) {
+                heroScore.textContent = '👍 Bien — ' + saveRate + '% épargnés';
+                heroTip.textContent   = 'Vous êtes sur la bonne voie. Réduire les loisirs de 10% vous ferait passer à 20% d\'épargne.';
+            } else if (saveRate > 0) {
+                heroScore.textContent = '⚠️ Attention — ' + saveRate + '% épargnés';
+                heroTip.textContent   = 'L\'objectif est de 20% minimum. Ce mois, il vous manque ' + (mInc * 0.2 - mSave).toFixed(0) + ' € pour atteindre cet objectif.';
+            } else {
+                heroScore.textContent = '🚨 Dépenses > Revenus';
+                heroTip.textContent   = 'Vous avez dépensé ' + Math.abs(mSave).toFixed(0) + ' € de plus que vous avez gagné. Identifiez les postes à réduire immédiatement.';
+            }
         }
-        hapticTap();
-        var cat = categories.find(function(c) { return c.id === _qaSelCat; }) || categories[0];
-        var today = new Date().toISOString().split('T')[0];
-        var accId = accounts[0] ? accounts[0].id : 'acc1';
-        var tx = {
-            id: Date.now(), amount: amt, label: cat.label,
-            date: today, type: 'expense', cat: _qaSelCat,
-            accountId: accId, recurring: false, note: ''
-        };
-        expenses.unshift(tx);
-        saveToCloud();
-        document.getElementById('qa-quick-amt').value = '';
-        updateAllViews();
-        // Flash confirmation
-        var bar = document.getElementById('quick-add-bar');
-        bar.style.background = 'rgba(76,175,130,0.25)';
-        setTimeout(function() { bar.style.background = ''; }, 600);
-        showToast(cat.icon + ' ' + amt.toFixed(2) + ' € ajouté');
+
+        // ── RÈGLE 50/30/20 ──
+        var ruleEl = document.getElementById('adv-rule-rows');
+        if (ruleEl && mInc > 0) {
+            var rules = [
+                { icon:'🏠', label:'Besoins fixes', sub:'Loyer, assurances, abonnements', actual:byType.fixe, target:mInc*0.5, color:'#e05c5c' },
+                { icon:'🛒', label:'Quotidien',      sub:'Courses, transport, santé',      actual:byType.vie,  target:mInc*0.3, color:'#4f8ef7' },
+                { icon:'🎬', label:'Loisirs',         sub:'Sorties, voyages, tech',         actual:byType.loisirs, target:mInc*0.2, color:'#9b6de8' }
+            ];
+            ruleEl.innerHTML = rules.map(function(r) {
+                var pct    = Math.round(r.actual / mInc * 100);
+                var ideal  = Math.round(r.target / mInc * 100);
+                var barPct = Math.min(100, r.actual / r.target * 100);
+                var over   = r.actual > r.target;
+                var status = over ? 'Dépassé' : 'OK ✓';
+                var badgeBg = over ? 'rgba(224,92,92,0.12)' : 'rgba(76,175,130,0.12)';
+                var badgeColor = over ? '#e05c5c' : '#4caf82';
+                return '<div class="adv-rule-row">'
+                    + '<div class="adv-rule-icon" style="background:' + r.color + '22;">' + r.icon + '</div>'
+                    + '<div class="adv-rule-info">'
+                    + '<div class="adv-rule-title">' + r.label + ' — <strong>' + pct + '%</strong> <span style="color:var(--text-muted);font-weight:400;">/ ' + ideal + '% idéal</span></div>'
+                    + '<div class="adv-rule-sub">' + r.sub + ' · ' + r.actual.toFixed(0) + ' € / ' + r.target.toFixed(0) + ' € max</div>'
+                    + '<div class="adv-rule-bar-wrap"><div class="adv-rule-bar" style="width:' + barPct.toFixed(0) + '%;background:' + (over ? '#e05c5c' : r.color) + '"></div></div>'
+                    + '</div>'
+                    + '<div class="adv-rule-badge" style="background:' + badgeBg + ';color:' + badgeColor + ';">' + status + '</div>'
+                    + '</div>';
+            }).join('');
+        } else if (ruleEl) {
+            ruleEl.innerHTML = '<p style="color:var(--text-muted);font-size:13px;text-align:center;padding:12px 0;">Ajoutez vos revenus pour voir la répartition.</p>';
+        }
+
+        // ── ACTIONS CONCRÈTES ──
+        var tipsList = document.getElementById('adv-tips-list');
+        if (tipsList) {
+            var tips = [];
+
+            // Fonds d'urgence
+            var efRatio = emergencyGoal > 0 ? globalRealBalance / emergencyGoal : 0;
+            if (efRatio < 0.5) {
+                tips.push({ type:'bad', icon:'🛡', title:'Fonds d\'urgence insuffisant',
+                    desc:'Objectif : ' + emergencyGoal + ' € (3-6 mois de charges). Vous en êtes à ' + Math.round(efRatio*100) + '%.',
+                    val:'Épargnez ' + Math.ceil((emergencyGoal - globalRealBalance) / 12).toFixed(0) + ' €/mois pour y arriver en 1 an' });
+            } else if (efRatio < 1) {
+                tips.push({ type:'warn', icon:'🛡', title:'Fonds d\'urgence en cours',
+                    desc:'Encore ' + (emergencyGoal - globalRealBalance).toFixed(0) + ' € avant d\'atteindre votre objectif.',
+                    val:Math.round(efRatio*100) + '% constitué' });
+            } else {
+                tips.push({ type:'ok', icon:'🛡', title:'Fonds d\'urgence constitué ✓',
+                    desc:'Vous avez couvert ' + Math.round(efRatio*100) + '% de votre objectif. Vous pouvez investir l\'excédent.',
+                    val:globalRealBalance.toFixed(0) + ' € disponibles' });
+            }
+
+            // Épargne mensuelle
+            if (mInc > 0) {
+                var recSav = mInc * 0.20;
+                if (mSave < 0) {
+                    tips.push({ type:'bad', icon:'📉', title:'Dépenses supérieures aux revenus',
+                        desc:'Réduisez en priorité : ' + (function(){ var top = Object.keys(byCat).sort(function(a,b){ return byCat[b]-byCat[a]; })[0]; var ci = (categories||[]).find(function(c){ return c.id===top; }); return ci ? ci.icon + ' ' + ci.label + ' (' + byCat[top].toFixed(0) + ' €)' : '–'; })(),
+                        val:'Déficit : ' + Math.abs(mSave).toFixed(0) + ' €' });
+                } else if (mSave < recSav) {
+                    var missing = (recSav - mSave).toFixed(0);
+                    tips.push({ type:'warn', icon:'💰', title:'Augmentez votre épargne',
+                        desc:'Il vous manque ' + missing + ' € pour atteindre 20% d\'épargne. Essayez de réduire une catégorie variable.',
+                        val:'Actuellement ' + saveRate + '% — objectif 20%' });
+                } else {
+                    tips.push({ type:'ok', icon:'💰', title:'Taux d\'épargne atteint ✓',
+                        desc:'Vous épargnez ' + saveRate + '% de vos revenus ce mois. Pensez à automatiser ce virement.',
+                        val:'+' + mSave.toFixed(0) + ' €/mois' });
+                }
+            }
+
+            // Cat dépassant le budget
+            Object.keys(byCat).forEach(function(cid) {
+                var bud = catBudgets[cid];
+                if (!bud || bud <= 0) return;
+                var ratio = byCat[cid] / bud;
+                if (ratio > 1) {
+                    var ci = (categories||[]).find(function(c){ return c.id===cid; });
+                    if (!ci) return;
+                    tips.push({ type:'warn', icon:ci.icon, title:ci.label + ' : budget dépassé',
+                        desc:'Dépensé : ' + byCat[cid].toFixed(0) + ' € sur ' + bud + ' € alloués (+' + ((ratio-1)*100).toFixed(0) + '%).',
+                        val:'Dépassement : +' + (byCat[cid]-bud).toFixed(0) + ' €' });
+                }
+            });
+
+            // Abonnements
+            var subs = expenses.filter(function(e){ return e.recurring && e.type==='expense'; });
+            if (subs.length > 0) {
+                var subTotal = subs.reduce(function(s,e){ return s+e.amount; }, 0);
+                var subPct   = mInc > 0 ? Math.round(subTotal/mInc*100) : 0;
+                if (subPct > 15) {
+                    tips.push({ type:'warn', icon:'📺', title:'Abonnements élevés',
+                        desc:subs.length + ' abonnements actifs pour ' + subTotal.toFixed(0) + ' €/mois (' + subPct + '% de vos revenus). Passez-les en revue.',
+                        val:subs.map(function(s){ return s.label; }).slice(0,3).join(', ') });
+                } else {
+                    tips.push({ type:'info', icon:'📺', title:subs.length + ' abonnements actifs',
+                        desc:'Total : ' + subTotal.toFixed(0) + ' €/mois — ' + subPct + '% de vos revenus.',
+                        val:'' });
+                }
+            }
+
+            // Conseil générique si peu de données
+            if (tips.length < 2) {
+                tips.push({ type:'info', icon:'📊', title:'Continuez à enregistrer',
+                    desc:'Plus vous enregistrez de transactions, plus les conseils seront précis et personnalisés.', val:'' });
+            }
+
+            tipsList.innerHTML = tips.map(function(t) {
+                return '<div class="adv-tip ' + t.type + '">'
+                    + '<div class="adv-tip-icon">' + t.icon + '</div>'
+                    + '<div><div class="adv-tip-title">' + t.title + '</div>'
+                    + '<div class="adv-tip-desc">' + t.desc + '</div>'
+                    + (t.val ? '<div class="adv-tip-val">' + t.val + '</div>' : '')
+                    + '</div></div>';
+            }).join('');
+        }
+
+        // ── OBJECTIFS ──
+        var goalsEl = document.getElementById('adv-goals-content');
+        if (goalsEl) {
+            var rows = [
+                { label:'💰 Épargne mensuelle cible',   val:savingsGoal > 0 ? savingsGoal + ' €/mois' : 'Non défini',        color:'' },
+                { label:'🛡 Fonds d\'urgence cible',      val:emergencyGoal > 0 ? emergencyGoal + ' €' : 'Non défini',         color:'' },
+                { label:'📈 Solde actuel',               val:globalRealBalance.toFixed(2) + ' €',                              color: globalRealBalance >= 0 ? '#4caf82' : '#e05c5c' },
+                { label:'📅 Projection fin de mois',    val:mInc > 0 ? (mSave*(30/new Date().getDate())).toFixed(0)+' € épargnés' : '–', color:'' }
+            ];
+            goalsEl.innerHTML = rows.map(function(r) {
+                return '<div class="adv-goal-row">'
+                    + '<span style="font-size:13px;color:var(--text-muted);">' + r.label + '</span>'
+                    + '<span style="font-size:14px;font-weight:700;' + (r.color ? 'color:'+r.color+';' : '') + '">' + r.val + '</span>'
+                    + '</div>';
+            }).join('');
+        }
+
+        // ── PROJECTIONS ──
+        var projEl = document.getElementById('adv-projections');
+        if (projEl) {
+            var monthly = Math.max(0, mSave);
+            var rows2 = [
+                { label:'Dans 3 mois',  val:'+' + (monthly*3).toFixed(0) + ' €' },
+                { label:'Dans 6 mois',  val:'+' + (monthly*6).toFixed(0) + ' €' },
+                { label:'Dans 1 an',    val:'+' + (monthly*12).toFixed(0) + ' €' },
+                { label:'Dans 3 ans',   val:'+' + (monthly*36).toFixed(0) + ' €' },
+                { label:'Dans 5 ans',   val:'+' + (monthly*60).toFixed(0) + ' €' }
+            ];
+            projEl.innerHTML = rows2.map(function(r) {
+                return '<div class="adv-proj-row">'
+                    + '<span style="font-size:13px;color:var(--text-muted);">' + r.label + '</span>'
+                    + '<span style="font-size:14px;font-weight:700;color:#4caf82;">' + r.val + '</span>'
+                    + '</div>';
+            }).join('');
+        }
     }
 
-    // ════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════
     // TENDANCES INTELLIGENTES
     // ════════════════════════════════════════════════════
     function computeTrends() {
@@ -2834,12 +3089,6 @@
 
 </script>
 
-    <!-- QUICK ADD BAR -->
-    <div id="quick-add-bar">
-        <input type="number" id="qa-quick-amt" placeholder="Montant €" step="0.01" inputmode="decimal"
-            onkeydown="if(event.key==='Enter') quickAddSubmit()">
-        <div class="qa-cat-row" id="qa-cat-row"></div>
-        <button class="qa-submit" onclick="quickAddSubmit()" title="Ajouter">✓</button>
-    </div>
+
 </body>
 </html>
