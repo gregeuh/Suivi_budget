@@ -146,6 +146,34 @@
         .input-group label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-left: 4px; letter-spacing: 0.5px;}
         .input-control { background-color: var(--input-bg); color: var(--text-main); border: none; padding: 16px; border-radius: 16px; width: 100%; box-sizing: border-box; font-size: 16px; outline: none; font-weight: 500; transition: 0.2s; }
         .input-control:focus { background-color: var(--card-bg); box-shadow: 0 0 0 2px var(--accent); }
+
+
+        /* AUTOCOMPLETE */
+        .suggest-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 16px; cursor: pointer; transition: background .12s;
+            border-bottom: 1px solid var(--input-bg);
+        }
+        .suggest-item:last-child { border-bottom: none; }
+        .suggest-item:hover, .suggest-item:active { background: var(--input-bg); }
+        .suggest-icon { font-size: 22px; width: 36px; height: 36px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--input-bg); flex-shrink: 0; }
+        .suggest-label { font-size: 14px; font-weight: 600; color: var(--text-main); }
+        .suggest-meta { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+        .suggest-amount { font-size: 14px; font-weight: 700; margin-left: auto; flex-shrink: 0; }
+        /* NUMPAD */
+        .npbtn {
+            padding: 0; height: 72px; border-radius: 18px; border: none;
+            background: var(--card-bg); color: var(--text-main);
+            font-size: 24px; font-weight: 700; cursor: pointer;
+            transition: transform .1s, background .15s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .npbtn:active { transform: scale(0.88); background: var(--input-bg); }
+        .npbtn-del { color: var(--text-muted); font-size: 20px; }
+        #numpad-screen.has-value { color: var(--accent); }
         .amount-input { font-size: 48px; font-weight: 800; background: transparent; border: none; outline: none; color: var(--text-main); width: 100%; text-align: center; margin-bottom: 25px; letter-spacing: -2px;}
         .amount-input::placeholder { color: var(--text-muted); opacity: 0.5; }
         
@@ -216,6 +244,72 @@
         .cal-cell.empty { background: transparent; cursor: default; }
         .cal-cell.today { background: var(--accent); color: white; }
         input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); cursor: pointer; }
+        /* ── PAVÉ NUMÉRIQUE ── */
+        .numpad-display {
+            font-size: 56px; font-weight: 800; letter-spacing: -2px;
+            text-align: center; min-height: 72px; line-height: 1;
+            color: var(--text-main); margin: 10px 0 6px 0;
+            transition: transform .1s;
+        }
+        .numpad-display.shake { animation: shake .25s; }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+        .numpad-currency { font-size: 22px; font-weight: 600; color: var(--text-muted); text-align: center; margin-bottom: 18px; }
+        .numpad-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 10px; margin: 0 0 16px 0;
+        }
+        .numpad-key {
+            background: var(--input-bg); border: none; border-radius: 18px;
+            padding: 20px 0; font-size: 22px; font-weight: 600;
+            color: var(--text-main); cursor: pointer;
+            transition: transform .08s, background .1s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .numpad-key:active { transform: scale(.9); background: var(--card-bg); }
+        .numpad-key.backspace { font-size: 20px; }
+        .numpad-key.zero { grid-column: span 1; }
+        .numpad-key.go {
+            background: var(--accent); color: white;
+            font-size: 16px; font-weight: 700;
+        }
+        .numpad-key.go:active { background: var(--accent); opacity: .85; }
+
+        /* ── SECTION RÉPÉTER ── */
+        .repeat-section { margin-bottom: 18px; }
+        .repeat-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 10px; }
+        .repeat-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+        .repeat-scroll::-webkit-scrollbar { display: none; }
+        .repeat-chip {
+            flex-shrink: 0; background: var(--input-bg); border-radius: 16px;
+            padding: 10px 14px; cursor: pointer; transition: .15s;
+            border: 1.5px solid transparent; max-width: 130px;
+        }
+        .repeat-chip:active { border-color: var(--accent); background: var(--card-bg); }
+        .repeat-chip-icon { font-size: 20px; margin-bottom: 4px; }
+        .repeat-chip-label { font-size: 12px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .repeat-chip-amount { font-size: 13px; font-weight: 700; color: var(--accent); margin-top: 1px; }
+
+        /* ── AUTOCOMPLETE ── */
+        .autocomplete-wrap { position: relative; }
+        .autocomplete-list {
+            position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 999;
+            background: var(--card-bg); border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,.18);
+            border: 1px solid var(--input-bg); overflow: hidden;
+            max-height: 220px; overflow-y: auto;
+        }
+        .autocomplete-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 16px; cursor: pointer; transition: .12s;
+        }
+        .autocomplete-item:hover, .autocomplete-item.active { background: var(--input-bg); }
+        .autocomplete-item + .autocomplete-item { border-top: 1px solid var(--input-bg); }
+        .ac-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+        .ac-info { flex: 1; min-width: 0; }
+        .ac-label { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ac-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+        .ac-amount { font-size: 14px; font-weight: 700; color: var(--accent); flex-shrink: 0; }
+
 
         @media (max-width: 600px) {
             .app-wrapper { padding: 15px 15px 80px 15px; }
@@ -260,19 +354,49 @@
             <button id="type-inc-btn" style="border:none; background:none; font-size:18px; font-weight:700; color:var(--text-muted); opacity:0.5; transition:0.2s; cursor:pointer;" onclick="setOpType('income')">Revenu</button>
         </div>
 
-        <input type="number" step="0.01" id="inp-amount" class="amount-input" placeholder="0,00 €">
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-            <div class="input-group">
+        <!-- MONTANT AFFICHÉ -->
+        <div class="numpad-display" id="numpad-display">0</div>
+        <div class="numpad-currency">€</div>
+
+        <!-- RÉPÉTER -->
+        <div class="repeat-section" id="repeat-section">
+            <div class="repeat-label">⚡ Fréquentes ce mois</div>
+            <div class="repeat-scroll" id="repeat-scroll"></div>
+        </div>
+
+        <!-- LIBELLÉ + DATE -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:18px;">
+            <div class="input-group autocomplete-wrap">
                 <label>Libellé</label>
-                <input type="text" id="inp-label" class="input-control" placeholder="Quoi ?" oninput="autoCategorize(this.value)" list="label-suggestions" autocomplete="off">
-                <datalist id="label-suggestions"></datalist>
+                <input type="text" id="inp-label" class="input-control" placeholder="Quoi ?"
+                    oninput="onLabelInput(this.value)" onkeydown="onLabelKeydown(event)"
+                    autocomplete="off" spellcheck="false">
+                <div class="autocomplete-list" id="ac-list" style="display:none;"></div>
             </div>
             <div class="input-group">
                 <label>Date</label>
                 <input type="date" id="inp-date" class="input-control">
             </div>
         </div>
+
+        <!-- PAVÉ NUMÉRIQUE -->
+        <div class="numpad-grid" id="numpad-grid">
+            <button class="numpad-key" onclick="numpad('1')">1</button>
+            <button class="numpad-key" onclick="numpad('2')">2</button>
+            <button class="numpad-key" onclick="numpad('3')">3</button>
+            <button class="numpad-key" onclick="numpad('4')">4</button>
+            <button class="numpad-key" onclick="numpad('5')">5</button>
+            <button class="numpad-key" onclick="numpad('6')">6</button>
+            <button class="numpad-key" onclick="numpad('7')">7</button>
+            <button class="numpad-key" onclick="numpad('8')">8</button>
+            <button class="numpad-key" onclick="numpad('9')">9</button>
+            <button class="numpad-key" onclick="numpad('.')">&#183;</button>
+            <button class="numpad-key zero" onclick="numpad('0')">0</button>
+            <button class="numpad-key backspace" onclick="numpadBack()">⌫</button>
+        </div>
+
+        <!-- Champ hidden pour la valeur numérique -->
+        <input type="hidden" id="inp-amount">
 
         <div id="category-block">
             <label style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; display:block; margin-left: 4px;">Catégorie</label>
@@ -525,42 +649,48 @@
         </div>
 
         <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Zones de solde</h2>
-        <div class="card" style="padding:0 20px;">
-            <div style="padding:14px 0 6px 0; font-size:13px; color:var(--text-muted); line-height:1.5;">
-                Définissez vos seuils pour le code couleur des comptes.
+        <div class="card" style="padding:20px;">
+            <div style="font-size:13px; color:var(--text-muted); margin-bottom:18px; line-height:1.6;">
+                Le code couleur est calculé automatiquement en fonction de votre <strong>budget mensuel total</strong> (somme des budgets par catégorie).
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 0; border-bottom:1px solid var(--input-bg);">
-                <div>
-                    <div style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:15px;">
-                        <span style="width:12px;height:12px;border-radius:50%;background:#ff3b30;display:inline-block;"></span>
-                        Zone critique (rouge)
+            <div style="display:flex; flex-direction:column; gap:12px;">
+                <div style="display:flex; align-items:center; gap:14px; background:rgba(255,59,48,0.1); border-radius:16px; padding:14px 16px; border-left:4px solid #ff3b30;">
+                    <span style="font-size:22px;">🔴</span>
+                    <div style="flex:1">
+                        <div style="font-weight:700; font-size:14px;">Zone critique</div>
+                        <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Solde &lt; 10% du budget mensuel</div>
                     </div>
-                    <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">En dessous de ce seuil</div>
-                </div>
-                <input type="number" id="set-threshold-danger" class="input-control" style="width:90px; text-align:right; padding:10px;" placeholder="0" onblur="saveThresholds()">
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 0; border-bottom:1px solid var(--input-bg);">
-                <div>
-                    <div style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:15px;">
-                        <span style="width:12px;height:12px;border-radius:50%;background:#ff9500;display:inline-block;"></span>
-                        Zone moyenne (orange)
+                    <div style="text-align:right">
+                        <div style="font-size:11px; color:var(--text-muted);">Seuil actuel</div>
+                        <div style="font-weight:700; color:#ff3b30;" id="lbl-danger">–</div>
                     </div>
-                    <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Entre rouge et vert</div>
                 </div>
-                <input type="number" id="set-threshold-warn" class="input-control" style="width:90px; text-align:right; padding:10px;" placeholder="500" onblur="saveThresholds()">
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 0;">
-                <div>
-                    <div style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:15px;">
-                        <span style="width:12px;height:12px;border-radius:50%;background:#34c759;display:inline-block;"></span>
-                        Zone confort (vert)
+                <div style="display:flex; align-items:center; gap:14px; background:rgba(255,149,0,0.1); border-radius:16px; padding:14px 16px; border-left:4px solid #ff9500;">
+                    <span style="font-size:22px;">🟠</span>
+                    <div style="flex:1">
+                        <div style="font-weight:700; font-size:14px;">Zone moyenne</div>
+                        <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Solde entre 10% et 30% du budget</div>
                     </div>
-                    <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Au dessus du seuil orange</div>
+                    <div style="text-align:right">
+                        <div style="font-size:11px; color:var(--text-muted);">Seuil actuel</div>
+                        <div style="font-weight:700; color:#ff9500;" id="lbl-warn">–</div>
+                    </div>
                 </div>
-                <div style="font-size:14px; font-weight:700; color:var(--green); padding:10px;">Automatique</div>
+                <div style="display:flex; align-items:center; gap:14px; background:rgba(52,199,89,0.1); border-radius:16px; padding:14px 16px; border-left:4px solid #34c759;">
+                    <span style="font-size:22px;">🟢</span>
+                    <div style="flex:1">
+                        <div style="font-weight:700; font-size:14px;">Zone confort</div>
+                        <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Solde &gt; 30% du budget mensuel</div>
+                    </div>
+                    <div style="text-align:right">
+                        <div style="font-size:11px; color:var(--text-muted);">Seuil actuel</div>
+                        <div style="font-weight:700; color:#34c759;" id="lbl-safe">–</div>
+                    </div>
+                </div>
             </div>
-            <div style="font-size:12px;color:var(--text-muted);padding:0 0 14px 0;">
-                Exemple : Danger &lt; <span id="lbl-danger" style="font-weight:700;color:#ff3b30">0 €</span> · Moyenne &lt; <span id="lbl-warn" style="font-weight:700;color:#ff9500">500 €</span> · Confort ≥ <span id="lbl-safe" style="font-weight:700;color:#34c759">500 €</span>
+            <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--input-bg); font-size:12px; color:var(--text-muted); text-align:center;">
+                Budget mensuel calculé : <strong id="lbl-total-budget" style="color:var(--text-main);">–</strong><br>
+                Modifiez les budgets par catégorie ci-dessus pour ajuster les seuils.
             </div>
         </div>
 
@@ -652,8 +782,6 @@
     
     let savingsGoal = 500;
     let emergencyGoal = 5000;
-    let balThresholdWarn = 500;   // below this = orange
-    let balThresholdDanger = 0;   // below this = red (negative by default)
     let catBudgets = {};
     let savedTheme = 'auto';
     let savedColor = 'blue';
@@ -694,17 +822,17 @@
         'apple','amazon prime','disney','navigo','assurance','mutuelle','abonnement'];
 
     const DEFAULT_CATEGORIES = [
-        { id: 'alim', label: 'Alimentation', icon: '🛒', type: 'vie', isCustom: false },
-        { id: 'transp', label: 'Transport', icon: '🚗', type: 'vie', isCustom: false },
-        { id: 'loisirs', label: 'Loisirs', icon: '🎬', type: 'loisirs', isCustom: false },
-        { id: 'logement', label: 'Logement', icon: '🏠', type: 'fixe', isCustom: false },
-        { id: 'vetements', label: 'Vêtements', icon: '👕', type: 'vie', isCustom: false },
-        { id: 'beaute', label: 'Beauté', icon: '🧴', type: 'vie', isCustom: false },
-        { id: 'cadeaux', label: 'Cadeaux', icon: '🎁', type: 'loisirs', isCustom: false },
-        { id: 'sante', label: 'Santé', icon: '💊', type: 'vie', isCustom: false },
-        { id: 'resto', label: 'Restaurant', icon: '🍽️', type: 'loisirs', isCustom: false },
-        { id: 'tech', label: 'Tech', icon: '💻', type: 'loisirs', isCustom: false },
-        { id: 'autre', label: 'Autre', icon: '📦', type: 'loisirs', isCustom: false }
+        { id: 'alim', label: 'Alimentation', icon: '🛒', type: 'vie', color: '#34c759', isCustom: false },
+        { id: 'transp', label: 'Transport', icon: '🚗', type: 'vie', color: '#007aff', isCustom: false },
+        { id: 'loisirs', label: 'Loisirs', icon: '🎬', type: 'loisirs', color: '#af52de', isCustom: false },
+        { id: 'logement', label: 'Logement', icon: '🏠', type: 'fixe', color: '#ff9500', isCustom: false },
+        { id: 'vetements', label: 'Vêtements', icon: '👕', type: 'vie', color: '#ff2d55', isCustom: false },
+        { id: 'beaute', label: 'Beauté', icon: '🧴', type: 'vie', color: '#ff375f', isCustom: false },
+        { id: 'cadeaux', label: 'Cadeaux', icon: '🎁', type: 'loisirs', color: '#5856d6', isCustom: false },
+        { id: 'sante', label: 'Santé', icon: '💊', type: 'vie', color: '#ff3b30', isCustom: false },
+        { id: 'resto', label: 'Restaurant', icon: '🍽️', type: 'loisirs', color: '#e67e22', isCustom: false },
+        { id: 'tech', label: 'Tech', icon: '💻', type: 'loisirs', color: '#5ac8fa', isCustom: false },
+        { id: 'autre', label: 'Autre', icon: '📦', type: 'loisirs', color: '#8e8e93', isCustom: false }
     ];
 
     auth.onAuthStateChanged(user => {
@@ -789,8 +917,6 @@
                     
                     savingsGoal = data.savingsGoal !== undefined ? data.savingsGoal : 500;
                     emergencyGoal = data.emergencyGoal !== undefined ? data.emergencyGoal : 5000;
-                    balThresholdWarn = data.balThresholdWarn !== undefined ? data.balThresholdWarn : 500;
-                    balThresholdDanger = data.balThresholdDanger !== undefined ? data.balThresholdDanger : 0;
                     catBudgets = data.catBudgets || {};
                     savedTheme = data.theme || 'auto';
                     savedColor = data.color || 'blue';
@@ -833,8 +959,6 @@
             categories: customCatsToSave,
             savingsGoal: savingsGoal,
             emergencyGoal: emergencyGoal,
-            balThresholdWarn: balThresholdWarn,
-            balThresholdDanger: balThresholdDanger,
             catBudgets: catBudgets,
             theme: savedTheme,
             color: savedColor
@@ -858,16 +982,7 @@
         
         document.getElementById('set-savings-goal').value = savingsGoal;
         document.getElementById('set-emergency').value = emergencyGoal;
-        const tDanger = document.getElementById('set-threshold-danger');
-        const tWarn   = document.getElementById('set-threshold-warn');
-        if (tDanger) tDanger.value = balThresholdDanger;
-        if (tWarn)   tWarn.value   = balThresholdWarn;
-        const lD = document.getElementById('lbl-danger');
-        const lW = document.getElementById('lbl-warn');
-        const lS = document.getElementById('lbl-safe');
-        if (lD) lD.textContent = balThresholdDanger.toFixed(0) + ' €';
-        if (lW) lW.textContent = balThresholdWarn.toFixed(0) + ' €';
-        if (lS) lS.textContent = balThresholdWarn.toFixed(0) + ' €';
+        refreshZoneLabels();
         
         updateGlobalMonthLabel();
         updateSuggestions(); 
@@ -960,10 +1075,7 @@
     // 4. GESTION DES OPERATIONS (AJOUT / MODIF)
     // ==========================================
 
-    function updateSuggestions() {
-        const uniqueLabels = [...new Set(expenses.map(e => e.label))];
-        document.getElementById('label-suggestions').innerHTML = uniqueLabels.map(l => `<option value="${escapeHTML(l)}">`).join('');
-    }
+    function updateSuggestions() { /* replaced by rich autocomplete */ }
 
     function autoCategorize(text) {
         if(!text) return;
@@ -1002,7 +1114,9 @@
         document.getElementById('btn-submit-tx').innerText = "Valider";
         document.getElementById('btn-delete-tx').style.display = 'none';
 
-        document.getElementById('inp-amount').value = ''; 
+        numpadReset();
+        buildRepeatChips();
+        hideAcList();
         document.getElementById('inp-label').value = ''; 
         document.getElementById('inp-note').value = ''; 
         document.getElementById('inp-url').value = ''; 
@@ -1017,6 +1131,7 @@
         
         setOpType('expense');
         renderCats();
+        renderRepeatChips();
         toggleRecOptions();
         
         document.getElementById('advanced-options').style.display = 'none';
@@ -1042,7 +1157,7 @@
 
         setOpType(tx.type);
         document.getElementById('inp-account').value = tx.accountId;
-        document.getElementById('inp-amount').value = tx.amount;
+        _numStr = String(tx.amount); updateNumDisplay();
         document.getElementById('inp-date').value = tx.date;
         document.getElementById('inp-label').value = tx.label; 
         document.getElementById('inp-note').value = tx.note || '';
@@ -1679,7 +1794,7 @@
         document.getElementById('accounts-container').innerHTML = accounts.map(a => {
             globalRealBalance += accBalances[a.id];
             const zone = getBalanceZone(accBalances[a.id]);
-            const zoneLabel = getZoneLabel(zone);
+            const zoneLabel = getZoneLabel(zone, accBalances[a.id]);
             return `
             <div class="bank-card zone-${zone}">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:2;">
@@ -1739,16 +1854,383 @@
         renderSettingsCatBudgets();
     }
 
-    function getBalanceZone(bal) {
-        if (bal < balThresholdDanger) return 'danger';
-        if (bal < balThresholdWarn)   return 'warn';
-        return 'safe';
+    function getMonthlyBudgetTotal() {
+        // Sum of all category budgets; fallback to savingsGoal * 4 if none set
+        const total = Object.values(catBudgets).reduce((s, v) => s + (parseFloat(v) || 0), 0);
+        return total > 0 ? total : (savingsGoal > 0 ? savingsGoal * 4 : 2000);
     }
 
-    function getZoneLabel(zone) {
-        if (zone === 'danger') return '🔴 Zone critique';
-        if (zone === 'warn')   return '🟠 Zone moyenne';
-        return '🟢 Zone confort';
+    function getBalanceZone(bal) {
+        const budget = getMonthlyBudgetTotal();
+        const pct = bal / budget * 100;
+        if (pct < 10)  return 'danger'; // < 10% du budget mensuel
+        if (pct < 30)  return 'warn';   // entre 10% et 30%
+        return 'safe';                  // > 30% = zone de confort
+    }
+
+    function getZoneLabel(zone, bal) {
+        const budget = getMonthlyBudgetTotal();
+        const pct = Math.round(bal / budget * 100);
+        if (zone === 'danger') return `🔴 Zone critique (${pct}% du budget)`;
+        if (zone === 'warn')   return `🟠 Zone moyenne (${pct}% du budget)`;
+        return `🟢 Zone confort (${pct}% du budget)`;
+    }
+
+    
+    // ── PAVÉ NUMÉRIQUE ──
+    let _numStr = '0';
+
+    function numpadReset() {
+        _numStr = '0';
+        updateNumDisplay();
+    }
+
+    function numpad(key) {
+        hapticTap();
+        if (key === '.') {
+            if (_numStr.includes('.')) return;
+            _numStr += '.';
+        } else {
+            if (_numStr === '0') _numStr = key;
+            else _numStr += key;
+            // max 7 chars before dot
+            const parts = _numStr.split('.');
+            if (parts[0].length > 7) { _numStr = _numStr.slice(0, -1); shakeDisplay(); return; }
+            // max 2 decimals
+            if (parts[1] && parts[1].length > 2) { _numStr = _numStr.slice(0, -1); return; }
+        }
+        updateNumDisplay();
+    }
+
+    function numpadBack() {
+        hapticTap();
+        _numStr = _numStr.slice(0, -1) || '0';
+        updateNumDisplay();
+    }
+
+    function updateNumDisplay() {
+        const el = document.getElementById('numpad-display'); if (!el) return;
+        el.textContent = _numStr.endsWith('.') ? _numStr : (parseFloat(_numStr) || 0).toLocaleString('fr-FR', {maximumFractionDigits:2}) + (_numStr.includes('.') && _numStr.split('.')[1] ? '' : '');
+        el.textContent = _numStr;
+        document.getElementById('inp-amount').value = _numStr;
+    }
+
+    function shakeDisplay() {
+        const el = document.getElementById('numpad-display'); if (!el) return;
+        el.classList.add('shake');
+        setTimeout(() => el.classList.remove('shake'), 300);
+    }
+
+    // ── RÉPÉTER ──
+    function buildRepeatChips() {
+        const container = document.getElementById('repeat-scroll');
+        const section   = document.getElementById('repeat-section');
+        if (!container) return;
+        // Last 5 unique labels from expenses
+        const seen = new Set();
+        const recent = expenses.filter(e => {
+            if (seen.has(e.label)) return false;
+            seen.add(e.label); return true;
+        }).slice(0, 5);
+        if (!recent.length) { if (section) section.style.display = 'none'; return; }
+        if (section) section.style.display = 'block';
+        container.innerHTML = recent.map(e => {
+            const cat = categories.find(c => c.id === e.cat) || { icon: '📦' };
+            return `<div class="repeat-chip" onclick="repeatTx(${e.id})">
+                <div class="repeat-chip-icon">${cat.icon}</div>
+                <div class="repeat-chip-label">${escapeHTML(e.label)}</div>
+                <div class="repeat-chip-amount">${e.amount.toLocaleString('fr-FR', {minimumFractionDigits:2})} €</div>
+            </div>`;
+        }).join('');
+    }
+
+    function repeatTx(id) {
+        hapticTap();
+        const tx = expenses.find(e => e.id === id); if (!tx) return;
+        // Fill amount
+        _numStr = String(tx.amount);
+        updateNumDisplay();
+        // Fill label
+        document.getElementById('inp-label').value = tx.label;
+        // Fill category
+        if (tx.type === 'expense') { selectCat(tx.cat); }
+        // Fill account
+        const accSel = document.getElementById('inp-account');
+        if (accSel && tx.accountId) accSel.value = tx.accountId;
+        // Fill type
+        setOpType(tx.type);
+        // Close autocomplete
+        hideAcList();
+        hapticTap();
+    }
+
+    // ── AUTOCOMPLETE ──
+    let _acIndex = -1;
+    let _acResults = [];
+
+    function buildAcResults(text) {
+        if (!text || text.length < 2) return [];
+        const lower = text.toLowerCase();
+        const seen = new Set();
+        return expenses
+            .filter(e => e.label.toLowerCase().includes(lower) && !seen.has(e.label) && seen.add(e.label))
+            .slice(0, 6);
+    }
+
+    function onLabelInput(text) {
+        autoCategorize(text);
+        _acIndex = -1;
+        _acResults = buildAcResults(text);
+        if (!_acResults.length || !text) { hideAcList(); return; }
+        renderAcList();
+    }
+
+    function renderAcList() {
+        const list = document.getElementById('ac-list'); if (!list) return;
+        list.style.display = 'block';
+        list.innerHTML = _acResults.map((e, i) => {
+            const cat = categories.find(c => c.id === e.cat) || { icon: '📦', label: '' };
+            const hl  = e.label.replace(
+                new RegExp('(' + document.getElementById('inp-label').value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi'),
+                '<strong>$1</strong>'
+            );
+            return `<div class="autocomplete-item ${i === _acIndex ? 'active' : ''}" onclick="applyAc(${i})">
+                <div class="ac-icon" style="background:${cat.color||'var(--input-bg)'}22;color:${cat.color||'var(--accent)'};">${cat.icon}</div>
+                <div class="ac-info">
+                    <div class="ac-label">${hl}</div>
+                    <div class="ac-sub">${cat.label}</div>
+                </div>
+                <div class="ac-amount">${e.amount.toLocaleString('fr-FR',{minimumFractionDigits:2})} €</div>
+            </div>`;
+        }).join('');
+    }
+
+    function onLabelKeydown(e) {
+        if (!_acResults.length) return;
+        if (e.key === 'ArrowDown') { e.preventDefault(); _acIndex = Math.min(_acIndex+1, _acResults.length-1); renderAcList(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); _acIndex = Math.max(_acIndex-1, 0); renderAcList(); }
+        else if (e.key === 'Enter' && _acIndex >= 0) { e.preventDefault(); applyAc(_acIndex); }
+        else if (e.key === 'Escape') { hideAcList(); }
+    }
+
+    function applyAc(i) {
+        hapticTap();
+        const tx = _acResults[i]; if (!tx) return;
+        document.getElementById('inp-label').value = tx.label;
+        // Pre-fill amount if numpad is still 0
+        if (_numStr === '0' || _numStr === '') {
+            _numStr = String(tx.amount);
+            updateNumDisplay();
+        }
+        if (tx.type === 'expense') selectCat(tx.cat);
+        const accSel = document.getElementById('inp-account');
+        if (accSel && tx.accountId) accSel.value = tx.accountId;
+        hideAcList();
+    }
+
+    function hideAcList() {
+        const l = document.getElementById('ac-list'); if (l) l.style.display = 'none';
+        _acResults = []; _acIndex = -1;
+    }
+
+    // Close autocomplete on outside click
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.autocomplete-wrap')) hideAcList();
+    });
+
+
+
+
+    // ── AUTOCOMPLETE LIBELLÉ ──
+    function onLabelInput(val) {
+        autoCategorize(val);
+        showSuggestDropdown(val);
+    }
+
+    function getSuggestions(query) {
+        if (!query || query.length < 1) return [];
+        const q = query.toLowerCase();
+        const seen = new Set();
+        return expenses
+            .filter(function(e) {
+                const match = e.label.toLowerCase().includes(q);
+                const key = e.label.toLowerCase();
+                if (!match || seen.has(key)) return false;
+                seen.add(key); return true;
+            })
+            .slice(0, 5);
+    }
+
+    function showSuggestDropdown(val) {
+        const dropdown = document.getElementById('suggest-dropdown');
+        if (!dropdown) return;
+        const matches = getSuggestions(val);
+        if (!matches.length) { dropdown.style.display = 'none'; return; }
+        dropdown.innerHTML = matches.map(function(e) {
+            const cat = categories.find(function(c) { return c.id === e.cat; }) || { icon: '📦', label: 'Autre' };
+            const dateStr = new Date(e.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+            const color = e.type === 'income' ? 'var(--green)' : 'var(--red)';
+            const sign = e.type === 'income' ? '+' : '-';
+            return '<div class="suggest-item" onmousedown="applySuggestion('' + String(e.id) + '')">'
+                + '<div class="suggest-icon">' + cat.icon + '</div>'
+                + '<div style="flex:1; min-width:0;">'
+                + '<div class="suggest-label">' + escapeHTML(e.label) + '</div>'
+                + '<div class="suggest-meta">' + cat.label + ' · ' + dateStr + '</div>'
+                + '</div>'
+                + '<div class="suggest-amount" style="color:' + color + ';">' + sign + parseFloat(e.amount).toFixed(2) + ' €</div>'
+                + '</div>';
+        }).join('');
+        dropdown.style.display = 'block';
+    }
+
+    function hideSuggestDropdown() {
+        const d = document.getElementById('suggest-dropdown');
+        if (d) d.style.display = 'none';
+    }
+
+    function applySuggestion(id) {
+        hapticTap();
+        const e = expenses.find(function(ex) { return String(ex.id) === String(id); });
+        if (!e) return;
+        document.getElementById('inp-label').value = e.label;
+        // Fill amount via numpad
+        document.getElementById('inp-amount').value = e.amount;
+        _npRaw = String(e.amount);
+        const val = parseFloat(e.amount);
+        document.getElementById('numpad-value').textContent = val.toLocaleString('fr-FR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
+        document.getElementById('numpad-value').style.color = e.type === 'expense' ? 'var(--red)' : 'var(--green)';
+        document.querySelector('[onclick="openNumpad()"] div:last-child').textContent = 'Appuyer pour modifier';
+        // Fill category + type
+        setOpType(e.type);
+        if (e.type === 'expense') selectCat(e.cat);
+        if (e.accountId) document.getElementById('inp-account').value = e.accountId;
+        hideSuggestDropdown();
+    }
+
+        // ── RÉPÉTER UNE OPÉRATION ──
+    function renderRepeatChips() {
+        const container = document.getElementById('repeat-chips');
+        if (!container) return;
+        // 3 opérations les plus fréquentes du mois en cours
+        const key = viewDate.getFullYear() + '-' + String(viewDate.getMonth()+1).padStart(2,'0');
+        const monthExp = expenses.filter(function(e) { return e.date && e.date.startsWith(key); });
+        // Count frequency by label
+        const freq = {};
+        monthExp.forEach(function(e) {
+            freq[e.label] = (freq[e.label] || 0) + 1;
+        });
+        // Sort by frequency, take top 3 unique labels, find a representative tx for each
+        const top3 = Object.keys(freq)
+            .sort(function(a,b) { return freq[b] - freq[a]; })
+            .slice(0, 3)
+            .map(function(label) {
+                return expenses.find(function(e) { return e.label === label; });
+            })
+            .filter(Boolean);
+        // Fallback: if not enough month data, fill with recent unique ops
+        if (top3.length < 3) {
+            const seen = new Set(top3.map(function(e) { return e.label; }));
+            expenses.filter(function(e) { return !e.recurring; }).forEach(function(e) {
+                if (top3.length >= 3) return;
+                if (!seen.has(e.label)) { seen.add(e.label); top3.push(e); }
+            });
+        }
+        if (!top3.length) {
+            container.parentElement.style.display = 'none'; return;
+        }
+        container.parentElement.style.display = 'block';
+        container.innerHTML = top3.map(function(e) {
+            const cat = categories.find(function(c) { return c.id === e.cat; }) || { icon: '📦' };
+            const sign = e.type === 'income' ? '+' : '-';
+            const color = e.type === 'income' ? 'var(--green)' : 'var(--red)';
+            const count = freq[e.label] ? ' · ' + freq[e.label] + '×' : '';
+            return '<button onclick="repeatTx('' + e.id + '')" style="'
+                + 'flex-shrink:0; display:flex; align-items:center; gap:8px;'
+                + 'background:var(--card-bg); border:1.5px solid var(--input-bg);'
+                + 'border-radius:50px; padding:9px 16px; cursor:pointer;'
+                + 'transition:.15s; white-space:nowrap;'
+                + '" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--input-bg)'">'
+                + '<span style="font-size:17px;">' + cat.icon + '</span>'
+                + '<div style="text-align:left;">'
+                + '<div style="font-size:13px; font-weight:700; color:var(--text-main); max-width:100px; overflow:hidden; text-overflow:ellipsis;">' + escapeHTML(e.label) + '</div>'
+                + '<div style="font-size:11px; font-weight:700; color:' + color + ';">' + sign + parseFloat(e.amount).toFixed(2) + ' €' + count + '</div>'
+                + '</div></button>';
+        }).join('');
+    }
+
+    function repeatTx(id) {
+        hapticTap();
+        const e = expenses.find(function(ex) { return String(ex.id) === String(id); });
+        if (!e) return;
+        // Fill form
+        setOpType(e.type);
+        document.getElementById('inp-amount').value = e.amount;
+        _npRaw = String(e.amount);
+        const val = parseFloat(e.amount);
+        document.getElementById('numpad-value').textContent = val.toLocaleString('fr-FR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
+        document.getElementById('numpad-value').style.color = e.type === 'expense' ? 'var(--red)' : 'var(--green)';
+        document.querySelector('[onclick="openNumpad()"] div:last-child').textContent = 'Appuyer pour modifier';
+        document.getElementById('inp-label').value = e.label;
+        document.getElementById('inp-date').value = new Date().toISOString().split('T')[0];
+        if (e.type === 'expense') { selectCat(e.cat); }
+        if (e.accountId) document.getElementById('inp-account').value = e.accountId;
+        // Scroll to validate button
+        setTimeout(function() {
+            const btn = document.getElementById('btn-submit-tx');
+            if (btn) btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+    }
+
+        // ── NUMPAD ──
+    var _npRaw = '0';
+
+    function openNumpad() {
+        hapticTap();
+        _npRaw = document.getElementById('inp-amount').value || '0';
+        document.getElementById('numpad-screen').textContent = _npRaw === '0' ? '0' : _npRaw;
+        document.getElementById('numpad-screen').classList.toggle('has-value', _npRaw !== '0');
+        document.getElementById('numpad-type-label').textContent = currentType === 'expense' ? 'Dépense' : 'Revenu';
+        const overlay = document.getElementById('numpad-overlay');
+        overlay.style.display = 'flex';
+        requestAnimationFrame(function() { overlay.style.opacity = '1'; });
+    }
+
+    function closeNumpad() {
+        document.getElementById('numpad-overlay').style.display = 'none';
+    }
+
+    function confirmNumpad() {
+        hapticTap();
+        const val = parseFloat(_npRaw);
+        if (!isNaN(val) && val > 0) {
+            document.getElementById('inp-amount').value = val.toFixed(2);
+            document.getElementById('numpad-value').textContent = val.toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' €';
+            document.getElementById('numpad-value').style.color = currentType === 'expense' ? 'var(--red)' : 'var(--green)';
+            document.querySelector('[onclick="openNumpad()"] div:last-child').textContent = 'Appuyer pour modifier';
+        }
+        closeNumpad();
+    }
+
+    function npPress(ch) {
+        if (navigator.vibrate) navigator.vibrate(6);
+        if (ch === '.' && _npRaw.includes('.')) return;
+        // Max 2 decimal places
+        if (_npRaw.includes('.') && _npRaw.split('.')[1].length >= 2) return;
+        // Max value
+        if (_npRaw.length >= 8) return;
+        if (_npRaw === '0' && ch !== '.') _npRaw = ch;
+        else _npRaw += ch;
+        const screen = document.getElementById('numpad-screen');
+        screen.textContent = _npRaw;
+        screen.classList.toggle('has-value', _npRaw !== '0');
+    }
+
+    function npBackspace() {
+        if (navigator.vibrate) navigator.vibrate(8);
+        _npRaw = _npRaw.length <= 1 ? '0' : _npRaw.slice(0, -1);
+        const screen = document.getElementById('numpad-screen');
+        screen.textContent = _npRaw;
+        screen.classList.toggle('has-value', _npRaw !== '0');
     }
 
         function renderCats() {
@@ -2152,17 +2634,18 @@
         saveToCloud();
     }
 
-    function saveThresholds() {
-        const danger = parseFloat(document.getElementById('set-threshold-danger').value);
-        const warn   = parseFloat(document.getElementById('set-threshold-warn').value);
-        if (!isNaN(danger)) balThresholdDanger = danger;
-        if (!isNaN(warn))   balThresholdWarn   = warn;
-        // Update preview labels
-        document.getElementById('lbl-danger').textContent = balThresholdDanger.toFixed(0) + ' €';
-        document.getElementById('lbl-warn').textContent   = balThresholdWarn.toFixed(0) + ' €';
-        document.getElementById('lbl-safe').textContent   = balThresholdWarn.toFixed(0) + ' €';
-        if (currentUser) saveToCloud();
-        updateAllViews();
+    function refreshZoneLabels() {
+        const budget = getMonthlyBudgetTotal();
+        const danger = budget * 0.10;
+        const warn   = budget * 0.30;
+        const lD = document.getElementById('lbl-danger');
+        const lW = document.getElementById('lbl-warn');
+        const lS = document.getElementById('lbl-safe');
+        const lT = document.getElementById('lbl-total-budget');
+        if (lD) lD.textContent = danger.toFixed(0) + ' €';
+        if (lW) lW.textContent = warn.toFixed(0) + ' €';
+        if (lS) lS.textContent = warn.toFixed(0) + ' €';
+        if (lT) lT.textContent = budget.toFixed(0) + ' €';
     }
 
         function saveDisplayName() {
