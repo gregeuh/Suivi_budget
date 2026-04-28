@@ -67,6 +67,8 @@
         .bank-card.revolut  { background: linear-gradient(150deg,#191c33 0%,#2f3166 100%); }
         /* Swile — jaune vif ticket restau */
         .bank-card.swile    { background: linear-gradient(150deg,#f5a623 0%,#e08800 100%); }
+        /* Livret A — vert Livret A */
+        .bank-card.livreta  { background: linear-gradient(150deg,#2e7d32 0%,#1b5e20 100%); }
         .bank-card.zone-safe   { background: linear-gradient(150deg,#5aa882 0%,#3a7a5a 100%) !important; }
         .bank-card.zone-warn   { background: linear-gradient(150deg,#d4a24a 0%,#a47828 100%) !important; }
         .bank-card.zone-danger { background: linear-gradient(150deg,#c97070 0%,#9e4848 100%) !important; }
@@ -626,6 +628,8 @@
         .bank-card.revolut  { background: linear-gradient(150deg,#191c33 0%,#2f3166 100%); }
         /* Swile — jaune vif ticket restau */
         .bank-card.swile    { background: linear-gradient(150deg,#f5a623 0%,#e08800 100%); }
+        /* Livret A — vert Livret A */
+        .bank-card.livreta  { background: linear-gradient(150deg,#2e7d32 0%,#1b5e20 100%); }
         .bank-card.zone-safe   { background: linear-gradient(150deg,#5aa882 0%,#3a7a5a 100%) !important; }
         .bank-card.zone-warn   { background: linear-gradient(150deg,#d4a24a 0%,#a47828 100%) !important; }
         .bank-card.zone-danger { background: linear-gradient(150deg,#c97070 0%,#9e4848 100%) !important; }
@@ -1238,6 +1242,7 @@
                     <div class="acc-color-dot"        data-color="orange"  style="background:#d4a24a;"  onclick="selectAccColor('orange')"  title="Orange"></div>
                     <div class="acc-color-dot"        data-color="revolut" style="background:#2f3166;"  onclick="selectAccColor('revolut')" title="Revolut"></div>
                     <div class="acc-color-dot"        data-color="swile"   style="background:#f5a623;"  onclick="selectAccColor('swile')"   title="Swile"></div>
+                    <div class="acc-color-dot"        data-color="livreta" style="background:#2e7d32;"  onclick="selectAccColor('livreta')" title="Livret A"></div>
                 </div>
                 <div style="display:flex;gap:8px;margin-top:2px;">
                     <button onclick="cancelAddAccount()" style="flex:1;padding:12px;border-radius:12px;border:none;background:var(--card-bg);color:var(--text-muted);font-weight:600;cursor:pointer;">Annuler</button>
@@ -1453,7 +1458,8 @@
                         accounts = [
                             { id: 'acc1',     name: 'Compte Principal', initBalance: 0, color: 'blue'    },
                             { id: 'acc_rev',  name: 'Revolut',          initBalance: 0, color: 'revolut' },
-                            { id: 'acc_swl',  name: 'Swile',            initBalance: 0, color: 'swile'   }
+                            { id: 'acc_swl',  name: 'Swile',            initBalance: 0, color: 'swile'   },
+                            { id: 'acc_lva',  name: 'Livret A',         initBalance: 0, color: 'livreta' }
                         ];
                     }
                     
@@ -1494,7 +1500,8 @@
         accounts = [
                             { id: 'acc1',     name: 'Compte Principal', initBalance: 0, color: 'blue'    },
                             { id: 'acc_rev',  name: 'Revolut',          initBalance: 0, color: 'revolut' },
-                            { id: 'acc_swl',  name: 'Swile',            initBalance: 0, color: 'swile'   }
+                            { id: 'acc_swl',  name: 'Swile',            initBalance: 0, color: 'swile'   },
+                            { id: 'acc_lva',  name: 'Livret A',         initBalance: 0, color: 'livreta' }
                         ];
         wishlist = [];
         categories = [...DEFAULT_CATEGORIES];
@@ -2393,7 +2400,7 @@
             <div class="bank-card zone-${zone}">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:2;">
                     <div class="acc-name" style="display:flex;align-items:center;gap:8px;">
-                        ${a.color==='revolut' ? '<span style="font-size:18px;opacity:.9">💳</span>' : a.color==='swile' ? '<span style="font-size:18px;opacity:.9">🍽️</span>' : ''}
+                        ${a.color==='revolut' ? '<span style="font-size:18px;opacity:.9">💳</span>' : a.color==='swile' ? '<span style="font-size:18px;opacity:.9">🍽️</span>' : a.color==='livreta' ? '<span style="font-size:18px;opacity:.9">🏦</span>' : ''}
                         ${escapeHTML(a.name)}
                     </div>
                     <button onclick="adjustBalance('${escapeHTML(a.id)}')" style="background:rgba(0,0,0,0.2); border:none; color:white; border-radius:12px; font-size:12px; padding:6px 12px; cursor:pointer; font-weight:700;">Ajuster</button>
@@ -2401,6 +2408,7 @@
                 <div class="acc-val blur-val" id="acc-val-${a.id}">${accBalances[a.id].toFixed(2)} €</div>
                 <div class="balance-zone-badge">${zoneLabel}</div>
                 ${a.color==='swile' ? '<div style="background:rgba(255,255,255,0.2);border-radius:8px;padding:3px 10px;font-size:10px;font-weight:700;margin-top:6px;display:inline-block;">🍽️ Tickets restau</div>' : ''}
+                ${a.color==='livreta' ? '<div style="background:rgba(255,255,255,0.2);border-radius:8px;padding:3px 10px;font-size:10px;font-weight:700;margin-top:6px;display:inline-block;">🏦 Livret A</div>' : ''}
                 ${a.color==='revolut' ? '<div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:3px 10px;font-size:10px;font-weight:700;margin-top:6px;display:inline-block;">💳 Revolut</div>' : ''}
             </div>`;
         }).join('');
@@ -3547,13 +3555,13 @@
     function renderSettingsAccounts() {
         const colorMap = {
             blue:'#c8913a', purple:'#a06848', green:'#5aa882',
-            pink:'#c06858', orange:'#d4a24a', revolut:'#2f3166', swile:'#f5a623'
+            pink:'#c06858', orange:'#d4a24a', revolut:'#2f3166', swile:'#f5a623', livreta:'#2e7d32'
         };
         document.getElementById('settings-accounts-list').innerHTML = accounts.map(a => `
             <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid var(--input-bg)">
                 <div style="display:flex; align-items:center; gap:12px;">
                     <div style="width:38px;height:38px;border-radius:12px;background:${colorMap[a.color]||'#c8913a'};flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;">
-                        ${a.color==='revolut'?'💳':a.color==='swile'?'🍽️':'🏦'}
+                        ${a.color==='revolut'?'💳':a.color==='swile'?'🍽️':a.color==='livreta'?'🏦':'💰'}
                     </div>
                     <div>
                         <strong style="font-size:15px;">${escapeHTML(a.name)}</strong><br>
