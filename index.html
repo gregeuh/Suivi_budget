@@ -1506,8 +1506,15 @@
         saveToCloud(); 
     }
 
+    var _cloudDataLoaded = false; // true once Firebase has sent us data at least once
+
     function saveToCloud() {
         if (!cloudDocRef) return;
+        // SAFETY: never save if data hasn't been loaded from Firebase yet
+        if (!_cloudDataLoaded) {
+            console.warn('saveToCloud blocked: Firebase data not yet loaded');
+            return;
+        }
         // Only persist custom categories - defaults are always rebuilt from DEFAULT_CATEGORIES
         const customCatsToSave = categories.filter(c => c.isCustom);
         cloudDocRef.set({
