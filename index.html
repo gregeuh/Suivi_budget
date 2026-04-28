@@ -202,6 +202,56 @@
 
 
 
+
+        /* ── ADVANCED OPTIONS ── */
+        .adv-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 13px 16px; background: var(--input-bg);
+            border-radius: 14px; margin-bottom: 10px;
+            transition: background .15s;
+        }
+        .adv-row-left { display: flex; align-items: center; gap: 10px; }
+        .adv-row-icon { font-size: 18px; width: 34px; height: 34px; background: var(--card-bg);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .adv-row-label { font-size: 14px; font-weight: 600; }
+        .adv-row-sub   { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+        .adv-toggle {
+            width: 48px; height: 28px; border-radius: 50px; border: none; cursor: pointer;
+            position: relative; transition: background .25s; flex-shrink: 0;
+            background: var(--surface3, #ccc);
+        }
+        .adv-toggle::after {
+            content: ''; position: absolute; top: 3px; left: 3px;
+            width: 22px; height: 22px; border-radius: 50%; background: white;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+            transition: transform .25s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .adv-toggle.on { background: var(--accent); }
+        .adv-toggle.on::after { transform: translateX(20px); }
+
+        .adv-expand {
+            overflow: hidden; max-height: 0;
+            transition: max-height .35s cubic-bezier(0.16,1,0.3,1), opacity .25s;
+            opacity: 0;
+        }
+        .adv-expand.open { max-height: 400px; opacity: 1; }
+        .adv-expand-inner { padding: 4px 0 10px 0; display: flex; flex-direction: column; gap: 10px; }
+
+        .adv-note-row {
+            display: flex; align-items: center; gap: 8px;
+            background: var(--input-bg); border-radius: 14px; padding: 4px 4px 4px 14px;
+        }
+        .adv-note-row input {
+            flex: 1; background: none; border: none; outline: none;
+            font-family: inherit; font-size: 14px; color: var(--text-main);
+            padding: 10px 0;
+        }
+        .adv-note-row input::placeholder { color: var(--text-muted); }
+        .adv-note-clear {
+            width: 28px; height: 28px; border-radius: 50%; background: var(--surface3, #ccc);
+            border: none; color: var(--text-muted); font-size: 13px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
         /* ── TYPE PILLS ── */
         .type-pill {
             flex: 1; padding: 10px 6px; border: none; border-radius: 12px;
@@ -467,34 +517,70 @@
             <div class="category-grid" id="cat-container"></div>
         </div>
 
-        <button id="btn-show-advanced" onclick="document.getElementById('advanced-options').style.display='block'; this.style.display='none';" style="background:var(--input-bg); border:none; color:var(--text-main); font-weight:600; width:100%; border-radius: 16px; text-align:center; padding:15px 0; margin-bottom:15px; transition:0.2s; cursor:pointer;">Options avancées (Compte, Récurrence...)</button>
-        
-        <div id="advanced-options" style="display:none; margin-bottom:20px;">
-            <div class="input-group" style="margin-bottom:15px;">
-                <label>Compte prélevé</label>
-                <select id="inp-account" class="input-control" style="appearance:none;"></select>
+        <!-- OPTIONS AVANCÉES REDESIGNÉES -->
+        <div style="margin-bottom:18px;" id="advanced-options">
+
+            <!-- Compte — toujours visible -->
+            <div class="adv-row" id="adv-account-row">
+                <div class="adv-row-left">
+                    <div class="adv-row-icon">🏦</div>
+                    <div>
+                        <div class="adv-row-label">Compte</div>
+                        <div class="adv-row-sub" id="adv-account-sub">Sélectionner</div>
+                    </div>
+                </div>
+                <select id="inp-account" style="background:var(--card-bg);border:none;border-radius:10px;padding:8px 12px;font-family:inherit;font-size:13px;font-weight:600;color:var(--text-main);cursor:pointer;outline:none;max-width:140px;" onchange="updateAccSub()"></select>
             </div>
-            <div class="input-group" style="margin-bottom:15px;">
-                <label>Note additionnelle (#Tag)</label>
-                <input type="text" id="inp-note" class="input-control" placeholder="ex: #Vacances">
+
+            <!-- Note — champ inline -->
+            <div class="adv-note-row">
+                <span style="font-size:16px;">📝</span>
+                <input type="text" id="inp-note" placeholder="Note ou #tag…">
+                <button class="adv-note-clear" onclick="document.getElementById('inp-note').value=''">✕</button>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; background: var(--input-bg); padding: 16px; border-radius: 16px; margin-bottom: 10px;">
-                <span style="font-weight:600; font-size:15px;">Opération récurrente</span>
-                <input type="checkbox" id="inp-recurring" onchange="toggleRecOptions()" style="width:22px; height:22px; accent-color:var(--accent);">
+
+            <!-- Récurrente — toggle iOS -->
+            <div class="adv-row" onclick="toggleRecurring()" style="cursor:pointer;">
+                <div class="adv-row-left">
+                    <div class="adv-row-icon">🔁</div>
+                    <div>
+                        <div class="adv-row-label">Récurrente</div>
+                        <div class="adv-row-sub" id="adv-rec-sub">Loyer, abonnement…</div>
+                    </div>
+                </div>
+                <button class="adv-toggle" id="rec-toggle-btn" onclick="event.stopPropagation();toggleRecurring()"></button>
             </div>
-            <div id="rec-options" style="display:none; margin-bottom:10px;">
-                <select id="inp-frequency" class="input-control" style="margin-bottom:10px;">
-                    <option value="monthly">Tous les mois</option>
-                    <option value="last_working_day">Dernier jour ouvré</option>
-                    <option value="weekly">Hebdomadaire</option>
-                </select>
-                <input type="date" id="inp-rec-end" class="input-control" placeholder="Date de fin (Optionnel)">
+            <!-- Récurrence options — slide down -->
+            <div class="adv-expand" id="rec-expand">
+                <div class="adv-expand-inner">
+                    <select id="inp-frequency" class="input-control">
+                        <option value="monthly">Tous les mois</option>
+                        <option value="last_working_day">Dernier jour ouvré</option>
+                        <option value="weekly">Hebdomadaire</option>
+                    </select>
+                    <input type="date" id="inp-rec-end" class="input-control" placeholder="Date de fin (optionnel)">
+                </div>
             </div>
-            <div class="input-group" style="margin-bottom:15px;">
-                <label>Lien Web</label>
-                <input type="url" id="inp-url" class="input-control" placeholder="https://...">
+            <input type="hidden" id="inp-recurring" value="false">
+
+            <!-- Lien web — toggle -->
+            <div class="adv-row" onclick="toggleUrlField()" style="cursor:pointer;">
+                <div class="adv-row-left">
+                    <div class="adv-row-icon">🔗</div>
+                    <div>
+                        <div class="adv-row-label">Lien web</div>
+                        <div class="adv-row-sub">Facture, reçu en ligne…</div>
+                    </div>
+                </div>
+                <button class="adv-toggle" id="url-toggle-btn" onclick="event.stopPropagation();toggleUrlField()"></button>
+            </div>
+            <div class="adv-expand" id="url-expand">
+                <div class="adv-expand-inner">
+                    <input type="url" id="inp-url" class="input-control" placeholder="https://...">
+                </div>
             </div>
         </div>
+        <div style="display:none"><input type="checkbox" id="inp-recurring-compat"></div>
 
         <div style="display:flex; gap:12px;">
             <button id="btn-delete-tx" style="display:none; background:var(--red-light); color:var(--red); border:none; width:64px; border-radius:18px; font-weight:700; font-size:20px; cursor:pointer;" onclick="deleteTxFromModal()">🗑</button>
@@ -1229,7 +1315,7 @@
         if (customMatch && currentType === 'expense') selectCat(customMatch.id);
 
         if(RECURRING_KEYWORDS.some(w => lower.includes(w))) {
-            document.getElementById('inp-recurring').checked = true;
+            document.getElementById('inp-recurring').value = 'true'; if(!_recOn) toggleRecurring();
             toggleRecOptions();
         }
     }
@@ -1254,19 +1340,14 @@
         const localDate = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
         document.getElementById('inp-date').value = localDate;
         
-        document.getElementById('inp-recurring').checked = false; 
         document.getElementById('inp-frequency').value = 'monthly';
         document.getElementById('inp-rec-end').value = '';
-        
         setOpType('expense');
         renderCats();
-        toggleRecOptions();
-        
-        document.getElementById('advanced-options').style.display = 'none';
-        document.getElementById('btn-show-advanced').style.display = 'block';
+
         
         document.getElementById('add-modal').style.display = 'flex'; 
-        setTimeout(() => document.getElementById('inp-amount').focus(), 300);
+        setTimeout(() => { var l = document.getElementById('inp-label'); if(l) l.focus(); }, 300);
     }
 
     let lastEditTime = 0;
@@ -1289,11 +1370,13 @@
         document.getElementById('inp-date').value = tx.date;
         document.getElementById('inp-label').value = tx.label; 
         document.getElementById('inp-note').value = tx.note || '';
+        if (tx.recurring) { if (!_recOn) toggleRecurring(); } else { if (_recOn) toggleRecurring(); }
+        if (tx.url) { if (!_urlOn) toggleUrlField(); document.getElementById('inp-url').value = tx.url || ''; } else { if (_urlOn) toggleUrlField(); }
         document.getElementById('inp-url').value = tx.url || '';
         
         if (tx.type === 'expense') selectCat(tx.cat);
 
-        document.getElementById('inp-recurring').checked = tx.recurring || false;
+        if((tx.recurring || false) !== _recOn) toggleRecurring();
         if(tx.recurring) {
             document.getElementById('inp-frequency').value = tx.frequency || 'monthly';
             document.getElementById('inp-rec-end').value = tx.endDate || '';
@@ -1302,7 +1385,7 @@
         toggleRecOptions();
         
         document.getElementById('advanced-options').style.display = 'block';
-        document.getElementById('btn-show-advanced').style.display = 'none';
+
         
         document.getElementById('add-modal').style.display = 'flex';
     }
@@ -1332,7 +1415,7 @@
         if (transferBlock) transferBlock.style.display = t === 'transfer' ? 'block' : 'none';
         // Show/hide regular fields
         var catBlock = document.getElementById('category-block');
-        var advBtn   = document.getElementById('btn-show-advanced');
+        var advBtn = null;
         var advOpts  = document.getElementById('advanced-options');
         if (catBlock) catBlock.style.display = (t === 'expense') ? 'block' : 'none';
         if (t === 'transfer') {
@@ -1350,7 +1433,7 @@
     }
 
     function toggleRecOptions() { 
-        document.getElementById('rec-options').style.display = document.getElementById('inp-recurring').checked ? 'block' : 'none'; 
+        document.getElementById('rec-options').style.display = document.getElementById('inp-recurring').value === 'true' ? 'block' : 'none'; 
     }
 
     function addExpense() {
@@ -1367,7 +1450,7 @@
         
         if(isNaN(amt) || !lbl || !accId) return alert("Le montant et le libellé sont requis.");
 
-        const isRecurring = document.getElementById('inp-recurring').checked;
+        const isRecurring = document.getElementById('inp-recurring').value === 'true';
 
         const txData = {
             amount: amt, 
@@ -1653,6 +1736,7 @@
 
     // --- MISE A JOUR DES COMPTES ---
     function updateAccountsSelectors() { 
+        setTimeout(updateAccSub, 100); 
         const options = accounts.map(a => `<option value="${escapeHTML(a.id)}">${escapeHTML(a.name)}</option>`).join('');
         document.getElementById('inp-account').innerHTML = options; 
         document.getElementById('inp-wish-account').innerHTML = options; 
@@ -2344,7 +2428,63 @@
     }
 
     
-    // ════════════════════════════════════════════════════
+
+    // ── ADVANCED OPTIONS LOGIC ──
+    var _recOn = false;
+    var _urlOn = false;
+
+    function updateAccSub() {
+        var sel = document.getElementById('inp-account');
+        var sub = document.getElementById('adv-account-sub');
+        if (!sel || !sub) return;
+        var opt = sel.options[sel.selectedIndex];
+        if (sub) sub.textContent = opt ? opt.text : 'Sélectionner';
+    }
+
+    function toggleRecurring() {
+        hapticTap();
+        _recOn = !_recOn;
+        var btn = document.getElementById('rec-toggle-btn');
+        var exp = document.getElementById('rec-expand');
+        var inp = document.getElementById('inp-recurring');
+        var sub = document.getElementById('adv-rec-sub');
+        if (btn) btn.classList.toggle('on', _recOn);
+        if (exp) exp.classList.toggle('open', _recOn);
+        if (inp) inp.value = _recOn ? 'true' : 'false';
+        if (sub) sub.textContent = _recOn ? 'Activer · choisir la fréquence' : 'Loyer, abonnement…';
+    }
+
+    function toggleUrlField() {
+        hapticTap();
+        _urlOn = !_urlOn;
+        var btn = document.getElementById('url-toggle-btn');
+        var exp = document.getElementById('url-expand');
+        if (btn) btn.classList.toggle('on', _urlOn);
+        if (exp) exp.classList.toggle('open', _urlOn);
+        if (_urlOn) setTimeout(function() { var u = document.getElementById('inp-url'); if(u) u.focus(); }, 350);
+    }
+
+    function resetAdvancedOptions() {
+        _recOn = false; _urlOn = false;
+        var recBtn = document.getElementById('rec-toggle-btn');
+        var urlBtn = document.getElementById('url-toggle-btn');
+        var recExp = document.getElementById('rec-expand');
+        var urlExp = document.getElementById('url-expand');
+        var inp    = document.getElementById('inp-recurring');
+        var sub    = document.getElementById('adv-rec-sub');
+        if (recBtn) recBtn.classList.remove('on');
+        if (urlBtn) urlBtn.classList.remove('on');
+        if (recExp) recExp.classList.remove('open');
+        if (urlExp) urlExp.classList.remove('open');
+        if (inp)    inp.value = 'false';
+        if (sub)    sub.textContent = 'Loyer, abonnement…';
+        var noteEl = document.getElementById('inp-note');
+        var urlEl  = document.getElementById('inp-url');
+        if (noteEl) noteEl.value = '';
+        if (urlEl)  urlEl.value  = '';
+    }
+
+        // ════════════════════════════════════════════════════
     // VIREMENTS ENTRE COMPTES
     // ════════════════════════════════════════════════════
     function updateTransferSelects() {
