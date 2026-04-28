@@ -24,25 +24,25 @@
     <style>
         /* THEMES ET VARIABLES */
         :root {
-            --accent: #6b8fe8; --accent-light: rgba(107, 143, 232, 0.10);
-            --red: #c97070; --red-light: rgba(201, 112, 112, 0.10);
-            --green: #5aa882; --green-light: rgba(90, 168, 130, 0.10);
-            --orange: #d4935a; --orange-light: rgba(212, 147, 90, 0.10);
+            --accent: #c8913a; --accent-light: rgba(200, 145, 58, 0.12);
+            --red: #c06858; --red-light: rgba(192, 104, 88, 0.10);
+            --green: #6aaa78; --green-light: rgba(106, 170, 120, 0.10);
+            --orange: #d4a24a; --orange-light: rgba(212, 162, 74, 0.10);
             --radius-card: 22px; --radius-btn: 16px;
         }
 
         body[data-theme="dark"] {
-            --bg-color: #0e0e14; --card-bg: #17171f; --text-main: #e8e8f0;
-            --text-muted: #8888a0; --input-bg: #222230; --border: rgba(255,255,255,0.06);
-            --shadow: 0 2px 12px rgba(0,0,0,0.25); --glass-bg: rgba(18, 18, 26, 0.88);
-            --surface3: #2e2e3a;
+            --bg-color: #100e0a; --card-bg: #1a1712; --text-main: #f0ece4;
+            --text-muted: #9a9080; --input-bg: #252018; --border: rgba(255,210,100,0.07);
+            --shadow: 0 2px 12px rgba(0,0,0,0.30); --glass-bg: rgba(22, 19, 14, 0.90);
+            --surface3: #2e2820;
         }
 
         body[data-theme="light"] {
-            --bg-color: #f7f6f2; --card-bg: #fefdfa; --text-main: #1c1c28;
-            --text-muted: #9898a8; --input-bg: #eeedf0; --border: rgba(0,0,0,0.05);
-            --shadow: 0 1px 8px rgba(0,0,0,0.04); --glass-bg: rgba(254, 253, 250, 0.92);
-            --surface3: #e2e1e8;
+            --bg-color: #f8f5ee; --card-bg: #fffef9; --text-main: #1e1a12;
+            --text-muted: #9a9080; --input-bg: #ede9df; --border: rgba(120,90,30,0.07);
+            --shadow: 0 1px 8px rgba(100,70,10,0.06); --glass-bg: rgba(255,254,248,0.92);
+            --surface3: #e0d9cc;
         }
 
         body {
@@ -93,8 +93,8 @@
             width: 100%; max-width: 460px;
         }
         body[data-theme="dark"] .tab-bar {
-            background: rgba(28,28,32,0.72);
-            border-color: rgba(255,255,255,0.12);
+            background: rgba(26,23,18,0.82);
+            border-color: rgba(255,210,100,0.10);
             box-shadow:
                 0 8px 32px rgba(0,0,0,0.45),
                 0 2px 8px rgba(0,0,0,0.3),
@@ -138,33 +138,33 @@
 
 
         .hero-tint { position: absolute; inset: 0; opacity: 0; transition: opacity .5s; border-radius: var(--radius-card); pointer-events: none; }
-        .hero-tint.positive { background: radial-gradient(ellipse at 50% 120%, rgba(76,175,130,0.12) 0%, transparent 70%); opacity: 1; }
-        .hero-tint.negative { background: radial-gradient(ellipse at 50% 120%, rgba(224,92,92,0.12) 0%, transparent 70%); opacity: 1; }
+        .hero-tint.positive { background: radial-gradient(ellipse at 50% 120%, rgba(200,145,58,0.12) 0%, transparent 70%); opacity: 1; }
+        .hero-tint.negative { background: radial-gradient(ellipse at 50% 120%, rgba(192,104,88,0.12) 0%, transparent 70%); opacity: 1; }
         .hero-curve { position: absolute; bottom: 0; left: 0; right: 0; pointer-events: none; opacity: 0.07; }
         .hero-section { position: relative; text-align: center; padding: 40px 20px 32px 20px; overflow: hidden; background: var(--card-bg); border-radius: var(--radius-card); box-shadow: var(--shadow); margin-bottom: 25px; }
         .hero-bg-curve { position: absolute; bottom: -5px; left: 0; width: 100%; height: 75%; z-index: 0; pointer-events: none; }
         .hero-content { position: relative; z-index: 1; }
         .hero-label { font-size: 10px; text-transform: uppercase; font-weight: 600; letter-spacing: 1.8px; color: var(--text-muted); margin-bottom: 14px; opacity: 0.6; }
-        .hero-balance { font-size: 54px; font-weight: 700; letter-spacing: -2px; line-height: 1; margin-bottom: 20px; font-variant-numeric: tabular-nums; }
+        .hero-balance { font-size: 54px; font-weight: 700; letter-spacing: -2px; font-family: 'Lora', Georgia, serif; line-height: 1; margin-bottom: 20px; font-variant-numeric: tabular-nums; }
         .hero-stats { display: flex; justify-content: center; gap: 15px; }
         .hero-stat-pill { background: var(--input-bg); padding: 10px 16px; border-radius: 50px; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px;}
 
         .accounts-scroll { display: flex; gap: 16px; overflow-x: auto; margin-bottom: 30px; scrollbar-width: none; padding: 10px 0; }
         .accounts-scroll::-webkit-scrollbar { display: none; }
         .bank-card { min-width: 260px; padding: 24px; border-radius: 24px; color: white; position: relative; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
-        .bank-card.blue { background: linear-gradient(150deg, #5a7fd4 0%, #3a56a8 100%); }
-        .bank-card.purple { background: linear-gradient(150deg, #8a6acc 0%, #614599 100%); }
-        .bank-card.pink { background: linear-gradient(150deg, #cc6878 0%, #9e4456 100%); }
-        .bank-card.green { background: linear-gradient(150deg, #4e9e7a 0%, #30705a 100%); }
-        .bank-card.orange { background: linear-gradient(150deg, #c98850 0%, #a06030 100%); }
+        .bank-card.blue { background: linear-gradient(150deg, #c8913a 0%, #9a6820 100%); }
+        .bank-card.purple { background: linear-gradient(150deg, #a06848 0%, #784030 100%); }
+        .bank-card.pink { background: linear-gradient(150deg, #c06858 0%, #904440 100%); }
+        .bank-card.green { background: linear-gradient(150deg, #6aaa78 0%, #4a7a58 100%); }
+        .bank-card.orange { background: linear-gradient(150deg, #d4a24a 0%, #a47828 100%); }
         .bank-card.alt-color { background: linear-gradient(135deg, #2c2c2e 0%, #1c1c1e 100%); }
         .bank-card::before { content:''; position:absolute; top:-40%; right:-10%; width:180px; height:180px; background:linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%); border-radius:50%; }
         .acc-name { font-size: 11px; font-weight: 700; text-transform: uppercase; opacity: 0.9; margin-bottom: 12px; letter-spacing: 1px; }
-        .acc-val { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+        .acc-val { font-size: 30px; font-weight: 700; letter-spacing: -1px; font-family: 'Lora', Georgia, serif; }
         /* BALANCE COLOR ZONES */
-        .bank-card.zone-danger  { background: linear-gradient(150deg, #c97070 0%, #9e4848 100%) !important; }
-        .bank-card.zone-warn    { background: linear-gradient(150deg, #c98850 0%, #a06030 100%) !important; }
-        .bank-card.zone-safe    { background: linear-gradient(150deg, #4e9e7a 0%, #30705a 100%) !important; }
+        .bank-card.zone-danger  { background: linear-gradient(150deg, #c06858 0%, #904040 100%) !important; }
+        .bank-card.zone-warn    { background: linear-gradient(150deg, #d4a24a 0%, #a47828 100%) !important; }
+        .bank-card.zone-safe    { background: linear-gradient(150deg, #6aaa78 0%, #4a7a58 100%) !important; }
         .balance-zone-badge {
             display: inline-flex; align-items: center; gap: 5px;
             font-size: 11px; font-weight: 700; letter-spacing: 0.3px;
@@ -352,7 +352,7 @@
         .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
         .category-item { display: flex; flex-direction: column; align-items: center; background-color: var(--input-bg); border-radius: 20px; padding: 18px 5px; cursor: pointer; transition: 0.3s ease; text-align: center; }
         .category-item.selected { background: var(--accent-light); color: var(--accent); transform: scale(0.98); }
-        .btn-submit { background: linear-gradient(145deg, var(--accent) 0%, #4a6cc4 100%); color: white; border: none; width: 100%; padding: 18px; border-radius: 18px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.3s ease; box-shadow: 0 2px 12px rgba(107,143,232,0.25); }
+        .btn-submit { background: linear-gradient(145deg, #d4a24a 0%, #a87828 100%); color: white; border: none; width: 100%; padding: 18px; border-radius: 18px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.3s ease; box-shadow: 0 2px 12px rgba(107,143,232,0.25); }
         .btn-submit:active { transform: scale(0.98); }
 
         .tx-date-header { font-size: 11px; font-weight: 700; color: var(--text-muted); margin: 22px 0 6px 0; text-transform: uppercase; letter-spacing: 1.2px; opacity: 0.7; }
@@ -431,7 +431,7 @@
             .tab-text { font-size: 9px; }
         }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@600;700&display=swap" rel="stylesheet">
 </head>
 <body id="app-body" data-theme="dark">
 
@@ -1240,19 +1240,31 @@
         if (navigator.vibrate) navigator.vibrate(15); 
     }
 
-    function animateValue(obj, start, end, duration, formatFn) {
-        let startTimestamp = null;
-        const step = (timestamp) => {
-            if (!startTimestamp) startTimestamp = timestamp;
-            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            const easeProgress = 1 - Math.pow(1 - progress, 4);
-            const current = start + easeProgress * (end - start);
-            obj.innerHTML = formatFn(current);
-            if (progress < 1) window.requestAnimationFrame(step);
-        };
-        window.requestAnimationFrame(step);
+    function animateValue(el, start, end, duration, formatFn) {
+        if (!el) return;
+        // Cancel any running animation on this element
+        if (el._animFrame) cancelAnimationFrame(el._animFrame);
+        var startTs = null;
+        var from = parseFloat(el._animTarget !== undefined ? el._animTarget : start);
+        el._animTarget = end;
+        var diff = end - from;
+        function step(ts) {
+            if (!startTs) startTs = ts;
+            var p = Math.min((ts - startTs) / duration, 1);
+            // Smooth ease out expo
+            var e = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+            el.textContent = formatFn(from + e * diff);
+            if (p < 1) {
+                el._animFrame = requestAnimationFrame(step);
+            } else {
+                el._animTarget = undefined;
+                el._animFrame  = undefined;
+            }
+        }
+        el._animFrame = requestAnimationFrame(step);
     }
 
+    
     function applyColor(c, doSave = false) {
         if (!ACCENT_COLORS[c]) c = 'blue';
         savedColor = c;
@@ -2068,9 +2080,9 @@
         const mainData = curData.filter(e => e.accountId === mainAccId);
         const rAV = mainData.filter(e=>e.type==='income').reduce((s,e)=>s+e.amount,0) - mainData.filter(e=>e.type==='expense').reduce((s,e)=>s+e.amount,0);
         
-        animateValue(document.getElementById('dash-inc'), 0, mInc, 800, v => "+" + v.toFixed(0) + " €");
-        animateValue(document.getElementById('dash-exp'), 0, mExp, 800, v => "-" + v.toFixed(0) + " €");
-        animateValue(document.getElementById('dash-remaining'), 0, rAV, 800, v => v.toFixed(0) + " €");
+        animateValue(document.getElementById('dash-inc'),       0, mInc, 900, function(v){ return '+' + v.toFixed(0) + ' €'; });
+        setTimeout(function(){ animateValue(document.getElementById('dash-exp'), 0, mExp, 900, function(v){ return '-' + v.toFixed(0) + ' €'; }); }, 80);
+        setTimeout(function(){ animateValue(document.getElementById('dash-remaining'), 0, rAV, 1000, function(v){ return v.toFixed(0) + ' €'; }); }, 160);
         
         document.getElementById('dash-goal-text').innerText = savingsGoal.toFixed(0);
         const safe = Math.max(0, mInc - savingsGoal);
@@ -2424,20 +2436,21 @@
         var projEl = document.getElementById('adv-projections');
         if (projEl) {
             var monthly = Math.max(0, mSave);
-            var rows2 = [
-                { label:'Dans 3 mois',  val:'+' + (monthly*3).toFixed(0) + ' €' },
-                { label:'Dans 6 mois',  val:'+' + (monthly*6).toFixed(0) + ' €' },
-                { label:'Dans 1 an',    val:'+' + (monthly*12).toFixed(0) + ' €' },
-                { label:'Dans 3 ans',   val:'+' + (monthly*36).toFixed(0) + ' €' },
-                { label:'Dans 5 ans',   val:'+' + (monthly*60).toFixed(0) + ' €' }
+            var projData = [
+                { label:'Dans 3 mois',  v: monthly*3  },
+                { label:'Dans 6 mois',  v: monthly*6  },
+                { label:'Dans 1 an',    v: monthly*12 },
+                { label:'Dans 3 ans',   v: monthly*36 },
+                { label:'Dans 5 ans',   v: monthly*60 }
             ];
-            projEl.innerHTML = rows2.map(function(r) {
+            projEl.innerHTML = projData.map(function(r) {
                 return '<div class="adv-proj-row">'
                     + '<span style="font-size:13px;color:var(--text-muted);">' + r.label + '</span>'
-                    + '<span style="font-size:14px;font-weight:700;color:#4caf82;">' + r.val + '</span>'
+                    + moneySpan(r.v, {prefix:'+', style:'font-size:14px;font-weight:700;color:#6aaa78'})
                     + '</div>';
             }).join('');
         }
+        setTimeout(function(){ animateAllMonetary(document.getElementById('advice-content'), 30); }, 80);
     }
 
     
@@ -2495,6 +2508,56 @@
         var urlEl  = document.getElementById('inp-url');
         if (noteEl) noteEl.value = '';
         if (urlEl)  urlEl.value  = '';
+    }
+
+    
+    // ════════════════════════════════════════════════════
+    // ANIMATION GLOBALE DES MONTANTS
+    // ════════════════════════════════════════════════════
+    function animateMoney(el, targetVal, duration) {
+        if (!el) return;
+        if (el._animFrame) cancelAnimationFrame(el._animFrame);
+        var from = parseFloat(el._lastVal || 0);
+        el._lastVal = targetVal;
+        var diff = targetVal - from;
+        var prefix = el.dataset.prefix || '';
+        var suffix = el.dataset.suffix || ' €';
+        var decimals = parseInt(el.dataset.decimals || '0');
+        var startTs = null;
+        function step(ts) {
+            if (!startTs) startTs = ts;
+            var p = Math.min((ts - startTs) / duration, 1);
+            var e = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+            var v = from + e * diff;
+            el.textContent = prefix + v.toLocaleString('fr-FR', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            }) + suffix;
+            if (p < 1) el._animFrame = requestAnimationFrame(step);
+            else el._animFrame = undefined;
+        }
+        el._animFrame = requestAnimationFrame(step);
+    }
+
+    // Scan DOM after any render and animate all .anim-val elements
+    function animateAllMonetary(container, baseDelay) {
+        var els = (container || document).querySelectorAll('.anim-val[data-val]');
+        els.forEach(function(el, i) {
+            var val = parseFloat(el.dataset.val);
+            if (isNaN(val)) return;
+            setTimeout(function() { animateMoney(el, val, 700); }, (baseDelay || 0) + i * 30);
+        });
+    }
+
+    // Helper to build an animated monetary span
+    function moneySpan(value, opts) {
+        opts = opts || {};
+        var prefix   = opts.prefix   || '';
+        var suffix   = opts.suffix   || ' €';
+        var decimals = opts.decimals !== undefined ? opts.decimals : 0;
+        var cls      = opts.cls      || '';
+        var style    = opts.style    || '';
+        return '<span class="anim-val ' + cls + '" data-val="' + value + '" data-prefix="' + prefix + '" data-suffix="' + suffix + '" data-decimals="' + decimals + '" style="' + style + '">0 €</span>';
     }
 
         // ════════════════════════════════════════════════════
@@ -2672,6 +2735,7 @@
     }
 
     function renderTrends() {
+        // animateAllMonetary called at end of renderStats
         var container = document.getElementById('trends-list');
         if (!container) return;
         var trends = computeTrends();
@@ -2685,16 +2749,22 @@
             container.innerHTML = '<div style="background:var(--card-bg);border-radius:18px;padding:24px;text-align:center;color:var(--text-muted);font-size:14px;border:1px solid var(--border);">📊 Ajoutez des données sur 2-3 mois pour voir les tendances apparaître.</div>';
             return;
         }
-        container.innerHTML = trends.map(function(t) {
+        var _trendHtml = trends.slice(0,5).map(function(t) {
+            var badgeVal = parseFloat(t.badge);
+            var badgeHtml = (!isNaN(badgeVal) && t.badge.indexOf('%') === -1)
+                ? moneySpan(badgeVal, {prefix: t.badge.charAt(0) === '+' ? '+' : '', style:''})
+                : t.badge;
             return '<div class="trend-card">'
                 + '<div class="trend-icon">' + t.icon + '</div>'
                 + '<div class="trend-body">'
                 + '<div class="trend-title">' + t.title + '</div>'
                 + '<div class="trend-desc">' + t.desc + '</div>'
                 + '</div>'
-                + '<div class="trend-badge trend-' + t.dir + '">' + t.badge + '</div>'
+                + '<div class="trend-badge trend-' + t.dir + '">' + badgeHtml + '</div>'
                 + '</div>';
         }).join('');
+        container.innerHTML = _trendHtml;
+        setTimeout(function(){ animateAllMonetary(container, 40); }, 60);
     }
 
     // ════════════════════════════════════════════════════
@@ -2716,6 +2786,7 @@
             });
         }
         var max = Math.max.apply(null, months.map(function(m){ return m.total; }).concat([1]));
+        // will animate after innerHTML set
         container.innerHTML = months.map(function(m) {
             var pct = Math.max(8, (m.total / max * 100));
             var color = m.isCurrent ? 'var(--accent)' : 'var(--text-muted)';
@@ -2723,7 +2794,7 @@
                 + '<div class="bar-month-label">' + m.label.toUpperCase() + '</div>'
                 + '<div class="bar-track">'
                 + '<div class="bar-fill' + (m.isCurrent ? ' bar-current' : '') + '" style="width:' + pct.toFixed(1) + '%;background:' + color + ';opacity:' + (m.isCurrent ? '1' : '0.45') + '">'
-                + '<div class="bar-val">' + (m.total > 0 ? m.total.toFixed(0) + ' €' : '') + '</div>'
+                + '<div class="bar-val">' + (m.total > 0 ? moneySpan(m.total, {style:'color:white;font-size:11px;font-weight:700'}) : '') + '</div>'
                 + '</div>'
                 + '</div>'
                 + '</div>';
@@ -2786,8 +2857,8 @@
         }
 
         rowsEl.innerHTML = [
-            { label: 'Dépenses', val: totalExp.toFixed(2) + ' €', color: totalExp > 0 ? 'var(--red)' : '' },
-            { label: 'Revenus', val: totalInc > 0 ? '+' + totalInc.toFixed(2) + ' €' : '–', color: 'var(--green)' },
+            { label: 'Dépenses', val: moneySpan(totalExp, {decimals:2, style:'color:var(--red)'}), raw: true },
+            { label: 'Revenus',  val: totalInc > 0 ? moneySpan(totalInc, {prefix:'+', decimals:2, style:'color:var(--green)'}) : '–', raw: true },
             { label: 'Transactions', val: txCount + ' opération' + (txCount > 1 ? 's' : ''), color: '' },
             { label: 'Top catégorie', val: topCat || '–', color: '' },
             diffStr ? { label: 'vs semaine passée', val: diffStr, color: diff > 0 ? 'var(--red)' : 'var(--green)' } : null
@@ -2795,6 +2866,7 @@
             return '<div class="recap-row"><span class="recap-label">' + row.label + '</span>'
                 + '<span class="recap-val"' + (row.color ? ' style="color:' + row.color + '"' : '') + '>' + row.val + '</span></div>';
         }).join('');
+        setTimeout(function(){ animateAllMonetary(document.getElementById('weekly-recap'), 20); }, 60);
     }
 
     // ════════════════════════════════════════════════════
@@ -3086,6 +3158,7 @@
     function renderStats() {
         renderTrends();
         renderBarChart();
+        setTimeout(function(){ animateAllMonetary(document.getElementById('tab-stats'), 50); }, 50);
         const list = document.getElementById('stats-list');
         const cMD = expandExpensesForMonth(viewDate.getFullYear(), viewDate.getMonth());
         
