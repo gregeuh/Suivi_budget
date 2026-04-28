@@ -64,7 +64,8 @@
 
         .app-wrapper { width: 100%; max-width: 800px; padding: 20px; display: none; box-sizing: border-box; padding-bottom: 120px; }
         .privacy-active .blur-val { filter: blur(8px); pointer-events: none; transition: 0.3s ease; }
-        @keyframes tabBounce { 0%{transform:scale(1)} 40%{transform:scale(1.28)} 70%{transform:scale(0.92)} 100%{transform:scale(1)} }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin: 0; transition: 0.3s; }
@@ -124,8 +125,8 @@
         }
         .tab-btn { position: relative; z-index: 1; flex: 1; background: none; border: none; color: var(--text-muted); padding: 8px 0; border-radius: 20px; cursor: pointer; transition: color 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
         .tab-btn.active { color: var(--accent); }
-        .tab-icon { font-size: 22px; display: inline-block; }
-        .tab-btn.active .tab-icon { filter: drop-shadow(0 2px 4px rgba(200,145,58,0.3)); }
+        .tab-icon { font-size: 22px; transition: transform 0.2s; }
+        .tab-btn.active .tab-icon { transform: scale(1.1); }
         .tab-text { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
         .month-selector { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); border-radius: var(--radius-card); padding: 16px 25px; margin-bottom: 25px; box-shadow: var(--shadow); }
@@ -322,21 +323,6 @@
         .recap-label { font-size: 13px; color: var(--text-muted); }
         .recap-val { font-size: 14px; font-weight: 700; }
 
-
-        /* ── SEASONAL THEMES ── */
-        body[data-season="spring"] { --accent: #7eb87e; --accent-light: rgba(126,184,126,0.12); }
-        body[data-season="summer"] { --accent: #d4a24a; --accent-light: rgba(212,162,74,0.12); }
-        body[data-season="autumn"] { --accent: #c07840; --accent-light: rgba(192,120,64,0.12); }
-        body[data-season="winter"] { --accent: #6888c8; --accent-light: rgba(104,136,200,0.12); }
-        /* Seasonal bg tint (very subtle) */
-        body[data-season="spring"][data-theme="light"] { --bg-color: #f5f8f0; --card-bg: #fafdf6; }
-        body[data-season="summer"][data-theme="light"] { --bg-color: #f8f5ee; --card-bg: #fffef9; }
-        body[data-season="autumn"][data-theme="light"] { --bg-color: #f8f2ea; --card-bg: #fff9f4; }
-        body[data-season="winter"][data-theme="light"] { --bg-color: #f0f2f8; --card-bg: #f8f9fe; }
-        body[data-season="spring"][data-theme="dark"]  { --bg-color: #0c100c; --card-bg: #141a14; }
-        body[data-season="summer"][data-theme="dark"]  { --bg-color: #100e0a; --card-bg: #1a1712; }
-        body[data-season="autumn"][data-theme="dark"]  { --bg-color: #120e08; --card-bg: #1c1610; }
-        body[data-season="winter"][data-theme="dark"]  { --bg-color: #0a0c12; --card-bg: #12151e; }
         /* ── GRAIN TEXTURE ── */
         body::before {
             content: '';
@@ -419,20 +405,8 @@
         .empty-state-icon { font-size: 64px; margin-bottom: 15px; opacity: 0.8; }
         .empty-state-title { font-size: 20px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; letter-spacing: -0.5px;}
 
-        .section {
-            display: none; opacity: 0;
-            transform: translateX(20px);
-            transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.16,1,0.3,1);
-        }
-        .section.active {
-            display: block; opacity: 0;
-            transform: translateX(20px);
-        }
-        .section.active.visible {
-            opacity: 1; transform: translateX(0);
-        }
-        .section.slide-left  { transform: translateX(-20px); }
-        .section.slide-right { transform: translateX(20px); }
+        .section { display: none; }
+        .section.active { display: block; }
         
 
         .tag-badge { background: var(--input-bg); border-radius: 8px; padding: 3px 8px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
@@ -457,11 +431,6 @@
             .tab-text { font-size: 9px; }
         }
     </style>
-        <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#c8913a">
-    <link rel="apple-touch-icon" href="icon-192.png">
-    <meta name="apple-mobile-web-app-title" content="Suivi Budget">
-    <meta name="mobile-web-app-capable" content="yes">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@600;700&display=swap" rel="stylesheet">
 </head>
 <body id="app-body" data-theme="dark">
@@ -1766,42 +1735,31 @@
         if (view === 'cal') renderCalendar();
     }
 
-    var _currentTabIndex = 0;
     function switchTab(id, btn, index) {
         hapticTap();
-        var direction = index >= _currentTabIndex ? 'right' : 'left';
-        _currentTabIndex = index;
-
-        document.querySelectorAll('.section').forEach(function(s) {
-            s.classList.remove('active','visible','slide-left','slide-right');
+        document.querySelectorAll('.section').forEach(s => {
+            s.classList.remove('active'); 
+            s.classList.remove('fade-in');
         });
-        document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
-
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        
         document.getElementById('tab-pill').style.transform = 'translateX(' + (index * 100) + '%)';
-
-        var icon = btn.querySelector('.tab-icon');
-        if (icon) {
-            icon.style.animation = 'none';
-            void icon.offsetWidth;
-            icon.style.animation = 'tabBounce 0.4s cubic-bezier(0.34,1.56,0.64,1)';
-        }
-
-        var target = document.getElementById('tab-' + id);
-        target.classList.add('active', direction === 'right' ? 'slide-right' : 'slide-left');
-        void target.offsetWidth;
-        requestAnimationFrame(function() {
-            requestAnimationFrame(function() {
-                target.classList.add('visible');
-                target.classList.remove('slide-left','slide-right');
-            });
-        });
-
+        
+        const target = document.getElementById('tab-' + id);
+        target.classList.add('active');
+        void target.offsetWidth; 
+        target.classList.add('fade-in');
+        
         btn.classList.add('active');
-        window.scrollTo(0, 0);
-
-        if (id === 'dash')   updateAllViews();
-        if (id === 'advice') renderAdvice();
+        window.scrollTo(0,0);
+        
+        if(id === 'dash') updateAllViews();
+        if(id === 'advice') renderAdvice();
+        if(id === 'tx') renderTransactions(); 
+        if(id === 'stats') renderStats();
     }
+
+    // --- MISE A JOUR DES COMPTES ---
     function updateAccountsSelectors() { 
         setTimeout(updateAccSub, 100); 
         const options = accounts.map(a => `<option value="${escapeHTML(a.id)}">${escapeHTML(a.name)}</option>`).join('');
@@ -2600,24 +2558,6 @@
         var cls      = opts.cls      || '';
         var style    = opts.style    || '';
         return '<span class="anim-val ' + cls + '" data-val="' + value + '" data-prefix="' + prefix + '" data-suffix="' + suffix + '" data-decimals="' + decimals + '" style="' + style + '">0 €</span>';
-    }
-
-    
-    // ════════════════════════════════════════════════════
-    // MODE SAISONNIER
-    // ════════════════════════════════════════════════════
-    function getSeason() {
-        var m = new Date().getMonth(); // 0-11
-        if (m >= 2 && m <= 4) return 'spring';
-        if (m >= 5 && m <= 7) return 'summer';
-        if (m >= 8 && m <= 10) return 'autumn';
-        return 'winter';
-    }
-    var SEASON_LABELS = { spring:'🌸 Printemps', summer:'☀️ Été', autumn:'🍂 Automne', winter:'❄️ Hiver' };
-
-    function applySeason() {
-        var season = getSeason();
-        document.getElementById('body').setAttribute('data-season', season);
     }
 
         // ════════════════════════════════════════════════════
@@ -3496,18 +3436,4 @@
 
 
 </body>
-</html
-    // ── SHORTCUT HANDLER ──
-    (function() {
-        var params = new URLSearchParams(window.location.search);
-        var action = params.get('action');
-        if (action === 'add') {
-            window.addEventListener('appReady', function() { setTimeout(openAddModal, 500); });
-        } else if (action === 'balance') {
-            window.addEventListener('appReady', function() {
-                setTimeout(function() { var bb = document.getElementById('bb-input'); if(bb) bb.focus(); }, 500);
-            });
-        }
-    })();
-
-    >
+</html>
