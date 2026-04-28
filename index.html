@@ -1669,46 +1669,42 @@
         if (customMatch && currentType === 'expense') selectCat(customMatch.id);
 
         if(RECURRING_KEYWORDS.some(w => lower.includes(w))) {
-            document.getElementById('inp-recurring').checked = true;
-            toggleRecOptions();
+            var ri = document.getElementById('inp-recurring'); if(ri) ri.value='true'; if(!_recOn) toggleRecurring();
         }
     }
 
-    function openAddModal() { 
+    function openAddModal() {
         hapticTap();
         editingTxId = null;
-        // Ensure categories array has at least DEFAULT_CATEGORIES
-        if (!categories || categories.length === 0) categories = [...DEFAULT_CATEGORIES]; 
-        
-        document.getElementById('modal-title').innerText = "Nouvelle opération";
-        document.getElementById('btn-submit-tx').innerText = "Valider";
-        renderRepeatChips();
+        if (!categories || categories.length === 0) categories = [...DEFAULT_CATEGORIES];
+
+        document.getElementById('modal-title').innerText = 'Nouvelle opération';
+        document.getElementById('btn-submit-tx').innerText = 'Valider';
         document.getElementById('btn-delete-tx').style.display = 'none';
 
         resetNumpad();
-        document.getElementById('inp-label').value = ''; 
-        document.getElementById('inp-note').value = ''; 
-        document.getElementById('inp-url').value = ''; 
-        
-        const today = new Date();
-        const localDate = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+        document.getElementById('inp-label').value = '';
+        var noteEl = document.getElementById('inp-note'); if(noteEl) noteEl.value = '';
+        var urlEl  = document.getElementById('inp-url');  if(urlEl)  urlEl.value  = '';
+
+        var today = new Date();
+        var localDate = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
         document.getElementById('inp-date').value = localDate;
-        
-        document.getElementById('inp-recurring').checked = false; 
+
+        var inpRec = document.getElementById('inp-recurring');
+        if(inpRec) inpRec.value = 'false';
         document.getElementById('inp-frequency').value = 'monthly';
         document.getElementById('inp-rec-end').value = '';
-        
+
         setOpType('expense');
         renderCats();
-        toggleRecOptions();
-        
-        document.getElementById('advanced-options').style.display = 'none';
-        document.getElementById('btn-show-advanced').style.display = 'block';
-        
-        document.getElementById('add-modal').style.display = 'flex'; 
-        setTimeout(() => document.getElementById('inp-amount').focus(), 300);
-    }
+        resetAdvancedOptions();
+        renderRepeatChips();
+        setTimeout(updateAccSub, 50);
 
+        document.getElementById('add-modal').style.display = 'flex';
+        setTimeout(function() { var l = document.getElementById('inp-label'); if(l) l.focus(); }, 300);
+    }
     let lastEditTime = 0;
     function openEditModal(id) {
         if (Date.now() - lastEditTime < 300) return;
@@ -1733,16 +1729,12 @@
         
         if (tx.type === 'expense') selectCat(tx.cat);
 
-        document.getElementById('inp-recurring').checked = tx.recurring || false;
-        if(tx.recurring) {
-            document.getElementById('inp-frequency').value = tx.frequency || 'monthly';
-            document.getElementById('inp-rec-end').value = tx.endDate || '';
-        }
+        var recInp2 = document.getElementById('inp-recurring'); if(recInp2) recInp2.value = (tx.recurring||false)?'true':'false';
+        if(tx.recurring && !_recOn) toggleRecurring();
         
         toggleRecOptions();
         
         document.getElementById('advanced-options').style.display = 'block';
-        document.getElementById('btn-show-advanced').style.display = 'none';
         
         document.getElementById('add-modal').style.display = 'flex';
     }
@@ -1772,7 +1764,6 @@
         if (transferBlock) transferBlock.style.display = t === 'transfer' ? 'block' : 'none';
         // Show/hide regular fields
         var catBlock = document.getElementById('category-block');
-        var advBtn   = document.getElementById('btn-show-advanced');
         var advOpts  = document.getElementById('advanced-options');
         if (catBlock) catBlock.style.display = (t === 'expense') ? 'block' : 'none';
         if (t === 'transfer') {
@@ -1781,8 +1772,7 @@
             // Populate transfer selects
             updateTransferSelects();
         } else {
-            if (advBtn) advBtn.style.display = 'block';
-        }
+            }
         // Update numpad color
         var _nv = document.getElementById('numpad-value');
         if (_nv && _nv.textContent !== '0') _nv.style.color = t==='income' ? '#4caf82' : (t==='transfer' ? 'var(--accent)' : '#e05c5c');
@@ -1790,7 +1780,7 @@
     }
 
     function toggleRecOptions() { 
-        document.getElementById('rec-options').style.display = document.getElementById('inp-recurring').checked ? 'block' : 'none'; 
+        /* handled by toggleRecurring */
     }
 
     function addExpense() {
