@@ -14,6 +14,65 @@
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        /* ── SEASONAL ── */
+        body[data-season="spring"] { --accent: #7eb87e; --accent-light: rgba(126,184,126,0.12); }
+        body[data-season="summer"] { --accent: #c8913a; --accent-light: rgba(200,145,58,0.12); }
+        body[data-season="autumn"] { --accent: #c07840; --accent-light: rgba(192,120,64,0.12); }
+        body[data-season="winter"] { --accent: #6888c8; --accent-light: rgba(104,136,200,0.12); }
+        body[data-season="spring"][data-theme="light"] { --bg-color:#f5f8f0; --card-bg:#fafdf6; }
+        body[data-season="autumn"][data-theme="light"] { --bg-color:#f8f2ea; --card-bg:#fff9f4; }
+        body[data-season="winter"][data-theme="light"] { --bg-color:#f0f2f8; --card-bg:#f8f9fe; }
+        body[data-season="spring"][data-theme="dark"]  { --bg-color:#0c100c; --card-bg:#141a14; }
+        body[data-season="autumn"][data-theme="dark"]  { --bg-color:#120e08; --card-bg:#1c1610; }
+        body[data-season="winter"][data-theme="dark"]  { --bg-color:#0a0c12; --card-bg:#12151e; }
+
+        /* ── TAB TRANSITIONS ── */
+        .section { display:none; opacity:0; transform:translateX(18px); transition:opacity .28s ease, transform .28s cubic-bezier(0.16,1,0.3,1); }
+        .section.active { display:block; opacity:0; transform:translateX(18px); }
+        .section.active.visible { opacity:1; transform:translateX(0); }
+        .section.slide-left  { transform:translateX(-18px); }
+        .section.slide-right { transform:translateX(18px); }
+        @keyframes tabBounce { 0%{transform:scale(1)} 40%{transform:scale(1.25)} 70%{transform:scale(0.93)} 100%{transform:scale(1)} }
+
+        /* ── TYPE PILLS ── */
+        .type-pill { flex:1; padding:10px 6px; border:none; border-radius:12px; background:transparent; color:var(--text-muted); font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; transition:all .2s; white-space:nowrap; }
+        .type-pill.active-pill { background:var(--card-bg); color:var(--text-main); box-shadow:0 2px 8px rgba(0,0,0,0.10); }
+
+        /* ── ADVANCED OPTIONS ── */
+        .adv-row { display:flex; align-items:center; justify-content:space-between; padding:15px 16px; background:var(--input-bg); border-radius:14px; transition:background .15s; }
+        .adv-row-left { display:flex; align-items:center; gap:10px; }
+        .adv-row-icon { font-size:18px; width:38px; height:38px; background:var(--card-bg); border-radius:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .adv-row-label { font-size:14px; font-weight:600; }
+        .adv-row-sub { font-size:11px; color:var(--text-muted); margin-top:1px; }
+        .adv-toggle { width:48px; height:28px; border-radius:50px; border:none; cursor:pointer; position:relative; transition:background .25s; flex-shrink:0; background:var(--surface3,#ccc); }
+        .adv-toggle::after { content:''; position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:white; box-shadow:0 1px 4px rgba(0,0,0,0.2); transition:transform .25s cubic-bezier(0.34,1.56,0.64,1); }
+        .adv-toggle.on { background:var(--accent); }
+        .adv-toggle.on::after { transform:translateX(20px); }
+        .adv-expand { overflow:hidden; max-height:0; transition:max-height .35s cubic-bezier(0.16,1,0.3,1), opacity .25s; opacity:0; }
+        .adv-expand.open { max-height:400px; opacity:1; }
+        .adv-expand-inner { padding:4px 0 10px 0; display:flex; flex-direction:column; gap:10px; }
+        .adv-note-row { display:flex; align-items:center; gap:8px; background:var(--input-bg); border-radius:16px; padding:6px 6px 6px 16px; }
+        .adv-note-row input { flex:1; background:none; border:none; outline:none; font-family:inherit; font-size:14px; color:var(--text-main); padding:13px 0; }
+        .adv-note-row input::placeholder { color:var(--text-muted); }
+        .adv-note-clear { width:28px; height:28px; border-radius:50%; background:var(--surface3,#ccc); border:none; color:var(--text-muted); font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+
+        /* ── BANK CARDS WARM ── */
+        .bank-card.blue   { background: linear-gradient(150deg,#c8913a 0%,#9a6820 100%); }
+        .bank-card.purple { background: linear-gradient(150deg,#a06848 0%,#784030 100%); }
+        .bank-card.pink   { background: linear-gradient(150deg,#c06858 0%,#904440 100%); }
+        .bank-card.green  { background: linear-gradient(150deg,#5aa882 0%,#3a7a5a 100%); }
+        .bank-card.orange { background: linear-gradient(150deg,#d4a24a 0%,#a47828 100%); }
+        .bank-card.zone-safe   { background: linear-gradient(150deg,#5aa882 0%,#3a7a5a 100%) !important; }
+        .bank-card.zone-warn   { background: linear-gradient(150deg,#d4a24a 0%,#a47828 100%) !important; }
+        .bank-card.zone-danger { background: linear-gradient(150deg,#c97070 0%,#9e4848 100%) !important; }
+
+        /* ── GRAIN ── */
+        body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.025;
+            background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            background-repeat:repeat; background-size:128px 128px; }
+        .app { position:relative; z-index:1; }
+
     </style>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -38,9 +97,10 @@
         }
 
         body[data-theme="light"] {
-            --bg-color: #f5f4f8; --card-bg: #ffffff; --text-main: #1a1a2e;
-            --text-muted: #9090a0; --input-bg: #ededf2; --border: rgba(0,0,0,0.04);
-            --shadow: 0 2px 16px rgba(0,0,0,0.06); --glass-bg: rgba(255, 255, 255, 0.90);
+            --bg-color: #f8f5ee; --card-bg: #fffef9; --text-main: #1e1a12;
+            --text-muted: #9a9080; --input-bg: #ede9df; --border: rgba(120,90,30,0.07);
+            --shadow: 0 1px 8px rgba(100,70,10,0.06); --glass-bg: rgba(255,254,248,0.92);
+            --surface3: #e0d9cc;
         }
 
         body {
@@ -158,7 +218,7 @@
         .bank-card.alt-color { background: linear-gradient(135deg, #2c2c2e 0%, #1c1c1e 100%); }
         .bank-card::before { content:''; position:absolute; top:-40%; right:-10%; width:180px; height:180px; background:linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%); border-radius:50%; }
         .acc-name { font-size: 11px; font-weight: 700; text-transform: uppercase; opacity: 0.9; margin-bottom: 12px; letter-spacing: 1px; }
-        .acc-val { font-size: 34px; font-weight: 800; letter-spacing: -1px; }
+        .acc-val { font-size: 30px; font-weight: 700; letter-spacing: -1px; font-family: 'Lora', Georgia, serif; }
         /* BALANCE COLOR ZONES */
         .bank-card.zone-danger  { background: linear-gradient(150deg, #e05c5c 0%, #b83a3a 100%) !important; }
         .bank-card.zone-warn    { background: linear-gradient(150deg, #f0944d 0%, #c96c28 100%) !important; }
@@ -367,8 +427,68 @@
             .tab-icon { font-size: 20px; }
             .tab-text { font-size: 9px; }
         }
+
+        /* ── SEASONAL ── */
+        body[data-season="spring"] { --accent: #7eb87e; --accent-light: rgba(126,184,126,0.12); }
+        body[data-season="summer"] { --accent: #c8913a; --accent-light: rgba(200,145,58,0.12); }
+        body[data-season="autumn"] { --accent: #c07840; --accent-light: rgba(192,120,64,0.12); }
+        body[data-season="winter"] { --accent: #6888c8; --accent-light: rgba(104,136,200,0.12); }
+        body[data-season="spring"][data-theme="light"] { --bg-color:#f5f8f0; --card-bg:#fafdf6; }
+        body[data-season="autumn"][data-theme="light"] { --bg-color:#f8f2ea; --card-bg:#fff9f4; }
+        body[data-season="winter"][data-theme="light"] { --bg-color:#f0f2f8; --card-bg:#f8f9fe; }
+        body[data-season="spring"][data-theme="dark"]  { --bg-color:#0c100c; --card-bg:#141a14; }
+        body[data-season="autumn"][data-theme="dark"]  { --bg-color:#120e08; --card-bg:#1c1610; }
+        body[data-season="winter"][data-theme="dark"]  { --bg-color:#0a0c12; --card-bg:#12151e; }
+
+        /* ── TAB TRANSITIONS ── */
+        .section { display:none; opacity:0; transform:translateX(18px); transition:opacity .28s ease, transform .28s cubic-bezier(0.16,1,0.3,1); }
+        .section.active { display:block; opacity:0; transform:translateX(18px); }
+        .section.active.visible { opacity:1; transform:translateX(0); }
+        .section.slide-left  { transform:translateX(-18px); }
+        .section.slide-right { transform:translateX(18px); }
+        @keyframes tabBounce { 0%{transform:scale(1)} 40%{transform:scale(1.25)} 70%{transform:scale(0.93)} 100%{transform:scale(1)} }
+
+        /* ── TYPE PILLS ── */
+        .type-pill { flex:1; padding:10px 6px; border:none; border-radius:12px; background:transparent; color:var(--text-muted); font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; transition:all .2s; white-space:nowrap; }
+        .type-pill.active-pill { background:var(--card-bg); color:var(--text-main); box-shadow:0 2px 8px rgba(0,0,0,0.10); }
+
+        /* ── ADVANCED OPTIONS ── */
+        .adv-row { display:flex; align-items:center; justify-content:space-between; padding:15px 16px; background:var(--input-bg); border-radius:14px; transition:background .15s; }
+        .adv-row-left { display:flex; align-items:center; gap:10px; }
+        .adv-row-icon { font-size:18px; width:38px; height:38px; background:var(--card-bg); border-radius:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .adv-row-label { font-size:14px; font-weight:600; }
+        .adv-row-sub { font-size:11px; color:var(--text-muted); margin-top:1px; }
+        .adv-toggle { width:48px; height:28px; border-radius:50px; border:none; cursor:pointer; position:relative; transition:background .25s; flex-shrink:0; background:var(--surface3,#ccc); }
+        .adv-toggle::after { content:''; position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:white; box-shadow:0 1px 4px rgba(0,0,0,0.2); transition:transform .25s cubic-bezier(0.34,1.56,0.64,1); }
+        .adv-toggle.on { background:var(--accent); }
+        .adv-toggle.on::after { transform:translateX(20px); }
+        .adv-expand { overflow:hidden; max-height:0; transition:max-height .35s cubic-bezier(0.16,1,0.3,1), opacity .25s; opacity:0; }
+        .adv-expand.open { max-height:400px; opacity:1; }
+        .adv-expand-inner { padding:4px 0 10px 0; display:flex; flex-direction:column; gap:10px; }
+        .adv-note-row { display:flex; align-items:center; gap:8px; background:var(--input-bg); border-radius:16px; padding:6px 6px 6px 16px; }
+        .adv-note-row input { flex:1; background:none; border:none; outline:none; font-family:inherit; font-size:14px; color:var(--text-main); padding:13px 0; }
+        .adv-note-row input::placeholder { color:var(--text-muted); }
+        .adv-note-clear { width:28px; height:28px; border-radius:50%; background:var(--surface3,#ccc); border:none; color:var(--text-muted); font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+
+        /* ── BANK CARDS WARM ── */
+        .bank-card.blue   { background: linear-gradient(150deg,#c8913a 0%,#9a6820 100%); }
+        .bank-card.purple { background: linear-gradient(150deg,#a06848 0%,#784030 100%); }
+        .bank-card.pink   { background: linear-gradient(150deg,#c06858 0%,#904440 100%); }
+        .bank-card.green  { background: linear-gradient(150deg,#5aa882 0%,#3a7a5a 100%); }
+        .bank-card.orange { background: linear-gradient(150deg,#d4a24a 0%,#a47828 100%); }
+        .bank-card.zone-safe   { background: linear-gradient(150deg,#5aa882 0%,#3a7a5a 100%) !important; }
+        .bank-card.zone-warn   { background: linear-gradient(150deg,#d4a24a 0%,#a47828 100%) !important; }
+        .bank-card.zone-danger { background: linear-gradient(150deg,#c97070 0%,#9e4848 100%) !important; }
+
+        /* ── GRAIN ── */
+        body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.025;
+            background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            background-repeat:repeat; background-size:128px 128px; }
+        .app { position:relative; z-index:1; }
+
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@600;700&display=swap" rel="stylesheet">
 </head>
 <body id="app-body" data-theme="dark">
 
@@ -467,34 +587,36 @@
             <div class="category-grid" id="cat-container"></div>
         </div>
 
-        <button id="btn-show-advanced" onclick="document.getElementById('advanced-options').style.display='block'; this.style.display='none';" style="background:var(--input-bg); border:none; color:var(--text-main); font-weight:600; width:100%; border-radius: 16px; text-align:center; padding:15px 0; margin-bottom:15px; transition:0.2s; cursor:pointer;">Options avancées (Compte, Récurrence...)</button>
-        
-        <div id="advanced-options" style="display:none; margin-bottom:20px;">
-            <div class="input-group" style="margin-bottom:15px;">
-                <label>Compte prélevé</label>
-                <select id="inp-account" class="input-control" style="appearance:none;"></select>
+        <div id="advanced-options" style="margin-bottom:18px;display:flex;flex-direction:column;gap:10px;">
+            <div class="adv-row">
+                <div class="adv-row-left"><div class="adv-row-icon">🏦</div><div><div class="adv-row-label">Compte</div><div class="adv-row-sub" id="adv-account-sub">–</div></div></div>
+                <select id="inp-account" style="background:var(--card-bg);border:none;border-radius:10px;padding:8px 12px;font-family:inherit;font-size:13px;font-weight:600;color:var(--text-main);cursor:pointer;outline:none;max-width:150px;" onchange="updateAccSub()"></select>
             </div>
-            <div class="input-group" style="margin-bottom:15px;">
-                <label>Note additionnelle (#Tag)</label>
-                <input type="text" id="inp-note" class="input-control" placeholder="ex: #Vacances">
+            <div class="adv-note-row">
+                <span style="font-size:16px;">📝</span>
+                <input type="text" id="inp-note" placeholder="Note ou #tag…">
+                <button class="adv-note-clear" onclick="document.getElementById('inp-note').value=''">✕</button>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; background: var(--input-bg); padding: 16px; border-radius: 16px; margin-bottom: 10px;">
-                <span style="font-weight:600; font-size:15px;">Opération récurrente</span>
-                <input type="checkbox" id="inp-recurring" onchange="toggleRecOptions()" style="width:22px; height:22px; accent-color:var(--accent);">
+            <div class="adv-row" onclick="toggleRecurring()" style="cursor:pointer;">
+                <div class="adv-row-left"><div class="adv-row-icon">🔁</div><div><div class="adv-row-label">Récurrente</div><div class="adv-row-sub" id="adv-rec-sub">Loyer, abonnement…</div></div></div>
+                <button class="adv-toggle" id="rec-toggle-btn" onclick="event.stopPropagation();toggleRecurring()"></button>
             </div>
-            <div id="rec-options" style="display:none; margin-bottom:10px;">
-                <select id="inp-frequency" class="input-control" style="margin-bottom:10px;">
-                    <option value="monthly">Tous les mois</option>
-                    <option value="last_working_day">Dernier jour ouvré</option>
-                    <option value="weekly">Hebdomadaire</option>
-                </select>
-                <input type="date" id="inp-rec-end" class="input-control" placeholder="Date de fin (Optionnel)">
+            <div class="adv-expand" id="rec-expand">
+                <div class="adv-expand-inner">
+                    <select id="inp-frequency" class="input-control"><option value="monthly">Tous les mois</option><option value="last_working_day">Dernier jour ouvré</option><option value="weekly">Hebdomadaire</option></select>
+                    <input type="date" id="inp-rec-end" class="input-control" placeholder="Date de fin (optionnel)">
+                </div>
             </div>
-            <div class="input-group" style="margin-bottom:15px;">
-                <label>Lien Web</label>
-                <input type="url" id="inp-url" class="input-control" placeholder="https://...">
+            <input type="hidden" id="inp-recurring" value="false">
+            <div class="adv-row" onclick="toggleUrlField()" style="cursor:pointer;">
+                <div class="adv-row-left"><div class="adv-row-icon">🔗</div><div><div class="adv-row-label">Lien web</div><div class="adv-row-sub">Facture, reçu…</div></div></div>
+                <button class="adv-toggle" id="url-toggle-btn" onclick="event.stopPropagation();toggleUrlField()"></button>
+            </div>
+            <div class="adv-expand" id="url-expand">
+                <div class="adv-expand-inner"><input type="url" id="inp-url" class="input-control" placeholder="https://..."></div>
             </div>
         </div>
+        <div style="display:none"><input type="checkbox" id="inp-recurring-compat"></div>
 
         <div style="display:flex; gap:12px;">
             <button id="btn-delete-tx" style="display:none; background:var(--red-light); color:var(--red); border:none; width:64px; border-radius:18px; font-weight:700; font-size:20px; cursor:pointer;" onclick="deleteTxFromModal()">🗑</button>
@@ -1367,7 +1489,7 @@
         
         if(isNaN(amt) || !lbl || !accId) return alert("Le montant et le libellé sont requis.");
 
-        const isRecurring = document.getElementById('inp-recurring').checked;
+        const isRecurring = document.getElementById('inp-recurring').value === 'true';
 
         const txData = {
             amount: amt, 
@@ -3205,6 +3327,123 @@
             alert("Application réparée et remise à neuf !");
         }
     }
+
+
+    // ── SEASONAL ──
+    function getSeason() {
+        var m=new Date().getMonth();
+        if(m>=2&&m<=4) return 'spring';
+        if(m>=5&&m<=7) return 'summer';
+        if(m>=8&&m<=10) return 'autumn';
+        return 'winter';
+    }
+    function applySeason() {
+        document.getElementById('body').setAttribute('data-season', getSeason());
+    }
+
+    // ── TAB TRANSITIONS + BOUNCE ──
+    var _tabIdx=0;
+    var _origSwitchTab=switchTab;
+    switchTab=function(id,btn,index){
+        var dir=index>=_tabIdx?'right':'left'; _tabIdx=index;
+        document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active','visible','slide-left','slide-right'); });
+        document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+        document.getElementById('tab-pill').style.transform='translateX('+(index*100)+'%)';
+        var icon=btn.querySelector('.tab-icon');
+        if(icon){ icon.style.animation='none'; void icon.offsetWidth; icon.style.animation='tabBounce 0.4s cubic-bezier(0.34,1.56,0.64,1)'; }
+        var target=document.getElementById('tab-'+id);
+        target.classList.add('active',dir==='right'?'slide-right':'slide-left');
+        void target.offsetWidth;
+        requestAnimationFrame(function(){ requestAnimationFrame(function(){
+            target.classList.add('visible'); target.classList.remove('slide-left','slide-right');
+        }); });
+        btn.classList.add('active'); window.scrollTo(0,0);
+        if(id==='dash') updateAllViews();
+        if(id==='tx') renderTransactions();
+        if(id==='stats') renderStats();
+        if(id==='advice') renderAdvice();
+    };
+
+    // ── ADVANCED OPTIONS TOGGLES ──
+    var _recOn=false,_urlOn=false;
+    function updateAccSub(){
+        var sel=document.getElementById('inp-account'),sub=document.getElementById('adv-account-sub');
+        if(!sel||!sub) return;
+        var opt=sel.options[sel.selectedIndex]; if(opt) sub.textContent=opt.text;
+    }
+    function toggleRecurring(){
+        hapticTap(); _recOn=!_recOn;
+        var btn=document.getElementById('rec-toggle-btn'),exp=document.getElementById('rec-expand');
+        var inp=document.getElementById('inp-recurring'),sub=document.getElementById('adv-rec-sub');
+        if(btn) btn.classList.toggle('on',_recOn);
+        if(exp) exp.classList.toggle('open',_recOn);
+        if(inp) inp.value=_recOn?'true':'false';
+        if(sub) sub.textContent=_recOn?'Choisir la fréquence':'Loyer, abonnement…';
+    }
+    function toggleUrlField(){
+        hapticTap(); _urlOn=!_urlOn;
+        var btn=document.getElementById('url-toggle-btn'),exp=document.getElementById('url-expand');
+        if(btn) btn.classList.toggle('on',_urlOn);
+        if(exp) exp.classList.toggle('open',_urlOn);
+        if(_urlOn) setTimeout(function(){ var u=document.getElementById('inp-url'); if(u) u.focus(); },350);
+    }
+    function resetAdvancedOptions(){
+        _recOn=false; _urlOn=false;
+        ['rec-toggle-btn','url-toggle-btn'].forEach(function(id){ var el=document.getElementById(id); if(el) el.classList.remove('on'); });
+        ['rec-expand','url-expand'].forEach(function(id){ var el=document.getElementById(id); if(el) el.classList.remove('open'); });
+        var inp=document.getElementById('inp-recurring'); if(inp) inp.value='false';
+        var note=document.getElementById('inp-note'); if(note) note.value='';
+        var url=document.getElementById('inp-url'); if(url) url.value='';
+    }
+    function toggleRecOptions(){ /* replaced by toggleRecurring */ }
+
+    // ── PATCH setOpType FOR 3 TYPES ──
+    var _origSetOpType=setOpType;
+    setOpType=function(t){
+        hapticTap(); currentType=t;
+        ['expense','income','transfer'].forEach(function(type){
+            var btn=document.getElementById('type-'+(type==='expense'?'exp':type==='income'?'inc':'vir')+'-btn');
+            if(btn) btn.classList.toggle('active-pill',type===t);
+        });
+        var tb=document.getElementById('transfer-block');
+        if(tb) tb.style.display=t==='transfer'?'block':'none';
+        document.getElementById('category-block').style.display=(t==='expense')?'block':'none';
+        if(t==='transfer') updateTransferSelects();
+        if(t==='expense') renderCats();
+        var nv=document.getElementById('numpad-value');
+        if(nv&&nv.textContent!=='0') nv.style.color=t==='income'?'var(--green)':t==='transfer'?'var(--accent)':'var(--red)';
+    };
+
+    // ── PATCH openAddModal ──
+    var _origOpenAddModal=openAddModal;
+    openAddModal=function(){
+        _origOpenAddModal();
+        resetAdvancedOptions();
+        setTimeout(updateAccSub,50);
+    };
+
+    // ── PATCH addExpense FOR TRANSFERS + inp-recurring ──
+    var _origAddExpense=addExpense;
+    addExpense=function(){
+        if(currentType==='transfer'){ saveTransfer(); return; }
+        _origAddExpense();
+    };
+
+    // ── PATCH inp-recurring.checked ──
+    // Already handled by hidden input, override addExpense reading
+    // (addExpense in original uses .checked, we intercept before it runs for transfers)
+
+    // ── APPLY SEASON ON INIT ──
+    document.addEventListener('DOMContentLoaded',function(){
+        applySeason();
+    });
+    // Also call when applyAppSettings fires
+    var _origApply=applyAppSettings;
+    applyAppSettings=function(){
+        _origApply();
+        applySeason();
+        setTimeout(updateAccSub,100);
+    };
 
 </script>
 
