@@ -2061,9 +2061,12 @@
                     savedColor = data.color || 'blue';
 
                 } else {
+                    // New user — init defaults and allow saving
+                    _cloudDataLoaded = true;
                     forceResetData();
                     return;
                 }
+                _cloudDataLoaded = true;
                 applyAppSettings(); 
             } catch (err) {
                 console.error("Données corrompues, auto-réparation...", err);
