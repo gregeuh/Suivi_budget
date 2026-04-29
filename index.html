@@ -287,20 +287,20 @@
         .confirm-amount { font-size: 28px; font-weight: 800; color: var(--green); margin-top: 6px; font-family: 'Lora', Georgia, serif; }
 
         /* ── SWIPE TO DELETE ── */
-        .tx-swipe-wrap { position: relative; overflow: hidden; border-radius: 12px; }
+        .tx-swipe-wrap { position: relative; border-radius: 12px; overflow: hidden; }
         .tx-delete-bg {
-            position: absolute; right: 0; top: 0; bottom: 0;
-            width: 80px; background: var(--red); display: flex;
-            align-items: center; justify-content: center;
-            border-radius: 0 12px 12px 0; transition: width .2s;
+            position: absolute; right: 0; top: 0; bottom: 0; width: 72px;
+            background: var(--red); display: flex; align-items: center;
+            justify-content: center; border-radius: 0 12px 12px 0; z-index: 0;
         }
-        .tx-delete-bg span { color: white; font-size: 22px; }
+        .tx-delete-bg span { color: white; font-size: 24px; }
         .tx-item-content {
-            background: var(--card-bg);
+            background: var(--card-bg); position: relative; z-index: 1;
             transition: transform .25s cubic-bezier(0.16,1,0.3,1), background .18s ease !important;
-            position: relative; z-index: 1;
+            cursor: grab;
+            user-select: none;
         }
-        .tx-item-content.swiped { transform: translateX(-80px); }
+        .tx-item-content:active { cursor: grabbing; }
 
         /* ── CARD GLASS REFLET ── */
         .bank-card::after {
@@ -1088,20 +1088,20 @@
         .confirm-amount { font-size: 28px; font-weight: 800; color: var(--green); margin-top: 6px; font-family: 'Lora', Georgia, serif; }
 
         /* ── SWIPE TO DELETE ── */
-        .tx-swipe-wrap { position: relative; overflow: hidden; border-radius: 12px; }
+        .tx-swipe-wrap { position: relative; border-radius: 12px; overflow: hidden; }
         .tx-delete-bg {
-            position: absolute; right: 0; top: 0; bottom: 0;
-            width: 80px; background: var(--red); display: flex;
-            align-items: center; justify-content: center;
-            border-radius: 0 12px 12px 0; transition: width .2s;
+            position: absolute; right: 0; top: 0; bottom: 0; width: 72px;
+            background: var(--red); display: flex; align-items: center;
+            justify-content: center; border-radius: 0 12px 12px 0; z-index: 0;
         }
-        .tx-delete-bg span { color: white; font-size: 22px; }
+        .tx-delete-bg span { color: white; font-size: 24px; }
         .tx-item-content {
-            background: var(--card-bg);
+            background: var(--card-bg); position: relative; z-index: 1;
             transition: transform .25s cubic-bezier(0.16,1,0.3,1), background .18s ease !important;
-            position: relative; z-index: 1;
+            cursor: grab;
+            user-select: none;
         }
-        .tx-item-content.swiped { transform: translateX(-80px); }
+        .tx-item-content:active { cursor: grabbing; }
 
         /* ── CARD GLASS REFLET ── */
         .bank-card::after {
@@ -2546,15 +2546,66 @@
 
     function exportPDF() {
         hapticTap();
-        const element = document.getElementById('capture-area');
-        const opt = {
-            margin:       10,
-            filename:     'mon_budget.pdf',
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        var now = new Date();
+        var monthLabel = now.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+        var curData = expandExpensesForMonth(viewDate.getFullYear(), viewDate.getMonth());
+        var mInc  = curData.filter(function(e){ return e.type==='income'; }).reduce(function(s,e){ return s+e.amount; },0);
+        var mExp  = curData.filter(function(e){ return e.type==='expense'; }).reduce(function(s,e){ return s+e.amount; },0);
+        var mSave = mInc - mExp;
+
+        var txRows = curData.filter(function(e){ return e.type==='expense'||e.type==='income'; })
+            .map(function(e) {
+                var cat = (categories||[]).find(function(c){ return c.id===e.cat; }) || {icon:'📦',label:'Autre'};
+                var acc = (accounts||[]).find(function(a){ return a.id===e.accountId; }) || {name:''};
+                return '<tr style="border-bottom:1px solid #f0ede6;">'
+                    + '<td style="padding:8px 6px;color:#666;">' + e.date + '</td>'
+                    + '<td style="padding:8px 6px;">' + cat.icon + ' ' + (e.label||'') + '</td>'
+                    + '<td style="padding:8px 6px;color:#999;font-size:12px;">' + acc.name + '</td>'
+                    + '<td style="padding:8px 6px;text-align:right;font-weight:700;color:' + (e.type==='income'?'#4a8a60':'#a05040') + ';">'
+                    + (e.type==='income'?'+':'-') + parseFloat(e.amount).toFixed(2) + ' €</td>'
+                    + '</tr>';
+            }).join('');
+
+        var html = '<div style="font-family:Georgia,serif;max-width:700px;margin:0 auto;padding:40px;color:#1e1a12;">'
+            + '<div style="text-align:center;margin-bottom:32px;">'
+            + '<div style="font-size:28px;font-weight:800;color:#c8913a;letter-spacing:-1px;">Suivi Budget</div>'
+            + '<div style="font-size:14px;color:#888;margin-top:4px;">' + (displayName ? 'Bonjour ' + displayName + ' — ' : '') + monthLabel + '</div>'
+            + '</div>'
+            + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px;">'
+            + '<div style="background:#f0f8f4;border-radius:12px;padding:16px;text-align:center;">'
+            + '<div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:6px;">Revenus</div>'
+            + '<div style="font-size:22px;font-weight:800;color:#4a8a60;">+' + mInc.toFixed(2) + ' €</div></div>'
+            + '<div style="background:#fdf0ee;border-radius:12px;padding:16px;text-align:center;">'
+            + '<div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:6px;">Dépenses</div>'
+            + '<div style="font-size:22px;font-weight:800;color:#a05040;">-' + mExp.toFixed(2) + ' €</div></div>'
+            + '<div style="background:#fdf8f0;border-radius:12px;padding:16px;text-align:center;">'
+            + '<div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:6px;">Épargne</div>'
+            + '<div style="font-size:22px;font-weight:800;color:' + (mSave>=0?'#c8913a':'#a05040') + ';">' + (mSave>=0?'+':'') + mSave.toFixed(2) + ' €</div></div>'
+            + '</div>'
+            + '<table style="width:100%;border-collapse:collapse;font-size:13px;">'
+            + '<thead><tr style="background:#f8f5ee;">'
+            + '<th style="padding:10px 6px;text-align:left;font-weight:700;color:#888;font-size:11px;text-transform:uppercase;">Date</th>'
+            + '<th style="padding:10px 6px;text-align:left;font-weight:700;color:#888;font-size:11px;text-transform:uppercase;">Libellé</th>'
+            + '<th style="padding:10px 6px;text-align:left;font-weight:700;color:#888;font-size:11px;text-transform:uppercase;">Compte</th>'
+            + '<th style="padding:10px 6px;text-align:right;font-weight:700;color:#888;font-size:11px;text-transform:uppercase;">Montant</th>'
+            + '</tr></thead><tbody>' + txRows + '</tbody></table>'
+            + '<div style="text-align:center;margin-top:32px;font-size:11px;color:#bbb;">Généré le ' + now.toLocaleDateString('fr-FR') + ' · Suivi Budget</div>'
+            + '</div>';
+
+        var el = document.createElement('div');
+        el.innerHTML = html;
+        document.body.appendChild(el);
+        var opt = {
+            margin: 10,
+            filename: 'budget_' + viewDate.getFullYear() + '-' + String(viewDate.getMonth()+1).padStart(2,'0') + '.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
-        html2pdf().set(opt).from(element).save();
+        html2pdf().set(opt).from(el).save().then(function() {
+            document.body.removeChild(el);
+            showToast('Export PDF téléchargé ✓');
+        });
     }
 
     function exportCSV() {
@@ -2567,10 +2618,14 @@
             const catObj = categories.find(c=>String(c.id)===String(e.cat)) || {label: e.cat};
             csv += `${e.type},${accName},${e.date},${safeLabel},${e.amount},${catObj.label},${e.recurring?'Oui':'Non'},${e.frequency||''},${e.endDate||''},${safeNote},${escapeHTML(e.url||'')}\n`;
         });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-        a.download = 'budget.csv';
+        var BOM = '\uFEFF';
+        var blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        var d = new Date();
+        a.download = 'budget_' + d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '.csv';
         a.click();
+        showToast('Export CSV téléchargé ✓');
     }
 
     // ==========================================
@@ -2875,38 +2930,87 @@
 
     // Gestion du TACTILE et du SWIPE
     let touchStartX = 0; let swipedElement = null;
-    function handleTouchStart(e, element) { 
+    // ── SWIPE TO DELETE ──
+    var _swipeEl = null, _swipeStartX = 0, _swipeId = null, _swiped = false;
+    var SWIPE_THRESHOLD = 72;
+
+    function handleTouchStart(e, element) {
+        // Close any open swipe
+        document.querySelectorAll('.tx-item-content.swipe-open').forEach(function(el) {
+            if (el !== element) closeSwipe(el);
+        });
         window.isSwiping = false;
-        touchStartX = e.touches[0].clientX; 
-        swipedElement = element; 
-        element.style.transition = 'none'; 
-    }
-    
-    function handleTouchMove(e) {
-        if(!swipedElement) return;
-        const diffX = e.touches[0].clientX - touchStartX;
-        if(Math.abs(diffX) > 10) window.isSwiping = true;
-        if(diffX < 0 && diffX > -80) swipedElement.style.transform = `translateX(${diffX}px)`;
-    }
-    
-    function handleTouchEnd(e, id) {
-        if(!swipedElement) return;
-        swipedElement.style.transition = 'transform 0.2s ease-out';
-        const diffX = e.changedTouches[0].clientX - touchStartX;
-        
-        if(diffX < -40) { 
-            swipedElement.style.transform = `translateX(-80px)`; 
-            hapticTap(); 
-        } else { 
-            swipedElement.style.transform = `translateX(0px)`; 
-            if (Math.abs(diffX) < 10 && id) {
-                openEditModal(id);
-            }
-        }
-        swipedElement = null;
-        setTimeout(() => { window.isSwiping = false; }, 50);
+        _swipeStartX = e.touches[0].clientX;
+        _swipeEl = element;
+        _swiped = false;
+        element.style.transition = 'none';
     }
 
+    function handleTouchMove(e) {
+        if (!_swipeEl) return;
+        var dx = e.touches[0].clientX - _swipeStartX;
+        if (Math.abs(dx) > 8) window.isSwiping = true;
+        if (dx < 0) {
+            var clamped = Math.max(dx, -SWIPE_THRESHOLD - 10);
+            _swipeEl.style.transform = 'translateX(' + clamped + 'px)';
+        } else if (_swiped) {
+            _swipeEl.style.transform = 'translateX(0)';
+            _swipeEl.classList.remove('swipe-open');
+            _swiped = false;
+        }
+    }
+
+    function handleTouchEnd(e, id) {
+        if (!_swipeEl) return;
+        var dx = e.changedTouches[0].clientX - _swipeStartX;
+        _swipeEl.style.transition = 'transform 0.25s cubic-bezier(0.16,1,0.3,1)';
+        if (dx < -SWIPE_THRESHOLD / 2) {
+            _swipeEl.style.transform = 'translateX(-' + SWIPE_THRESHOLD + 'px)';
+            _swipeEl.classList.add('swipe-open');
+            _swiped = true;
+        } else {
+            closeSwipe(_swipeEl);
+        }
+        _swipeId = id;
+        _swipeEl = null;
+    }
+
+    function closeSwipe(el) {
+        if (!el) return;
+        el.style.transition = 'transform 0.25s cubic-bezier(0.16,1,0.3,1)';
+        el.style.transform = 'translateX(0)';
+        el.classList.remove('swipe-open');
+    }
+
+    // Close swipe on tap elsewhere
+    document.addEventListener('touchstart', function(e) {
+        if (!e.target.closest('.tx-swipe-wrap') && !e.target.closest('.tx-delete-bg')) {
+            document.querySelectorAll('.tx-item-content.swipe-open').forEach(closeSwipe);
+        }
+    }, { passive: true });
+
+    // Delete on tap of red button
+    document.addEventListener('click', function(e) {
+        var bg = e.target.closest('.tx-delete-bg');
+        if (!bg) return;
+        var wrap = bg.parentElement;
+        var txContent = wrap ? wrap.querySelector('.tx-item-content') : null;
+        if (txContent) {
+            var match = txContent.getAttribute('onclick') && txContent.getAttribute('onclick').match(/openEditModal\('([^']+)'\)/);
+            if (match) {
+                hapticTap();
+                // Animate out
+                wrap.style.transition = 'opacity 0.2s, transform 0.2s';
+                wrap.style.opacity = '0';
+                wrap.style.transform = 'translateX(-100%)';
+                setTimeout(function() {
+                    deleteTx(match[1]);
+                    updateAllViews();
+                    if (document.getElementById('tab-tx').classList.contains('active')) renderTransactions();
+                }, 200);
+            }
+        }
+    });
     function formatRelativeDate(dateStr) {
         const today = new Date();
         const yesterday = new Date();
@@ -3031,6 +3135,26 @@
         
         animateValue(document.getElementById('dash-inc'), 0, mInc, 800, v => "+" + v.toFixed(0) + " €");
         animateValue(document.getElementById('dash-exp'), 0, mExp, 800, v => "-" + v.toFixed(0) + " €");
+        // Prévision fin de mois
+        var forecastEl = document.getElementById('hero-forecast');
+        if (forecastEl) {
+            var today = new Date();
+            var daysInMonth = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate();
+            var dayOfMonth = today.getDate();
+            var daysLeft = daysInMonth - dayOfMonth;
+            if (mExp > 0 && dayOfMonth > 0) {
+                var dailySpend = mExp / dayOfMonth;
+                var forecastTotal = mExp + (dailySpend * daysLeft);
+                var forecastBalance = mInc > 0 ? mInc - forecastTotal : rAV - (dailySpend * daysLeft);
+                var sign = forecastBalance >= 0 ? '+' : '';
+                var emoji = forecastBalance >= 0 ? '📈' : '📉';
+                forecastEl.textContent = emoji + ' Prévision fin ' + today.toLocaleDateString('fr-FR',{month:'long'}) + ' : ' + sign + forecastBalance.toFixed(0) + ' €';
+                forecastEl.style.color = forecastBalance >= 0 ? 'rgba(150,255,180,0.9)' : 'rgba(255,150,130,0.9)';
+            } else {
+                forecastEl.textContent = '';
+            }
+        }
+
         animateValue(document.getElementById('dash-remaining'), 0, rAV, 800, v => v.toFixed(0) + " €");
         
         document.getElementById('dash-goal-text').innerText = savingsGoal.toFixed(0);
@@ -4702,6 +4826,56 @@
         }
         showToast('🍽️ Paramètres Swile sauvegardés');
     }
+
+    
+    // ── SWIPE TO DELETE — MOUSE SUPPORT ──
+    var _mouseSwipeEl = null, _mouseStartX = 0, _mouseDown = false;
+
+    document.addEventListener('mousedown', function(e) {
+        var item = e.target.closest('.tx-item-content');
+        if (!item) return;
+        _mouseDown = true;
+        _mouseStartX = e.clientX;
+        _mouseSwipeEl = item;
+        item.style.transition = 'none';
+        // Close others
+        document.querySelectorAll('.tx-item-content.swipe-open').forEach(function(el) {
+            if (el !== item) closeSwipe(el);
+        });
+    });
+
+    document.addEventListener('mousemove', function(e) {
+        if (!_mouseDown || !_mouseSwipeEl) return;
+        var dx = e.clientX - _mouseStartX;
+        if (dx < 0) {
+            var clamped = Math.max(dx, -SWIPE_THRESHOLD - 10);
+            _mouseSwipeEl.style.transform = 'translateX(' + clamped + 'px)';
+        } else if (_mouseSwipeEl.classList.contains('swipe-open')) {
+            _mouseSwipeEl.style.transform = 'translateX(0)';
+            _mouseSwipeEl.classList.remove('swipe-open');
+        }
+    });
+
+    document.addEventListener('mouseup', function(e) {
+        if (!_mouseDown || !_mouseSwipeEl) return;
+        var dx = e.clientX - _mouseStartX;
+        _mouseSwipeEl.style.transition = 'transform 0.25s cubic-bezier(0.16,1,0.3,1)';
+        if (dx < -SWIPE_THRESHOLD / 2) {
+            _mouseSwipeEl.style.transform = 'translateX(-' + SWIPE_THRESHOLD + 'px)';
+            _mouseSwipeEl.classList.add('swipe-open');
+        } else {
+            closeSwipe(_mouseSwipeEl);
+        }
+        _mouseDown = false;
+        _mouseSwipeEl = null;
+    });
+
+    // Close swipe on click elsewhere (mouse)
+    document.addEventListener('mousedown', function(e) {
+        if (!e.target.closest('.tx-swipe-wrap') && !e.target.closest('.tx-delete-bg')) {
+            document.querySelectorAll('.tx-item-content.swipe-open').forEach(closeSwipe);
+        }
+    });
 
         // ── SEASONAL ──
     function getSeason() {
