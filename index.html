@@ -3006,7 +3006,7 @@
         document.getElementById('accounts-container').innerHTML = accounts.map(a => {
             globalRealBalance += accBalances[a.id];
             const zone = getBalanceZone(accBalances[a.id], a);
-            const zoneLabel = getZoneLabel(zone, accBalances[a.id]);
+            const zoneLabel = getZoneLabel(zone);
             return `
             <div class="bank-card zone-${zone}">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:2;">
@@ -3082,17 +3082,17 @@
             return 'safe';
         }
         // Global fallback
-        if (bal < balThresholdDanger) return 'danger';
-        if (bal < balThresholdWarn)   return 'warn';
+        var wDef = typeof balThresholdWarn   !== 'undefined' ? balThresholdWarn   : 500;
+        var dDef = typeof balThresholdDanger !== 'undefined' ? balThresholdDanger : 0;
+        if (bal <= dDef) return 'danger';
+        if (bal <= wDef) return 'warn';
         return 'safe';
     }
 
-    function getZoneLabel(zone, bal) {
-        var budget = getMonthlyBudgetTotal();
-        var pct = budget > 0 ? Math.round(bal / budget * 100) : 0;
-        if (zone === 'danger') return '🔴 Critique · ' + pct + '% du budget';
-        if (zone === 'warn')   return '🟠 Attention · ' + pct + '% du budget';
-        return '🟢 Confort · ' + pct + '% du budget';
+    function getZoneLabel(zone) {
+        if (zone === 'danger') return '🔴 Zone critique';
+        if (zone === 'warn')   return '🟠 Zone attention';
+        return '🟢 Zone confort';
     }
 
     
