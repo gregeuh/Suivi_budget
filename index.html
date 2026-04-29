@@ -318,6 +318,37 @@
             background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 60%);
         }
 
+
+        /* ── TAB BAR HOVER EFFECTS ── */
+        .tab-btn:hover .tab-icon {
+            animation: tabBounce 0.35s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .tab-btn:hover .tab-text {
+            color: var(--accent);
+            transition: color .2s;
+        }
+        .tab-btn:hover {
+            background: rgba(200,145,58,0.08);
+            border-radius: 20px;
+            transition: background .2s;
+        }
+        .tab-btn:active .tab-icon {
+            animation: tabBounce 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        /* Ripple effect on tap */
+        .tab-btn {
+            position: relative; overflow: hidden;
+        }
+        .tab-btn::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(circle, rgba(200,145,58,0.2) 0%, transparent 70%);
+            opacity: 0; border-radius: 20px;
+            transition: opacity .3s;
+            pointer-events: none;
+        }
+        .tab-btn:active::after { opacity: 1; }
+
     </style>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -976,6 +1007,37 @@
             background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 60%);
         }
 
+
+        /* ── TAB BAR HOVER EFFECTS ── */
+        .tab-btn:hover .tab-icon {
+            animation: tabBounce 0.35s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .tab-btn:hover .tab-text {
+            color: var(--accent);
+            transition: color .2s;
+        }
+        .tab-btn:hover {
+            background: rgba(200,145,58,0.08);
+            border-radius: 20px;
+            transition: background .2s;
+        }
+        .tab-btn:active .tab-icon {
+            animation: tabBounce 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        /* Ripple effect on tap */
+        .tab-btn {
+            position: relative; overflow: hidden;
+        }
+        .tab-btn::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(circle, rgba(200,145,58,0.2) 0%, transparent 70%);
+            opacity: 0; border-radius: 20px;
+            transition: opacity .3s;
+            pointer-events: none;
+        }
+        .tab-btn:active::after { opacity: 1; }
+
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@600;700&display=swap" rel="stylesheet">
@@ -1157,7 +1219,7 @@
         </div>
     </div>
 
-    <div class="header">
+    <div class="header" id="app-header">
         <h1 id="welcome-title">Budget</h1>
         <div class="header-actions">
             <button class="btn-privacy" onclick="togglePrivacy()" title="Confidentialité">👁</button>
@@ -4030,6 +4092,8 @@
         btn.classList.add('active'); window.scrollTo(0,0);
         var ms = document.querySelector('.month-selector');
         if(ms) ms.style.display = (id === 'settings') ? 'none' : 'flex';
+        var hdr = document.getElementById('app-header');
+        if(hdr) hdr.style.display = (id === 'settings') ? 'none' : 'flex';
         if(id==='dash') updateAllViews();
         if(id==='tx') renderTransactions();
         if(id==='stats') renderStats();
