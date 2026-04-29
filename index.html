@@ -65,14 +65,19 @@
         .bank-card.green  { background: linear-gradient(150deg,#5aa882 0%,#3a7a5a 100%); }
         .bank-card.orange   { background: linear-gradient(150deg,#d4a24a 0%,#a47828 100%); }
         /* Revolut — violet électrique */
-        .bank-card.revolut, .bank-card.revolut.zone-safe, .bank-card.revolut.zone-warn, .bank-card.revolut.zone-danger { background: linear-gradient(150deg,#191c33 0%,#2f3166 100%) !important; }
+        .bank-card.revolut { background: linear-gradient(150deg,#191c33 0%,#2f3166 100%); }
         /* Swile — jaune vif ticket restau */
-        .bank-card.swile, .bank-card.swile.zone-safe, .bank-card.swile.zone-warn, .bank-card.swile.zone-danger { background: linear-gradient(135deg, #f7b731 0%, #f0944d 60%, #e8722a 100%) !important; }
+        .bank-card.swile { background: linear-gradient(135deg, #f7b731 0%, #f0944d 60%, #e8722a 100%); }
         /* Livret A — vert Livret A */
-        .bank-card.livreta, .bank-card.livreta.zone-safe, .bank-card.livreta.zone-warn, .bank-card.livreta.zone-danger { background: linear-gradient(150deg,#2e7d32 0%,#1b5e20 100%) !important; }
-        .bank-card.zone-safe   { background: linear-gradient(150deg,#5aa882 0%,#3a7a5a 100%) !important; }
-        .bank-card.zone-warn   { background: linear-gradient(150deg,#d4a24a 0%,#a47828 100%) !important; }
-        .bank-card.zone-danger { background: linear-gradient(150deg,#c97070 0%,#9e4848 100%) !important; }
+        .bank-card.livreta { background: linear-gradient(150deg,#2e7d32 0%,#1b5e20 100%); }
+        /* Zone — full card color change */
+        .bank-card.zone-safe   { background: linear-gradient(150deg, #3a9e6a 0%, #1f7a48 100%) !important; }
+        .bank-card.zone-warn   { background: linear-gradient(150deg, #d4935a 0%, #a86530 100%) !important; }
+        .bank-card.zone-danger { background: linear-gradient(150deg, #c05050 0%, #8a2a2a 100%) !important; animation: cardDanger 2s ease-in-out infinite; }
+        @keyframes cardDanger {
+            0%,100% { box-shadow: 0 8px 24px rgba(192,80,80,0.3); }
+            50%      { box-shadow: 0 8px 32px rgba(192,80,80,0.6); }
+        }
 
         /* ── GRAIN ── */
         body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.025;
@@ -410,11 +415,10 @@
             background: linear-gradient(135deg, #f7b731 0%, #f0944d 60%, #e8722a 100%) !important;
             position: relative; overflow: hidden;
         }
-        .bank-card.swile::before {
-            content: '🍽️';
+        .bank-card.swile .swile-fork-bg {
             position: absolute; right: -10px; top: 50%; transform: translateY(-50%);
             font-size: 80px; opacity: 0.12; pointer-events: none; z-index: 0;
-            filter: grayscale(0.3);
+            filter: grayscale(0.3); line-height:1;
         }
         .swile-progress-wrap {
             margin-top: 12px; position: relative; z-index: 2;
@@ -605,11 +609,14 @@
         .bank-card.zone-warn    { background: linear-gradient(150deg, #f0944d 0%, #c96c28 100%) !important; }
         .bank-card.zone-safe    { background: linear-gradient(150deg, #4caf82 0%, #2e7a5c 100%) !important; }
         .balance-zone-badge {
-            display: inline-flex; align-items: center; gap: 5px;
-            font-size: 11px; font-weight: 700; letter-spacing: 0.3px;
-            padding: 4px 10px; border-radius: 50px;
-            background: rgba(0,0,0,0.2); color: white; margin-top: 8px;
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 12px; font-weight: 700; letter-spacing: 0.3px;
+            padding: 5px 12px; border-radius: 50px; margin-top: 8px;
+            color: white; backdrop-filter: blur(4px);
         }
+        .bank-card.zone-safe   .balance-zone-badge { background: rgba(40,180,100,0.35); border: 1px solid rgba(90,255,160,0.4); }
+        .bank-card.zone-warn   .balance-zone-badge { background: rgba(180,130,30,0.35); border: 1px solid rgba(255,200,80,0.4); }
+        .bank-card.zone-danger .balance-zone-badge { background: rgba(200,40,40,0.35);  border: 1px solid rgba(255,80,80,0.4); }
         .acc-val-indicator {
             width: 10px; height: 10px; border-radius: 50%;
             display: inline-block; margin-right: 6px; flex-shrink: 0;
@@ -859,14 +866,19 @@
         .bank-card.green  { background: linear-gradient(150deg,#5aa882 0%,#3a7a5a 100%); }
         .bank-card.orange   { background: linear-gradient(150deg,#d4a24a 0%,#a47828 100%); }
         /* Revolut — violet électrique */
-        .bank-card.revolut, .bank-card.revolut.zone-safe, .bank-card.revolut.zone-warn, .bank-card.revolut.zone-danger { background: linear-gradient(150deg,#191c33 0%,#2f3166 100%) !important; }
+        .bank-card.revolut { background: linear-gradient(150deg,#191c33 0%,#2f3166 100%); }
         /* Swile — jaune vif ticket restau */
-        .bank-card.swile, .bank-card.swile.zone-safe, .bank-card.swile.zone-warn, .bank-card.swile.zone-danger { background: linear-gradient(135deg, #f7b731 0%, #f0944d 60%, #e8722a 100%) !important; }
+        .bank-card.swile { background: linear-gradient(135deg, #f7b731 0%, #f0944d 60%, #e8722a 100%); }
         /* Livret A — vert Livret A */
-        .bank-card.livreta, .bank-card.livreta.zone-safe, .bank-card.livreta.zone-warn, .bank-card.livreta.zone-danger { background: linear-gradient(150deg,#2e7d32 0%,#1b5e20 100%) !important; }
-        .bank-card.zone-safe   { background: linear-gradient(150deg,#5aa882 0%,#3a7a5a 100%) !important; }
-        .bank-card.zone-warn   { background: linear-gradient(150deg,#d4a24a 0%,#a47828 100%) !important; }
-        .bank-card.zone-danger { background: linear-gradient(150deg,#c97070 0%,#9e4848 100%) !important; }
+        .bank-card.livreta { background: linear-gradient(150deg,#2e7d32 0%,#1b5e20 100%); }
+        /* Zone — full card color change */
+        .bank-card.zone-safe   { background: linear-gradient(150deg, #3a9e6a 0%, #1f7a48 100%) !important; }
+        .bank-card.zone-warn   { background: linear-gradient(150deg, #d4935a 0%, #a86530 100%) !important; }
+        .bank-card.zone-danger { background: linear-gradient(150deg, #c05050 0%, #8a2a2a 100%) !important; animation: cardDanger 2s ease-in-out infinite; }
+        @keyframes cardDanger {
+            0%,100% { box-shadow: 0 8px 24px rgba(192,80,80,0.3); }
+            50%      { box-shadow: 0 8px 32px rgba(192,80,80,0.6); }
+        }
 
         /* ── GRAIN ── */
         body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.025;
@@ -1204,11 +1216,10 @@
             background: linear-gradient(135deg, #f7b731 0%, #f0944d 60%, #e8722a 100%) !important;
             position: relative; overflow: hidden;
         }
-        .bank-card.swile::before {
-            content: '🍽️';
+        .bank-card.swile .swile-fork-bg {
             position: absolute; right: -10px; top: 50%; transform: translateY(-50%);
             font-size: 80px; opacity: 0.12; pointer-events: none; z-index: 0;
-            filter: grayscale(0.3);
+            filter: grayscale(0.3); line-height:1;
         }
         .swile-progress-wrap {
             margin-top: 12px; position: relative; z-index: 2;
@@ -2003,14 +2014,19 @@
                     var loadedIds = loadedAccs.map(function(a){ return a.id; });
                     defaultAccs.forEach(function(da) {
                         if (loadedIds.indexOf(da.id) === -1) loadedAccs.push(da);
+                        else {
+                            // Merge threshold fields if missing
+                            var existing = loadedAccs.find(function(a){ return a.id === da.id; });
+                            if (existing && existing.warnAt === undefined) { existing.warnAt = da.warnAt; existing.dangerAt = da.dangerAt; }
+                        }
                     });
                     accounts = loadedAccs;
                     if (accounts.length === 0) {
                         accounts = [
-                            { id: 'acc1',    name: 'Compte Principal', initBalance: 0, color: 'blue',    icon: '🏦' },
-                            { id: 'acc_rev', name: 'Revolut',          initBalance: 0, color: 'revolut', icon: '💳' },
-                            { id: 'acc_swl', name: 'Swile',            initBalance: 0, color: 'swile',   icon: '🍽️' },
-                            { id: 'acc_lva', name: 'Livret A',         initBalance: 0, color: 'livreta', icon: '🏧' }
+                            { id: 'acc1',    name: 'Compte Principal', initBalance: 0, color: 'blue',    icon: '🏦', warnAt: 500,  dangerAt: 0   },
+                            { id: 'acc_rev', name: 'Revolut',          initBalance: 0, color: 'revolut', icon: '💳', warnAt: 200,  dangerAt: 0   },
+                            { id: 'acc_swl', name: 'Swile',            initBalance: 0, color: 'swile',   icon: '🍽️', warnAt: 50,   dangerAt: 20  },
+                            { id: 'acc_lva', name: 'Livret A',         initBalance: 0, color: 'livreta', icon: '🏧', warnAt: 1000, dangerAt: 500 }
                         ];
                     }
                     
@@ -2052,10 +2068,10 @@
         displayName = '';
         expenses = [];
         accounts = [
-                            { id: 'acc1',    name: 'Compte Principal', initBalance: 0, color: 'blue',    icon: '🏦' },
-                            { id: 'acc_rev', name: 'Revolut',          initBalance: 0, color: 'revolut', icon: '💳' },
-                            { id: 'acc_swl', name: 'Swile',            initBalance: 0, color: 'swile',   icon: '🍽️' },
-                            { id: 'acc_lva', name: 'Livret A',         initBalance: 0, color: 'livreta', icon: '🏧' }
+                            { id: 'acc1',    name: 'Compte Principal', initBalance: 0, color: 'blue',    icon: '🏦', warnAt: 500,  dangerAt: 0   },
+                            { id: 'acc_rev', name: 'Revolut',          initBalance: 0, color: 'revolut', icon: '💳', warnAt: 200,  dangerAt: 0   },
+                            { id: 'acc_swl', name: 'Swile',            initBalance: 0, color: 'swile',   icon: '🍽️', warnAt: 50,   dangerAt: 20  },
+                            { id: 'acc_lva', name: 'Livret A',         initBalance: 0, color: 'livreta', icon: '🏧', warnAt: 1000, dangerAt: 500 }
                         ];
         wishlist = [];
         categories = [...DEFAULT_CATEGORIES];
@@ -2989,8 +3005,8 @@
         } else {
         document.getElementById('accounts-container').innerHTML = accounts.map(a => {
             globalRealBalance += accBalances[a.id];
-            const zone = getBalanceZone(accBalances[a.id]);
-            const zoneLabel = getZoneLabel(zone);
+            const zone = getBalanceZone(accBalances[a.id], a);
+            const zoneLabel = getZoneLabel(zone, accBalances[a.id]);
             return `
             <div class="bank-card zone-${zone}">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:2;">
@@ -3002,8 +3018,16 @@
                 </div>
                 <div class="acc-val blur-val" id="acc-val-${a.id}">${accBalances[a.id].toFixed(2)} €</div>
                 <div class="balance-zone-badge">${zoneLabel}</div>
+                ${a.color !== 'swile' ? (function(){
+                    var budget = getMonthlyBudgetTotal();
+                    var pct = budget > 0 ? Math.min(100, Math.round(accBalances[a.id] / budget * 100)) : 0;
+                    var barColor = zone==='danger' ? 'rgba(255,80,80,0.8)' : zone==='warn' ? 'rgba(255,200,80,0.8)' : 'rgba(90,255,160,0.8)';
+                    return '<div style="margin-top:8px;height:3px;background:rgba(255,255,255,0.2);border-radius:50px;overflow:hidden;position:relative;z-index:2;">'
+                        + '<div style="height:100%;width:'+pct+'%;background:'+barColor+';border-radius:50px;transition:width 1s cubic-bezier(0.16,1,0.3,1);"></div>'
+                        + '</div>';
+                })() : ''}
                 ${a.color==='livreta' ? '<div style="background:rgba(255,255,255,0.2);border-radius:8px;padding:3px 10px;font-size:10px;font-weight:700;margin-top:6px;display:inline-block;">🏦 Livret A</div>' : ''}
-                ${a.color==='swile' ? renderSwileExtra(accBalances[a.id]) : ''}
+                ${a.color==='swile' ? '<div class="swile-fork-bg">🍽️</div>' + renderSwileExtra(accBalances[a.id]) : ''}
                 ${a.color==='revolut' ? '<div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:3px 10px;font-size:10px;font-weight:700;margin-top:6px;display:inline-block;">💳 Revolut</div>' : ''}
             </div>`;
         }).join('');
@@ -3057,16 +3081,25 @@
         renderSettingsCatBudgets();
     }
 
-    function getBalanceZone(bal) {
+    function getBalanceZone(bal, acc) {
+        // Per-account thresholds
+        if (acc && acc.dangerAt !== undefined && acc.warnAt !== undefined) {
+            if (bal <= acc.dangerAt) return 'danger';
+            if (bal <= acc.warnAt)   return 'warn';
+            return 'safe';
+        }
+        // Global fallback
         if (bal < balThresholdDanger) return 'danger';
         if (bal < balThresholdWarn)   return 'warn';
         return 'safe';
     }
 
-    function getZoneLabel(zone) {
-        if (zone === 'danger') return '🔴 Zone critique';
-        if (zone === 'warn')   return '🟠 Zone moyenne';
-        return '🟢 Zone confort';
+    function getZoneLabel(zone, bal) {
+        var budget = getMonthlyBudgetTotal();
+        var pct = budget > 0 ? Math.round(bal / budget * 100) : 0;
+        if (zone === 'danger') return '🔴 Critique · ' + pct + '% du budget';
+        if (zone === 'warn')   return '🟠 Attention · ' + pct + '% du budget';
+        return '🟢 Confort · ' + pct + '% du budget';
     }
 
     
@@ -4181,7 +4214,24 @@
         }
     }
     
-    function renderSettingsAccounts() {
+
+    function editAccountThresholds(id) {
+        hapticTap();
+        var acc = accounts.find(function(a){ return String(a.id)===String(id); });
+        if (!acc) return;
+        var w = prompt('Seuil attention pour ' + acc.name + ' (orange, en euros)', acc.warnAt !== undefined ? acc.warnAt : 500);
+        if (w === null) return;
+        var d = prompt('Seuil danger pour ' + acc.name + ' (rouge, en euros)', acc.dangerAt !== undefined ? acc.dangerAt : 0);
+        if (d === null) return;
+        var wi = parseFloat(w), di = parseFloat(d);
+        if (!isNaN(wi)) acc.warnAt   = wi;
+        if (!isNaN(di)) acc.dangerAt = di;
+        saveToCloud();
+        updateAllViews();
+        showToast('Seuils mis a jour pour ' + acc.name);
+    }
+
+        function renderSettingsAccounts() {
         const colorMap = {
             blue:'#c8913a', purple:'#a06848', green:'#5aa882',
             pink:'#c06858', orange:'#d4a24a', revolut:'#2f3166', swile:'#f5a623', livreta:'#2e7d32'
@@ -4197,9 +4247,10 @@
                         <small style="color:var(--text-muted)">Solde initial : ${a.initBalance.toFixed(2)} €</small>
                     </div>
                 </div>
-                <div style="display:flex; gap:8px;">
-                    <button onclick="editAccount('${escapeHTML(a.id)}')" style="background:var(--input-bg); border:none; color:var(--accent); padding:8px 12px; border-radius:10px; font-weight:700; font-size:13px; cursor:pointer;">Éditer</button>
-                    <button onclick="deleteAccount('${escapeHTML(a.id)}')" style="background:var(--red-light); border:none; color:var(--red); padding:8px 12px; border-radius:10px; font-weight:700; font-size:13px; cursor:pointer;">×</button>
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                    <button onclick="editAccountThresholds('${escapeHTML(a.id)}')" style="background:var(--input-bg); border:none; color:var(--accent); padding:8px 10px; border-radius:10px; font-weight:700; font-size:12px; cursor:pointer;" title="Seuils">🎯</button>
+                    <button onclick="editAccount('${escapeHTML(a.id)}')" style="background:var(--input-bg); border:none; color:var(--accent); padding:8px 10px; border-radius:10px; font-weight:700; font-size:12px; cursor:pointer;">Éditer</button>
+                    <button onclick="deleteAccount('${escapeHTML(a.id)}')" style="background:var(--red-light); border:none; color:var(--red); padding:8px 10px; border-radius:10px; font-weight:700; font-size:12px; cursor:pointer;">×</button>
                 </div>
             </div>`).join('');
     }
