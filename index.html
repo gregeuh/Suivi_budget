@@ -232,6 +232,92 @@
         .acc-color-dot:hover   { transform: scale(1.15); }
         .acc-color-dot.active  { border-color: var(--text-main); transform: scale(1.1); }
 
+
+        /* ── SKELETON LOADING ── */
+        @keyframes skeletonPulse {
+            0%   { opacity: .45; }
+            50%  { opacity: .9; }
+            100% { opacity: .45; }
+        }
+        .skeleton {
+            background: var(--input-bg);
+            border-radius: 12px;
+            animation: skeletonPulse 1.4s ease-in-out infinite;
+        }
+        #skeleton-screen {
+            padding: 20px;
+            display: none;
+        }
+        .sk-hero  { height: 160px; border-radius: 20px; margin-bottom: 16px; }
+        .sk-card  { height: 80px;  border-radius: 18px; margin-bottom: 12px; }
+        .sk-card-sm { height: 56px; border-radius: 14px; margin-bottom: 10px; }
+        .sk-row   { display: flex; gap: 12px; margin-bottom: 12px; }
+        .sk-row .skeleton { flex: 1; height: 56px; border-radius: 14px; }
+
+        /* ── CONFIRMATION CHECK ── */
+        #confirm-overlay {
+            display: none; position: fixed; inset: 0; z-index: 9998;
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+            align-items: center; justify-content: center;
+        }
+        #confirm-overlay.show { display: flex; }
+        .confirm-box {
+            background: var(--card-bg); border-radius: 28px;
+            padding: 40px 48px; text-align: center;
+            animation: confirmPop .35s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        @keyframes confirmPop {
+            from { transform: scale(0.6); opacity: 0; }
+            to   { transform: scale(1);   opacity: 1; }
+        }
+        .confirm-check {
+            font-size: 56px; display: block; margin-bottom: 12px;
+            animation: checkBounce .5s cubic-bezier(0.34,1.56,0.64,1) .1s both;
+        }
+        @keyframes checkBounce {
+            from { transform: scale(0) rotate(-20deg); }
+            to   { transform: scale(1) rotate(0deg); }
+        }
+        .confirm-label { font-size: 18px; font-weight: 700; color: var(--text-main); }
+        .confirm-amount { font-size: 28px; font-weight: 800; color: var(--green); margin-top: 6px; font-family: 'Lora', Georgia, serif; }
+
+        /* ── SWIPE TO DELETE ── */
+        .tx-swipe-wrap { position: relative; overflow: hidden; border-radius: 12px; }
+        .tx-delete-bg {
+            position: absolute; right: 0; top: 0; bottom: 0;
+            width: 80px; background: var(--red); display: flex;
+            align-items: center; justify-content: center;
+            border-radius: 0 12px 12px 0; transition: width .2s;
+        }
+        .tx-delete-bg span { color: white; font-size: 22px; }
+        .tx-item-content {
+            background: var(--card-bg);
+            transition: transform .25s cubic-bezier(0.16,1,0.3,1), background .18s ease !important;
+            position: relative; z-index: 1;
+        }
+        .tx-item-content.swiped { transform: translateX(-80px); }
+
+        /* ── CARD GLASS REFLET ── */
+        .bank-card::after {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0;
+            height: 55%; border-radius: 24px 24px 0 0;
+            background: linear-gradient(160deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none; z-index: 1;
+        }
+
+        /* ── TX ICON BADGE ── */
+        .tx-icon-badge {
+            width: 44px; height: 44px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; margin-right: 14px; flex-shrink: 0;
+            position: relative; overflow: hidden;
+        }
+        .tx-icon-badge::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 60%);
+        }
+
     </style>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -804,6 +890,92 @@
         .acc-color-dot:hover   { transform: scale(1.15); }
         .acc-color-dot.active  { border-color: var(--text-main); transform: scale(1.1); }
 
+
+        /* ── SKELETON LOADING ── */
+        @keyframes skeletonPulse {
+            0%   { opacity: .45; }
+            50%  { opacity: .9; }
+            100% { opacity: .45; }
+        }
+        .skeleton {
+            background: var(--input-bg);
+            border-radius: 12px;
+            animation: skeletonPulse 1.4s ease-in-out infinite;
+        }
+        #skeleton-screen {
+            padding: 20px;
+            display: none;
+        }
+        .sk-hero  { height: 160px; border-radius: 20px; margin-bottom: 16px; }
+        .sk-card  { height: 80px;  border-radius: 18px; margin-bottom: 12px; }
+        .sk-card-sm { height: 56px; border-radius: 14px; margin-bottom: 10px; }
+        .sk-row   { display: flex; gap: 12px; margin-bottom: 12px; }
+        .sk-row .skeleton { flex: 1; height: 56px; border-radius: 14px; }
+
+        /* ── CONFIRMATION CHECK ── */
+        #confirm-overlay {
+            display: none; position: fixed; inset: 0; z-index: 9998;
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+            align-items: center; justify-content: center;
+        }
+        #confirm-overlay.show { display: flex; }
+        .confirm-box {
+            background: var(--card-bg); border-radius: 28px;
+            padding: 40px 48px; text-align: center;
+            animation: confirmPop .35s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        @keyframes confirmPop {
+            from { transform: scale(0.6); opacity: 0; }
+            to   { transform: scale(1);   opacity: 1; }
+        }
+        .confirm-check {
+            font-size: 56px; display: block; margin-bottom: 12px;
+            animation: checkBounce .5s cubic-bezier(0.34,1.56,0.64,1) .1s both;
+        }
+        @keyframes checkBounce {
+            from { transform: scale(0) rotate(-20deg); }
+            to   { transform: scale(1) rotate(0deg); }
+        }
+        .confirm-label { font-size: 18px; font-weight: 700; color: var(--text-main); }
+        .confirm-amount { font-size: 28px; font-weight: 800; color: var(--green); margin-top: 6px; font-family: 'Lora', Georgia, serif; }
+
+        /* ── SWIPE TO DELETE ── */
+        .tx-swipe-wrap { position: relative; overflow: hidden; border-radius: 12px; }
+        .tx-delete-bg {
+            position: absolute; right: 0; top: 0; bottom: 0;
+            width: 80px; background: var(--red); display: flex;
+            align-items: center; justify-content: center;
+            border-radius: 0 12px 12px 0; transition: width .2s;
+        }
+        .tx-delete-bg span { color: white; font-size: 22px; }
+        .tx-item-content {
+            background: var(--card-bg);
+            transition: transform .25s cubic-bezier(0.16,1,0.3,1), background .18s ease !important;
+            position: relative; z-index: 1;
+        }
+        .tx-item-content.swiped { transform: translateX(-80px); }
+
+        /* ── CARD GLASS REFLET ── */
+        .bank-card::after {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0;
+            height: 55%; border-radius: 24px 24px 0 0;
+            background: linear-gradient(160deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none; z-index: 1;
+        }
+
+        /* ── TX ICON BADGE ── */
+        .tx-icon-badge {
+            width: 44px; height: 44px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; margin-right: 14px; flex-shrink: 0;
+            position: relative; overflow: hidden;
+        }
+        .tx-icon-badge::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 60%);
+        }
+
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@600;700&display=swap" rel="stylesheet">
@@ -830,7 +1002,8 @@
         <div class="sheet-handle"></div>
         <button class="close-btn" style="position:absolute; top:25px; right:25px; background:var(--input-bg); border:none; width:36px; height:36px; border-radius:18px; color:var(--text-muted); font-size:18px; display:flex; justify-content:center; align-items:center; cursor:pointer;" onclick="closeAddModal()">✕</button>
         
-        <h2 id="modal-title" style="display:none;">Nouvelle opération</h2>
+        <div id="modal-breadcrumb" style="display:none;font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;"></div>
+        <h2 id="modal-title" style="font-size:20px;font-weight:800;margin-bottom:16px;">Nouvelle opération</h2>
         
         <div style="display:flex; justify-content:center; gap:6px; margin-bottom:20px; background:var(--input-bg); border-radius:16px; padding:4px;">
             <button id="type-exp-btn" class="type-pill active-pill" onclick="setOpType('expense')">💸 Dépense</button>
@@ -1432,6 +1605,8 @@
             document.getElementById('profile-email-display').innerText = user.email; 
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('app-wrapper').style.display = 'block';
+                document.getElementById('skeleton-screen').style.display = 'block';
+                document.getElementById('capture-area') && (document.getElementById('capture-area').style.opacity = '0');
             initCloudSync();
         } else {
             currentUser = null;
@@ -1879,6 +2054,18 @@
         saveToCloud();
         closeAddModal();
         updateAllViews();
+        // Show confirmation
+        var _cAmt = parseFloat(document.getElementById('inp-amount').value) || 0;
+        var confirmAmt = document.getElementById('confirm-amount');
+        var confirmLbl = document.getElementById('confirm-label');
+        var confirmOv  = document.getElementById('confirm-overlay');
+        if(confirmAmt && confirmLbl && confirmOv) {
+            confirmLbl.textContent = currentType === 'income' ? 'Revenu ajouté' : currentType === 'transfer' ? 'Virement effectué' : 'Dépense ajoutée';
+            confirmAmt.textContent = (currentType === 'income' ? '+' : '-') + _cAmt.toFixed(2) + ' €';
+            confirmAmt.style.color = currentType === 'income' ? 'var(--green)' : 'var(--red)';
+            confirmOv.classList.add('show');
+            setTimeout(function() { confirmOv.classList.remove('show'); }, 1400);
+        }
         if(document.getElementById('tab-tx').classList.contains('active')) renderTransactions();
     }
 
@@ -2893,6 +3080,18 @@
         saveToCloud();
         closeAddModal();
         updateAllViews();
+        // Show confirmation
+        var _cAmt = parseFloat(document.getElementById('inp-amount').value) || 0;
+        var confirmAmt = document.getElementById('confirm-amount');
+        var confirmLbl = document.getElementById('confirm-label');
+        var confirmOv  = document.getElementById('confirm-overlay');
+        if(confirmAmt && confirmLbl && confirmOv) {
+            confirmLbl.textContent = currentType === 'income' ? 'Revenu ajouté' : currentType === 'transfer' ? 'Virement effectué' : 'Dépense ajoutée';
+            confirmAmt.textContent = (currentType === 'income' ? '+' : '-') + _cAmt.toFixed(2) + ' €';
+            confirmAmt.style.color = currentType === 'income' ? 'var(--green)' : 'var(--red)';
+            confirmOv.classList.add('show');
+            setTimeout(function() { confirmOv.classList.remove('show'); }, 1400);
+        }
         if (document.getElementById('tab-tx').classList.contains('active')) renderTransactions();
         showToast('Virement de ' + amt.toFixed(2) + ' € effectué ✓');
     }
@@ -3316,9 +3515,9 @@
             html += `
             <div class="tx-swipe-container">
                 <div class="tx-delete-btn" onclick="deleteTx('${e.originalId}')">Suppr.</div>
-                <div class="tx-item-content" onclick="if(!window.isSwiping) openEditModal('${e.originalId}')" ontouchstart="handleTouchStart(event, this)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event, '${e.originalId}')">
+                <div class="tx-swipe-wrap"><div class="tx-delete-bg"><span>🗑️</span></div><div class="tx-item-content" onclick="if(!window.isSwiping) openEditModal('${e.originalId}')" ontouchstart="handleTouchStart(event, this)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event, '${e.originalId}')">
                     <div style="display:flex; align-items:center;">
-                        <div class="tx-icon-box">${icon}</div>
+                        <div class="tx-icon-badge" style="background:${isTransfer ? 'rgba(107,143,232,0.15)' : isInc ? 'rgba(90,168,130,0.15)' : 'var(--input-bg)'};">${icon}</div>
                         <div>
                             <div class="tx-title">${safeLabel} ${freqBadge} ${urlBadge}</div>
                             <div class="tx-subtitle">${accName}</div>
@@ -3748,7 +3947,58 @@
     }
 
 
-    // ── SEASONAL ──
+
+    // ── SWIPE TO DELETE ──
+    var _swipeStartX = 0, _swipeEl = null, _swipeTxId = null, _swiped = false;
+
+    function handleTouchStart(e, el) {
+        _swipeStartX = e.touches[0].clientX;
+        _swipeEl = el; _swiped = false;
+        window.isSwiping = false;
+        // Close any previously swiped item
+        document.querySelectorAll('.tx-item-content.swiped').forEach(function(s) {
+            if(s !== el) s.classList.remove('swiped');
+        });
+    }
+    function handleTouchMove(e) {
+        if(!_swipeEl) return;
+        var dx = e.touches[0].clientX - _swipeStartX;
+        if(Math.abs(dx) > 8) window.isSwiping = true;
+        if(dx < -20) { _swipeEl.classList.add('swiped'); _swiped = true; }
+        else if(dx > 10) { _swipeEl.classList.remove('swiped'); _swiped = false; }
+    }
+    function handleTouchEnd(e, txId) {
+        if(_swiped) {
+            // Tap on delete area
+            _swipeTxId = txId;
+        }
+        _swipeEl = null;
+    }
+
+    // Tap on delete background
+    document.addEventListener('click', function(e) {
+        var bg = e.target.closest('.tx-delete-bg');
+        if(bg) {
+            var wrap = bg.parentElement;
+            var content = wrap ? wrap.querySelector('.tx-item-content') : null;
+            // Find txId from onclick
+            if(content) {
+                var match = content.getAttribute('onclick') && content.getAttribute('onclick').match(/openEditModal\('([^']+)'\)/);
+                if(match) {
+                    hapticTap();
+                    deleteTx(match[1]);
+                    updateAllViews();
+                    if(document.getElementById('tab-tx').classList.contains('active')) renderTransactions();
+                }
+            }
+        }
+        // Tap elsewhere closes swiped items
+        if(!e.target.closest('.tx-swipe-wrap')) {
+            document.querySelectorAll('.tx-item-content.swiped').forEach(function(s) { s.classList.remove('swiped'); });
+        }
+    });
+
+        // ── SEASONAL ──
     function getSeason() {
         var m=new Date().getMonth();
         if(m>=2&&m<=4) return 'spring';
@@ -3778,6 +4028,8 @@
             target.classList.add('visible');
         }); });
         btn.classList.add('active'); window.scrollTo(0,0);
+        var ms = document.querySelector('.month-selector');
+        if(ms) ms.style.display = (id === 'settings') ? 'none' : 'flex';
         if(id==='dash') updateAllViews();
         if(id==='tx') renderTransactions();
         if(id==='stats') renderStats();
@@ -3862,6 +4114,27 @@
 
 </script>
 
+
+
+    <!-- SKELETON LOADING -->
+    <div id="skeleton-screen">
+        <div class="skeleton sk-hero"></div>
+        <div class="sk-row"><div class="skeleton"></div><div class="skeleton"></div></div>
+        <div class="skeleton sk-card"></div>
+        <div class="skeleton sk-card"></div>
+        <div class="skeleton sk-card-sm"></div>
+        <div class="skeleton sk-card-sm"></div>
+        <div class="skeleton sk-card-sm"></div>
+    </div>
+
+    <!-- CONFIRM OVERLAY -->
+    <div id="confirm-overlay">
+        <div class="confirm-box">
+            <span class="confirm-check">✅</span>
+            <div class="confirm-label" id="confirm-label">Opération ajoutée</div>
+            <div class="confirm-amount" id="confirm-amount"></div>
+        </div>
+    </div>
 
 </body>
 </html>
