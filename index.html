@@ -2642,10 +2642,6 @@
 
     function exportPDF() {
         hapticTap();
-        if (typeof html2pdf === 'undefined') {
-            showToast('Librairie PDF non chargée, réessayez');
-            return;
-        }
         var now = new Date();
         var monthLabel = now.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
         var curData = expandExpensesForMonth(viewDate.getFullYear(), viewDate.getMonth());
@@ -2653,81 +2649,61 @@
         var mExp  = curData.filter(function(e){ return e.type==='expense'; }).reduce(function(s,e){ return s+e.amount; },0);
         var mSave = mInc - mExp;
 
-        var txRows = curData
-            .filter(function(e){ return e.type==='expense'||e.type==='income'; })
-            .sort(function(a,b){ return a.date < b.date ? 1 : -1; })
+        var txRows = curData.filter(function(e){ return e.type==='expense'||e.type==='income'; })
             .map(function(e) {
-                var cat = (categories||[]).find(function(c){ return c.id===e.cat; }) || {label:'Autre'};
+                var cat = (categories||[]).find(function(c){ return c.id===e.cat; }) || {icon:'📦',label:'Autre'};
                 var acc = (accounts||[]).find(function(a){ return a.id===e.accountId; }) || {name:''};
-                var color = e.type==='income' ? '#2e7d50' : '#8b3a2a';
-                var sign  = e.type==='income' ? '+' : '-';
-                return '<tr>'
-                    + '<td style="padding:7px 8px;color:#777;font-size:12px;white-space:nowrap;">' + e.date + '</td>'
-                    + '<td style="padding:7px 8px;font-weight:600;">' + ((e.label||'').replace(/[^ -ÿ]/g,'')) + '</td>'
-                    + '<td style="padding:7px 8px;color:#999;font-size:12px;">' + (cat.label||'') + '</td>'
-                    + '<td style="padding:7px 8px;font-size:12px;color:#777;">' + (acc.name||'') + '</td>'
-                    + '<td style="padding:7px 8px;text-align:right;font-weight:700;color:' + color + ';white-space:nowrap;">'
-                    + sign + parseFloat(e.amount).toFixed(2) + ' EUR</td>'
+                return '<tr style="border-bottom:1px solid #f0ede6;">'
+                    + '<td style="padding:8px 6px;color:#666;">' + e.date + '</td>'
+                    + '<td style="padding:8px 6px;">' + cat.icon + ' ' + (e.label||'') + '</td>'
+                    + '<td style="padding:8px 6px;color:#999;font-size:12px;">' + acc.name + '</td>'
+                    + '<td style="padding:8px 6px;text-align:right;font-weight:700;color:' + (e.type==='income'?'#4a8a60':'#a05040') + ';">'
+                    + (e.type==='income'?'+':'-') + parseFloat(e.amount).toFixed(2) + ' €</td>'
                     + '</tr>';
             }).join('');
 
-        var html = '<div style="font-family:Arial,Helvetica,sans-serif;max-width:680px;margin:0 auto;padding:32px;color:#1e1a12;background:white;">'
-            // Header
-            + '<div style="border-bottom:3px solid #c8913a;padding-bottom:20px;margin-bottom:24px;">'
-            + '<div style="font-size:26px;font-weight:800;color:#c8913a;letter-spacing:-0.5px;">Suivi Budget</div>'
-            + '<div style="font-size:13px;color:#888;margin-top:4px;">'
-            + (displayName ? displayName + ' — ' : '') + monthLabel
-            + '</div></div>'
-            // Summary cards
-            + '<div style="display:flex;gap:12px;margin-bottom:28px;">'
-            + '<div style="flex:1;background:#f0f8f4;border-radius:10px;padding:14px;text-align:center;">'
-            + '<div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:5px;">Revenus</div>'
-            + '<div style="font-size:20px;font-weight:800;color:#2e7d50;">+' + mInc.toFixed(2) + ' EUR</div></div>'
-            + '<div style="flex:1;background:#fdf0ee;border-radius:10px;padding:14px;text-align:center;">'
-            + '<div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:5px;">Depenses</div>'
-            + '<div style="font-size:20px;font-weight:800;color:#8b3a2a;">-' + mExp.toFixed(2) + ' EUR</div></div>'
-            + '<div style="flex:1;background:#fdf8f0;border-radius:10px;padding:14px;text-align:center;">'
-            + '<div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:5px;">Epargne</div>'
-            + '<div style="font-size:20px;font-weight:800;color:' + (mSave>=0?'#c8913a':'#8b3a2a') + ';">'
-            + (mSave>=0?'+':'') + mSave.toFixed(2) + ' EUR</div></div>'
+        var html = '<div style="font-family:Georgia,serif;max-width:700px;margin:0 auto;padding:40px;color:#1e1a12;">'
+            + '<div style="text-align:center;margin-bottom:32px;">'
+            + '<div style="font-size:28px;font-weight:800;color:#c8913a;letter-spacing:-1px;">Suivi Budget</div>'
+            + '<div style="font-size:14px;color:#888;margin-top:4px;">' + (displayName ? 'Bonjour ' + displayName + ' — ' : '') + monthLabel + '</div>'
             + '</div>'
-            // Table
+            + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px;">'
+            + '<div style="background:#f0f8f4;border-radius:12px;padding:16px;text-align:center;">'
+            + '<div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:6px;">Revenus</div>'
+            + '<div style="font-size:22px;font-weight:800;color:#4a8a60;">+' + mInc.toFixed(2) + ' €</div></div>'
+            + '<div style="background:#fdf0ee;border-radius:12px;padding:16px;text-align:center;">'
+            + '<div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:6px;">Dépenses</div>'
+            + '<div style="font-size:22px;font-weight:800;color:#a05040;">-' + mExp.toFixed(2) + ' €</div></div>'
+            + '<div style="background:#fdf8f0;border-radius:12px;padding:16px;text-align:center;">'
+            + '<div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:6px;">Épargne</div>'
+            + '<div style="font-size:22px;font-weight:800;color:' + (mSave>=0?'#c8913a':'#a05040') + ';">' + (mSave>=0?'+':'') + mSave.toFixed(2) + ' €</div></div>'
+            + '</div>'
             + '<table style="width:100%;border-collapse:collapse;font-size:13px;">'
-            + '<thead><tr style="background:#f8f5ee;border-bottom:2px solid #e8e0d0;">'
-            + '<th style="padding:9px 8px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:#999;font-weight:700;">Date</th>'
-            + '<th style="padding:9px 8px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:#999;font-weight:700;">Libelle</th>'
-            + '<th style="padding:9px 8px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:#999;font-weight:700;">Categorie</th>'
-            + '<th style="padding:9px 8px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:#999;font-weight:700;">Compte</th>'
-            + '<th style="padding:9px 8px;text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:#999;font-weight:700;">Montant</th>'
-            + '</tr></thead>'
-            + '<tbody>' + (txRows || '<tr><td colspan="5" style="text-align:center;padding:20px;color:#bbb;">Aucune transaction ce mois</td></tr>') + '</tbody>'
-            + '</table>'
-            // Footer
-            + '<div style="text-align:center;margin-top:28px;padding-top:16px;border-top:1px solid #eee;font-size:10px;color:#bbb;">'
-            + 'Genere le ' + now.toLocaleDateString('fr-FR') + ' par Suivi Budget'
-            + '</div></div>';
+            + '<thead><tr style="background:#f8f5ee;">'
+            + '<th style="padding:10px 6px;text-align:left;font-weight:700;color:#888;font-size:11px;text-transform:uppercase;">Date</th>'
+            + '<th style="padding:10px 6px;text-align:left;font-weight:700;color:#888;font-size:11px;text-transform:uppercase;">Libellé</th>'
+            + '<th style="padding:10px 6px;text-align:left;font-weight:700;color:#888;font-size:11px;text-transform:uppercase;">Compte</th>'
+            + '<th style="padding:10px 6px;text-align:right;font-weight:700;color:#888;font-size:11px;text-transform:uppercase;">Montant</th>'
+            + '</tr></thead><tbody>' + txRows + '</tbody></table>'
+            + '<div style="text-align:center;margin-top:32px;font-size:11px;color:#bbb;">Généré le ' + now.toLocaleDateString('fr-FR') + ' · Suivi Budget</div>'
+            + '</div>';
 
         var el = document.createElement('div');
-        el.style.cssText = 'position:absolute;left:-9999px;top:0;background:white;';
         el.innerHTML = html;
         document.body.appendChild(el);
-
-        var fname = 'budget_' + viewDate.getFullYear() + '-' + String(viewDate.getMonth()+1).padStart(2,'0') + '.pdf';
-        html2pdf().set({
-            margin: [10, 10, 10, 10],
-            filename: fname,
-            image: { type: 'jpeg', quality: 0.95 },
-            html2canvas: { scale: 2, useCORS: true, logging: false },
+        var opt = {
+            margin: 10,
+            filename: 'budget_' + viewDate.getFullYear() + '-' + String(viewDate.getMonth()+1).padStart(2,'0') + '.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        }).from(el).save().then(function() {
+        };
+        html2pdf().set(opt).from(el).save().then(function() {
             document.body.removeChild(el);
-            showToast('PDF telecharge !');
-        }).catch(function(err) {
-            document.body.removeChild(el);
-            console.error('PDF error:', err);
-            showToast('Erreur PDF - reessayez');
+            showToast('Export PDF téléchargé ✓');
         });
     }
+
     function exportCSV() {
         hapticTap();
         let csv = "Type,Compte,Date,Libelle,Montant,Categorie,Recurrent,Frequence,Date_Fin,Note,URL\n";
