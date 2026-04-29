@@ -213,6 +213,16 @@
         }
 
 
+
+        /* ── ACCOUNT ICON PICKER ── */
+        .acc-icon-dot {
+            width: 40px; height: 40px; border-radius: 12px; cursor: pointer;
+            border: 2.5px solid transparent; transition: transform .18s, border-color .18s;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; background: var(--input-bg); flex-shrink: 0;
+        }
+        .acc-icon-dot:hover  { transform: scale(1.12); }
+        .acc-icon-dot.active { border-color: var(--accent); background: var(--accent-light); transform: scale(1.08); }
         /* ── ACCOUNT COLOR PICKER ── */
         .acc-color-dot {
             width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
@@ -775,6 +785,16 @@
         }
 
 
+
+        /* ── ACCOUNT ICON PICKER ── */
+        .acc-icon-dot {
+            width: 40px; height: 40px; border-radius: 12px; cursor: pointer;
+            border: 2.5px solid transparent; transition: transform .18s, border-color .18s;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; background: var(--input-bg); flex-shrink: 0;
+        }
+        .acc-icon-dot:hover  { transform: scale(1.12); }
+        .acc-icon-dot.active { border-color: var(--accent); background: var(--accent-light); transform: scale(1.08); }
         /* ── ACCOUNT COLOR PICKER ── */
         .acc-color-dot {
             width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
@@ -1235,6 +1255,21 @@
             <div id="add-account-form" style="display:none; margin-top:14px; background:var(--input-bg); border-radius:16px; padding:16px; flex-direction:column; gap:10px;">
                 <input id="new-acc-name" type="text" class="input-control" placeholder="Nom du compte (ex: Revolut)" style="margin:0;">
                 <input id="new-acc-bal" type="number" class="input-control" placeholder="Solde initial (€)" step="0.01" style="margin:0;">
+                <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;">Icône</div>
+                <div id="acc-icon-picker" style="display:flex;gap:8px;flex-wrap:wrap;padding:2px 0;">
+                    <div class="acc-icon-dot active" data-icon="🏦" onclick="selectAccIcon('🏦')" title="Banque">🏦</div>
+                    <div class="acc-icon-dot" data-icon="💳" onclick="selectAccIcon('💳')" title="Carte">💳</div>
+                    <div class="acc-icon-dot" data-icon="💰" onclick="selectAccIcon('💰')" title="Argent">💰</div>
+                    <div class="acc-icon-dot" data-icon="🏧" onclick="selectAccIcon('🏧')" title="Distributeur">🏧</div>
+                    <div class="acc-icon-dot" data-icon="💵" onclick="selectAccIcon('💵')" title="Billets">💵</div>
+                    <div class="acc-icon-dot" data-icon="🪙" onclick="selectAccIcon('🪙')" title="Pièce">🪙</div>
+                    <div class="acc-icon-dot" data-icon="📈" onclick="selectAccIcon('📈')" title="Investissement">📈</div>
+                    <div class="acc-icon-dot" data-icon="🏠" onclick="selectAccIcon('🏠')" title="Immobilier">🏠</div>
+                    <div class="acc-icon-dot" data-icon="✈️" onclick="selectAccIcon('✈️')" title="Voyage">✈️</div>
+                    <div class="acc-icon-dot" data-icon="🎓" onclick="selectAccIcon('🎓')" title="Épargne études">🎓</div>
+                    <div class="acc-icon-dot" data-icon="🍽️" onclick="selectAccIcon('🍽️')" title="Tickets restau">🍽️</div>
+                    <div class="acc-icon-dot" data-icon="🚗" onclick="selectAccIcon('🚗')" title="Voiture">🚗</div>
+                </div>
                 <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;">Couleur du compte</div>
                 <div id="acc-color-picker" style="display:flex;gap:10px;flex-wrap:wrap;padding:2px 0;">
                     <div class="acc-color-dot active" data-color="blue"    style="background:#c8913a;"  onclick="selectAccColor('blue')"    title="Doré"></div>
@@ -1455,13 +1490,13 @@
                     displayName = data.displayName || '';
                     expenses = Array.isArray(data.expenses) ? data.expenses.filter(e=>e) : [];
                     
-                    accounts = Array.isArray(data.accounts) ? data.accounts.filter(a=>a) : [];
+                    accounts = Array.isArray(data.accounts) ? data.accounts.filter(a=>a).map(function(a){ return a.icon ? a : Object.assign({}, a, {icon: a.color==='revolut'?'💳':a.color==='swile'?'🍽️':a.color==='livreta'?'🏧':'🏦'}); }) : [];
                     if (accounts.length === 0) {
                         accounts = [
-                            { id: 'acc1',     name: 'Compte Principal', initBalance: 0, color: 'blue'    },
-                            { id: 'acc_rev',  name: 'Revolut',          initBalance: 0, color: 'revolut' },
-                            { id: 'acc_swl',  name: 'Swile',            initBalance: 0, color: 'swile'   },
-                            { id: 'acc_lva',  name: 'Livret A',         initBalance: 0, color: 'livreta' }
+                            { id: 'acc1',    name: 'Compte Principal', initBalance: 0, color: 'blue',    icon: '🏦' },
+                            { id: 'acc_rev', name: 'Revolut',          initBalance: 0, color: 'revolut', icon: '💳' },
+                            { id: 'acc_swl', name: 'Swile',            initBalance: 0, color: 'swile',   icon: '🍽️' },
+                            { id: 'acc_lva', name: 'Livret A',         initBalance: 0, color: 'livreta', icon: '🏧' }
                         ];
                     }
                     
@@ -1500,10 +1535,10 @@
         displayName = '';
         expenses = [];
         accounts = [
-                            { id: 'acc1',     name: 'Compte Principal', initBalance: 0, color: 'blue'    },
-                            { id: 'acc_rev',  name: 'Revolut',          initBalance: 0, color: 'revolut' },
-                            { id: 'acc_swl',  name: 'Swile',            initBalance: 0, color: 'swile'   },
-                            { id: 'acc_lva',  name: 'Livret A',         initBalance: 0, color: 'livreta' }
+                            { id: 'acc1',    name: 'Compte Principal', initBalance: 0, color: 'blue',    icon: '🏦' },
+                            { id: 'acc_rev', name: 'Revolut',          initBalance: 0, color: 'revolut', icon: '💳' },
+                            { id: 'acc_swl', name: 'Swile',            initBalance: 0, color: 'swile',   icon: '🍽️' },
+                            { id: 'acc_lva', name: 'Livret A',         initBalance: 0, color: 'livreta', icon: '🏧' }
                         ];
         wishlist = [];
         categories = [...DEFAULT_CATEGORIES];
@@ -2402,7 +2437,7 @@
             <div class="bank-card zone-${zone}">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:2;">
                     <div class="acc-name" style="display:flex;align-items:center;gap:8px;">
-                        ${a.color==='revolut' ? '<span style="font-size:18px;opacity:.9">💳</span>' : a.color==='swile' ? '<span style="font-size:18px;opacity:.9">🍽️</span>' : a.color==='livreta' ? '<span style="font-size:18px;opacity:.9">🏦</span>' : ''}
+                        ${a.icon ? '<span style="font-size:20px;opacity:.9">' + a.icon + '</span>' : ''}
                         ${escapeHTML(a.name)}
                     </div>
                     <button onclick="adjustBalance('${escapeHTML(a.id)}')" style="background:rgba(0,0,0,0.2); border:none; color:white; border-radius:12px; font-size:12px; padding:6px 12px; cursor:pointer; font-weight:700;">Ajuster</button>
@@ -3501,7 +3536,9 @@
         if (form) { form.style.display = 'flex'; }
         if (btn)  { btn.style.display  = 'none'; }
         _newAccColor = 'blue';
+        _newAccIcon  = '🏦';
         selectAccColor('blue');
+        selectAccIcon('🏦');
         var nameEl = document.getElementById('new-acc-name'); if(nameEl) { nameEl.value=''; nameEl.focus(); }
         var balEl  = document.getElementById('new-acc-bal');  if(balEl)  balEl.value='';
     }
@@ -3512,6 +3549,15 @@
         if (btn)  btn.style.display  = 'block';
     }
     var _newAccColor = 'blue';
+    var _newAccIcon  = '🏦';
+
+    function selectAccIcon(icon) {
+        _newAccIcon = icon;
+        document.querySelectorAll('.acc-icon-dot').forEach(function(d) {
+            d.classList.toggle('active', d.dataset.icon === icon);
+        });
+    }
+
     function selectAccColor(color) {
         _newAccColor = color;
         document.querySelectorAll('.acc-color-dot').forEach(function(d) {
@@ -3525,7 +3571,7 @@
         var bal  = parseFloat(balStr);
         if (!name)    { showToast('Entrez un nom de compte'); return; }
         if (isNaN(bal)) { showToast('Solde invalide'); return; }
-        accounts.push({ id: 'acc_'+Date.now(), name: name, initBalance: bal, color: _newAccColor });
+        accounts.push({ id: 'acc_'+Date.now(), name: name, initBalance: bal, color: _newAccColor, icon: _newAccIcon });
         saveToCloud();
         updateAccountsSelectors();
         renderSettingsAccounts();
@@ -3563,7 +3609,7 @@
             <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid var(--input-bg)">
                 <div style="display:flex; align-items:center; gap:12px;">
                     <div style="width:38px;height:38px;border-radius:12px;background:${colorMap[a.color]||'#c8913a'};flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;">
-                        ${a.color==='revolut'?'💳':a.color==='swile'?'🍽️':a.color==='livreta'?'🏦':'💰'}
+                        ${a.icon || '🏦'}
                     </div>
                     <div>
                         <strong style="font-size:15px;">${escapeHTML(a.name)}</strong><br>
