@@ -1701,8 +1701,8 @@
                     <span style="font-size:13px;color:var(--text-muted);">€</span>
                 </div>
             </div>
-            <button onclick="saveSwileSettings()" style="width:100%;padding:14px;border-radius:14px;border:none;background:var(--accent);color:white;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;margin-top:6px;">
-                Sauvegarder
+            <button onclick="saveSwileSettings()" style="width:100%;padding:14px;border-radius:14px;border:none;background:#c8913a;color:white;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;margin-top:6px;box-shadow:0 4px 16px rgba(200,145,58,0.4);letter-spacing:0.3px;">
+                💾 Sauvegarder
             </button>
         </div>
 
@@ -2013,11 +2013,19 @@
                     ];
                     var loadedIds = loadedAccs.map(function(a){ return a.id; });
                     defaultAccs.forEach(function(da) {
-                        if (loadedIds.indexOf(da.id) === -1) loadedAccs.push(da);
-                        else {
-                            // Merge threshold fields if missing
+                        if (loadedIds.indexOf(da.id) === -1) {
+                            // Add missing default account (brand new)
+                            loadedAccs.push(da);
+                        } else {
+                            // Only fill in MISSING fields — never overwrite existing data
                             var existing = loadedAccs.find(function(a){ return a.id === da.id; });
-                            if (existing && existing.warnAt === undefined) { existing.warnAt = da.warnAt; existing.dangerAt = da.dangerAt; }
+                            if (existing) {
+                                if (existing.warnAt   === undefined) existing.warnAt   = da.warnAt;
+                                if (existing.dangerAt === undefined) existing.dangerAt = da.dangerAt;
+                                if (!existing.icon)                  existing.icon     = da.icon;
+                                if (!existing.color)                 existing.color    = da.color;
+                                // NEVER overwrite initBalance — that's user data
+                            }
                         }
                     });
                     accounts = loadedAccs;
