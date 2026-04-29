@@ -3006,7 +3006,7 @@
         document.getElementById('accounts-container').innerHTML = accounts.map(a => {
             globalRealBalance += accBalances[a.id];
             const zone = getBalanceZone(accBalances[a.id], a);
-            const zoneLabel = getZoneLabel(zone);
+            const zoneLabel = getZoneLabel(zone, a);
             return `
             <div class="bank-card zone-${zone}">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:2;">
@@ -3075,6 +3075,19 @@
     }
 
     function getBalanceZone(bal, acc) {
+        // Swile : zone basée sur les repas restants
+        if (acc && acc.color === 'swile') {
+            var meal = swileMealPrice || 10;
+            var meals = Math.floor(bal / meal);
+            var alertAt = swileLowAlert || 5;
+            if (meals <= 0)        return 'danger';
+            if (meals <= alertAt)  return 'warn';
+            return 'safe';
+        }
+        // Livret A : toujours zone confort (c'est de l'épargne)
+        if (acc && acc.color === 'livreta') {
+            return 'safe';
+        }
         // Per-account thresholds
         if (acc && acc.dangerAt !== undefined && acc.warnAt !== undefined) {
             if (bal <= acc.dangerAt) return 'danger';
@@ -3089,7 +3102,15 @@
         return 'safe';
     }
 
-    function getZoneLabel(zone) {
+    function getZoneLabel(zone, acc) {
+        var isSwile   = acc && acc.color === 'swile';
+        var isLivreta = acc && acc.color === 'livreta';
+        if (isSwile) {
+            if (zone === 'danger') return '🔴 Tickets épuisés';
+            if (zone === 'warn')   return '🟠 Peu de tickets';
+            return '🟢 Tickets suffisants';
+        }
+        if (isLivreta) return '🟢 Épargne';
         if (zone === 'danger') return '🔴 Zone critique';
         if (zone === 'warn')   return '🟠 Zone attention';
         return '🟢 Zone confort';
