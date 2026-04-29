@@ -268,11 +268,11 @@
             padding: 20px;
             display: none;
         }
-        .sk-hero  { height: 160px; border-radius: 20px; margin-bottom: 16px; }
-        .sk-card  { height: 80px;  border-radius: 18px; margin-bottom: 12px; }
-        .sk-card-sm { height: 56px; border-radius: 14px; margin-bottom: 10px; }
+        .sk-hero  { height: 160px; border-radius: 15px; margin-bottom: 16px; }
+        .sk-card  { height: 80px;  border-radius: 12px; margin-bottom: 12px; }
+        .sk-card-sm { height: 56px; border-radius: 12px; margin-bottom: 10px; }
         .sk-row   { display: flex; gap: 12px; margin-bottom: 12px; }
-        .sk-row .skeleton { flex: 1; height: 56px; border-radius: 14px; }
+        .sk-row .skeleton { flex: 1; height: 56px; border-radius: 12px; }
 
         /* ── CONFIRMATION CHECK ── */
         #confirm-overlay {
@@ -299,7 +299,7 @@
             to   { transform: scale(1) rotate(0deg); }
         }
         .confirm-label { font-size: 18px; font-weight: 700; color: var(--text-main); }
-        .confirm-amount { font-size: 28px; font-weight: 800; color: var(--green); margin-top: 6px; font-family: 'Lora', Georgia, serif; }
+        .confirm-amount { font-size: 28px; font-weight: 700; color: var(--green); margin-top: 6px; font-family: 'Lora', Georgia, serif; }
 
         /* ── SWIPE TO DELETE ── */
         .tx-swipe-wrap { position: relative; border-radius: 12px; overflow: hidden; isolation: isolate; }
@@ -330,7 +330,7 @@
 
         /* ── TX ICON BADGE ── */
         .tx-icon-badge {
-            width: 48px; height: 48px; border-radius: 14px;
+            width: 48px; height: 48px; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
             font-size: 22px; margin-right: 14px; flex-shrink: 0;
             position: relative; overflow: hidden;
@@ -351,7 +351,7 @@
         }
         .tab-btn:hover {
             background: rgba(200,145,58,0.08);
-            border-radius: 20px;
+            border-radius: 15px;
             transition: background .2s;
         }
         .tab-btn:active .tab-icon {
@@ -365,7 +365,7 @@
             content: '';
             position: absolute; inset: 0;
             background: radial-gradient(circle, rgba(200,145,58,0.2) 0%, transparent 70%);
-            opacity: 0; border-radius: 20px;
+            opacity: 0; border-radius: 15px;
             transition: opacity .3s;
             pointer-events: none;
         }
@@ -414,9 +414,9 @@
         .ob-step.active { display: flex; flex-direction: column; align-items: center; gap: 16px; animation: obSlide .35s cubic-bezier(0.16,1,0.3,1); }
         @keyframes obSlide { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:translateX(0); } }
         .ob-emoji { font-size: 72px; line-height: 1; margin-bottom: 4px; animation: floatIcon 3s ease-in-out infinite; }
-        .ob-title { font-size: 26px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
+        .ob-title { font-size: 26px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px; }
         .ob-sub   { font-size: 15px; color: var(--text-muted); line-height: 1.6; max-width: 300px; }
-        .ob-input { width: 100%; padding: 16px; border-radius: 16px; border: none; background: var(--input-bg); color: var(--text-main); font-family: inherit; font-size: 18px; font-weight: 700; text-align: center; outline: none; box-sizing: border-box; }
+        .ob-input { width: 100%; padding: 16px; border-radius: 12px; border: none; background: var(--input-bg); color: var(--text-main); font-family: inherit; font-size: 18px; font-weight: 700; text-align: center; outline: none; box-sizing: border-box; }
         .ob-input:focus { box-shadow: 0 0 0 3px var(--accent-light); }
         .ob-btn { width: 100%; padding: 16px; border-radius: 50px; border: none; background: var(--accent); color: white; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 6px 20px var(--accent-light); transition: transform .2s; }
         .ob-btn:hover { transform: translateY(-2px); }
@@ -453,7 +453,7 @@
         .swile-meals { font-size: 12px; color: rgba(255,255,255,0.7); line-height: 1.4; }
         .swile-low-badge {
             display: inline-flex; align-items: center; gap: 4px;
-            background: rgba(255,255,255,0.2); border-radius: 20px;
+            background: rgba(255,255,255,0.2); border-radius: 15px;
             padding: 3px 10px; font-size: 11px; font-weight: 700; color: white;
             margin-top: 8px;
         }
@@ -498,7 +498,7 @@
             width: 100%; padding: 18px; text-align: center;
             font-family: 'Lora', Georgia, serif;
             font-size: 42px; font-weight: 700; letter-spacing: -1px;
-            border: none; border-radius: 18px;
+            border: none; border-radius: 12px;
             background: var(--input-bg); color: var(--text-main);
             outline: none; box-sizing: border-box;
             transition: box-shadow .2s, color .2s;
@@ -548,19 +548,19 @@
             --red: #e05c5c; --red-light: rgba(224, 92, 92, 0.1);
             --green: #4caf82; --green-light: rgba(76, 175, 130, 0.1);
             --orange: #f0944d; --orange-light: rgba(240, 148, 77, 0.1);
-            --radius-card: 24px; --radius-btn: 16px;
+            --radius-card: 18px; --radius-btn: 16px;
         }
 
         body[data-theme="dark"] {
-            --bg-color: #0d0d0f; --card-bg: #1a1a1f; --text-main: #f0f0f5;
-            --text-muted: #8a8a95; --input-bg: #26262d; --border: rgba(255,255,255,0.05);
+            --bg-color: #0e0b08; --card-bg: #181510; --text-main: #f0ece4;
+            --text-muted: #9a9080; --input-bg: #221e16; --border: rgba(255,255,255,0.05);
             --shadow: 0 4px 24px rgba(0,0,0,0.35); --glass-bg: rgba(20, 20, 25, 0.82);
         }
 
         body[data-theme="light"] {
             --bg-color: #f8f5ee; --card-bg: #fffef9; --text-main: #1e1a12;
             --text-muted: #9a9080; --input-bg: #ede9df; --border: rgba(120,90,30,0.07);
-            --shadow: 0 1px 8px rgba(100,70,10,0.06); --glass-bg: rgba(255,254,248,0.92);
+            --shadow: 0 1px 6px rgba(100,70,10,0.05); --glass-bg: rgba(255,254,248,0.92);
             --surface3: #e0d9cc;
         }
 
@@ -587,11 +587,11 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .header h1 { font-size: 34px; font-weight: 800; letter-spacing: -1px; margin: 0; transition: 0.3s; }
+        .header h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.5px; margin: 0; transition: 0.3s; }
         .header-actions { display: flex; gap: 12px; align-items: center; }
-        .btn-privacy { background: var(--input-bg); color: var(--text-main); border: none; width: 44px; height: 44px; border-radius: 14px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn-privacy { background: var(--input-bg); color: var(--text-main); border: none; width: 44px; height: 44px; border-radius: 12px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .btn-privacy:active { transform: scale(0.95); }
-        .btn-add { background: var(--accent); color: white; border: none; padding: 0 18px; height: 40px; border-radius: 20px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px var(--accent-light); transition: 0.2s; }
+        .btn-add { background: var(--accent); color: white; border: none; padding: 0 18px; height: 40px; border-radius: 15px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px var(--accent-light); transition: 0.2s; }
         .btn-add:active { transform: scale(0.95); opacity: 0.9; }
 
         .tab-bar-container { position: fixed; bottom: 25px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 1000; padding: 0 20px; box-sizing: border-box; pointer-events: none; }
@@ -642,25 +642,25 @@
                 inset 0 1px 0 rgba(255,255,255,0.08),
                 inset 0 -1px 0 rgba(0,0,0,0.15);
         }
-        .tab-btn { position: relative; z-index: 1; flex: 1; background: none; border: none; color: var(--text-muted); padding: 8px 0; border-radius: 20px; cursor: pointer; transition: color 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
+        .tab-btn { position: relative; z-index: 1; flex: 1; background: none; border: none; color: var(--text-muted); padding: 8px 0; border-radius: 15px; cursor: pointer; transition: color 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
         .tab-btn.active { color: var(--accent); }
         .tab-icon { font-size: 22px; transition: transform 0.2s; }
         .tab-btn.active .tab-icon { transform: scale(1.1); }
-        .tab-text { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .tab-text { font-size: 10px; font-weight: 600; text-transform: none; letter-spacing: 0; }
 
         .month-selector { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); border-radius: var(--radius-card); padding: 16px 25px; margin-bottom: 25px; box-shadow: var(--shadow); }
-        .month-btn { background: var(--input-bg); color: var(--accent); border: none; width: 44px; height: 44px; border-radius: 16px; font-size: 22px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .month-btn { background: var(--input-bg); color: var(--accent); border: none; width: 44px; height: 44px; border-radius: 12px; font-size: 22px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
         .month-btn:active { transform: scale(0.9); }
-        .month-label { font-size: 18px; font-weight: 800; text-transform: capitalize; color: var(--text-main); letter-spacing: -0.5px;}
+        .month-label { font-size: 18px; font-weight: 700; text-transform: capitalize; color: var(--text-main); letter-spacing: -0.5px;}
 
-        .card { background-color: var(--card-bg); border-radius: var(--radius-card); padding: 22px; margin-bottom: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+        .card { background-color: var(--card-bg); border-radius: var(--radius-card); padding: 20px; margin-bottom: 14px; box-shadow: var(--shadow); border: 1px solid var(--border); }
 
 
         .hero-tint { position: absolute; inset: 0; opacity: 0; transition: opacity .5s; border-radius: var(--radius-card); pointer-events: none; }
         .hero-tint.positive { background: radial-gradient(ellipse at 50% 120%, rgba(76,175,130,0.12) 0%, transparent 70%); opacity: 1; }
         .hero-tint.negative { background: radial-gradient(ellipse at 50% 120%, rgba(224,92,92,0.12) 0%, transparent 70%); opacity: 1; }
         .hero-curve { position: absolute; bottom: 0; left: 0; right: 0; pointer-events: none; opacity: 0.07; }
-        .hero-section { position: relative; text-align: center; padding: 40px 20px 32px 20px; overflow: hidden; background: var(--card-bg); border-radius: var(--radius-card); box-shadow: var(--shadow); margin-bottom: 25px; }
+        .hero-section { position: relative; text-align: center; padding: 28px 20px 24px 20px; overflow: hidden; background: var(--card-bg); border-radius: var(--radius-card); box-shadow: var(--shadow); margin-bottom: 25px; }
         .hero-section::before {
             content: '';
             position: absolute; top: 0; left: 0; right: 0; height: 50%;
@@ -671,13 +671,13 @@
         .hero-bg-curve { position: absolute; bottom: -5px; left: 0; width: 100%; height: 75%; z-index: 0; pointer-events: none; }
         .hero-content { position: relative; z-index: 1; }
         .hero-label { font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 12px; opacity: 0.7; }
-        .hero-balance { font-size: 62px; font-weight: 800; letter-spacing: -3px; line-height: 1; margin-bottom: 20px; font-variant-numeric: tabular-nums; }
+        .hero-balance { font-size: 62px; font-weight: 700; letter-spacing: -3px; line-height: 1; margin-bottom: 20px; font-variant-numeric: tabular-nums; }
         .hero-stats { display: flex; justify-content: center; gap: 15px; }
         .hero-stat-pill { background: var(--input-bg); padding: 10px 16px; border-radius: 50px; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px;}
 
         .accounts-scroll { display: flex; gap: 16px; overflow-x: auto; margin-bottom: 30px; scrollbar-width: none; padding: 10px 0; }
         .accounts-scroll::-webkit-scrollbar { display: none; }
-        .bank-card { min-width: 260px; padding: 24px; border-radius: 24px; color: white; position: relative; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .bank-card { min-width: 260px; padding: 24px; border-radius: 12px; color: white; position: relative; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
         .bank-card.blue { background: linear-gradient(150deg, #4f8ef7 0%, #2d5fd4 100%); }
         .bank-card.purple { background: linear-gradient(150deg, #9b6de8 0%, #6b3fbf 100%); }
         .bank-card.pink { background: linear-gradient(150deg, #e8607a 0%, #b83358 100%); }
@@ -718,14 +718,14 @@
         @keyframes slideUpSheet { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .sheet-handle { width: 40px; height: 5px; background: var(--text-muted); border-radius: 3px; margin: 0 auto 20px auto; opacity: 0.3; }
 
-        .segmented-control { display: flex; background: var(--input-bg); border-radius: 14px; padding: 4px; margin-bottom: 25px; }
+        .segmented-control { display: flex; background: var(--input-bg); border-radius: 12px; padding: 4px; margin-bottom: 25px; }
         .segment { flex: 1; text-align: center; padding: 12px; font-size: 14px; font-weight: 600; border-radius: 10px; cursor: pointer; color: var(--text-muted); transition: 0.2s; }
         .segment.active { background: var(--card-bg); color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .segment.active.income-tab { color: var(--green); }
         
         .input-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;}
         .input-group label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-left: 4px; letter-spacing: 0.5px;}
-        .input-control { background-color: var(--input-bg); color: var(--text-main); border: none; padding: 16px; border-radius: 16px; width: 100%; box-sizing: border-box; font-size: 16px; outline: none; font-weight: 500; transition: 0.2s; }
+        .input-control { background-color: var(--input-bg); color: var(--text-main); border: none; padding: 16px; border-radius: 12px; width: 100%; box-sizing: border-box; font-size: 16px; outline: none; font-weight: 500; transition: 0.2s; }
         .input-control:focus { background-color: var(--card-bg); box-shadow: 0 0 0 2px var(--accent); }
 
 
@@ -771,7 +771,7 @@
         .adv-proj-row { display:flex; justify-content:space-between; align-items:center; padding:10px 12px; background:var(--input-bg); border-radius:10px; margin-bottom:8px; }
         .adv-proj-row:last-child { margin-bottom:0; }
         /* ── TRENDS ── */
-        .trend-card { background: var(--card-bg); border-radius: 18px; padding: 16px 18px; margin-bottom: 10px; border: 1px solid var(--border); display: flex; align-items: center; gap: 14px; }
+        .trend-card { background: var(--card-bg); border-radius: 12px; padding: 16px 18px; margin-bottom: 10px; border: 1px solid var(--border); display: flex; align-items: center; gap: 14px; }
         .trend-icon { font-size: 22px; width: 44px; height: 44px; background: var(--input-bg); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .trend-body { flex: 1; min-width: 0; }
         .trend-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
@@ -791,12 +791,12 @@
         .bar-current { border: 2px solid var(--accent); box-sizing: border-box; }
 
         /* ── PUSH NOTIF BANNER ── */
-        #notif-banner { display: none; background: linear-gradient(135deg, var(--accent), #2d5fd4); color: white; border-radius: 16px; padding: 14px 18px; margin-bottom: 16px; cursor: pointer; }
+        #notif-banner { display: none; background: linear-gradient(135deg, var(--accent), #2d5fd4); color: white; border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; cursor: pointer; }
         #notif-banner h4 { font-size: 14px; font-weight: 700; margin: 0 0 4px 0; }
         #notif-banner p { font-size: 12px; margin: 0; opacity: 0.85; }
 
         /* ── WEEKLY RECAP ── */
-        #weekly-recap { display: none; background: var(--card-bg); border-radius: 18px; padding: 18px; margin-bottom: 16px; border: 1px solid var(--border); }
+        #weekly-recap { display: none; background: var(--card-bg); border-radius: 12px; padding: 18px; margin-bottom: 16px; border: 1px solid var(--border); }
         .recap-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--input-bg); }
         .recap-row:last-child { border-bottom: none; }
         .recap-label { font-size: 13px; color: var(--text-muted); }
@@ -814,17 +814,17 @@
         .suggest-item:last-child { border-bottom:none; }
         .suggest-item:hover { background:var(--input-bg); }
         .suggest-icon { font-size:20px; width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:var(--input-bg); flex-shrink:0; }
-        .amount-input { font-size: 48px; font-weight: 800; background: transparent; border: none; outline: none; color: var(--text-main); width: 100%; text-align: center; margin-bottom: 25px; letter-spacing: -2px;}
+        .amount-input { font-size: 48px; font-weight: 700; background: transparent; border: none; outline: none; color: var(--text-main); width: 100%; text-align: center; margin-bottom: 25px; letter-spacing: -2px;}
         .amount-input::placeholder { color: var(--text-muted); opacity: 0.5; }
         
         .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
-        .category-item { display: flex; flex-direction: column; align-items: center; background-color: var(--input-bg); border-radius: 20px; padding: 18px 5px; cursor: pointer; transition: 0.2s; text-align: center; }
+        .category-item { display: flex; flex-direction: column; align-items: center; background-color: var(--input-bg); border-radius: 15px; padding: 18px 5px; cursor: pointer; transition: 0.2s; text-align: center; }
         .category-item.selected { background: var(--accent-light); color: var(--accent); transform: scale(0.98); }
-        .btn-submit { background-color: var(--accent); color: white; border: none; width: 100%; padding: 18px; border-radius: 18px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px var(--accent-light); }
+        .btn-submit { background-color: var(--accent); color: white; border: none; width: 100%; padding: 18px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px var(--accent-light); }
         .btn-submit:active { transform: scale(0.98); }
 
         /* old tx-date-header */ .tx-date-header-old { font-size: 11px; font-weight: 700; color: var(--text-muted); margin: 22px 0 6px 0; text-transform: uppercase; letter-spacing: 1.2px; opacity: 0.7; }
-        .tx-item-content { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; cursor: pointer; transition: opacity .15s; }
+        .tx-item-content { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; cursor: pointer; transition: opacity .15s; }
         .tx-item-content:active { opacity: 0.65; }
         .tx-icon-box { font-size: 22px; background: var(--input-bg); width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 13px; margin-right: 14px; flex-shrink: 0; }
         .tx-title { font-weight: 600; font-size: 15px; margin-bottom: 3px; }
@@ -840,7 +840,7 @@
 
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
         .cal-day-label { text-align: center; font-size: 12px; font-weight: 600; color: var(--text-muted); padding-bottom: 10px; }
-        .cal-cell { aspect-ratio: 1; background: var(--input-bg); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; position: relative; cursor: pointer; transition: 0.2s; }
+        .cal-cell { aspect-ratio: 1; background: var(--input-bg); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; position: relative; cursor: pointer; transition: 0.2s; }
         .cal-cell:hover { background: var(--accent-light); }
         .cal-cell.has-tx { background: var(--accent-light); color: var(--accent); }
         .cal-cell.has-tx::after { content: ''; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; position: absolute; bottom: 8px; }
@@ -852,12 +852,12 @@
         .ring-fill { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s cubic-bezier(0.16, 1, 0.3, 1); }
         .ring-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 22px; }
 
-        .advice-box { background: var(--card-bg); padding: 18px; border-radius: 18px; margin-bottom: 25px; display: flex; gap: 15px; align-items: flex-start; box-shadow: var(--shadow); }
+        .advice-box { background: var(--card-bg); padding: 18px; border-radius: 12px; margin-bottom: 25px; display: flex; gap: 15px; align-items: flex-start; box-shadow: var(--shadow); }
         .advice-icon { font-size: 28px; }
         .advice-text { font-size: 14px; line-height: 1.6; color: var(--text-main); }
         
         .projection-box { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
-        .proj-card { background: var(--input-bg); padding: 18px; border-radius: 16px; text-align: center; }
+        .proj-card { background: var(--input-bg); padding: 18px; border-radius: 12px; text-align: center; }
         .proj-title { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 0.5px;}
         .proj-val { font-size: 22px; font-weight: 700; color: var(--green); letter-spacing: -0.5px;}
 
@@ -1151,11 +1151,11 @@
             padding: 20px;
             display: none;
         }
-        .sk-hero  { height: 160px; border-radius: 20px; margin-bottom: 16px; }
-        .sk-card  { height: 80px;  border-radius: 18px; margin-bottom: 12px; }
-        .sk-card-sm { height: 56px; border-radius: 14px; margin-bottom: 10px; }
+        .sk-hero  { height: 160px; border-radius: 15px; margin-bottom: 16px; }
+        .sk-card  { height: 80px;  border-radius: 12px; margin-bottom: 12px; }
+        .sk-card-sm { height: 56px; border-radius: 12px; margin-bottom: 10px; }
         .sk-row   { display: flex; gap: 12px; margin-bottom: 12px; }
-        .sk-row .skeleton { flex: 1; height: 56px; border-radius: 14px; }
+        .sk-row .skeleton { flex: 1; height: 56px; border-radius: 12px; }
 
         /* ── CONFIRMATION CHECK ── */
         #confirm-overlay {
@@ -1182,7 +1182,7 @@
             to   { transform: scale(1) rotate(0deg); }
         }
         .confirm-label { font-size: 18px; font-weight: 700; color: var(--text-main); }
-        .confirm-amount { font-size: 28px; font-weight: 800; color: var(--green); margin-top: 6px; font-family: 'Lora', Georgia, serif; }
+        .confirm-amount { font-size: 28px; font-weight: 700; color: var(--green); margin-top: 6px; font-family: 'Lora', Georgia, serif; }
 
 
 
@@ -1197,7 +1197,7 @@
 
         /* ── TX ICON BADGE ── */
         .tx-icon-badge {
-            width: 48px; height: 48px; border-radius: 14px;
+            width: 48px; height: 48px; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
             font-size: 22px; margin-right: 14px; flex-shrink: 0;
             position: relative; overflow: hidden;
@@ -1218,7 +1218,7 @@
         }
         .tab-btn:hover {
             background: rgba(200,145,58,0.08);
-            border-radius: 20px;
+            border-radius: 15px;
             transition: background .2s;
         }
         .tab-btn:active .tab-icon {
@@ -1232,7 +1232,7 @@
             content: '';
             position: absolute; inset: 0;
             background: radial-gradient(circle, rgba(200,145,58,0.2) 0%, transparent 70%);
-            opacity: 0; border-radius: 20px;
+            opacity: 0; border-radius: 15px;
             transition: opacity .3s;
             pointer-events: none;
         }
@@ -1281,9 +1281,9 @@
         .ob-step.active { display: flex; flex-direction: column; align-items: center; gap: 16px; animation: obSlide .35s cubic-bezier(0.16,1,0.3,1); }
         @keyframes obSlide { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:translateX(0); } }
         .ob-emoji { font-size: 72px; line-height: 1; margin-bottom: 4px; animation: floatIcon 3s ease-in-out infinite; }
-        .ob-title { font-size: 26px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
+        .ob-title { font-size: 26px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px; }
         .ob-sub   { font-size: 15px; color: var(--text-muted); line-height: 1.6; max-width: 300px; }
-        .ob-input { width: 100%; padding: 16px; border-radius: 16px; border: none; background: var(--input-bg); color: var(--text-main); font-family: inherit; font-size: 18px; font-weight: 700; text-align: center; outline: none; box-sizing: border-box; }
+        .ob-input { width: 100%; padding: 16px; border-radius: 12px; border: none; background: var(--input-bg); color: var(--text-main); font-family: inherit; font-size: 18px; font-weight: 700; text-align: center; outline: none; box-sizing: border-box; }
         .ob-input:focus { box-shadow: 0 0 0 3px var(--accent-light); }
         .ob-btn { width: 100%; padding: 16px; border-radius: 50px; border: none; background: var(--accent); color: white; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 6px 20px var(--accent-light); transition: transform .2s; }
         .ob-btn:hover { transform: translateY(-2px); }
@@ -1320,7 +1320,7 @@
         .swile-meals { font-size: 12px; color: rgba(255,255,255,0.7); line-height: 1.4; }
         .swile-low-badge {
             display: inline-flex; align-items: center; gap: 4px;
-            background: rgba(255,255,255,0.2); border-radius: 20px;
+            background: rgba(255,255,255,0.2); border-radius: 15px;
             padding: 3px 10px; font-size: 11px; font-weight: 700; color: white;
             margin-top: 8px;
         }
@@ -1365,7 +1365,7 @@
             width: 100%; padding: 18px; text-align: center;
             font-family: 'Lora', Georgia, serif;
             font-size: 42px; font-weight: 700; letter-spacing: -1px;
-            border: none; border-radius: 18px;
+            border: none; border-radius: 12px;
             background: var(--input-bg); color: var(--text-main);
             outline: none; box-sizing: border-box;
             transition: box-shadow .2s, color .2s;
@@ -1410,7 +1410,7 @@
 <div id="auth-screen">
     <div class="auth-box">
         <div class="auth-logo">💰</div>
-        <h1 style="margin-top:0; font-size:26px; letter-spacing:-0.5px; font-weight:800;">Budget Pro</h1>
+        <h1 style="margin-top:0; font-size:26px; letter-spacing:-0.5px; font-weight:700;">Budget Pro</h1>
         <p style="color:var(--text-muted); font-size:14px; margin-bottom:30px;">Connexion sécurisée au cloud privé.</p>
         
         <div id="auth-error-msg" class="auth-error"></div>
@@ -1428,7 +1428,7 @@
         <button class="close-btn" style="position:absolute; top:25px; right:25px; background:var(--input-bg); border:none; width:36px; height:36px; border-radius:18px; color:var(--text-muted); font-size:18px; display:flex; justify-content:center; align-items:center; cursor:pointer;" onclick="closeAddModal()">✕</button>
         
         <div id="modal-breadcrumb" style="display:none;font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;"></div>
-        <h2 id="modal-title" style="font-size:20px;font-weight:800;margin-bottom:16px;">Nouvelle opération</h2>
+        <h2 id="modal-title" style="font-size:20px;font-weight:700;margin-bottom:16px;">Nouvelle opération</h2>
         
         <div style="display:flex; justify-content:center; gap:6px; margin-bottom:20px; background:var(--input-bg); border-radius:16px; padding:4px;">
             <button id="type-exp-btn" class="type-pill active-pill" onclick="setOpType('expense')">💸 Dépense</button>
@@ -1465,7 +1465,7 @@
 
         <!-- MODE PAVÉ -->
         <div id="numpad-display" onclick="openNumpad()" style="cursor:pointer;margin-bottom:20px;text-align:center;display:flex;flex-direction:column;align-items:center;">
-            <div id="numpad-value" style="font-size:48px;font-weight:800;letter-spacing:-2px;color:var(--text-main);min-height:58px;line-height:1;">0</div>
+            <div id="numpad-value" style="font-size:48px;font-weight:700;letter-spacing:-2px;color:var(--text-main);min-height:58px;line-height:1;">0</div>
             <div id="numpad-hint" style="font-size:13px;color:var(--text-muted);font-weight:600;margin-top:2px;">Appuyer pour saisir le montant</div>
         </div>
 
@@ -1482,7 +1482,7 @@
             <div style="width:100%;max-width:420px;background:var(--card-bg);border-radius:24px 24px 0 0;padding:24px 20px 40px;animation:slideUpSheet .25s;">
                 <div style="width:40px;height:4px;background:var(--input-bg);border-radius:50px;margin:0 auto 20px;"></div>
                 <div id="numpad-type-label" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:10px;text-align:center;">Dépense</div>
-                <div id="numpad-screen" style="font-size:56px;font-weight:800;letter-spacing:-2px;color:var(--text-main);min-height:70px;text-align:center;transition:color .15s;margin-bottom:4px;">0</div>
+                <div id="numpad-screen" style="font-size:56px;font-weight:700;letter-spacing:-2px;color:var(--text-main);min-height:70px;text-align:center;transition:color .15s;margin-bottom:4px;">0</div>
                 <div style="font-size:13px;color:var(--text-muted);font-weight:600;text-align:center;margin-bottom:20px;">€</div>
             <div style="padding:0;">
                 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px;">
@@ -1493,7 +1493,7 @@
                 </div>
                 <div style="display:flex;gap:10px;margin-top:10px;">
                     <button onclick="closeNumpad()" style="flex:1;padding:16px;border-radius:14px;border:none;background:var(--input-bg);color:var(--text-muted);font-size:15px;font-weight:700;cursor:pointer;">Annuler</button>
-                    <button onclick="confirmNumpad()" style="flex:2;padding:16px;border-radius:14px;border:none;background:var(--accent);color:white;font-size:16px;font-weight:800;cursor:pointer;">Valider &#10003;</button>
+                    <button onclick="confirmNumpad()" style="flex:2;padding:16px;border-radius:14px;border:none;background:var(--accent);color:white;font-size:16px;font-weight:700;cursor:pointer;">Valider &#10003;</button>
                 </div>
             </div></div>
         </div>
@@ -1565,7 +1565,7 @@
     <div class="modal-content">
         <div class="sheet-handle"></div>
         <button class="close-btn" style="position:absolute; top:25px; right:25px; background:var(--input-bg); border:none; width:36px; height:36px; border-radius:18px; color:var(--text-muted); font-size:18px; display:flex; justify-content:center; align-items:center; cursor:pointer;" onclick="closeWishlistModal()">✕</button>
-        <h2 id="wishlist-modal-title" style="margin-top:0; margin-bottom:25px; font-size:24px; font-weight:800; letter-spacing:-0.5px;">Mon Projet</h2>
+        <h2 id="wishlist-modal-title" style="margin-top:0; margin-bottom:25px; font-size:24px; font-weight:700; letter-spacing:-0.5px;">Mon Projet</h2>
         
         <input type="number" step="0.01" id="inp-wish-price" class="amount-input" placeholder="0,00 €">
         
@@ -1646,16 +1646,16 @@
                 <div style="font-size:12px; font-weight:600; text-align:center; color:var(--text-muted); margin-top:12px;">Objectif d'épargne : <span id="dash-goal-text">0</span>€ restants en fin de mois</div>
             </div>
 
-            <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Comptes</h2>
+            <h2 style="font-size:22px; margin:28px 0 12px 0; letter-spacing:-0.5px; font-weight:700;">Comptes</h2>
             <div class="accounts-scroll" id="accounts-container"></div>
 
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; margin-top:35px;">
-                <h2 style="font-size:22px; margin:0; letter-spacing:-0.5px; font-weight:800;">Mes Projets</h2>
+                <h2 style="font-size:22px; margin:0; letter-spacing:-0.5px; font-weight:700;">Mes Projets</h2>
                 <button style="background:var(--card-bg); color:var(--accent); border:none; padding:8px 16px; border-radius:14px; font-weight:700; cursor:pointer; box-shadow:var(--shadow);" onclick="openWishlistModal()">+ Ajouter</button>
             </div>
             <div id="wishlist-container"></div>
             
-            <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">À venir ce mois-ci</h2>
+            <h2 style="font-size:22px; margin:28px 0 12px 0; letter-spacing:-0.5px; font-weight:700;">À venir ce mois-ci</h2>
             <div class="card" style="padding:10px 24px;">
                 <div id="upcoming-list" style="font-size:15px; color:var(--text-muted);"></div>
             </div>
@@ -1663,7 +1663,7 @@
     </div>
 
     <div id="tab-tx" class="section">
-        <h1 style="font-size: 34px; font-weight: 800; letter-spacing: -1px; margin-bottom: 20px;">Transactions</h1>
+        <h1 style="font-size: 26px; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 20px;">Transactions</h1>
         
         <input type="text" id="tx-search" placeholder="🔍 Rechercher (Libellé, #Tag...)" style="width:100%; padding:16px 20px; border-radius:18px; border:none; background:var(--card-bg); box-shadow:var(--shadow); color:var(--text-main); font-size:16px; font-weight:500; outline:none; margin-bottom:20px; box-sizing:border-box;" oninput="renderTransactions()">
         
@@ -1699,18 +1699,18 @@
     </div>
 
     <div id="tab-stats" class="section">
-        <h1 style="font-size: 34px; font-weight: 800; letter-spacing: -1px; margin-bottom: 6px;">Analyses</h1>
+        <h1 style="font-size: 26px; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 6px;">Analyses</h1>
         <p id="stats-subtitle" style="font-size:14px; color:var(--text-muted); margin-bottom:20px; line-height:1.5;"></p>
 
         <!-- TENDANCES INTELLIGENTES -->
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <h2 style="font-size:18px; font-weight:800; letter-spacing:-0.5px; margin:0;">📈 Tendances</h2>
+            <h2 style="font-size:18px; font-weight:700; letter-spacing:-0.5px; margin:0;">📈 Tendances</h2>
         </div>
         <div id="trends-list" style="margin-bottom:28px;"></div>
 
         <!-- GRAPHIQUE 6 MOIS -->
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <h2 style="font-size:18px; font-weight:800; letter-spacing:-0.5px; margin:0;">📆 Historique mensuel</h2>
+            <h2 style="font-size:18px; font-weight:700; letter-spacing:-0.5px; margin:0;">📆 Historique mensuel</h2>
         </div>
         <div class="card" style="margin-bottom:28px;">
             <div class="bar-chart-wrap" id="bar-chart-months"></div>
@@ -1723,7 +1723,7 @@
                     <circle cx="50" cy="50" r="44" fill="none" stroke="var(--border)" stroke-width="12"/>
                     <circle id="score-circle" cx="50" cy="50" r="44" fill="none" stroke="var(--accent)" stroke-width="12" stroke-dasharray="276" stroke-dashoffset="276" stroke-linecap="round" style="transition: stroke-dashoffset 1.5s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.5s;"/>
                 </svg>
-                <div id="score-text" class="blur-val" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:32px; font-weight:800; letter-spacing:-1px;">0</div>
+                <div id="score-text" class="blur-val" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:32px; font-weight:700; letter-spacing:-1px;">0</div>
             </div>
             <div>
                 <h2 style="margin:0 0 8px 0; font-size:20px; letter-spacing:-0.5px;">Score Santé</h2>
@@ -1736,10 +1736,10 @@
             <div class="advice-text" id="advice-text">Calcul en cours...</div>
         </div>
 
-        <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Radar Abonnements</h2>
+        <h2 style="font-size:22px; margin:28px 0 12px 0; letter-spacing:-0.5px; font-weight:700;">Radar Abonnements</h2>
         <div id="sub-radar-list"></div>
 
-        <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Projections & Épargne</h2>
+        <h2 style="font-size:22px; margin:28px 0 12px 0; letter-spacing:-0.5px; font-weight:700;">Projections & Épargne</h2>
         <div class="card">
             <div class="prog-header"><span>Fonds d'urgence</span><span id="emergency-label" style="color:var(--text-main); font-weight:700;" class="blur-val">0 € / 0 €</span></div>
             <div class="prog-bar-bg"><div class="prog-bar-fill" id="emergency-fill" style="background:var(--green)"></div></div>
@@ -1750,7 +1750,7 @@
             </div>
         </div>
 
-        <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Règle d'or (50/30/20)</h2>
+        <h2 style="font-size:22px; margin:28px 0 12px 0; letter-spacing:-0.5px; font-weight:700;">Règle d'or (50/30/20)</h2>
         <div class="card">
             <div class="rings-container" style="padding:10px 0;">
                 <div style="position:relative; width:80px; height:80px;"><svg viewBox="0 0 100 100" style="transform:rotate(-90deg);width:100%;height:100%;"><circle fill="none" stroke="var(--input-bg)" stroke-width="12" cx="50" cy="50" r="40"/><circle id="ring-fixe" fill="none" stroke="var(--red)" stroke-width="12" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" cx="50" cy="50" r="40" style="transition:1s cubic-bezier(0.16,1,0.3,1)"/></svg><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:20px;">🏠</div></div>
@@ -1762,42 +1762,42 @@
             </div>
         </div>
         
-        <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Détails & Enveloppes</h2>
+        <h2 style="font-size:22px; margin:28px 0 12px 0; letter-spacing:-0.5px; font-weight:700;">Détails & Enveloppes</h2>
         <div class="card" style="padding:20px;">
             <div id="stats-list"></div>
         </div>
     </div>
 
     <div id="tab-advice" class="section">
-        <h1 style="font-size:34px;font-weight:800;letter-spacing:-1px;margin-bottom:6px;">💡 Conseils</h1>
+        <h1 style="font-size:34px;font-weight:700;letter-spacing:-1px;margin-bottom:6px;">💡 Conseils</h1>
         <p style="font-size:14px;color:var(--text-muted);margin-bottom:24px;">Personnalisés selon vos habitudes.</p>
 
         <!-- SCORE + CONSEIL PRINCIPAL -->
         <div id="advice-hero" style="background:linear-gradient(135deg,var(--accent),#2d5fd4);border-radius:24px;padding:24px;margin-bottom:16px;color:white;">
             <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.75;margin-bottom:8px;">Votre situation</div>
-            <div id="adv-score-line" style="font-size:28px;font-weight:800;letter-spacing:-1px;margin-bottom:8px;">–</div>
+            <div id="adv-score-line" style="font-size:28px;font-weight:700;letter-spacing:-1px;margin-bottom:8px;">–</div>
             <div id="adv-main-tip" style="font-size:14px;opacity:.9;line-height:1.5;">Chargement...</div>
         </div>
 
         <!-- RÈGLE 50/30/20 -->
         <div class="card" id="adv-rule-card" style="margin-bottom:16px;">
-            <div style="font-size:16px;font-weight:800;margin-bottom:4px;">Règle 50 / 30 / 20</div>
+            <div style="font-size:16px;font-weight:700;margin-bottom:4px;">Règle 50 / 30 / 20</div>
             <div style="font-size:13px;color:var(--text-muted);margin-bottom:18px;">Répartition idéale de vos revenus</div>
             <div id="adv-rule-rows"></div>
         </div>
 
         <!-- CONSEILS PERSONNALISÉS -->
-        <div style="font-size:18px;font-weight:800;margin-bottom:12px;letter-spacing:-0.5px;">📋 Actions concrètes</div>
+        <div style="font-size:18px;font-weight:700;margin-bottom:12px;letter-spacing:-0.5px;">📋 Actions concrètes</div>
         <div id="adv-tips-list" style="margin-bottom:24px;"></div>
 
         <!-- OBJECTIFS D'ÉPARGNE -->
-        <div style="font-size:18px;font-weight:800;margin-bottom:12px;letter-spacing:-0.5px;">🎯 Vos objectifs</div>
+        <div style="font-size:18px;font-weight:700;margin-bottom:12px;letter-spacing:-0.5px;">🎯 Vos objectifs</div>
         <div class="card" style="margin-bottom:16px;">
             <div id="adv-goals-content"></div>
         </div>
 
         <!-- PROJECTIONS -->
-        <div style="font-size:18px;font-weight:800;margin-bottom:12px;letter-spacing:-0.5px;">📈 Projections d'épargne</div>
+        <div style="font-size:18px;font-weight:700;margin-bottom:12px;letter-spacing:-0.5px;">📈 Projections d'épargne</div>
         <div class="card" style="margin-bottom:32px;">
             <div id="adv-projections"></div>
         </div>
@@ -1805,10 +1805,10 @@
 
 
     <div id="tab-settings" class="section">
-        <h1 style="font-size: 34px; font-weight: 800; letter-spacing: -1px; margin-bottom: 20px;">Réglages</h1>
+        <h1 style="font-size: 26px; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 20px;">Réglages</h1>
         
         <div class="card" style="display:flex; align-items:center; gap:20px;">
-            <div id="profile-avatar" style="width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 70%,#000));display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:white;letter-spacing:-1px;font-family:'Lora',Georgia,serif;box-shadow:0 4px 16px var(--accent-light);flex-shrink:0;">?</div>
+            <div id="profile-avatar" style="width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 70%,#000));display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:white;letter-spacing:-1px;font-family:'Lora',Georgia,serif;box-shadow:0 4px 16px var(--accent-light);flex-shrink:0;">?</div>
             <div style="flex:1;">
                 <input type="text" id="set-displayname" placeholder="Votre Prénom" oninput="saveDisplayName()" style="background:transparent; border:none; color:var(--text-main); font-size:22px; font-weight:700; width:100%; outline:none; padding:0; margin-bottom:4px;" placeholder="Votre prénom">
                 <div id="profile-email-display" style="font-size:13px; color:var(--text-muted);">Connecté</div>
@@ -1816,7 +1816,7 @@
         </div>
 
         
-        <h2 style="font-size:20px; font-weight:700; margin:30px 0 15px 0; letter-spacing:-0.3px; display:flex; align-items:center; gap:10px;">
+        <h2 style="font-size:20px; font-weight:700; margin:24px 0 12px 0; letter-spacing:-0.3px; display:flex; align-items:center; gap:10px;">
             🍽️ Swile — Tickets restau
         </h2>
         <div class="card" style="padding:0 20px;">
@@ -1868,7 +1868,7 @@
             </button>
         </div>
 
-        <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Objectifs</h2>
+        <h2 style="font-size:22px; margin:28px 0 12px 0; letter-spacing:-0.5px; font-weight:700;">Objectifs</h2>
         <div class="card" style="padding:0 20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 0; border-bottom:1px solid var(--input-bg);">
                 <div><div style="font-weight:600; font-size:15px;">Épargne cible</div><div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Fin de mois</div></div>
@@ -1880,7 +1880,7 @@
             </div>
         </div>
 
-        <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Zones de solde</h2>
+        <h2 style="font-size:22px; margin:28px 0 12px 0; letter-spacing:-0.5px; font-weight:700;">Zones de solde</h2>
         <div class="card" style="padding:0 20px;">
             <div style="padding:14px 0 6px 0; font-size:13px; color:var(--text-muted); line-height:1.5;">
                 Définissez vos seuils pour le code couleur des comptes.
@@ -1920,7 +1920,7 @@
             </div>
         </div>
 
-        <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Mes Comptes</h2>
+        <h2 style="font-size:22px; margin:28px 0 12px 0; letter-spacing:-0.5px; font-weight:700;">Mes Comptes</h2>
         <div class="card" style="padding: 10px 20px;">
             <div id="settings-accounts-list"></div>
             <div id="add-account-form" style="display:none; margin-top:14px; background:var(--input-bg); border-radius:16px; padding:16px; flex-direction:column; gap:10px;">
@@ -1960,14 +1960,14 @@
             <button id="btn-show-add-account" style="background:var(--input-bg); color:var(--accent); border:none; width:100%; padding:14px; border-radius:14px; font-weight:600; cursor:pointer; margin:10px 0;" onclick="showAddAccountForm()">+ Ajouter un compte</button>
         </div>
 
-        <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Mes Catégories & Limites</h2>
+        <h2 style="font-size:22px; margin:28px 0 12px 0; letter-spacing:-0.5px; font-weight:700;">Mes Catégories & Limites</h2>
         <div class="card" style="padding: 10px 20px;">
             <div id="settings-custom-cats-list"></div>
             <button style="background:var(--input-bg); color:var(--accent); border:none; width:100%; padding:14px; border-radius:14px; font-weight:600; cursor:pointer; margin:10px 0;" onclick="addCustomCategory()">+ Créer une catégorie</button>
         </div>
         <div class="card" style="padding: 10px 20px;" id="settings-cat-budgets"></div>
 
-        <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Apparence</h2>
+        <h2 style="font-size:22px; margin:28px 0 12px 0; letter-spacing:-0.5px; font-weight:700;">Apparence</h2>
         <div class="card" style="padding:0 20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 0; border-bottom:1px solid var(--input-bg);">
                 <div style="font-weight:600; font-size:15px;">Thème</div>
@@ -1985,7 +1985,7 @@
             </div>
         </div>
 
-        <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Outils</h2>
+        <h2 style="font-size:22px; margin:28px 0 12px 0; letter-spacing:-0.5px; font-weight:700;">Outils</h2>
         <div class="card" style="padding:20px;">
             <button onclick="document.getElementById('csv-file-input').click()" style="background:var(--input-bg); color:var(--text-main); border:none; width:100%; padding:16px; border-radius:16px; font-weight:600; cursor:pointer; margin-bottom:12px; display:flex; justify-content:center; gap:10px;">📥 Importer Relevé CSV</button>
             <input type="file" id="csv-file-input" style="display:none" accept=".csv" onchange="importCSV(event)">
@@ -2001,7 +2001,7 @@
             
             <button style="background:var(--card-bg); color:var(--orange); border:none; width:100%; padding:16px; border-radius:16px; font-weight:700; cursor:pointer; margin-bottom:12px;" onclick="freshStart()">🧹 Nouveau Mois (Garder Soldes)</button>
             <button style="background:var(--card-bg); color:var(--red); border:none; width:100%; padding:16px; border-radius:16px; font-weight:700; cursor:pointer; margin-bottom:12px;" onclick="deleteAllOperations()">🗑️ Effacer toutes les opérations</button>
-            <button style="background:var(--red); color:white; border:none; width:100%; padding:16px; border-radius:16px; font-weight:800; cursor:pointer; margin-bottom:12px;" onclick="clearData()">🔥 Réinitialiser (Réparation)</button>
+            <button style="background:var(--red); color:white; border:none; width:100%; padding:16px; border-radius:16px; font-weight:700; cursor:pointer; margin-bottom:12px;" onclick="clearData()">🔥 Réinitialiser (Réparation)</button>
             <button style="background:var(--card-bg); color:var(--text-main); border:1px solid var(--border); width:100%; padding:16px; border-radius:16px; font-weight:700; cursor:pointer;" onclick="logoutUser()">Se déconnecter</button>
         </div>
     </div>
@@ -2740,19 +2740,19 @@
 
         var html = '<div style="font-family:Georgia,serif;max-width:700px;margin:0 auto;padding:40px;color:#1e1a12;">'
             + '<div style="text-align:center;margin-bottom:32px;">'
-            + '<div style="font-size:28px;font-weight:800;color:#c8913a;letter-spacing:-1px;">Suivi Budget</div>'
+            + '<div style="font-size:28px;font-weight:700;color:#c8913a;letter-spacing:-1px;">Suivi Budget</div>'
             + '<div style="font-size:14px;color:#888;margin-top:4px;">' + (displayName ? 'Bonjour ' + displayName + ' — ' : '') + monthLabel + '</div>'
             + '</div>'
             + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px;">'
             + '<div style="background:#f0f8f4;border-radius:12px;padding:16px;text-align:center;">'
             + '<div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:6px;">Revenus</div>'
-            + '<div style="font-size:22px;font-weight:800;color:#4a8a60;">+' + mInc.toFixed(2) + ' €</div></div>'
+            + '<div style="font-size:22px;font-weight:700;color:#4a8a60;">+' + mInc.toFixed(2) + ' €</div></div>'
             + '<div style="background:#fdf0ee;border-radius:12px;padding:16px;text-align:center;">'
             + '<div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:6px;">Dépenses</div>'
-            + '<div style="font-size:22px;font-weight:800;color:#a05040;">-' + mExp.toFixed(2) + ' €</div></div>'
+            + '<div style="font-size:22px;font-weight:700;color:#a05040;">-' + mExp.toFixed(2) + ' €</div></div>'
             + '<div style="background:#fdf8f0;border-radius:12px;padding:16px;text-align:center;">'
             + '<div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:6px;">Épargne</div>'
-            + '<div style="font-size:22px;font-weight:800;color:' + (mSave>=0?'#c8913a':'#a05040') + ';">' + (mSave>=0?'+':'') + mSave.toFixed(2) + ' €</div></div>'
+            + '<div style="font-size:22px;font-weight:700;color:' + (mSave>=0?'#c8913a':'#a05040') + ';">' + (mSave>=0?'+':'') + mSave.toFixed(2) + ' €</div></div>'
             + '</div>'
             + '<table style="width:100%;border-collapse:collapse;font-size:13px;">'
             + '<thead><tr style="background:#f8f5ee;">'
@@ -3238,8 +3238,8 @@
 
             return `
             <div class="card" style="padding:20px; cursor:pointer;" onclick="openWishlistModal('${escapeHTML(w.id)}')">
-                <div style="font-weight:800; font-size:18px; margin-bottom:6px; letter-spacing:-0.5px;">${escapeHTML(w.name)} ${linkHtml}</div>
-                <div style="font-size:28px; font-weight:800; letter-spacing:-1px; margin-bottom:15px;">${w.price.toFixed(0)} €</div>
+                <div style="font-weight:700; font-size:18px; margin-bottom:6px; letter-spacing:-0.5px;">${escapeHTML(w.name)} ${linkHtml}</div>
+                <div style="font-size:28px; font-weight:700; letter-spacing:-1px; margin-bottom:15px;">${w.price.toFixed(0)} €</div>
                 <div class="prog-bar-bg" style="height:10px; margin-bottom:12px;"><div class="prog-bar-fill" style="width:${prog}%; background:${barColor}"></div></div>
                 <div style="font-size:13px;">${stat}</div>
             </div>`;
@@ -3348,10 +3348,10 @@
             document.getElementById('upcoming-list').innerHTML = up.map(e => `
             <div class="upcoming-item">
                 <div style="display:flex; align-items:center; gap:12px;">
-                    <div style="background:var(--input-bg); color:var(--text-main); width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:18px;">${e.displayDay}</div>
+                    <div style="background:var(--input-bg); color:var(--text-main); width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:18px;">${e.displayDay}</div>
                     <span style="font-weight:700; font-size:16px;">${escapeHTML(e.label)}</span>
                 </div>
-                <div class="blur-val" style="font-weight:800; font-size:18px; letter-spacing:-0.5px;">${e.amount.toFixed(0)} €</div>
+                <div class="blur-val" style="font-weight:700; font-size:18px; letter-spacing:-0.5px;">${e.amount.toFixed(0)} €</div>
             </div>`).join('');
         }
 
@@ -4279,7 +4279,7 @@
                 if(dE.length > 0) {
                     document.getElementById('cal-details-list').innerHTML = dE.map(e => {
                         const icon = e.type === 'income' ? '💰' : (categories.find(c => String(c.id) === String(e.cat)) || {}).icon || '📦';
-                        return `<div class="tx-item" onclick="openEditModal('${e.originalId}')"><span style="display:flex; align-items:center; gap:12px;"><div class="tx-icon-box" style="width:40px; height:40px; border-radius:12px; margin:0;">${icon}</div> <b>${escapeHTML(e.label)}</b></span><span class="blur-val" style="font-weight:800; font-size:16px; color:${e.type==='income'?'var(--green)':'var(--text-main)'}">${e.type==='income'?'+':'-'}${e.amount.toFixed(2)} €</span></div>`;
+                        return `<div class="tx-item" onclick="openEditModal('${e.originalId}')"><span style="display:flex; align-items:center; gap:12px;"><div class="tx-icon-box" style="width:40px; height:40px; border-radius:12px; margin:0;">${icon}</div> <b>${escapeHTML(e.label)}</b></span><span class="blur-val" style="font-weight:700; font-size:16px; color:${e.type==='income'?'var(--green)':'var(--text-main)'}">${e.type==='income'?'+':'-'}${e.amount.toFixed(2)} €</span></div>`;
                     }).join('');
                 } else {
                     document.getElementById('cal-details-list').innerHTML = '<div style="color:var(--text-muted); font-size:14px; padding:10px 0;">Rien ce jour.</div>';
@@ -4321,15 +4321,15 @@
                         <div style="font-size:13px; color:var(--text-muted); margin-top:2px;">${fT}</div>
                     </div>
                 </div>
-                <div style="font-weight:800; color:var(--red); font-size:18px;">- ${mC.toFixed(0)} € <span style="font-size:11px; color:var(--text-muted);">/m</span></div>
+                <div style="font-weight:700; color:var(--red); font-size:18px;">- ${mC.toFixed(0)} € <span style="font-size:11px; color:var(--text-muted);">/m</span></div>
             </div>`;
         });
 
         const headerHtml = `
         <div style="background:linear-gradient(135deg, #ff3b30 0%, #ff9500 100%); color:white; padding:25px; border-radius:24px; margin-bottom:25px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 10px 30px rgba(255,59,48,0.3);">
             <div>
-                <div style="font-size:13px; text-transform:uppercase; font-weight:800; letter-spacing:1px; margin-bottom:4px; opacity:0.9;">Total fixe</div>
-                <div style="font-size:38px; font-weight:800; letter-spacing:-1.5px;">${totalMonthly.toFixed(0)} € <span style="font-size:16px; font-weight:600; opacity:0.8;">/mois</span></div>
+                <div style="font-size:13px; text-transform:uppercase; font-weight:700; letter-spacing:1px; margin-bottom:4px; opacity:0.9;">Total fixe</div>
+                <div style="font-size:38px; font-weight:700; letter-spacing:-1.5px;">${totalMonthly.toFixed(0)} € <span style="font-size:16px; font-weight:600; opacity:0.8;">/mois</span></div>
             </div>
             <div style="font-size:52px; opacity:0.9;">📡</div>
         </div>`;
@@ -4441,7 +4441,7 @@
                         <div class="tx-icon-box" style="width:36px; height:36px; border-radius:10px; margin:0;">${cat.icon}</div> 
                         <span style="font-weight:700; color:var(--text-main); font-size:16px;">${escapeHTML(cat.label)}</span>
                     </span>
-                    <span class="blur-val" style="font-weight:800; font-size:16px; display:flex; align-items:center; gap:6px;">${val.toFixed(0)} € ${lT}</span>
+                    <span class="blur-val" style="font-weight:700; font-size:16px; display:flex; align-items:center; gap:6px;">${val.toFixed(0)} € ${lT}</span>
                 </div>
                 <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:${Math.min(pct, 100)}%; background:${col}"></div></div>
             </div>`;
