@@ -297,10 +297,10 @@
         .tx-item-content {
             background: var(--card-bg); position: relative; z-index: 1;
             transition: transform .25s cubic-bezier(0.16,1,0.3,1), background .18s ease !important;
-            cursor: grab;
+            cursor: pointer;
             user-select: none;
         }
-        .tx-item-content:active { cursor: grabbing; }
+        .tx-item-content.is-dragging { cursor: grabbing; }
 
         /* ── CARD GLASS REFLET ── */
         .bank-card::after {
@@ -4924,46 +4924,56 @@
 
     
     // ── SWIPE TO DELETE — MOUSE SUPPORT ──
-    var _mouseSwipeEl = null, _mouseStartX = 0, _mouseDown = false;
+    var _mouseSwipeEl = null, _mouseStartX = 0, _mouseDown = false, _mouseDragging = false;
 
     document.addEventListener('mousedown', function(e) {
         var item = e.target.closest('.tx-item-content');
         if (!item) return;
-        _mouseDown = true;
-        _mouseStartX = e.clientX;
-        _mouseSwipeEl = item;
-        item.style.transition = 'none';
         // Close others
         document.querySelectorAll('.tx-item-content.swipe-open').forEach(function(el) {
             if (el !== item) closeSwipe(el);
         });
+        _mouseDown = true;
+        _mouseDragging = false;
+        _mouseStartX = e.clientX;
+        _mouseSwipeEl = item;
     });
 
     document.addEventListener('mousemove', function(e) {
         if (!_mouseDown || !_mouseSwipeEl) return;
         var dx = e.clientX - _mouseStartX;
-        if (dx < 0) {
+        // Only activate swipe after real horizontal movement
+        if (!_mouseDragging && Math.abs(dx) < 8) return;
+        if (!_mouseDragging && dx < 0) {
+            _mouseDragging = true;
+            _mouseSwipeEl.style.transition = 'none';
+            _mouseSwipeEl.classList.add('is-dragging');
+        }
+        if (_mouseDragging && dx < 0) {
             var clamped = Math.max(dx, -SWIPE_THRESHOLD - 10);
             _mouseSwipeEl.style.transform = 'translateX(' + clamped + 'px)';
-        } else if (_mouseSwipeEl.classList.contains('swipe-open')) {
-            _mouseSwipeEl.style.transform = 'translateX(0)';
-            _mouseSwipeEl.classList.remove('swipe-open');
         }
     });
 
     document.addEventListener('mouseup', function(e) {
         if (!_mouseDown || !_mouseSwipeEl) return;
-        var dx = e.clientX - _mouseStartX;
-        _mouseSwipeEl.style.transition = 'transform 0.25s cubic-bezier(0.16,1,0.3,1)';
-        if (dx < -SWIPE_THRESHOLD / 2) {
-            _mouseSwipeEl.style.transform = 'translateX(-' + SWIPE_THRESHOLD + 'px)';
-            _mouseSwipeEl.classList.add('swipe-open');
-        } else {
-            closeSwipe(_mouseSwipeEl);
+        _mouseSwipeEl.classList.remove('is-dragging');
+        if (_mouseDragging) {
+            var dx = e.clientX - _mouseStartX;
+            _mouseSwipeEl.style.transition = 'transform 0.25s cubic-bezier(0.16,1,0.3,1)';
+            if (dx < -SWIPE_THRESHOLD / 2) {
+                _mouseSwipeEl.style.transform = 'translateX(-' + SWIPE_THRESHOLD + 'px)';
+                _mouseSwipeEl.classList.add('swipe-open');
+            } else {
+                closeSwipe(_mouseSwipeEl);
+            }
+            // Prevent the click event that follows mouseup from firing
+            e.stopImmediatePropagation();
+            setTimeout(function() { _mouseDragging = false; }, 10);
         }
         _mouseDown = false;
         _mouseSwipeEl = null;
-    });
+    }, true); // capture phase to intercept before click
 
     // Close swipe on click elsewhere (mouse)
     document.addEventListener('mousedown', function(e) {
