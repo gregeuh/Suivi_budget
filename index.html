@@ -65,19 +65,14 @@
         .bank-card.green  { background: linear-gradient(150deg,#5aa882 0%,#3a7a5a 100%); }
         .bank-card.orange   { background: linear-gradient(150deg,#d4a24a 0%,#a47828 100%); }
         /* Revolut — violet électrique */
-        .bank-card.revolut { background: linear-gradient(150deg,#191c33 0%,#2f3166 100%); }
+        .bank-card.revolut  { background: linear-gradient(150deg,#191c33 0%,#2f3166 100%); }
         /* Swile — jaune vif ticket restau */
-        .bank-card.swile { background: linear-gradient(135deg, #f7b731 0%, #f0944d 60%, #e8722a 100%); }
+        .bank-card.swile    { background: linear-gradient(150deg,#f5a623 0%,#e08800 100%); }
         /* Livret A — vert Livret A */
-        .bank-card.livreta { background: linear-gradient(150deg,#2e7d32 0%,#1b5e20 100%); }
-        /* Zone — full card color change */
-        .bank-card.zone-safe   { background: linear-gradient(150deg, #3a9e6a 0%, #1f7a48 100%) !important; }
-        .bank-card.zone-warn   { background: linear-gradient(150deg, #d4935a 0%, #a86530 100%) !important; }
-        .bank-card.zone-danger { background: linear-gradient(150deg, #c05050 0%, #8a2a2a 100%) !important; animation: cardDanger 2s ease-in-out infinite; }
-        @keyframes cardDanger {
-            0%,100% { box-shadow: 0 8px 24px rgba(192,80,80,0.3); }
-            50%      { box-shadow: 0 8px 32px rgba(192,80,80,0.6); }
-        }
+        .bank-card.livreta  { background: linear-gradient(150deg,#2e7d32 0%,#1b5e20 100%); }
+        .bank-card.zone-safe   { background: linear-gradient(150deg,#5aa882 0%,#3a7a5a 100%) !important; }
+        .bank-card.zone-warn   { background: linear-gradient(150deg,#d4a24a 0%,#a47828 100%) !important; }
+        .bank-card.zone-danger { background: linear-gradient(150deg,#c97070 0%,#9e4848 100%) !important; }
 
         /* ── GRAIN ── */
         body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.025;
@@ -409,55 +404,6 @@
         .ob-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--input-bg); transition: background .3s, width .3s; }
         .ob-dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
 
-
-        /* ── SWILE CARD PREMIUM ── */
-        .bank-card.swile {
-            background: linear-gradient(135deg, #f7b731 0%, #f0944d 60%, #e8722a 100%) !important;
-            position: relative; overflow: hidden;
-        }
-        .bank-card.swile .swile-fork-bg {
-            position: absolute; right: -10px; top: 50%; transform: translateY(-50%);
-            font-size: 80px; opacity: 0.12; pointer-events: none; z-index: 0;
-            filter: grayscale(0.3); line-height:1;
-        }
-        .swile-progress-wrap {
-            margin-top: 12px; position: relative; z-index: 2;
-        }
-        .swile-progress-bar {
-            height: 4px; background: rgba(255,255,255,0.25); border-radius: 50px; overflow: hidden; margin-bottom: 6px;
-        }
-        .swile-progress-fill {
-            height: 100%; border-radius: 50px;
-            background: rgba(255,255,255,0.85);
-            transition: width 1s cubic-bezier(0.16,1,0.3,1);
-        }
-        .swile-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
-        .swile-daily { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.9); line-height: 1.4; }
-        .swile-meals { font-size: 12px; color: rgba(255,255,255,0.7); line-height: 1.4; }
-        .swile-low-badge {
-            display: inline-flex; align-items: center; gap: 4px;
-            background: rgba(255,255,255,0.2); border-radius: 20px;
-            padding: 3px 10px; font-size: 11px; font-weight: 700; color: white;
-            margin-top: 8px;
-        }
-        .swile-low-badge.alert { background: rgba(255,50,50,0.35); animation: pulseAlert .8s ease-in-out infinite; }
-        @keyframes pulseAlert { 0%,100%{opacity:1} 50%{opacity:.6} }
-
-
-        /* ── TOAST ── */
-        #toast-msg {
-            position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
-            background: var(--text-main); color: var(--bg-color);
-            padding: 12px 22px; border-radius: 50px;
-            font-size: 14px; font-weight: 600;
-            opacity: 0; transition: opacity .25s, transform .25s;
-            pointer-events: none; z-index: 9999; white-space: nowrap;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        }
-        #toast-msg.show {
-            opacity: 1; transform: translateX(-50%) translateY(0);
-        }
-
     </style>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -609,14 +555,11 @@
         .bank-card.zone-warn    { background: linear-gradient(150deg, #f0944d 0%, #c96c28 100%) !important; }
         .bank-card.zone-safe    { background: linear-gradient(150deg, #4caf82 0%, #2e7a5c 100%) !important; }
         .balance-zone-badge {
-            display: inline-flex; align-items: center; gap: 6px;
-            font-size: 12px; font-weight: 700; letter-spacing: 0.3px;
-            padding: 5px 12px; border-radius: 50px; margin-top: 8px;
-            color: white; backdrop-filter: blur(4px);
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 11px; font-weight: 700; letter-spacing: 0.3px;
+            padding: 4px 10px; border-radius: 50px;
+            background: rgba(0,0,0,0.2); color: white; margin-top: 8px;
         }
-        .bank-card.zone-safe   .balance-zone-badge { background: rgba(0,0,0,0.2); }
-        .bank-card.zone-warn   .balance-zone-badge { background: rgba(0,0,0,0.2); }
-        .bank-card.zone-danger .balance-zone-badge { background: rgba(0,0,0,0.25); }
         .acc-val-indicator {
             width: 10px; height: 10px; border-radius: 50%;
             display: inline-block; margin-right: 6px; flex-shrink: 0;
@@ -866,19 +809,14 @@
         .bank-card.green  { background: linear-gradient(150deg,#5aa882 0%,#3a7a5a 100%); }
         .bank-card.orange   { background: linear-gradient(150deg,#d4a24a 0%,#a47828 100%); }
         /* Revolut — violet électrique */
-        .bank-card.revolut { background: linear-gradient(150deg,#191c33 0%,#2f3166 100%); }
+        .bank-card.revolut  { background: linear-gradient(150deg,#191c33 0%,#2f3166 100%); }
         /* Swile — jaune vif ticket restau */
-        .bank-card.swile { background: linear-gradient(135deg, #f7b731 0%, #f0944d 60%, #e8722a 100%); }
+        .bank-card.swile    { background: linear-gradient(150deg,#f5a623 0%,#e08800 100%); }
         /* Livret A — vert Livret A */
-        .bank-card.livreta { background: linear-gradient(150deg,#2e7d32 0%,#1b5e20 100%); }
-        /* Zone — full card color change */
-        .bank-card.zone-safe   { background: linear-gradient(150deg, #3a9e6a 0%, #1f7a48 100%) !important; }
-        .bank-card.zone-warn   { background: linear-gradient(150deg, #d4935a 0%, #a86530 100%) !important; }
-        .bank-card.zone-danger { background: linear-gradient(150deg, #c05050 0%, #8a2a2a 100%) !important; animation: cardDanger 2s ease-in-out infinite; }
-        @keyframes cardDanger {
-            0%,100% { box-shadow: 0 8px 24px rgba(192,80,80,0.3); }
-            50%      { box-shadow: 0 8px 32px rgba(192,80,80,0.6); }
-        }
+        .bank-card.livreta  { background: linear-gradient(150deg,#2e7d32 0%,#1b5e20 100%); }
+        .bank-card.zone-safe   { background: linear-gradient(150deg,#5aa882 0%,#3a7a5a 100%) !important; }
+        .bank-card.zone-warn   { background: linear-gradient(150deg,#d4a24a 0%,#a47828 100%) !important; }
+        .bank-card.zone-danger { background: linear-gradient(150deg,#c97070 0%,#9e4848 100%) !important; }
 
         /* ── GRAIN ── */
         body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.025;
@@ -1209,55 +1147,6 @@
         .ob-dots { display: flex; gap: 8px; }
         .ob-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--input-bg); transition: background .3s, width .3s; }
         .ob-dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
-
-
-        /* ── SWILE CARD PREMIUM ── */
-        .bank-card.swile {
-            background: linear-gradient(135deg, #f7b731 0%, #f0944d 60%, #e8722a 100%) !important;
-            position: relative; overflow: hidden;
-        }
-        .bank-card.swile .swile-fork-bg {
-            position: absolute; right: -10px; top: 50%; transform: translateY(-50%);
-            font-size: 80px; opacity: 0.12; pointer-events: none; z-index: 0;
-            filter: grayscale(0.3); line-height:1;
-        }
-        .swile-progress-wrap {
-            margin-top: 12px; position: relative; z-index: 2;
-        }
-        .swile-progress-bar {
-            height: 4px; background: rgba(255,255,255,0.25); border-radius: 50px; overflow: hidden; margin-bottom: 6px;
-        }
-        .swile-progress-fill {
-            height: 100%; border-radius: 50px;
-            background: rgba(255,255,255,0.85);
-            transition: width 1s cubic-bezier(0.16,1,0.3,1);
-        }
-        .swile-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
-        .swile-daily { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.9); line-height: 1.4; }
-        .swile-meals { font-size: 12px; color: rgba(255,255,255,0.7); line-height: 1.4; }
-        .swile-low-badge {
-            display: inline-flex; align-items: center; gap: 4px;
-            background: rgba(255,255,255,0.2); border-radius: 20px;
-            padding: 3px 10px; font-size: 11px; font-weight: 700; color: white;
-            margin-top: 8px;
-        }
-        .swile-low-badge.alert { background: rgba(255,50,50,0.35); animation: pulseAlert .8s ease-in-out infinite; }
-        @keyframes pulseAlert { 0%,100%{opacity:1} 50%{opacity:.6} }
-
-
-        /* ── TOAST ── */
-        #toast-msg {
-            position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
-            background: var(--text-main); color: var(--bg-color);
-            padding: 12px 22px; border-radius: 50px;
-            font-size: 14px; font-weight: 600;
-            opacity: 0; transition: opacity .25s, transform .25s;
-            pointer-events: none; z-index: 9999; white-space: nowrap;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        }
-        #toast-msg.show {
-            opacity: 1; transform: translateX(-50%) translateY(0);
-        }
 
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -1653,59 +1542,6 @@
             </div>
         </div>
 
-        
-        <h2 style="font-size:20px; font-weight:700; margin:30px 0 15px 0; letter-spacing:-0.3px; display:flex; align-items:center; gap:10px;">
-            🍽️ Swile — Tickets restau
-        </h2>
-        <div class="card" style="padding:0 20px;">
-            <div style="padding:16px 0 8px; font-size:13px; color:var(--text-muted); line-height:1.6;">
-                Configurez votre compte Swile pour le rechargement automatique et les alertes.
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid var(--input-bg);">
-                <div>
-                    <div style="font-weight:600; font-size:14px;">💰 Montant mensuel</div>
-                    <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Rechargé par votre employeur entre le 28 et le 30</div>
-                </div>
-                <div style="display:flex; align-items:center; gap:6px;">
-                    <input type="number" id="swile-monthly" class="input-control" style="width:80px;text-align:right;padding:8px;" placeholder="0" step="0.01">
-                    <span style="font-size:13px;color:var(--text-muted);">€</span>
-                </div>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid var(--input-bg);">
-                <div>
-                    <div style="font-weight:600; font-size:14px;">🍴 Prix moyen d'un repas</div>
-                    <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Pour calculer le nombre de repas restants</div>
-                </div>
-                <div style="display:flex; align-items:center; gap:6px;">
-                    <input type="number" id="swile-meal-price" class="input-control" style="width:80px;text-align:right;padding:8px;" placeholder="10" step="0.50">
-                    <span style="font-size:13px;color:var(--text-muted);">€</span>
-                </div>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 0;">
-                <div>
-                    <div style="font-weight:600; font-size:14px;">⚠️ Alerte solde bas</div>
-                    <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Notification quand il reste moins de X repas</div>
-                </div>
-                <div style="display:flex; align-items:center; gap:6px;">
-                    <input type="number" id="swile-low-alert" class="input-control" style="width:80px;text-align:right;padding:8px;" placeholder="5">
-                    <span style="font-size:13px;color:var(--text-muted);">repas</span>
-                </div>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-top:1px solid var(--input-bg); margin-top:4px;">
-                <div>
-                    <div style="font-weight:600; font-size:14px;">💳 Solde actuel Swile</div>
-                    <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Affiché directement sur la carte</div>
-                </div>
-                <div style="display:flex; align-items:center; gap:6px;">
-                    <input type="number" id="swile-balance" class="input-control" style="width:80px;text-align:right;padding:8px;" placeholder="0" step="0.01">
-                    <span style="font-size:13px;color:var(--text-muted);">€</span>
-                </div>
-            </div>
-            <button onclick="saveSwileSettings()" style="width:100%;padding:14px;border-radius:14px;border:none;background:#c8913a;color:white;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;margin-top:6px;box-shadow:0 4px 16px rgba(200,145,58,0.4);letter-spacing:0.3px;">
-                💾 Sauvegarder
-            </button>
-        </div>
-
         <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Objectifs</h2>
         <div class="card" style="padding:0 20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 0; border-bottom:1px solid var(--input-bg);">
@@ -1880,9 +1716,6 @@
     
     let savingsGoal = 500;
     let emergencyGoal = 5000;
-    let swileMonthlyAmount = 0;  // montant rechargé par l'employeur
-    let swileLowAlert = 5;       // alerte si < X repas restants
-    let swileMealPrice = 10;     // prix moyen d'un repas
     let balThresholdWarn = 500;   // below this = orange
     let balThresholdDanger = 0;   // below this = red (negative by default)
     let catBudgets = {};
@@ -2003,38 +1836,13 @@
                     displayName = data.displayName || '';
                     expenses = Array.isArray(data.expenses) ? data.expenses.filter(e=>e) : [];
                     
-                    var loadedAccs = Array.isArray(data.accounts) ? data.accounts.filter(a=>a).map(function(a){ return a.icon ? a : Object.assign({}, a, {icon: a.color==='revolut'?'💳':a.color==='swile'?'🍽️':a.color==='livreta'?'🏧':'🏦'}); }) : [];
-                    // Merge with defaults — add missing default accounts if not present
-                    var defaultAccs = [
-                        { id: 'acc1',    name: 'Compte Principal', initBalance: 0, color: 'blue',    icon: '🏦' },
-                        { id: 'acc_rev', name: 'Revolut',          initBalance: 0, color: 'revolut', icon: '💳' },
-                        { id: 'acc_swl', name: 'Swile',            initBalance: 0, color: 'swile',   icon: '🍽️' },
-                        { id: 'acc_lva', name: 'Livret A',         initBalance: 0, color: 'livreta', icon: '🏧' }
-                    ];
-                    var loadedIds = loadedAccs.map(function(a){ return a.id; });
-                    defaultAccs.forEach(function(da) {
-                        if (loadedIds.indexOf(da.id) === -1) {
-                            // Add missing default account (brand new)
-                            loadedAccs.push(da);
-                        } else {
-                            // Only fill in MISSING fields — never overwrite existing data
-                            var existing = loadedAccs.find(function(a){ return a.id === da.id; });
-                            if (existing) {
-                                if (existing.warnAt   === undefined) existing.warnAt   = da.warnAt;
-                                if (existing.dangerAt === undefined) existing.dangerAt = da.dangerAt;
-                                if (!existing.icon)                  existing.icon     = da.icon;
-                                if (!existing.color)                 existing.color    = da.color;
-                                // NEVER overwrite initBalance — that's user data
-                            }
-                        }
-                    });
-                    accounts = loadedAccs;
+                    accounts = Array.isArray(data.accounts) ? data.accounts.filter(a=>a).map(function(a){ return a.icon ? a : Object.assign({}, a, {icon: a.color==='revolut'?'💳':a.color==='swile'?'🍽️':a.color==='livreta'?'🏧':'🏦'}); }) : [];
                     if (accounts.length === 0) {
                         accounts = [
-                            { id: 'acc1',    name: 'Compte Principal', initBalance: 0, color: 'blue',    icon: '🏦', warnAt: 500,  dangerAt: 0   },
-                            { id: 'acc_rev', name: 'Revolut',          initBalance: 0, color: 'revolut', icon: '💳', warnAt: 200,  dangerAt: 0   },
-                            { id: 'acc_swl', name: 'Swile',            initBalance: 0, color: 'swile',   icon: '🍽️', warnAt: 50,   dangerAt: 20  },
-                            { id: 'acc_lva', name: 'Livret A',         initBalance: 0, color: 'livreta', icon: '🏧', warnAt: 1000, dangerAt: 500 }
+                            { id: 'acc1',    name: 'Compte Principal', initBalance: 0, color: 'blue',    icon: '🏦' },
+                            { id: 'acc_rev', name: 'Revolut',          initBalance: 0, color: 'revolut', icon: '💳' },
+                            { id: 'acc_swl', name: 'Swile',            initBalance: 0, color: 'swile',   icon: '🍽️' },
+                            { id: 'acc_lva', name: 'Livret A',         initBalance: 0, color: 'livreta', icon: '🏧' }
                         ];
                     }
                     
@@ -2051,9 +1859,6 @@
                     
                     savingsGoal = data.savingsGoal !== undefined ? data.savingsGoal : 500;
                     emergencyGoal = data.emergencyGoal !== undefined ? data.emergencyGoal : 5000;
-                    swileMonthlyAmount = data.swileMonthlyAmount || 0;
-                    swileLowAlert     = data.swileLowAlert     || 5;
-                    swileMealPrice    = data.swileMealPrice    || 10;
                     balThresholdWarn = data.balThresholdWarn !== undefined ? data.balThresholdWarn : 500;
                     balThresholdDanger = data.balThresholdDanger !== undefined ? data.balThresholdDanger : 0;
                     catBudgets = data.catBudgets || {};
@@ -2061,13 +1866,12 @@
                     savedColor = data.color || 'blue';
 
                 } else {
-                        forceResetData();
+                    forceResetData();
                     return;
                 }
                 applyAppSettings(); 
             } catch (err) {
                 console.error("Données corrompues, auto-réparation...", err);
-                // Only reset LOCAL state, never Firebase
                 forceResetData();
             }
         });
@@ -2077,10 +1881,10 @@
         displayName = '';
         expenses = [];
         accounts = [
-                            { id: 'acc1',    name: 'Compte Principal', initBalance: 0, color: 'blue',    icon: '🏦', warnAt: 500,  dangerAt: 0   },
-                            { id: 'acc_rev', name: 'Revolut',          initBalance: 0, color: 'revolut', icon: '💳', warnAt: 200,  dangerAt: 0   },
-                            { id: 'acc_swl', name: 'Swile',            initBalance: 0, color: 'swile',   icon: '🍽️', warnAt: 50,   dangerAt: 20  },
-                            { id: 'acc_lva', name: 'Livret A',         initBalance: 0, color: 'livreta', icon: '🏧', warnAt: 1000, dangerAt: 500 }
+                            { id: 'acc1',    name: 'Compte Principal', initBalance: 0, color: 'blue',    icon: '🏦' },
+                            { id: 'acc_rev', name: 'Revolut',          initBalance: 0, color: 'revolut', icon: '💳' },
+                            { id: 'acc_swl', name: 'Swile',            initBalance: 0, color: 'swile',   icon: '🍽️' },
+                            { id: 'acc_lva', name: 'Livret A',         initBalance: 0, color: 'livreta', icon: '🏧' }
                         ];
         wishlist = [];
         categories = [...DEFAULT_CATEGORIES];
@@ -2089,14 +1893,19 @@
         catBudgets = {};
         savedTheme = 'auto';
         savedColor = 'blue';
-        // SAFETY: never wipe Firebase on reset
-        // saveToCloud();
-        console.warn('forceResetData: local reset only, Firebase untouched');
+        saveToCloud(); 
     }
 
+    var _cloudDataLoaded = false; // true once Firebase has sent us data at least once
 
     function saveToCloud() {
         if (!cloudDocRef) return;
+        // SAFETY: never save if data hasn't been loaded from Firebase yet
+        if (!_cloudDataLoaded) {
+            console.warn('saveToCloud blocked: Firebase data not yet loaded');
+            return;
+        }
+        // Only persist custom categories - defaults are always rebuilt from DEFAULT_CATEGORIES
         const customCatsToSave = categories.filter(c => c.isCustom);
         cloudDocRef.set({
             displayName: displayName,
@@ -2106,16 +1915,14 @@
             categories: customCatsToSave,
             savingsGoal: savingsGoal,
             emergencyGoal: emergencyGoal,
-            swileMonthlyAmount: swileMonthlyAmount,
-            swileLowAlert: swileLowAlert,
-            swileMealPrice: swileMealPrice,
             balThresholdWarn: balThresholdWarn,
             balThresholdDanger: balThresholdDanger,
             catBudgets: catBudgets,
             theme: savedTheme,
             color: savedColor
-        }, { merge: true }).catch(err => console.error('Erreur sauvegarde:', err));
+        }, { merge: true }).catch(err => console.error("Erreur de sauvegarde :", err));
     }
+
     function applyAppSettings() {
         // Wrap everything in try-catch so no single error can stop data from loading
         try {
@@ -2161,16 +1968,6 @@
         try { if(typeof initNotifBanner === 'function') initNotifBanner(); } catch(e) {}
         try { var sk = document.getElementById('skeleton-screen'); if(sk) sk.style.display = 'none'; } catch(e) {}
         try { if(typeof checkOnboarding === 'function') checkOnboarding(); } catch(e) {}
-        try { checkSwileAutoRecharge(); checkSwileLowAlert(); } catch(e) {}
-        try { var si=document.getElementById('swile-monthly'); if(si) si.value=swileMonthlyAmount;
-        // Pre-fill swile balance from current calculated balance
-        var swileAccEl = accounts.find(function(a){ return a.color==='swile'; });
-        var swileBalEl = document.getElementById('swile-balance');
-        if(swileAccEl && swileBalEl) {
-            var sb = swileAccEl.initBalance;
-            expenses.forEach(function(e){ if(e.accountId===swileAccEl.id){ sb += (e.type==='income'||e.type==='transfer_in')?e.amount:-e.amount; } });
-            swileBalEl.value = sb > 0 ? sb.toFixed(2) : '';
-        } var sp=document.getElementById('swile-meal-price'); if(sp) sp.value=swileMealPrice; var sl=document.getElementById('swile-low-alert'); if(sl) sl.value=swileLowAlert; } catch(e) {}
         try { if(typeof updateAccSub === 'function') setTimeout(updateAccSub, 100); } catch(e) {}
     }
 
@@ -2710,13 +2507,7 @@
         hapticTap();
         const acc = accounts.find(a => String(a.id) === String(accId));
         if (!acc) return;
-
-        // For Swile: show a nicer prompt with context
-        const isSwile = acc.color === 'swile';
-        const promptMsg = isSwile
-            ? '🍽️ Solde actuel de votre compte Swile (€) :'
-            : '💰 Nouveau solde réel du compte "' + acc.name + '" (€) :';
-
+        
         const nowReal = new Date();
         let currentCalcBal = acc.initBalance;
         
@@ -3008,8 +2799,8 @@
         } else {
         document.getElementById('accounts-container').innerHTML = accounts.map(a => {
             globalRealBalance += accBalances[a.id];
-            const zone = getBalanceZone(accBalances[a.id], a);
-            const zoneLabel = getZoneLabel(zone, a);
+            const zone = getBalanceZone(accBalances[a.id]);
+            const zoneLabel = getZoneLabel(zone);
             return `
             <div class="bank-card zone-${zone}">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:2;">
@@ -3021,9 +2812,8 @@
                 </div>
                 <div class="acc-val blur-val" id="acc-val-${a.id}">${accBalances[a.id].toFixed(2)} €</div>
                 <div class="balance-zone-badge">${zoneLabel}</div>
-
+                ${a.color==='swile' ? '<div style="background:rgba(255,255,255,0.2);border-radius:8px;padding:3px 10px;font-size:10px;font-weight:700;margin-top:6px;display:inline-block;">🍽️ Tickets restau</div>' : ''}
                 ${a.color==='livreta' ? '<div style="background:rgba(255,255,255,0.2);border-radius:8px;padding:3px 10px;font-size:10px;font-weight:700;margin-top:6px;display:inline-block;">🏦 Livret A</div>' : ''}
-                ${a.color==='swile' ? '<div class="swile-fork-bg">🍽️</div>' + renderSwileExtra(accBalances[a.id]) : ''}
                 ${a.color==='revolut' ? '<div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:3px 10px;font-size:10px;font-weight:700;margin-top:6px;display:inline-block;">💳 Revolut</div>' : ''}
             </div>`;
         }).join('');
@@ -3077,45 +2867,15 @@
         renderSettingsCatBudgets();
     }
 
-    function getBalanceZone(bal, acc) {
-        // Swile : zone basée sur les repas restants
-        if (acc && acc.color === 'swile') {
-            var meal = swileMealPrice || 10;
-            var meals = Math.floor(bal / meal);
-            var alertAt = swileLowAlert || 5;
-            if (meals <= 0)        return 'danger';
-            if (meals <= alertAt)  return 'warn';
-            return 'safe';
-        }
-        // Livret A : toujours zone confort (c'est de l'épargne)
-        if (acc && acc.color === 'livreta') {
-            return 'safe';
-        }
-        // Per-account thresholds
-        if (acc && acc.dangerAt !== undefined && acc.warnAt !== undefined) {
-            if (bal <= acc.dangerAt) return 'danger';
-            if (bal <= acc.warnAt)   return 'warn';
-            return 'safe';
-        }
-        // Global fallback
-        var wDef = typeof balThresholdWarn   !== 'undefined' ? balThresholdWarn   : 500;
-        var dDef = typeof balThresholdDanger !== 'undefined' ? balThresholdDanger : 0;
-        if (bal <= dDef) return 'danger';
-        if (bal <= wDef) return 'warn';
+    function getBalanceZone(bal) {
+        if (bal < balThresholdDanger) return 'danger';
+        if (bal < balThresholdWarn)   return 'warn';
         return 'safe';
     }
 
-    function getZoneLabel(zone, acc) {
-        var isSwile   = acc && acc.color === 'swile';
-        var isLivreta = acc && acc.color === 'livreta';
-        if (isSwile) {
-            if (zone === 'danger') return '🔴 Tickets épuisés';
-            if (zone === 'warn')   return '🟠 Peu de tickets';
-            return '🟢 Tickets suffisants';
-        }
-        if (isLivreta) return '🟢 Épargne';
+    function getZoneLabel(zone) {
         if (zone === 'danger') return '🔴 Zone critique';
-        if (zone === 'warn')   return '🟠 Zone attention';
+        if (zone === 'warn')   return '🟠 Zone moyenne';
         return '🟢 Zone confort';
     }
 
@@ -4231,24 +3991,7 @@
         }
     }
     
-
-    function editAccountThresholds(id) {
-        hapticTap();
-        var acc = accounts.find(function(a){ return String(a.id)===String(id); });
-        if (!acc) return;
-        var w = prompt('Seuil attention pour ' + acc.name + ' (orange, en euros)', acc.warnAt !== undefined ? acc.warnAt : 500);
-        if (w === null) return;
-        var d = prompt('Seuil danger pour ' + acc.name + ' (rouge, en euros)', acc.dangerAt !== undefined ? acc.dangerAt : 0);
-        if (d === null) return;
-        var wi = parseFloat(w), di = parseFloat(d);
-        if (!isNaN(wi)) acc.warnAt   = wi;
-        if (!isNaN(di)) acc.dangerAt = di;
-        saveToCloud();
-        updateAllViews();
-        showToast('Seuils mis a jour pour ' + acc.name);
-    }
-
-        function renderSettingsAccounts() {
+    function renderSettingsAccounts() {
         const colorMap = {
             blue:'#c8913a', purple:'#a06848', green:'#5aa882',
             pink:'#c06858', orange:'#d4a24a', revolut:'#2f3166', swile:'#f5a623', livreta:'#2e7d32'
@@ -4264,10 +4007,9 @@
                         <small style="color:var(--text-muted)">Solde initial : ${a.initBalance.toFixed(2)} €</small>
                     </div>
                 </div>
-                <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                    <button onclick="editAccountThresholds('${escapeHTML(a.id)}')" style="background:var(--input-bg); border:none; color:var(--accent); padding:8px 10px; border-radius:10px; font-weight:700; font-size:12px; cursor:pointer;" title="Seuils">🎯</button>
-                    <button onclick="editAccount('${escapeHTML(a.id)}')" style="background:var(--input-bg); border:none; color:var(--accent); padding:8px 10px; border-radius:10px; font-weight:700; font-size:12px; cursor:pointer;">Éditer</button>
-                    <button onclick="deleteAccount('${escapeHTML(a.id)}')" style="background:var(--red-light); border:none; color:var(--red); padding:8px 10px; border-radius:10px; font-weight:700; font-size:12px; cursor:pointer;">×</button>
+                <div style="display:flex; gap:8px;">
+                    <button onclick="editAccount('${escapeHTML(a.id)}')" style="background:var(--input-bg); border:none; color:var(--accent); padding:8px 12px; border-radius:10px; font-weight:700; font-size:13px; cursor:pointer;">Éditer</button>
+                    <button onclick="deleteAccount('${escapeHTML(a.id)}')" style="background:var(--red-light); border:none; color:var(--red); padding:8px 12px; border-radius:10px; font-weight:700; font-size:13px; cursor:pointer;">×</button>
                 </div>
             </div>`).join('');
     }
@@ -4492,7 +4234,7 @@
         if (wt && displayName) wt.textContent = 'Bonjour ' + displayName + ' 👋';
         var dn = document.getElementById('set-displayname');
         if (dn) dn.value = displayName;
-        saveToCloud();
+        if (_cloudDataLoaded) saveToCloud();
     }
 
     function obSkip() {
@@ -4506,213 +4248,6 @@
         if (!localStorage.getItem('ob_done') && !displayName) {
             setTimeout(showOnboarding, 600);
         }
-    }
-
-    
-    // ════════════════════════════════════════════════════
-    // SWILE — CARTE PREMIUM
-    // ════════════════════════════════════════════════════
-    function getWorkingDaysLeft() {
-        var now = new Date();
-        var lastDay = new Date(now.getFullYear(), now.getMonth()+1, 0);
-        var count = 0;
-        for (var d = new Date(now); d <= lastDay; d.setDate(d.getDate()+1)) {
-            var day = d.getDay();
-            if (day !== 0 && day !== 6) count++;
-        }
-        return count;
-    }
-
-        // ── TOAST ──
-    var _toastTimer = null;
-    function showToast(msg, duration) {
-        var el = document.getElementById('toast-msg');
-        if (!el) return;
-        el.textContent = msg;
-        el.classList.add('show');
-        clearTimeout(_toastTimer);
-        _toastTimer = setTimeout(function() {
-            el.classList.remove('show');
-        }, duration || 2500);
-    }
-
-    function renderSwileExtra(balance) {
-        if (!balance && balance !== 0) return '';
-        var meal   = swileMealPrice || 10;
-        var mealsLeft = Math.floor(balance / meal);
-        var daysLeft  = getWorkingDaysLeft();
-        var daily  = daysLeft > 0 ? (balance / daysLeft).toFixed(2) : '0.00';
-        var pctUsed = swileMonthlyAmount > 0
-            ? Math.min(100, Math.round((1 - balance / swileMonthlyAmount) * 100))
-            : 0;
-        var isLow = mealsLeft <= (swileLowAlert || 5);
-
-        return '<div class="swile-progress-wrap">'
-            + '<div class="swile-progress-bar"><div class="swile-progress-fill" style="width:' + (100-pctUsed) + '%"></div></div>'
-            + '<div class="swile-meta">'
-            + '<span class="swile-daily">~' + daily + ' €/jour</span>'
-            + '<span class="swile-meals">' + mealsLeft + ' repas restants</span>'
-            + '</div>'
-            + '<div class="swile-low-badge' + (isLow ? ' alert' : '') + '">'
-            + (isLow ? '⚠️' : '🔄') + ' Rechargement fin de mois'
-            + (swileMonthlyAmount > 0 ? ' · ' + swileMonthlyAmount + ' €' : '')
-            + '</div>'
-            + '</div>';
-    }
-
-    function checkSwileAutoRecharge() {
-        if (!swileMonthlyAmount || swileMonthlyAmount <= 0) return;
-        var swileAcc = accounts.find(function(a) { return a.color === 'swile'; });
-        if (!swileAcc) return;
-        var now = new Date();
-        var day = now.getDate();
-        // Trigger window: 28th to 30th, after 18:00
-        if (day < 28 || day > 30) return;
-        if (now.getHours() < 18) return;
-        // Check if already done this month
-        var key = 'swile_recharge_' + now.getFullYear() + '_' + now.getMonth();
-        if (localStorage.getItem(key)) return;
-        // Only show after 18h and not snoozed today
-        var snoozeKey = "swile_snooze_" + now.toDateString();
-        if (localStorage.getItem(snoozeKey)) return;
-        showSwileRechargePrompt();
-    }
-
-    function showSwileRechargePrompt() {
-        var now = new Date();
-        var key = 'swile_recharge_' + now.getFullYear() + '_' + now.getMonth();
-        // Create a non-blocking banner
-        var existing = document.getElementById('swile-recharge-banner');
-        if (existing) return;
-        var banner = document.createElement('div');
-        banner.id = 'swile-recharge-banner';
-        banner.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);z-index:8000;background:linear-gradient(135deg,#f7b731,#f0944d);color:white;border-radius:20px;padding:16px 20px;box-shadow:0 8px 30px rgba(0,0,0,0.2);max-width:340px;width:calc(100% - 40px);';
-        banner.innerHTML = '<div style="font-size:13px;font-weight:700;margin-bottom:8px;">🔄 Rechargement Swile en cours</div>'
-            + '<div style="font-size:12px;opacity:.9;margin-bottom:12px;">Votre employeur va recharger votre compte entre le 28 et le 30. Confirmez le montant reçu :</div>'
-            + '<div style="display:flex;gap:8px;align-items:center;">'
-            + '<input id="swile-confirm-amount" type="number" placeholder="' + swileMonthlyAmount + '" value="' + swileMonthlyAmount + '" style="flex:1;padding:10px;border-radius:10px;border:none;font-size:15px;font-weight:700;text-align:center;">'
-            + '<span style="font-size:13px;">€</span>'
-            + '<button onclick="confirmSwileRecharge()" style="padding:10px 16px;border-radius:10px;border:none;background:rgba(0,0,0,0.2);color:white;font-weight:700;cursor:pointer;">✓</button>'
-            + '<button onclick="dismissSwileRecharge()" style="padding:10px;border-radius:10px;border:none;background:rgba(0,0,0,0.1);color:white;cursor:pointer;">✕</button>'
-            + '</div>';
-        document.body.appendChild(banner);
-    }
-
-    function confirmSwileRecharge() {
-        var swileAcc = accounts.find(function(a) { return a.color === 'swile'; });
-        if (!swileAcc) return;
-        var input = document.getElementById('swile-confirm-amount');
-        var amount = input ? parseFloat(input.value) : swileMonthlyAmount;
-        if (!amount || amount <= 0) return;
-        var now = new Date();
-        var tx = {
-            id: 'swile_' + Date.now(),
-            amount: amount,
-            label: '🔄 Rechargement Swile',
-            date: now.toISOString().split('T')[0],
-            type: 'income', cat: 'autre',
-            accountId: swileAcc.id,
-            recurring: false, note: 'Rechargement employeur'
-        };
-        expenses.unshift(tx);
-        saveToCloud();
-        var key = 'swile_recharge_' + now.getFullYear() + '_' + now.getMonth();
-        localStorage.setItem(key, '1');
-        dismissSwileRecharge();
-        updateAllViews();
-        showToast('🍽️ Swile rechargé : +' + amount.toFixed(2) + ' €');
-    }
-
-    function dismissSwileRecharge() {
-        var banner = document.getElementById('swile-recharge-banner');
-        if (banner) banner.remove();
-        // Snooze for 24h if dismissed without confirming
-        var now = new Date();
-        var snoozeKey = 'swile_snooze_' + now.toDateString();
-        localStorage.setItem(snoozeKey, '1');
-    }
-
-    function checkSwileLowAlert() {
-        if (!swileMealPrice || swileMealPrice <= 0) return;
-        var swileAcc = accounts.find(function(a) { return a.color === 'swile'; });
-        if (!swileAcc) return;
-        // Calculate balance
-        var bal = swileAcc.initBalance;
-        expenses.forEach(function(e) {
-            if (e.accountId === swileAcc.id) {
-                bal += (e.type === 'income' || e.type === 'transfer_in') ? e.amount : -e.amount;
-            }
-        });
-        var meals = Math.floor(bal / swileMealPrice);
-        if (meals <= (swileLowAlert || 5) && meals >= 0) {
-            var alertKey = 'swile_alert_' + new Date().toDateString();
-            if (!localStorage.getItem(alertKey)) {
-                showToast('⚠️ Swile : seulement ' + meals + ' repas restants !');
-                localStorage.setItem(alertKey, '1');
-            }
-        }
-    }
-
-    function saveSwileSettings() {
-        var ma = document.getElementById('swile-monthly');
-        var mp = document.getElementById('swile-meal-price');
-        var la = document.getElementById('swile-low-alert');
-        var balEl = document.getElementById('swile-balance');
-        var newAmount = ma ? (parseFloat(ma.value) || 0) : swileMonthlyAmount;
-        var oldAmount = swileMonthlyAmount;
-        if(ma) swileMonthlyAmount = newAmount;
-        if(mp) swileMealPrice     = parseFloat(mp.value) || 10;
-        if(la) swileLowAlert      = parseFloat(la.value) || 5;
-
-        // If monthly amount changed, update Swile account initBalance
-        if (newAmount !== oldAmount && newAmount > 0) {
-            var swileAcc = accounts.find(function(a) { return a.color === 'swile'; });
-            if (swileAcc) {
-                // Set initBalance to the new monthly amount
-                // (user will adjust actual current balance via "Ajuster")
-                // But if balance was 0 (never set), pre-fill with monthly amount
-                var swileIdx = accounts.indexOf(swileAcc);
-                if (swileAcc.initBalance === 0) {
-                    accounts[swileIdx] = Object.assign({}, swileAcc, { initBalance: newAmount });
-                    showToast('💡 Solde Swile initialisé à ' + newAmount + ' €. Ajustez si besoin.');
-                }
-            }
-        }
-
-        // Apply Swile balance directly if provided
-        if (balEl && balEl.value !== '' && balEl.value !== '0') {
-            var newBal = parseFloat(balEl.value);
-            if (!isNaN(newBal)) {
-                var swileAcc2 = accounts.find(function(a) { return a.color === 'swile'; });
-                if (swileAcc2) {
-                    var idx2 = accounts.indexOf(swileAcc2);
-                    // Calculate what initBalance gives us the desired real balance
-                    // realBal = initBalance + sum(transactions)
-                    var txSum = 0;
-                    expenses.forEach(function(e) {
-                        if (e.accountId === swileAcc2.id) {
-                            txSum += (e.type === 'income' || e.type === 'transfer_in') ? e.amount : -e.amount;
-                        }
-                    });
-                    accounts[idx2] = Object.assign({}, swileAcc2, { initBalance: newBal - txSum });
-                }
-            }
-        }
-        saveToCloud();
-        updateAllViews();
-
-        // Visual feedback on the button
-        var btn = document.querySelector('[onclick="saveSwileSettings()"]');
-        if (btn) {
-            var orig = btn.textContent;
-            btn.textContent = '✓ Sauvegardé !';
-            btn.style.background = 'var(--green)';
-            setTimeout(function() {
-                btn.textContent = orig;
-                btn.style.background = '';
-            }, 2000);
-        }
-        showToast('🍽️ Paramètres Swile sauvegardés');
     }
 
         // ── SEASONAL ──
@@ -4898,6 +4433,5 @@
         </div>
     </div>
 
-    <div id="toast-msg"></div>
 </body>
 </html>
