@@ -458,6 +458,47 @@
             opacity: 1; transform: translateX(-50%) translateY(0);
         }
 
+
+        /* ── KEYBOARD INPUT MODE ── */
+        .amount-mode-toggle {
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px; margin-bottom: 16px;
+        }
+        .amount-mode-btn {
+            padding: 6px 14px; border-radius: 50px; border: none;
+            font-family: inherit; font-size: 12px; font-weight: 700;
+            cursor: pointer; transition: all .2s;
+            background: var(--input-bg); color: var(--text-muted);
+        }
+        .amount-mode-btn.active {
+            background: var(--accent); color: white;
+            box-shadow: 0 3px 12px var(--accent-light);
+        }
+        #keyboard-amount-wrap {
+            display: none; margin-bottom: 20px;
+        }
+        .keyboard-amount-input {
+            width: 100%; padding: 18px; text-align: center;
+            font-family: 'Lora', Georgia, serif;
+            font-size: 42px; font-weight: 700; letter-spacing: -1px;
+            border: none; border-radius: 18px;
+            background: var(--input-bg); color: var(--text-main);
+            outline: none; box-sizing: border-box;
+            transition: box-shadow .2s, color .2s;
+            -moz-appearance: textfield;
+        }
+        .keyboard-amount-input::-webkit-inner-spin-button,
+        .keyboard-amount-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+        .keyboard-amount-input:focus {
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+        .keyboard-amount-input.income { color: var(--green); }
+        .keyboard-amount-input.expense { color: var(--red); }
+        .keyboard-amount-hint {
+            text-align: center; font-size: 12px; color: var(--text-muted);
+            font-weight: 600; margin-top: 6px;
+        }
+
     </style>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -1244,6 +1285,47 @@
             opacity: 1; transform: translateX(-50%) translateY(0);
         }
 
+
+        /* ── KEYBOARD INPUT MODE ── */
+        .amount-mode-toggle {
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px; margin-bottom: 16px;
+        }
+        .amount-mode-btn {
+            padding: 6px 14px; border-radius: 50px; border: none;
+            font-family: inherit; font-size: 12px; font-weight: 700;
+            cursor: pointer; transition: all .2s;
+            background: var(--input-bg); color: var(--text-muted);
+        }
+        .amount-mode-btn.active {
+            background: var(--accent); color: white;
+            box-shadow: 0 3px 12px var(--accent-light);
+        }
+        #keyboard-amount-wrap {
+            display: none; margin-bottom: 20px;
+        }
+        .keyboard-amount-input {
+            width: 100%; padding: 18px; text-align: center;
+            font-family: 'Lora', Georgia, serif;
+            font-size: 42px; font-weight: 700; letter-spacing: -1px;
+            border: none; border-radius: 18px;
+            background: var(--input-bg); color: var(--text-main);
+            outline: none; box-sizing: border-box;
+            transition: box-shadow .2s, color .2s;
+            -moz-appearance: textfield;
+        }
+        .keyboard-amount-input::-webkit-inner-spin-button,
+        .keyboard-amount-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+        .keyboard-amount-input:focus {
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+        .keyboard-amount-input.income { color: var(--green); }
+        .keyboard-amount-input.expense { color: var(--red); }
+        .keyboard-amount-hint {
+            text-align: center; font-size: 12px; color: var(--text-muted);
+            font-weight: 600; margin-top: 6px;
+        }
+
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@600;700&display=swap" rel="stylesheet">
@@ -1296,9 +1378,29 @@
             </div>
         </div>
 
+        <!-- MODE TOGGLE -->
+        <div class="amount-mode-toggle">
+            <button class="amount-mode-btn active" id="btn-mode-numpad" onclick="setAmountMode('numpad')">
+                🔢 Pavé
+            </button>
+            <button class="amount-mode-btn" id="btn-mode-keyboard" onclick="setAmountMode('keyboard')">
+                ⌨️ Clavier
+            </button>
+        </div>
+
+        <!-- MODE PAVÉ -->
         <div id="numpad-display" onclick="openNumpad()" style="cursor:pointer;margin-bottom:20px;text-align:center;">
             <div id="numpad-value" style="font-size:48px;font-weight:800;letter-spacing:-2px;color:var(--text-main);min-height:58px;line-height:1;">0</div>
             <div id="numpad-hint" style="font-size:13px;color:var(--text-muted);font-weight:600;margin-top:2px;">Appuyer pour saisir le montant</div>
+        </div>
+
+        <!-- MODE CLAVIER -->
+        <div id="keyboard-amount-wrap">
+            <input type="number" id="keyboard-amount" class="keyboard-amount-input expense"
+                placeholder="0.00" step="0.01" min="0" inputmode="decimal"
+                oninput="onKeyboardAmountInput(this.value)"
+                onkeydown="if(event.key==='Enter') document.getElementById('inp-label').focus()">
+            <div class="keyboard-amount-hint">Tapez le montant puis appuyez sur Entrée</div>
         </div>
         <input type="hidden" id="inp-amount" value="">
         <div id="numpad-overlay" onclick="closeNumpadBackdrop(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(6px);z-index:9999;flex-direction:column;align-items:center;justify-content:flex-end;">
@@ -2262,6 +2364,7 @@
         document.getElementById('btn-delete-tx').style.display = 'none';
 
         resetNumpad();
+        if(typeof resetAmountMode === 'function') resetAmountMode();
         document.getElementById('inp-label').value = '';
         var noteEl = document.getElementById('inp-note'); if(noteEl) noteEl.value = '';
         var urlEl  = document.getElementById('inp-url');  if(urlEl)  urlEl.value  = '';
@@ -2365,6 +2468,14 @@
     function addExpense() {
         if (currentType === 'transfer') { saveTransfer(); return; }
         hapticTap();
+        // Sync keyboard mode value before saving
+        if (_amountMode === 'keyboard') {
+            var kbVal = document.getElementById('keyboard-amount').value;
+            var kbNum = parseFloat(kbVal);
+            if (!isNaN(kbNum) && kbNum > 0) {
+                document.getElementById('inp-amount').value = kbNum.toFixed(2);
+            }
+        }
         let amtInput = document.getElementById('inp-amount').value;
         if(amtInput) amtInput = amtInput.replace(',', '.');
         
@@ -4861,6 +4972,73 @@
         }
     });
 
+    
+    // ── AMOUNT MODE (NUMPAD / KEYBOARD) ──
+    var _amountMode = 'numpad';
+
+    function setAmountMode(mode) {
+        _amountMode = mode;
+        var numpadBtn  = document.getElementById('btn-mode-numpad');
+        var kbBtn      = document.getElementById('btn-mode-keyboard');
+        var numpadDisp = document.getElementById('numpad-display');
+        var kbWrap     = document.getElementById('keyboard-amount-wrap');
+        var kbInput    = document.getElementById('keyboard-amount');
+
+        if (mode === 'keyboard') {
+            if (numpadBtn)  numpadBtn.classList.remove('active');
+            if (kbBtn)      kbBtn.classList.add('active');
+            if (numpadDisp) numpadDisp.style.display = 'none';
+            if (kbWrap)     kbWrap.style.display = 'block';
+            // Pre-fill with current amount if any
+            var cur = document.getElementById('inp-amount').value;
+            if (kbInput) {
+                kbInput.value = cur && cur !== '0' ? parseFloat(cur).toFixed(2) : '';
+                // Update color based on type
+                kbInput.className = 'keyboard-amount-input ' + (currentType === 'income' ? 'income' : 'expense');
+                setTimeout(function() { kbInput.focus(); kbInput.select(); }, 100);
+            }
+        } else {
+            if (kbBtn)      kbBtn.classList.remove('active');
+            if (numpadBtn)  numpadBtn.classList.add('active');
+            if (kbWrap)     kbWrap.style.display = 'none';
+            if (numpadDisp) numpadDisp.style.display = 'block';
+            // Sync keyboard value to numpad if filled
+            if (kbInput && kbInput.value) {
+                var val = parseFloat(kbInput.value);
+                if (!isNaN(val) && val > 0) fillNumpad(val, currentType);
+            }
+        }
+    }
+
+    function onKeyboardAmountInput(val) {
+        var num = parseFloat(val);
+        var kbInput = document.getElementById('keyboard-amount');
+        // Update color
+        if (kbInput) {
+            kbInput.className = 'keyboard-amount-input ' + (currentType === 'income' ? 'income' : 'expense');
+        }
+        // Sync to hidden input
+        if (!isNaN(num) && num > 0) {
+            document.getElementById('inp-amount').value = num.toFixed(2);
+        } else {
+            document.getElementById('inp-amount').value = '';
+        }
+    }
+
+    function resetAmountMode() {
+        _amountMode = 'numpad';
+        var numpadBtn  = document.getElementById('btn-mode-numpad');
+        var kbBtn      = document.getElementById('btn-mode-keyboard');
+        var numpadDisp = document.getElementById('numpad-display');
+        var kbWrap     = document.getElementById('keyboard-amount-wrap');
+        var kbInput    = document.getElementById('keyboard-amount');
+        if (numpadBtn)  numpadBtn.classList.add('active');
+        if (kbBtn)      kbBtn.classList.remove('active');
+        if (numpadDisp) numpadDisp.style.display = 'block';
+        if (kbWrap)     kbWrap.style.display = 'none';
+        if (kbInput)    kbInput.value = '';
+    }
+
         // ── SEASONAL ──
     function getSeason() {
         var m=new Date().getMonth();
@@ -4947,6 +5125,8 @@
         document.getElementById('category-block').style.display=(t==='expense')?'block':'none';
         if(t==='transfer') updateTransferSelects();
         if(t==='expense') renderCats();
+        var kbInp = document.getElementById('keyboard-amount');
+        if(kbInp) kbInp.className = 'keyboard-amount-input ' + (t==='income'?'income':'expense');
         var nv=document.getElementById('numpad-value');
         if(nv&&nv.textContent!=='0') nv.style.color=t==='income'?'var(--green)':t==='transfer'?'var(--accent)':'var(--red)';
     };
