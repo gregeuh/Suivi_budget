@@ -2067,6 +2067,7 @@
                     return;
                 }
                 _cloudDataLoaded = true;
+                if (expenses.length > 0 || accounts.length > 1) _hadCloudData = true;
                 applyAppSettings(); 
             } catch (err) {
                 console.error("Données corrompues, auto-réparation...", err);
@@ -2097,16 +2098,18 @@
         console.warn('forceResetData: local reset only, Firebase untouched');
     }
 
-    var _cloudDataLoaded = false; // true once Firebase has sent us data at least once
+    var _cloudDataLoaded = false;
+    var _hadCloudData = false; // true si Firebase avait des données
 
     function saveToCloud() {
         if (!cloudDocRef) return;
-        // SAFETY: never save if data hasn't been loaded from Firebase yet
-        if (!_cloudDataLoaded) {
-            console.warn('saveToCloud blocked: Firebase data not yet loaded');
+        if (!currentUser) return;
+        // Protection minimale : ne pas écraser si Firebase avait des données
+        // et qu'on essaie de sauvegarder vide
+        if (_hadCloudData && expenses.length === 0 && accounts.length === 0) {
+            console.warn('saveToCloud: protection données vides');
             return;
         }
-        // Only persist custom categories - defaults are always rebuilt from DEFAULT_CATEGORIES
         const customCatsToSave = categories.filter(c => c.isCustom);
         cloudDocRef.set({
             displayName: displayName,
@@ -2124,7 +2127,7 @@
             catBudgets: catBudgets,
             theme: savedTheme,
             color: savedColor
-        }, { merge: true }).catch(err => console.error("Erreur de sauvegarde :", err));
+        }, { merge: true }).catch(err => console.error('Erreur sauvegarde:', err));
     }
 
     function applyAppSettings() {
@@ -4214,7 +4217,7 @@
         if (!name)    { showToast('Entrez un nom de compte'); return; }
         if (isNaN(bal)) { showToast('Solde invalide'); return; }
         accounts.push({ id: 'acc_'+Date.now(), name: name, initBalance: bal, color: _newAccColor, icon: _newAccIcon });
-        if(_cloudDataLoaded) saveToCloud();
+        saveToCloud();
         updateAccountsSelectors();
         renderSettingsAccounts();
         updateAllViews();
@@ -4226,7 +4229,7 @@
         hapticTap();
         const acc = accounts.find(a => String(a.id) === String(id)); if (!acc) return;
         const bal = parseFloat(prompt(`Nouveau solde initial pour ${acc.name} (€) :\n(Ajustez plutôt depuis le dashboard pour la vraie vie)`, acc.initBalance).replace(',', '.'));
-        if (!isNaN(bal)) { acc.initBalance = bal; if(_cloudDataLoaded) saveToCloud(); renderSettingsAccounts(); updateAllViews(); }
+        if (!isNaN(bal)) { acc.initBalance = bal; saveToCloud(); renderSettingsAccounts(); updateAllViews(); }
     }
 
     function deleteAccount(id) {
@@ -4254,7 +4257,7 @@
         var wi = parseFloat(w), di = parseFloat(d);
         if (!isNaN(wi)) acc.warnAt   = wi;
         if (!isNaN(di)) acc.dangerAt = di;
-        if(_cloudDataLoaded) saveToCloud();
+        saveToCloud();
         updateAllViews();
         showToast('Seuils mis a jour pour ' + acc.name);
     }
@@ -4503,7 +4506,7 @@
         if (wt && displayName) wt.textContent = 'Bonjour ' + displayName + ' 👋';
         var dn = document.getElementById('set-displayname');
         if (dn) dn.value = displayName;
-        if (_cloudDataLoaded) saveToCloud();
+        saveToCloud();
     }
 
     function obSkip() {
@@ -4709,7 +4712,7 @@
                 }
             }
         }
-        if(_cloudDataLoaded) saveToCloud();
+        saveToCloud();
         updateAllViews();
 
         // Visual feedback on the button
