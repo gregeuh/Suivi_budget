@@ -439,6 +439,21 @@
         .swile-low-badge.alert { background: rgba(255,50,50,0.35); animation: pulseAlert .8s ease-in-out infinite; }
         @keyframes pulseAlert { 0%,100%{opacity:1} 50%{opacity:.6} }
 
+
+        /* ── TOAST ── */
+        #toast-msg {
+            position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: var(--text-main); color: var(--bg-color);
+            padding: 12px 22px; border-radius: 50px;
+            font-size: 14px; font-weight: 600;
+            opacity: 0; transition: opacity .25s, transform .25s;
+            pointer-events: none; z-index: 9999; white-space: nowrap;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        #toast-msg.show {
+            opacity: 1; transform: translateX(-50%) translateY(0);
+        }
+
     </style>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -1218,6 +1233,21 @@
         .swile-low-badge.alert { background: rgba(255,50,50,0.35); animation: pulseAlert .8s ease-in-out infinite; }
         @keyframes pulseAlert { 0%,100%{opacity:1} 50%{opacity:.6} }
 
+
+        /* ── TOAST ── */
+        #toast-msg {
+            position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: var(--text-main); color: var(--bg-color);
+            padding: 12px 22px; border-radius: 50px;
+            font-size: 14px; font-weight: 600;
+            opacity: 0; transition: opacity .25s, transform .25s;
+            pointer-events: none; z-index: 9999; white-space: nowrap;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        #toast-msg.show {
+            opacity: 1; transform: translateX(-50%) translateY(0);
+        }
+
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@600;700&display=swap" rel="stylesheet">
@@ -1640,7 +1670,7 @@
                     <span style="font-size:13px;color:var(--text-muted);">€</span>
                 </div>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid var(--input-bg);">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 0;">
                 <div>
                     <div style="font-weight:600; font-size:14px;">⚠️ Alerte solde bas</div>
                     <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Notification quand il reste moins de X repas</div>
@@ -1650,11 +1680,9 @@
                     <span style="font-size:13px;color:var(--text-muted);">repas</span>
                 </div>
             </div>
-            <div style="padding:14px 0;">
-                <button onclick="saveSwileSettings()" style="width:100%;padding:14px;border-radius:14px;border:none;background:var(--accent);color:white;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;">
-                    Sauvegarder
-                </button>
-            </div>
+            <button onclick="saveSwileSettings()" style="width:100%;padding:14px;border-radius:14px;border:none;background:var(--accent);color:white;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;margin-top:6px;">
+                Sauvegarder
+            </button>
         </div>
 
         <h2 style="font-size:22px; margin:35px 0 15px 0; letter-spacing:-0.5px; font-weight:800;">Objectifs</h2>
@@ -1954,7 +1982,19 @@
                     displayName = data.displayName || '';
                     expenses = Array.isArray(data.expenses) ? data.expenses.filter(e=>e) : [];
                     
-                    accounts = Array.isArray(data.accounts) ? data.accounts.filter(a=>a).map(function(a){ return a.icon ? a : Object.assign({}, a, {icon: a.color==='revolut'?'💳':a.color==='swile'?'🍽️':a.color==='livreta'?'🏧':'🏦'}); }) : [];
+                    var loadedAccs = Array.isArray(data.accounts) ? data.accounts.filter(a=>a).map(function(a){ return a.icon ? a : Object.assign({}, a, {icon: a.color==='revolut'?'💳':a.color==='swile'?'🍽️':a.color==='livreta'?'🏧':'🏦'}); }) : [];
+                    // Merge with defaults — add missing default accounts if not present
+                    var defaultAccs = [
+                        { id: 'acc1',    name: 'Compte Principal', initBalance: 0, color: 'blue',    icon: '🏦' },
+                        { id: 'acc_rev', name: 'Revolut',          initBalance: 0, color: 'revolut', icon: '💳' },
+                        { id: 'acc_swl', name: 'Swile',            initBalance: 0, color: 'swile',   icon: '🍽️' },
+                        { id: 'acc_lva', name: 'Livret A',         initBalance: 0, color: 'livreta', icon: '🏧' }
+                    ];
+                    var loadedIds = loadedAccs.map(function(a){ return a.id; });
+                    defaultAccs.forEach(function(da) {
+                        if (loadedIds.indexOf(da.id) === -1) loadedAccs.push(da);
+                    });
+                    accounts = loadedAccs;
                     if (accounts.length === 0) {
                         accounts = [
                             { id: 'acc1',    name: 'Compte Principal', initBalance: 0, color: 'blue',    icon: '🏦' },
@@ -4391,6 +4431,19 @@
         return count;
     }
 
+        // ── TOAST ──
+    var _toastTimer = null;
+    function showToast(msg, duration) {
+        var el = document.getElementById('toast-msg');
+        if (!el) return;
+        el.textContent = msg;
+        el.classList.add('show');
+        clearTimeout(_toastTimer);
+        _toastTimer = setTimeout(function() {
+            el.classList.remove('show');
+        }, duration || 2500);
+    }
+
     function renderSwileExtra(balance) {
         if (!balance && balance !== 0) return '';
         var meal   = swileMealPrice || 10;
@@ -4703,5 +4756,6 @@
         </div>
     </div>
 
+    <div id="toast-msg"></div>
 </body>
 </html>
