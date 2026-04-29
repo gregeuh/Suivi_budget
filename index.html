@@ -287,13 +287,15 @@
         .confirm-amount { font-size: 28px; font-weight: 800; color: var(--green); margin-top: 6px; font-family: 'Lora', Georgia, serif; }
 
         /* ── SWIPE TO DELETE ── */
-        .tx-swipe-wrap { position: relative; border-radius: 12px; overflow: hidden; }
+        .tx-swipe-wrap { position: relative; border-radius: 12px; overflow: hidden; isolation: isolate; }
         .tx-delete-bg {
             position: absolute; right: 0; top: 0; bottom: 0; width: 72px;
             background: var(--red); display: flex; align-items: center;
-            justify-content: center; border-radius: 0 12px 12px 0; z-index: 0;
+            justify-content: center; z-index: 0;
+            border-radius: 0;
+            clip-path: inset(0);
         }
-        .tx-delete-bg span { color: white; font-size: 24px; }
+        .tx-delete-bg span { color: white; font-size: 22px; }
         .tx-item-content {
             background: var(--card-bg); position: relative; z-index: 1;
             transition: transform .25s cubic-bezier(0.16,1,0.3,1), background .18s ease !important;
@@ -4315,11 +4317,17 @@
             document.getElementById('emergency-fill').style.width = "0%";
         }
 
-        // 50-30-20
-        const bC = mInc > 0 ? mInc : 1;
-        document.getElementById('ring-fixe').style.strokeDashoffset = 251.2 - (Math.min(types.fixe / (bC*0.5), 1) * 251.2);
-        document.getElementById('ring-vie').style.strokeDashoffset = 251.2 - (Math.min(types.vie / (bC*0.3), 1) * 251.2);
-        document.getElementById('ring-loisirs').style.strokeDashoffset = 251.2 - (Math.min(types.loisirs / (bC*0.2), 1) * 251.2);
+        // 50-30-20 — use income as base, fallback to total expenses
+        const bC = mInc > 0 ? mInc : (total > 0 ? total : 1);
+        const ring = function(id, actual, target) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            var pct = target > 0 ? Math.min(actual / target, 1) : 0;
+            el.style.strokeDashoffset = 251.2 - (pct * 251.2);
+        };
+        ring('ring-fixe',   types.fixe,    bC * 0.5);
+        ring('ring-vie',    types.vie,     bC * 0.3);
+        ring('ring-loisirs',types.loisirs, bC * 0.2);
 
         let adv = "<strong>Félicitations !</strong> Règle respectée."; let aI = "✅";
         if (mInc === 0) { adv = "<strong>Oups !</strong> Ajoutez vos revenus."; aI = "⚠️"; }
