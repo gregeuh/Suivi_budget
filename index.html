@@ -65,11 +65,11 @@
         .bank-card.green  { background: linear-gradient(150deg,#5aa882 0%,#3a7a5a 100%); }
         .bank-card.orange   { background: linear-gradient(150deg,#d4a24a 0%,#a47828 100%); }
         /* Revolut — violet électrique */
-        .bank-card.revolut  { background: linear-gradient(150deg,#191c33 0%,#2f3166 100%); }
+        .bank-card.revolut, .bank-card.revolut.zone-safe, .bank-card.revolut.zone-warn, .bank-card.revolut.zone-danger { background: linear-gradient(150deg,#191c33 0%,#2f3166 100%) !important; }
         /* Swile — jaune vif ticket restau */
-        .bank-card.swile    { background: linear-gradient(150deg,#f5a623 0%,#e08800 100%); }
+        .bank-card.swile, .bank-card.swile.zone-safe, .bank-card.swile.zone-warn, .bank-card.swile.zone-danger { background: linear-gradient(135deg, #f7b731 0%, #f0944d 60%, #e8722a 100%) !important; }
         /* Livret A — vert Livret A */
-        .bank-card.livreta  { background: linear-gradient(150deg,#2e7d32 0%,#1b5e20 100%); }
+        .bank-card.livreta, .bank-card.livreta.zone-safe, .bank-card.livreta.zone-warn, .bank-card.livreta.zone-danger { background: linear-gradient(150deg,#2e7d32 0%,#1b5e20 100%) !important; }
         .bank-card.zone-safe   { background: linear-gradient(150deg,#5aa882 0%,#3a7a5a 100%) !important; }
         .bank-card.zone-warn   { background: linear-gradient(150deg,#d4a24a 0%,#a47828 100%) !important; }
         .bank-card.zone-danger { background: linear-gradient(150deg,#c97070 0%,#9e4848 100%) !important; }
@@ -427,9 +427,9 @@
             background: rgba(255,255,255,0.85);
             transition: width 1s cubic-bezier(0.16,1,0.3,1);
         }
-        .swile-meta { display: flex; justify-content: space-between; align-items: center; }
-        .swile-daily { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.9); }
-        .swile-meals { font-size: 12px; color: rgba(255,255,255,0.7); }
+        .swile-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+        .swile-daily { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.9); line-height: 1.4; }
+        .swile-meals { font-size: 12px; color: rgba(255,255,255,0.7); line-height: 1.4; }
         .swile-low-badge {
             display: inline-flex; align-items: center; gap: 4px;
             background: rgba(255,255,255,0.2); border-radius: 20px;
@@ -859,11 +859,11 @@
         .bank-card.green  { background: linear-gradient(150deg,#5aa882 0%,#3a7a5a 100%); }
         .bank-card.orange   { background: linear-gradient(150deg,#d4a24a 0%,#a47828 100%); }
         /* Revolut — violet électrique */
-        .bank-card.revolut  { background: linear-gradient(150deg,#191c33 0%,#2f3166 100%); }
+        .bank-card.revolut, .bank-card.revolut.zone-safe, .bank-card.revolut.zone-warn, .bank-card.revolut.zone-danger { background: linear-gradient(150deg,#191c33 0%,#2f3166 100%) !important; }
         /* Swile — jaune vif ticket restau */
-        .bank-card.swile    { background: linear-gradient(150deg,#f5a623 0%,#e08800 100%); }
+        .bank-card.swile, .bank-card.swile.zone-safe, .bank-card.swile.zone-warn, .bank-card.swile.zone-danger { background: linear-gradient(135deg, #f7b731 0%, #f0944d 60%, #e8722a 100%) !important; }
         /* Livret A — vert Livret A */
-        .bank-card.livreta  { background: linear-gradient(150deg,#2e7d32 0%,#1b5e20 100%); }
+        .bank-card.livreta, .bank-card.livreta.zone-safe, .bank-card.livreta.zone-warn, .bank-card.livreta.zone-danger { background: linear-gradient(150deg,#2e7d32 0%,#1b5e20 100%) !important; }
         .bank-card.zone-safe   { background: linear-gradient(150deg,#5aa882 0%,#3a7a5a 100%) !important; }
         .bank-card.zone-warn   { background: linear-gradient(150deg,#d4a24a 0%,#a47828 100%) !important; }
         .bank-card.zone-danger { background: linear-gradient(150deg,#c97070 0%,#9e4848 100%) !important; }
@@ -1221,9 +1221,9 @@
             background: rgba(255,255,255,0.85);
             transition: width 1s cubic-bezier(0.16,1,0.3,1);
         }
-        .swile-meta { display: flex; justify-content: space-between; align-items: center; }
-        .swile-daily { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.9); }
-        .swile-meals { font-size: 12px; color: rgba(255,255,255,0.7); }
+        .swile-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+        .swile-daily { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.9); line-height: 1.4; }
+        .swile-meals { font-size: 12px; color: rgba(255,255,255,0.7); line-height: 1.4; }
         .swile-low-badge {
             display: inline-flex; align-items: center; gap: 4px;
             background: rgba(255,255,255,0.2); border-radius: 20px;
