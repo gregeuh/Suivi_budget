@@ -748,7 +748,6 @@
         .tx-subtitle { font-size: 12px; color: var(--text-muted); letter-spacing: 0.1px; }
         .tx-swipe-container { position: relative; overflow: hidden; border-bottom: 1px solid var(--input-bg); }
         .tx-swipe-container:last-child { border-bottom: none; }
-        .tx-delete-btn { position: absolute; right: 0; top: 0; bottom: 0; width: 80px; background: var(--red); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; cursor: pointer; z-index: 1; }
         .tx-item-content { position: relative; z-index: 2; background: var(--bg-color); transition: transform 0.2s ease-out; }
         
         .filter-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 15px; scrollbar-width: none;}
@@ -1087,21 +1086,7 @@
         .confirm-label { font-size: 18px; font-weight: 700; color: var(--text-main); }
         .confirm-amount { font-size: 28px; font-weight: 800; color: var(--green); margin-top: 6px; font-family: 'Lora', Georgia, serif; }
 
-        /* ── SWIPE TO DELETE ── */
-        .tx-swipe-wrap { position: relative; border-radius: 12px; overflow: hidden; }
-        .tx-delete-bg {
-            position: absolute; right: 0; top: 0; bottom: 0; width: 72px;
-            background: var(--red); display: flex; align-items: center;
-            justify-content: center; border-radius: 0 12px 12px 0; z-index: 0;
-        }
-        .tx-delete-bg span { color: white; font-size: 24px; }
-        .tx-item-content {
-            background: var(--card-bg); position: relative; z-index: 1;
-            transition: transform .25s cubic-bezier(0.16,1,0.3,1), background .18s ease !important;
-            cursor: grab;
-            user-select: none;
-        }
-        .tx-item-content:active { cursor: grabbing; }
+
 
         /* ── CARD GLASS REFLET ── */
         .bank-card::after {
@@ -4058,7 +4043,6 @@
 
             html += `
             <div class="tx-swipe-container">
-                <div class="tx-delete-btn" onclick="deleteTx('${e.originalId}')">Suppr.</div>
                 <div class="tx-swipe-wrap"><div class="tx-delete-bg"><span>🗑️</span></div><div class="tx-item-content" onclick="if(!window.isSwiping) openEditModal('${e.originalId}')" ontouchstart="handleTouchStart(event, this)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event, '${e.originalId}')">
                     <div style="display:flex; align-items:center;">
                         <div class="tx-icon-badge" style="background:${isTransfer ? 'rgba(107,143,232,0.15)' : isInc ? 'rgba(90,168,130,0.15)' : 'var(--input-bg)'};">${icon}</div>
