@@ -614,9 +614,9 @@
             padding: 5px 12px; border-radius: 50px; margin-top: 8px;
             color: white; backdrop-filter: blur(4px);
         }
-        .bank-card.zone-safe   .balance-zone-badge { background: rgba(40,180,100,0.35); border: 1px solid rgba(90,255,160,0.4); }
-        .bank-card.zone-warn   .balance-zone-badge { background: rgba(180,130,30,0.35); border: 1px solid rgba(255,200,80,0.4); }
-        .bank-card.zone-danger .balance-zone-badge { background: rgba(200,40,40,0.35);  border: 1px solid rgba(255,80,80,0.4); }
+        .bank-card.zone-safe   .balance-zone-badge { background: rgba(0,0,0,0.2); }
+        .bank-card.zone-warn   .balance-zone-badge { background: rgba(0,0,0,0.2); }
+        .bank-card.zone-danger .balance-zone-badge { background: rgba(0,0,0,0.25); }
         .acc-val-indicator {
             width: 10px; height: 10px; border-radius: 50%;
             display: inline-block; margin-right: 6px; flex-shrink: 0;
@@ -3018,14 +3018,7 @@
                 </div>
                 <div class="acc-val blur-val" id="acc-val-${a.id}">${accBalances[a.id].toFixed(2)} €</div>
                 <div class="balance-zone-badge">${zoneLabel}</div>
-                ${a.color !== 'swile' ? (function(){
-                    var budget = getMonthlyBudgetTotal();
-                    var pct = budget > 0 ? Math.min(100, Math.round(accBalances[a.id] / budget * 100)) : 0;
-                    var barColor = zone==='danger' ? 'rgba(255,80,80,0.8)' : zone==='warn' ? 'rgba(255,200,80,0.8)' : 'rgba(90,255,160,0.8)';
-                    return '<div style="margin-top:8px;height:3px;background:rgba(255,255,255,0.2);border-radius:50px;overflow:hidden;position:relative;z-index:2;">'
-                        + '<div style="height:100%;width:'+pct+'%;background:'+barColor+';border-radius:50px;transition:width 1s cubic-bezier(0.16,1,0.3,1);"></div>'
-                        + '</div>';
-                })() : ''}
+
                 ${a.color==='livreta' ? '<div style="background:rgba(255,255,255,0.2);border-radius:8px;padding:3px 10px;font-size:10px;font-weight:700;margin-top:6px;display:inline-block;">🏦 Livret A</div>' : ''}
                 ${a.color==='swile' ? '<div class="swile-fork-bg">🍽️</div>' + renderSwileExtra(accBalances[a.id]) : ''}
                 ${a.color==='revolut' ? '<div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:3px 10px;font-size:10px;font-weight:700;margin-top:6px;display:inline-block;">💳 Revolut</div>' : ''}
