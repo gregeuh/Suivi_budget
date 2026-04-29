@@ -349,6 +349,61 @@
         }
         .tab-btn:active::after { opacity: 1; }
 
+
+        /* ── EMPTY STATES ── */
+        .empty-illustrated {
+            text-align: center; padding: 48px 20px;
+            display: flex; flex-direction: column; align-items: center; gap: 12px;
+        }
+        .empty-illustrated-icon {
+            font-size: 64px; line-height: 1;
+            animation: floatIcon 3s ease-in-out infinite;
+        }
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-8px); }
+        }
+        .empty-illustrated-title {
+            font-size: 18px; font-weight: 700; color: var(--text-main);
+        }
+        .empty-illustrated-sub {
+            font-size: 14px; color: var(--text-muted); line-height: 1.5; max-width: 260px;
+        }
+        .empty-illustrated-btn {
+            margin-top: 8px; padding: 12px 28px; background: var(--accent);
+            color: white; border: none; border-radius: 50px; font-family: inherit;
+            font-size: 15px; font-weight: 700; cursor: pointer;
+            box-shadow: 0 4px 16px var(--accent-light);
+            transition: transform .2s, box-shadow .2s;
+        }
+        .empty-illustrated-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--accent-light); }
+        .empty-illustrated-btn:active { transform: scale(0.96); }
+
+
+        /* ── ONBOARDING ── */
+        #onboarding-overlay {
+            display: none; position: fixed; inset: 0; z-index: 10000;
+            background: var(--bg-color);
+            flex-direction: column; align-items: center; justify-content: center;
+            padding: 32px 24px;
+        }
+        #onboarding-overlay.show { display: flex; }
+        .ob-step { display: none; width: 100%; max-width: 380px; text-align: center; }
+        .ob-step.active { display: flex; flex-direction: column; align-items: center; gap: 16px; animation: obSlide .35s cubic-bezier(0.16,1,0.3,1); }
+        @keyframes obSlide { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:translateX(0); } }
+        .ob-emoji { font-size: 72px; line-height: 1; margin-bottom: 4px; animation: floatIcon 3s ease-in-out infinite; }
+        .ob-title { font-size: 26px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
+        .ob-sub   { font-size: 15px; color: var(--text-muted); line-height: 1.6; max-width: 300px; }
+        .ob-input { width: 100%; padding: 16px; border-radius: 16px; border: none; background: var(--input-bg); color: var(--text-main); font-family: inherit; font-size: 18px; font-weight: 700; text-align: center; outline: none; box-sizing: border-box; }
+        .ob-input:focus { box-shadow: 0 0 0 3px var(--accent-light); }
+        .ob-btn { width: 100%; padding: 16px; border-radius: 50px; border: none; background: var(--accent); color: white; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 6px 20px var(--accent-light); transition: transform .2s; }
+        .ob-btn:hover { transform: translateY(-2px); }
+        .ob-btn:active { transform: scale(0.97); }
+        .ob-skip { font-size: 13px; color: var(--text-muted); cursor: pointer; margin-top: 4px; text-decoration: underline; }
+        .ob-dots { display: flex; gap: 8px; }
+        .ob-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--input-bg); transition: background .3s, width .3s; }
+        .ob-dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
+
     </style>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -1037,6 +1092,61 @@
             pointer-events: none;
         }
         .tab-btn:active::after { opacity: 1; }
+
+
+        /* ── EMPTY STATES ── */
+        .empty-illustrated {
+            text-align: center; padding: 48px 20px;
+            display: flex; flex-direction: column; align-items: center; gap: 12px;
+        }
+        .empty-illustrated-icon {
+            font-size: 64px; line-height: 1;
+            animation: floatIcon 3s ease-in-out infinite;
+        }
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-8px); }
+        }
+        .empty-illustrated-title {
+            font-size: 18px; font-weight: 700; color: var(--text-main);
+        }
+        .empty-illustrated-sub {
+            font-size: 14px; color: var(--text-muted); line-height: 1.5; max-width: 260px;
+        }
+        .empty-illustrated-btn {
+            margin-top: 8px; padding: 12px 28px; background: var(--accent);
+            color: white; border: none; border-radius: 50px; font-family: inherit;
+            font-size: 15px; font-weight: 700; cursor: pointer;
+            box-shadow: 0 4px 16px var(--accent-light);
+            transition: transform .2s, box-shadow .2s;
+        }
+        .empty-illustrated-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--accent-light); }
+        .empty-illustrated-btn:active { transform: scale(0.96); }
+
+
+        /* ── ONBOARDING ── */
+        #onboarding-overlay {
+            display: none; position: fixed; inset: 0; z-index: 10000;
+            background: var(--bg-color);
+            flex-direction: column; align-items: center; justify-content: center;
+            padding: 32px 24px;
+        }
+        #onboarding-overlay.show { display: flex; }
+        .ob-step { display: none; width: 100%; max-width: 380px; text-align: center; }
+        .ob-step.active { display: flex; flex-direction: column; align-items: center; gap: 16px; animation: obSlide .35s cubic-bezier(0.16,1,0.3,1); }
+        @keyframes obSlide { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:translateX(0); } }
+        .ob-emoji { font-size: 72px; line-height: 1; margin-bottom: 4px; animation: floatIcon 3s ease-in-out infinite; }
+        .ob-title { font-size: 26px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
+        .ob-sub   { font-size: 15px; color: var(--text-muted); line-height: 1.6; max-width: 300px; }
+        .ob-input { width: 100%; padding: 16px; border-radius: 16px; border: none; background: var(--input-bg); color: var(--text-main); font-family: inherit; font-size: 18px; font-weight: 700; text-align: center; outline: none; box-sizing: border-box; }
+        .ob-input:focus { box-shadow: 0 0 0 3px var(--accent-light); }
+        .ob-btn { width: 100%; padding: 16px; border-radius: 50px; border: none; background: var(--accent); color: white; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 6px 20px var(--accent-light); transition: transform .2s; }
+        .ob-btn:hover { transform: translateY(-2px); }
+        .ob-btn:active { transform: scale(0.97); }
+        .ob-skip { font-size: 13px; color: var(--text-muted); cursor: pointer; margin-top: 4px; text-decoration: underline; }
+        .ob-dots { display: flex; gap: 8px; }
+        .ob-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--input-bg); transition: background .3s, width .3s; }
+        .ob-dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
 
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -1857,6 +1967,7 @@
 
         try { if(typeof initNotifBanner === 'function') initNotifBanner(); } catch(e) {}
         try { var sk = document.getElementById('skeleton-screen'); if(sk) sk.style.display = 'none'; } catch(e) {}
+        try { if(typeof checkOnboarding === 'function') checkOnboarding(); } catch(e) {}
         try { if(typeof updateAccSub === 'function') setTimeout(updateAccSub, 100); } catch(e) {}
     }
 
@@ -2678,6 +2789,14 @@
             }
         });
 
+        if (!accounts || accounts.length === 0) {
+            document.getElementById('accounts-container').innerHTML =
+                '<div class="empty-illustrated" style="padding:32px 20px;">'
+                + '<div class="empty-illustrated-icon">🏦</div>'
+                + '<div class="empty-illustrated-title">Aucun compte</div>'
+                + '<div class="empty-illustrated-sub">Ajoutez vos comptes dans l\'onglet Profil pour commencer.</div>'
+                + '</div>';
+        } else {
         document.getElementById('accounts-container').innerHTML = accounts.map(a => {
             globalRealBalance += accBalances[a.id];
             const zone = getBalanceZone(accBalances[a.id]);
@@ -2699,6 +2818,7 @@
             </div>`;
         }).join('');
 
+        } // end accounts else
         accounts.forEach(a => {
             if(document.getElementById(`acc-val-${a.id}`)) animateValue(document.getElementById(`acc-val-${a.id}`), 0, accBalances[a.id], 800, val => val.toFixed(2) + " €");
         });
@@ -2803,6 +2923,11 @@
         var val = parseFloat(_npRaw);
         if (!isNaN(val) && val > 0) fillNumpad(val, currentType);
         closeNumpad();
+        // Auto-focus label field after amount entry
+        setTimeout(function() {
+            var lbl = document.getElementById('inp-label');
+            if (lbl && !lbl.value) lbl.focus();
+        }, 200);
     }
 
     function npPress(ch) {
@@ -3546,7 +3671,12 @@
         const filtered = activeExps.filter(e => (currentFilter === 'all' || (currentFilter === 'income' ? e.type === 'income' : e.cat === currentFilter)) && (e.label.toLowerCase().includes(search) || (e.note && e.note.toLowerCase().includes(search))));
         
         if(filtered.length === 0) {
-            list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🍃</div><div class="empty-state-title">Aucune opération</div><div style="font-size:14px;">Vous n'avez rien dépensé.</div></div>`;
+            list.innerHTML = '<div class="empty-illustrated">'
+                + '<div class="empty-illustrated-icon">🍃</div>'
+                + '<div class="empty-illustrated-title">Aucune transaction</div>'
+                + '<div class="empty-illustrated-sub">Vous n\'avez aucune opération ce mois-ci. Commencez à suivre vos dépenses !</div>'
+                + '<button class="empty-illustrated-btn" onclick="openAddModal()">+ Ajouter une opération</button>'
+                + '</div>';
             return;
         }
         
@@ -4060,6 +4190,66 @@
         }
     });
 
+    
+    // ── ONBOARDING ──
+    var _obStep = 0;
+
+    function showOnboarding() {
+        var ov = document.getElementById('onboarding-overlay');
+        if (ov) { ov.classList.add('show'); setTimeout(function() { var n = document.getElementById('ob-name'); if(n) n.focus(); }, 300); }
+    }
+
+    function obGoTo(step) {
+        document.querySelectorAll('.ob-step').forEach(function(s, i) {
+            s.classList.toggle('active', i === step);
+        });
+        document.querySelectorAll('.ob-dot').forEach(function(d, i) {
+            d.classList.toggle('active', i === step);
+        });
+        _obStep = step;
+    }
+
+    function obNext(nextStep) {
+        if (nextStep === 1) {
+            var name = (document.getElementById('ob-name').value || '').trim();
+            if (!name) { document.getElementById('ob-name').focus(); return; }
+            displayName = name;
+            var rt = document.getElementById('ob-ready-title');
+            if (rt) rt.textContent = 'C\'est parti, ' + name + ' !';
+        }
+        if (nextStep === 2) {
+            var bud = parseFloat(document.getElementById('ob-budget').value);
+            if (!isNaN(bud) && bud > 0) savingsGoal = Math.round(bud * 0.2);
+        }
+        obGoTo(nextStep);
+        if (nextStep === 1) setTimeout(function() { var b = document.getElementById('ob-budget'); if(b) b.focus(); }, 300);
+    }
+
+    function obFinish() {
+        var ov = document.getElementById('onboarding-overlay');
+        if (ov) ov.classList.remove('show');
+        localStorage.setItem('ob_done', '1');
+        // Save displayName
+        var wt = document.getElementById('welcome-title');
+        if (wt && displayName) wt.textContent = 'Bonjour ' + displayName + ' 👋';
+        var dn = document.getElementById('set-displayname');
+        if (dn) dn.value = displayName;
+        if (_cloudDataLoaded) saveToCloud();
+    }
+
+    function obSkip() {
+        var ov = document.getElementById('onboarding-overlay');
+        if (ov) ov.classList.remove('show');
+        localStorage.setItem('ob_done', '1');
+    }
+
+    function checkOnboarding() {
+        // Show only if new user (no displayName and first time)
+        if (!localStorage.getItem('ob_done') && !displayName) {
+            setTimeout(showOnboarding, 600);
+        }
+    }
+
         // ── SEASONAL ──
     function getSeason() {
         var m=new Date().getMonth();
@@ -4197,6 +4387,49 @@
             <span class="confirm-check">✅</span>
             <div class="confirm-label" id="confirm-label">Opération ajoutée</div>
             <div class="confirm-amount" id="confirm-amount"></div>
+        </div>
+    </div>
+
+
+    <!-- ONBOARDING -->
+    <div id="onboarding-overlay">
+        <div style="width:100%;max-width:380px;">
+            <!-- Dots -->
+            <div class="ob-dots" style="justify-content:center;margin-bottom:32px;">
+                <div class="ob-dot active" id="ob-dot-0"></div>
+                <div class="ob-dot" id="ob-dot-1"></div>
+                <div class="ob-dot" id="ob-dot-2"></div>
+            </div>
+
+            <!-- Step 1 — Bienvenue + Prénom -->
+            <div class="ob-step active" id="ob-step-0">
+                <div class="ob-emoji">👋</div>
+                <div class="ob-title">Bienvenue !</div>
+                <div class="ob-sub">Votre assistant budgetaire personnel. Commençons par faire connaissance.</div>
+                <input class="ob-input" id="ob-name" type="text" placeholder="Votre prénom" maxlength="30"
+                    onkeydown="if(event.key==='Enter') obNext(1)">
+                <button class="ob-btn" onclick="obNext(1)">Continuer →</button>
+                <span class="ob-skip" onclick="obSkip()">Passer</span>
+            </div>
+
+            <!-- Step 2 — Budget mensuel -->
+            <div class="ob-step" id="ob-step-1">
+                <div class="ob-emoji">💰</div>
+                <div class="ob-title">Votre budget</div>
+                <div class="ob-sub">Quel est votre budget mensuel total ? Vous pourrez le modifier plus tard.</div>
+                <input class="ob-input" id="ob-budget" type="number" placeholder="ex: 2000" inputmode="decimal"
+                    onkeydown="if(event.key==='Enter') obNext(2)">
+                <button class="ob-btn" onclick="obNext(2)">Continuer →</button>
+                <span class="ob-skip" onclick="obSkip()">Passer</span>
+            </div>
+
+            <!-- Step 3 — Prêt ! -->
+            <div class="ob-step" id="ob-step-2">
+                <div class="ob-emoji">🚀</div>
+                <div class="ob-title" id="ob-ready-title">C'est parti !</div>
+                <div class="ob-sub">Tout est prêt. Ajoutez votre première transaction et commencez à suivre votre budget.</div>
+                <button class="ob-btn" onclick="obFinish()">Commencer →</button>
+            </div>
         </div>
     </div>
 
