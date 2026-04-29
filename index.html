@@ -214,7 +214,22 @@
         }
         /* Tab bar — ombre plus présente */
         .tab-bar {
-            box-shadow: 0 -4px 20px rgba(100,70,10,0.10), 0 8px 30px rgba(0,0,0,0.12) !important;
+            background: rgba(255,255,255,0.22) !important;
+            backdrop-filter: blur(40px) saturate(200%) !important;
+            -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
+            border: 1px solid rgba(255,255,255,0.5) !important;
+            box-shadow: 
+                0 8px 32px rgba(0,0,0,0.15),
+                0 2px 8px rgba(0,0,0,0.08),
+                inset 0 1px 0 rgba(255,255,255,0.6),
+                inset 0 -1px 0 rgba(0,0,0,0.05) !important;
+        }
+        body[data-theme="dark"] .tab-bar {
+            background: rgba(22,19,14,0.85) !important;
+            border-color: rgba(255,210,100,0.12) !important;
+            box-shadow:
+                0 8px 32px rgba(0,0,0,0.5),
+                inset 0 1px 0 rgba(255,255,255,0.08) !important;
         }
 
 
@@ -315,9 +330,9 @@
 
         /* ── TX ICON BADGE ── */
         .tx-icon-badge {
-            width: 44px; height: 44px; border-radius: 14px;
+            width: 48px; height: 48px; border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 20px; margin-right: 14px; flex-shrink: 0;
+            font-size: 22px; margin-right: 14px; flex-shrink: 0;
             position: relative; overflow: hidden;
         }
         .tx-icon-badge::after {
@@ -501,6 +516,24 @@
             font-weight: 600; margin-top: 6px;
         }
 
+
+        /* ── DATE SEPARATOR ── */
+        .tx-date-sep {
+            display: flex; align-items: center; gap: 12px;
+            margin: 20px 0 8px 0;
+        }
+        .tx-date-sep::before, .tx-date-sep::after {
+            content: ''; flex: 1; height: 1px;
+            background: linear-gradient(to right, transparent, var(--border), transparent);
+        }
+        .tx-date-pill {
+            font-size: 11px; font-weight: 700; letter-spacing: 0.8px;
+            text-transform: uppercase; color: var(--text-muted);
+            background: var(--input-bg); border-radius: 50px;
+            padding: 4px 12px; white-space: nowrap;
+            border: 1px solid var(--border);
+        }
+
     </style>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -628,6 +661,13 @@
         .hero-tint.negative { background: radial-gradient(ellipse at 50% 120%, rgba(224,92,92,0.12) 0%, transparent 70%); opacity: 1; }
         .hero-curve { position: absolute; bottom: 0; left: 0; right: 0; pointer-events: none; opacity: 0.07; }
         .hero-section { position: relative; text-align: center; padding: 40px 20px 32px 20px; overflow: hidden; background: var(--card-bg); border-radius: var(--radius-card); box-shadow: var(--shadow); margin-bottom: 25px; }
+        .hero-section::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, transparent 100%);
+            border-radius: var(--radius-card) var(--radius-card) 0 0;
+            pointer-events: none; z-index: 1;
+        }
         .hero-bg-curve { position: absolute; bottom: -5px; left: 0; width: 100%; height: 75%; z-index: 0; pointer-events: none; }
         .hero-content { position: relative; z-index: 1; }
         .hero-label { font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 12px; opacity: 0.7; }
@@ -783,7 +823,7 @@
         .btn-submit { background-color: var(--accent); color: white; border: none; width: 100%; padding: 18px; border-radius: 18px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px var(--accent-light); }
         .btn-submit:active { transform: scale(0.98); }
 
-        .tx-date-header { font-size: 11px; font-weight: 700; color: var(--text-muted); margin: 22px 0 6px 0; text-transform: uppercase; letter-spacing: 1.2px; opacity: 0.7; }
+        /* old tx-date-header */ .tx-date-header-old { font-size: 11px; font-weight: 700; color: var(--text-muted); margin: 22px 0 6px 0; text-transform: uppercase; letter-spacing: 1.2px; opacity: 0.7; }
         .tx-item-content { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; cursor: pointer; transition: opacity .15s; }
         .tx-item-content:active { opacity: 0.65; }
         .tx-icon-box { font-size: 22px; background: var(--input-bg); width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 13px; margin-right: 14px; flex-shrink: 0; }
@@ -1057,7 +1097,22 @@
         }
         /* Tab bar — ombre plus présente */
         .tab-bar {
-            box-shadow: 0 -4px 20px rgba(100,70,10,0.10), 0 8px 30px rgba(0,0,0,0.12) !important;
+            background: rgba(255,255,255,0.22) !important;
+            backdrop-filter: blur(40px) saturate(200%) !important;
+            -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
+            border: 1px solid rgba(255,255,255,0.5) !important;
+            box-shadow: 
+                0 8px 32px rgba(0,0,0,0.15),
+                0 2px 8px rgba(0,0,0,0.08),
+                inset 0 1px 0 rgba(255,255,255,0.6),
+                inset 0 -1px 0 rgba(0,0,0,0.05) !important;
+        }
+        body[data-theme="dark"] .tab-bar {
+            background: rgba(22,19,14,0.85) !important;
+            border-color: rgba(255,210,100,0.12) !important;
+            box-shadow:
+                0 8px 32px rgba(0,0,0,0.5),
+                inset 0 1px 0 rgba(255,255,255,0.08) !important;
         }
 
 
@@ -1142,9 +1197,9 @@
 
         /* ── TX ICON BADGE ── */
         .tx-icon-badge {
-            width: 44px; height: 44px; border-radius: 14px;
+            width: 48px; height: 48px; border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 20px; margin-right: 14px; flex-shrink: 0;
+            font-size: 22px; margin-right: 14px; flex-shrink: 0;
             position: relative; overflow: hidden;
         }
         .tx-icon-badge::after {
@@ -1326,6 +1381,24 @@
         .keyboard-amount-hint {
             text-align: center; font-size: 12px; color: var(--text-muted);
             font-weight: 600; margin-top: 6px;
+        }
+
+
+        /* ── DATE SEPARATOR ── */
+        .tx-date-sep {
+            display: flex; align-items: center; gap: 12px;
+            margin: 20px 0 8px 0;
+        }
+        .tx-date-sep::before, .tx-date-sep::after {
+            content: ''; flex: 1; height: 1px;
+            background: linear-gradient(to right, transparent, var(--border), transparent);
+        }
+        .tx-date-pill {
+            font-size: 11px; font-weight: 700; letter-spacing: 0.8px;
+            text-transform: uppercase; color: var(--text-muted);
+            background: var(--input-bg); border-radius: 50px;
+            padding: 4px 12px; white-space: nowrap;
+            border: 1px solid var(--border);
         }
 
     </style>
@@ -1735,7 +1808,7 @@
         <h1 style="font-size: 34px; font-weight: 800; letter-spacing: -1px; margin-bottom: 20px;">Réglages</h1>
         
         <div class="card" style="display:flex; align-items:center; gap:20px;">
-            <div style="width: 70px; height: 70px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 32px; color: white;">👤</div>
+            <div id="profile-avatar" style="width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 70%,#000));display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:white;letter-spacing:-1px;font-family:'Lora',Georgia,serif;box-shadow:0 4px 16px var(--accent-light);flex-shrink:0;">?</div>
             <div style="flex:1;">
                 <input type="text" id="set-displayname" placeholder="Votre Prénom" oninput="saveDisplayName()" style="background:transparent; border:none; color:var(--text-main); font-size:22px; font-weight:700; width:100%; outline:none; padding:0; margin-bottom:4px;" placeholder="Votre prénom">
                 <div id="profile-email-display" style="font-size:13px; color:var(--text-muted);">Connecté</div>
@@ -2238,6 +2311,7 @@
         try { if(typeof initNotifBanner === 'function') initNotifBanner(); } catch(e) {}
         try { var sk = document.getElementById('skeleton-screen'); if(sk) sk.style.display = 'none'; } catch(e) {}
         try { if(typeof checkOnboarding === 'function') checkOnboarding(); } catch(e) {}
+        try { if(typeof updateProfileAvatar === 'function') updateProfileAvatar(); } catch(e) {}
         try { checkSwileAutoRecharge(); checkSwileLowAlert(); } catch(e) {}
         try { var si=document.getElementById('swile-monthly'); if(si) si.value=swileMonthlyAmount;
         // Pre-fill swile balance from current calculated balance
@@ -4135,7 +4209,9 @@
         
         filtered.forEach(e => {
             if (e.date !== lastDate) {
-                html += `<div class="tx-date-header">${formatRelativeDate(e.date)}</div>`;
+                html += `<div class="tx-date-sep">
+                <div class="tx-date-pill">${formatRelativeDate(e.date)}</div>
+            </div>`;
                 lastDate = e.date;
             }
             
@@ -5055,6 +5131,23 @@
         if (numpadDisp) numpadDisp.style.display = 'block';
         if (kbWrap)     kbWrap.style.display = 'none';
         if (kbInput)    kbInput.value = '';
+    }
+
+    
+    function updateProfileAvatar() {
+        var el = document.getElementById('profile-avatar');
+        if (!el) return;
+        if (displayName && displayName.trim()) {
+            var parts = displayName.trim().split(' ');
+            var initials = parts.length >= 2
+                ? parts[0][0].toUpperCase() + parts[parts.length-1][0].toUpperCase()
+                : displayName.trim().substring(0,2).toUpperCase();
+            el.textContent = initials;
+            el.style.fontSize = initials.length > 1 ? '26px' : '32px';
+        } else {
+            el.textContent = '?';
+            el.style.fontSize = '32px';
+        }
     }
 
         // ── SEASONAL ──
