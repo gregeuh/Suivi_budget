@@ -5150,6 +5150,98 @@
         }
     }
 
+    
+    // ── SWIPE NAVIGATION (tab bar + content) ──
+    var _TAB_ORDER = ['dash', 'tx', 'stats', 'advice', 'settings'];
+    var _swipeNavStartX = 0, _swipeNavStartY = 0;
+    var _swipeNavActive = false, _swipeNavEl = null;
+
+    function getTabBtnByIndex(idx) {
+        return document.querySelector('.tab-btn[onclick*="' + _TAB_ORDER[idx] + '"]');
+    }
+
+    function swipeToTab(newIdx) {
+        if (newIdx < 0 || newIdx >= _TAB_ORDER.length) return;
+        var btn = getTabBtnByIndex(newIdx);
+        if (btn) switchTab(_TAB_ORDER[newIdx], btn, newIdx);
+    }
+
+    // ── TOUCH on content (app-wrapper) ──
+    var _appWrapper = null;
+    document.addEventListener('DOMContentLoaded', function() {
+        _appWrapper = document.getElementById('app-wrapper');
+        if (_appWrapper) {
+            _appWrapper.addEventListener('touchstart', function(e) {
+                // Don't intercept if touching a tx item (swipe to delete)
+                if (e.target.closest('.tx-swipe-wrap')) return;
+                // Don't intercept horizontal scrolls (accounts carousel)
+                if (e.target.closest('.accounts-scroll')) return;
+                _swipeNavStartX = e.touches[0].clientX;
+                _swipeNavStartY = e.touches[0].clientY;
+                _swipeNavActive = true;
+            }, { passive: true });
+
+            _appWrapper.addEventListener('touchmove', function(e) {
+                if (!_swipeNavActive) return;
+                var dx = e.touches[0].clientX - _swipeNavStartX;
+                var dy = e.touches[0].clientY - _swipeNavStartY;
+                // Cancel if mostly vertical
+                if (Math.abs(dy) > Math.abs(dx)) { _swipeNavActive = false; return; }
+            }, { passive: true });
+
+            _appWrapper.addEventListener('touchend', function(e) {
+                if (!_swipeNavActive) return;
+                var dx = e.changedTouches[0].clientX - _swipeNavStartX;
+                var dy = e.changedTouches[0].clientY - _swipeNavStartY;
+                _swipeNavActive = false;
+                if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx) * 0.8) return;
+                if (dx < 0) swipeToTab(_tabIdx + 1); // swipe left → next tab
+                else        swipeToTab(_tabIdx - 1); // swipe right → prev tab
+            }, { passive: true });
+        }
+    });
+
+    // ── TOUCH on tab bar ──
+    var _tabBarSwipeStartX = 0, _tabBarSwipeStartY = 0;
+    document.addEventListener('DOMContentLoaded', function() {
+        var tabBar = document.querySelector('.tab-bar');
+        if (!tabBar) return;
+
+        tabBar.addEventListener('touchstart', function(e) {
+            _tabBarSwipeStartX = e.touches[0].clientX;
+            _tabBarSwipeStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        tabBar.addEventListener('touchend', function(e) {
+            var dx = e.changedTouches[0].clientX - _tabBarSwipeStartX;
+            var dy = e.changedTouches[0].clientY - _tabBarSwipeStartY;
+            if (Math.abs(dx) < 40 || Math.abs(dy) > Math.abs(dx)) return;
+            if (dx < 0) swipeToTab(_tabIdx + 1);
+            else        swipeToTab(_tabIdx - 1);
+        }, { passive: true });
+    });
+
+    // ── MOUSE on tab bar (desktop) ──
+    var _tabBarMouseStartX = 0, _tabBarMouseDown = false;
+    document.addEventListener('DOMContentLoaded', function() {
+        var tabBar = document.querySelector('.tab-bar');
+        if (!tabBar) return;
+
+        tabBar.addEventListener('mousedown', function(e) {
+            _tabBarMouseDown = true;
+            _tabBarMouseStartX = e.clientX;
+        });
+        tabBar.addEventListener('mouseup', function(e) {
+            if (!_tabBarMouseDown) return;
+            _tabBarMouseDown = false;
+            var dx = e.clientX - _tabBarMouseStartX;
+            if (Math.abs(dx) < 40) return; // too small = it's a click, not a swipe
+            if (dx < 0) swipeToTab(_tabIdx + 1);
+            else        swipeToTab(_tabIdx - 1);
+        });
+        tabBar.addEventListener('mouseleave', function() { _tabBarMouseDown = false; });
+    });
+
         // ── SEASONAL ──
     function getSeason() {
         var m=new Date().getMonth();
