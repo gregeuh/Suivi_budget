@@ -2067,6 +2067,7 @@
                 applyAppSettings(); 
             } catch (err) {
                 console.error("Données corrompues, auto-réparation...", err);
+                // Only reset LOCAL state, never Firebase
                 forceResetData();
             }
         });
@@ -2088,7 +2089,9 @@
         catBudgets = {};
         savedTheme = 'auto';
         savedColor = 'blue';
-        saveToCloud(); 
+        // SAFETY: never wipe Firebase on reset
+        // saveToCloud();
+        console.warn('forceResetData: local reset only, Firebase untouched');
     }
 
     var _cloudDataLoaded = false; // true once Firebase has sent us data at least once
@@ -4208,7 +4211,7 @@
         if (!name)    { showToast('Entrez un nom de compte'); return; }
         if (isNaN(bal)) { showToast('Solde invalide'); return; }
         accounts.push({ id: 'acc_'+Date.now(), name: name, initBalance: bal, color: _newAccColor, icon: _newAccIcon });
-        saveToCloud();
+        if(_cloudDataLoaded) saveToCloud();
         updateAccountsSelectors();
         renderSettingsAccounts();
         updateAllViews();
@@ -4220,7 +4223,7 @@
         hapticTap();
         const acc = accounts.find(a => String(a.id) === String(id)); if (!acc) return;
         const bal = parseFloat(prompt(`Nouveau solde initial pour ${acc.name} (€) :\n(Ajustez plutôt depuis le dashboard pour la vraie vie)`, acc.initBalance).replace(',', '.'));
-        if (!isNaN(bal)) { acc.initBalance = bal; saveToCloud(); renderSettingsAccounts(); updateAllViews(); }
+        if (!isNaN(bal)) { acc.initBalance = bal; if(_cloudDataLoaded) saveToCloud(); renderSettingsAccounts(); updateAllViews(); }
     }
 
     function deleteAccount(id) {
@@ -4248,7 +4251,7 @@
         var wi = parseFloat(w), di = parseFloat(d);
         if (!isNaN(wi)) acc.warnAt   = wi;
         if (!isNaN(di)) acc.dangerAt = di;
-        saveToCloud();
+        if(_cloudDataLoaded) saveToCloud();
         updateAllViews();
         showToast('Seuils mis a jour pour ' + acc.name);
     }
