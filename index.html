@@ -2061,13 +2061,9 @@
                     savedColor = data.color || 'blue';
 
                 } else {
-                    // New user — init defaults and allow saving
-                    _cloudDataLoaded = true;
-                    forceResetData();
+                        forceResetData();
                     return;
                 }
-                _cloudDataLoaded = true;
-                if (expenses.length > 0 || accounts.length > 1) _hadCloudData = true;
                 applyAppSettings(); 
             } catch (err) {
                 console.error("Données corrompues, auto-réparation...", err);
@@ -2098,18 +2094,9 @@
         console.warn('forceResetData: local reset only, Firebase untouched');
     }
 
-    var _cloudDataLoaded = false;
-    var _hadCloudData = false; // true si Firebase avait des données
 
     function saveToCloud() {
         if (!cloudDocRef) return;
-        if (!currentUser) return;
-        // Protection minimale : ne pas écraser si Firebase avait des données
-        // et qu'on essaie de sauvegarder vide
-        if (_hadCloudData && expenses.length === 0 && accounts.length === 0) {
-            console.warn('saveToCloud: protection données vides');
-            return;
-        }
         const customCatsToSave = categories.filter(c => c.isCustom);
         cloudDocRef.set({
             displayName: displayName,
@@ -2129,7 +2116,6 @@
             color: savedColor
         }, { merge: true }).catch(err => console.error('Erreur sauvegarde:', err));
     }
-
     function applyAppSettings() {
         // Wrap everything in try-catch so no single error can stop data from loading
         try {
