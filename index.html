@@ -548,6 +548,34 @@
             border-bottom-color: var(--accent) !important;
         }
 
+
+        /* ── HERO DUO (dépenses / revenus) ── */
+        .hero-duo {
+            display: flex; align-items: center; justify-content: center;
+            gap: 0; margin: 4px 0 10px 0; width: 100%;
+        }
+        .hero-duo-col {
+            flex: 1; text-align: center; padding: 12px 8px;
+        }
+        .hero-duo-label {
+            font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.6);
+            text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px;
+        }
+        .hero-duo-amount {
+            font-size: 34px; font-weight: 700; letter-spacing: -1px;
+            font-family: 'Lora', Georgia, serif; line-height: 1;
+        }
+        .hero-duo-exp { color: #ff8a80; }
+        .hero-duo-inc { color: #80cfa9; }
+        .hero-duo-divider {
+            width: 1px; height: 50px; background: rgba(255,255,255,0.15);
+            flex-shrink: 0;
+        }
+        .hero-balance-sub {
+            font-size: 12px; color: rgba(255,255,255,0.55); font-weight: 500;
+            text-align: center; margin-top: 2px; min-height: 16px;
+        }
+
     </style>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -1433,6 +1461,34 @@
             border-bottom-color: var(--accent) !important;
         }
 
+
+        /* ── HERO DUO (dépenses / revenus) ── */
+        .hero-duo {
+            display: flex; align-items: center; justify-content: center;
+            gap: 0; margin: 4px 0 10px 0; width: 100%;
+        }
+        .hero-duo-col {
+            flex: 1; text-align: center; padding: 12px 8px;
+        }
+        .hero-duo-label {
+            font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.6);
+            text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px;
+        }
+        .hero-duo-amount {
+            font-size: 34px; font-weight: 700; letter-spacing: -1px;
+            font-family: 'Lora', Georgia, serif; line-height: 1;
+        }
+        .hero-duo-exp { color: #ff8a80; }
+        .hero-duo-inc { color: #80cfa9; }
+        .hero-duo-divider {
+            width: 1px; height: 50px; background: rgba(255,255,255,0.15);
+            flex-shrink: 0;
+        }
+        .hero-balance-sub {
+            font-size: 12px; color: rgba(255,255,255,0.55); font-weight: 500;
+            text-align: center; margin-top: 2px; min-height: 16px;
+        }
+
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@600;700&display=swap" rel="stylesheet">
@@ -1660,11 +1716,23 @@
                 <svg class="hero-curve" viewBox="0 0 800 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M0,50 C150,20 300,70 450,40 S650,10 800,35 L800,80 L0,80Z" fill="var(--accent)"/>
                 </svg>
-                <div class="hero-label">Reste à vivre ce mois</div>
-                    <div class="hero-balance blur-val" id="dash-remaining">0 €</div>
-                    <div class="hero-stats">
-                        <div class="hero-stat-pill" style="color: var(--green);">↓ <span id="dash-inc" class="blur-val">0 €</span></div>
-                        <div class="hero-stat-pill" style="color: var(--red-text, #e05c5c);">↑ <span id="dash-exp" class="blur-val">0 €</span></div>
+                <div class="hero-label">Dépenses <span id="dash-month-label"></span> · Revenus <span id="dash-prev-month-label"></span></div>
+                    <div class="hero-duo">
+                        <div class="hero-duo-col">
+                            <div class="hero-duo-label">Dépenses</div>
+                            <div class="hero-duo-amount hero-duo-exp blur-val" id="dash-exp">0 €</div>
+                        </div>
+                        <div class="hero-duo-divider"></div>
+                        <div class="hero-duo-col">
+                            <div class="hero-duo-label">Revenus</div>
+                            <div class="hero-duo-amount hero-duo-inc blur-val" id="dash-inc">0 €</div>
+                        </div>
+                    </div>
+                    <div class="hero-balance-sub blur-val" id="dash-remaining"></div>
+                    <div id="hero-swile-block" style="display:none;margin-top:10px;padding:8px 16px;background:rgba(247,183,49,0.15);border-radius:50px;display:inline-flex;align-items:center;gap:8px;">
+                        <span style="font-size:14px;">🍽️</span>
+                        <span style="font-size:12px;color:rgba(255,255,255,0.75);font-weight:500;"><span id="dash-swile-month-label">Tickets restau utilisés</span> :</span>
+                        <span class="blur-val" id="dash-swile-exp" style="font-size:13px;font-weight:700;color:#ffd580;">0 €</span>
                     </div>
                 </div>
             </div>
@@ -3330,15 +3398,56 @@
         });
 
         const curData = expandExpensesForMonth(tY, tM);
-        const mInc = curData.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0);
-        const mExp = curData.filter(e => e.type === 'expense').reduce((s, e) => s + e.amount, 0);
+        // Find Swile account id
+        const swileAccId = (accounts.find(a => a.color === 'swile') || {}).id;
+
+        // Dépenses = mois en cours (hors Swile)
+        const mExp = curData.filter(e => e.type === 'expense' && e.accountId !== swileAccId).reduce((s, e) => s + e.amount, 0);
+        // Swile : dépenses du mois précédent (rechargement fin mois → utilisé le mois suivant)
+        const swileExpData = expandExpensesForMonth(prevY, prevM);
+        const swileExp = swileExpData.filter(e => e.type === 'expense' && e.accountId === swileAccId).reduce((s, e) => s + e.amount, 0);
+
+        // Revenus = mois PRÉCÉDENT (le salaire de mars finance avril)
+        const prevM = tM === 0 ? 11 : tM - 1;
+        const prevY = tM === 0 ? tY - 1 : tY;
+        const prevData = expandExpensesForMonth(prevY, prevM);
+        const mInc = prevData.filter(e => e.type === 'income' && e.accountId !== swileAccId).reduce((s, e) => s + e.amount, 0);
         
         const mainAccId = accounts[0] ? accounts[0].id : null;
         const mainData = curData.filter(e => e.accountId === mainAccId);
         const rAV = mainData.filter(e=>e.type==='income').reduce((s,e)=>s+e.amount,0) - mainData.filter(e=>e.type==='expense').reduce((s,e)=>s+e.amount,0);
         
-        animateValue(document.getElementById('dash-inc'), 0, mInc, 800, v => "+" + v.toFixed(0) + " €");
-        animateValue(document.getElementById('dash-exp'), 0, mExp, 800, v => "-" + v.toFixed(0) + " €");
+        // Update month label
+        var mlEl = document.getElementById('dash-month-label');
+        if(mlEl) mlEl.textContent = new Date(tY, tM).toLocaleDateString('fr-FR',{month:'long'});
+        var plEl = document.getElementById('dash-prev-month-label');
+        if(plEl) plEl.textContent = new Date(prevY, prevM).toLocaleDateString('fr-FR',{month:'long'});
+        var slEl = document.getElementById('dash-swile-month-label');
+        if(slEl) slEl.textContent = 'Tickets restau utilisés en ' + new Date(prevY, prevM).toLocaleDateString('fr-FR',{month:'long'});
+
+        animateValue(document.getElementById('dash-inc'), 0, mInc, 800, v => v.toFixed(0) + ' €');
+        animateValue(document.getElementById('dash-exp'), 0, mExp, 800, v => v.toFixed(0) + ' €');
+
+        // Swile block
+        var swileBlock = document.getElementById('hero-swile-block');
+        var swileExpEl = document.getElementById('dash-swile-exp');
+        if (swileBlock && swileExpEl) {
+            if (swileAccId && swileExp > 0) {
+                swileBlock.style.display = 'inline-flex';
+                animateValue(swileExpEl, 0, swileExp, 800, v => v.toFixed(0) + ' €');
+            } else {
+                swileBlock.style.display = 'none';
+            }
+        }
+
+        // Solde résiduel sous les deux chiffres
+        var subEl = document.getElementById('dash-remaining');
+        if(subEl) {
+            var diff = mInc - mExp;
+            var sign = diff >= 0 ? '+' : '';
+            subEl.textContent = sign + diff.toFixed(0) + ' € de solde ce mois';
+            subEl.style.color = diff >= 0 ? 'rgba(128,207,169,0.7)' : 'rgba(255,138,128,0.7)';
+        }
         // Prévision fin de mois
         var forecastEl = document.getElementById('hero-forecast');
         if (forecastEl) {
@@ -3359,7 +3468,7 @@
             }
         }
 
-        animateValue(document.getElementById('dash-remaining'), 0, rAV, 800, v => v.toFixed(0) + " €");
+        // animateValue(document.getElementById('dash-remaining'), 0, rAV, 800, v => v.toFixed(0) + " €");
         
         document.getElementById('dash-goal-text').innerText = savingsGoal.toFixed(0);
         const safe = Math.max(0, mInc - savingsGoal);
