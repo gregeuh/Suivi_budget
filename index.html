@@ -330,14 +330,10 @@
 
         /* ── TX ICON BADGE ── */
         .tx-icon-badge {
-            width: 48px; height: 48px; border-radius: 12px;
+            width: 38px; height: 38px; border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 22px; margin-right: 14px; flex-shrink: 0;
-            position: relative; overflow: hidden;
-        }
-        .tx-icon-badge::after {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 60%);
+            font-size: 20px; margin-right: 12px; flex-shrink: 0;
+            background: none !important;
         }
 
 
@@ -359,7 +355,6 @@
         }
         /* Ripple effect on tap */
         .tab-btn {
-            position: relative; overflow: hidden;
         }
         .tab-btn::after {
             content: '';
@@ -430,7 +425,6 @@
         /* ── SWILE CARD PREMIUM ── */
         .bank-card.swile {
             background: linear-gradient(135deg, #f7b731 0%, #f0944d 60%, #e8722a 100%) !important;
-            position: relative; overflow: hidden;
         }
         .bank-card.swile .swile-fork-bg {
             position: absolute; right: -10px; top: 50%; transform: translateY(-50%);
@@ -648,10 +642,10 @@
         .tab-btn.active .tab-icon { transform: scale(1.1); }
         .tab-text { font-size: 10px; font-weight: 600; text-transform: none; letter-spacing: 0; }
 
-        .month-selector { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); border-radius: var(--radius-card); padding: 16px 25px; margin-bottom: 25px; box-shadow: var(--shadow); }
-        .month-btn { background: var(--input-bg); color: var(--accent); border: none; width: 44px; height: 44px; border-radius: 12px; font-size: 22px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .month-selector { display: flex; justify-content: space-between; align-items: center; background: transparent; border-radius: 0; padding: 8px 4px; margin-bottom: 20px; box-shadow: none; border: none; }
+        .month-btn { background: transparent; color: var(--text-muted); border: none; width: 32px; height: 32px; border-radius: 8px; font-size: 18px; font-weight: 400; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
         .month-btn:active { transform: scale(0.9); }
-        .month-label { font-size: 18px; font-weight: 700; text-transform: capitalize; color: var(--text-main); letter-spacing: -0.5px;}
+        .month-label { font-size: 15px; font-weight: 500; text-transform: capitalize; color: var(--text-muted); letter-spacing: 0.3px;; letter-spacing: -0.5px;}
 
         .card { background-color: var(--card-bg); border-radius: var(--radius-card); padding: 20px; margin-bottom: 14px; box-shadow: var(--shadow); border: 1px solid var(--border); }
 
@@ -692,14 +686,18 @@
         .bank-card.zone-warn    { background: linear-gradient(150deg, #f0944d 0%, #c96c28 100%) !important; }
         .bank-card.zone-safe    { background: linear-gradient(150deg, #4caf82 0%, #2e7a5c 100%) !important; }
         .balance-zone-badge {
-            display: inline-flex; align-items: center; gap: 6px;
-            font-size: 12px; font-weight: 700; letter-spacing: 0.3px;
-            padding: 5px 12px; border-radius: 50px; margin-top: 8px;
-            color: white; backdrop-filter: blur(4px);
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 11px; font-weight: 500; letter-spacing: 0.2px;
+            padding: 0; margin-top: 6px; border-radius: 0;
+            color: rgba(255,255,255,0.75); background: none;
         }
-        .bank-card.zone-safe   .balance-zone-badge { background: rgba(0,0,0,0.2); }
-        .bank-card.zone-warn   .balance-zone-badge { background: rgba(0,0,0,0.2); }
-        .bank-card.zone-danger .balance-zone-badge { background: rgba(0,0,0,0.25); }
+        .balance-zone-badge::before {
+            content: ''; width: 6px; height: 6px; border-radius: 50%;
+            flex-shrink: 0; display: inline-block;
+        }
+        .bank-card.zone-safe   .balance-zone-badge::before { background: rgba(150,255,180,0.9); }
+        .bank-card.zone-warn   .balance-zone-badge::before { background: rgba(255,210,80,0.9); }
+        .bank-card.zone-danger .balance-zone-badge::before { background: rgba(255,100,100,0.9); box-shadow: 0 0 5px rgba(255,100,100,0.5); }
         .acc-val-indicator {
             width: 10px; height: 10px; border-radius: 50%;
             display: inline-block; margin-right: 6px; flex-shrink: 0;
@@ -1197,14 +1195,10 @@
 
         /* ── TX ICON BADGE ── */
         .tx-icon-badge {
-            width: 48px; height: 48px; border-radius: 12px;
+            width: 38px; height: 38px; border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 22px; margin-right: 14px; flex-shrink: 0;
-            position: relative; overflow: hidden;
-        }
-        .tx-icon-badge::after {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 60%);
+            font-size: 20px; margin-right: 12px; flex-shrink: 0;
+            background: none !important;
         }
 
 
@@ -1226,7 +1220,6 @@
         }
         /* Ripple effect on tap */
         .tab-btn {
-            position: relative; overflow: hidden;
         }
         .tab-btn::after {
             content: '';
@@ -1297,7 +1290,6 @@
         /* ── SWILE CARD PREMIUM ── */
         .bank-card.swile {
             background: linear-gradient(135deg, #f7b731 0%, #f0944d 60%, #e8722a 100%) !important;
-            position: relative; overflow: hidden;
         }
         .bank-card.swile .swile-fork-bg {
             position: absolute; right: -10px; top: 50%; transform: translateY(-50%);
@@ -3393,14 +3385,14 @@
         var isSwile   = acc && acc.color === 'swile';
         var isLivreta = acc && acc.color === 'livreta';
         if (isSwile) {
-            if (zone === 'danger') return '🔴 Tickets épuisés';
-            if (zone === 'warn')   return '🟠 Peu de tickets';
-            return '🟢 Tickets suffisants';
+            if (zone === 'danger') return 'Tickets épuisés';
+            if (zone === 'warn')   return 'Peu de tickets';
+            return 'Tickets suffisants';
         }
-        if (isLivreta) return '🟢 Épargne';
-        if (zone === 'danger') return '🔴 Zone critique';
-        if (zone === 'warn')   return '🟠 Zone attention';
-        return '🟢 Zone confort';
+        if (isLivreta) return 'Épargne';
+        if (zone === 'danger') return 'Zone critique';
+        if (zone === 'warn')   return 'Zone attention';
+        return 'Zone confort';
     }
 
     
