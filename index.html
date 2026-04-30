@@ -636,7 +636,7 @@
         }
         .tab-active-pill {
             position: absolute; top: 6px; bottom: 6px; left: 6px;
-            width: calc((100% - 14px) / 4);
+            width: calc((100% - 12px) / 5);
             /* Pill liquid glass */
             background: rgba(255,255,255,0.72);
             backdrop-filter: blur(20px);
@@ -1628,8 +1628,8 @@
             <div class="tab-active-pill" id="tab-pill"></div>
             <button class="tab-btn active" onclick="switchTab('dash', this, 0)"><span class="tab-icon">🏠</span><span class="tab-text">Accueil</span></button>
             <button class="tab-btn" onclick="switchTab('tx', this, 1)"><span class="tab-icon">📝</span><span class="tab-text">Journal</span></button>
-            <button class="tab-btn" onclick="switchTab('comptes', this, 2)"><span class="tab-icon">💳</span><span class="tab-text">Comptes</span></button>
-            <button class="tab-btn" onclick="switchTab('stats', this, 3)"><span class="tab-icon">📊</span><span class="tab-text">Analyses</span></button>
+            <button class="tab-btn" onclick="switchTab('stats', this, 2)"><span class="tab-icon">📊</span><span class="tab-text">Analyses</span></button>
+            <button class="tab-btn" onclick="switchTab('advice', this, 3)"><span class="tab-icon">💡</span><span class="tab-text">Conseils</span></button>
             <button class="tab-btn" onclick="switchTab('settings', this, 4)"><span class="tab-icon">👤</span><span class="tab-text">Profil</span></button>
         </div>
     </div>
@@ -1660,7 +1660,7 @@
                 <svg class="hero-curve" viewBox="0 0 800 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M0,50 C150,20 300,70 450,40 S650,10 800,35 L800,80 L0,80Z" fill="var(--accent)"/>
                 </svg>
-                <div class="hero-label">Solde disponible</div>
+                <div class="hero-label">Reste à vivre ce mois</div>
                     <div class="hero-balance blur-val" id="dash-remaining">0 €</div>
                     <div class="hero-stats">
                         <div class="hero-stat-pill" style="color: var(--green);">↓ <span id="dash-inc" class="blur-val">0 €</span></div>
@@ -1678,13 +1678,23 @@
                 <div style="font-size:12px; font-weight:600; text-align:center; color:var(--text-muted); margin-top:12px;">Objectif d'épargne : <span id="dash-goal-text">0</span>€ restants en fin de mois</div>
             </div>
 
-            
+            <h2 style="font-size:22px; margin:28px 0 12px 0; letter-spacing:-0.5px; font-weight:700;">Comptes</h2>
+            <div class="accounts-scroll" id="accounts-container"></div>
 
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; margin-top:35px;">
+                <h2 style="font-size:22px; margin:0; letter-spacing:-0.5px; font-weight:700;">Mes Projets</h2>
+                <button style="background:var(--card-bg); color:var(--accent); border:none; padding:8px 16px; border-radius:14px; font-weight:700; cursor:pointer; box-shadow:var(--shadow);" onclick="openWishlistModal()">+ Ajouter</button>
+            </div>
+            <div id="wishlist-container"></div>
             
+            <h2 style="font-size:22px; margin:28px 0 12px 0; letter-spacing:-0.5px; font-weight:700;">À venir ce mois-ci</h2>
+            <div class="card" style="padding:10px 24px;">
+                <div id="upcoming-list" style="font-size:15px; color:var(--text-muted);"></div>
+            </div>
         </div>
     </div>
 
-<div id="tab-tx" class="section">
+    <div id="tab-tx" class="section">
         <h1 style="font-size: 26px; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 20px;">Transactions</h1>
         
         <input type="text" id="tx-search" placeholder="🔍 Rechercher (Libellé, #Tag...)" style="width:100%; padding:16px 20px; border-radius:18px; border:none; background:var(--card-bg); box-shadow:var(--shadow); color:var(--text-main); font-size:16px; font-weight:500; outline:none; margin-bottom:20px; box-sizing:border-box;" oninput="renderTransactions()">
@@ -1790,7 +1800,40 @@
         </div>
     </div>
 
-    
+    <div id="tab-advice" class="section">
+        <h1 style="font-size:34px;font-weight:700;letter-spacing:-1px;margin-bottom:6px;">💡 Conseils</h1>
+        <p style="font-size:14px;color:var(--text-muted);margin-bottom:24px;">Personnalisés selon vos habitudes.</p>
+
+        <!-- SCORE + CONSEIL PRINCIPAL -->
+        <div id="advice-hero" style="background:linear-gradient(135deg,var(--accent),#2d5fd4);border-radius:24px;padding:24px;margin-bottom:16px;color:white;">
+            <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.75;margin-bottom:8px;">Votre situation</div>
+            <div id="adv-score-line" style="font-size:28px;font-weight:700;letter-spacing:-1px;margin-bottom:8px;">–</div>
+            <div id="adv-main-tip" style="font-size:14px;opacity:.9;line-height:1.5;">Chargement...</div>
+        </div>
+
+        <!-- RÈGLE 50/30/20 -->
+        <div class="card" id="adv-rule-card" style="margin-bottom:16px;">
+            <div style="font-size:16px;font-weight:700;margin-bottom:4px;">Règle 50 / 30 / 20</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:18px;">Répartition idéale de vos revenus</div>
+            <div id="adv-rule-rows"></div>
+        </div>
+
+        <!-- CONSEILS PERSONNALISÉS -->
+        <div style="font-size:18px;font-weight:700;margin-bottom:12px;letter-spacing:-0.5px;">📋 Actions concrètes</div>
+        <div id="adv-tips-list" style="margin-bottom:24px;"></div>
+
+        <!-- OBJECTIFS D'ÉPARGNE -->
+        <div style="font-size:18px;font-weight:700;margin-bottom:12px;letter-spacing:-0.5px;">🎯 Vos objectifs</div>
+        <div class="card" style="margin-bottom:16px;">
+            <div id="adv-goals-content"></div>
+        </div>
+
+        <!-- PROJECTIONS -->
+        <div style="font-size:18px;font-weight:700;margin-bottom:12px;letter-spacing:-0.5px;">📈 Projections d'épargne</div>
+        <div class="card" style="margin-bottom:32px;">
+            <div id="adv-projections"></div>
+        </div>
+    </div>
 
 
     <div id="tab-settings" class="section">
@@ -2299,7 +2342,6 @@
 
         try { if(typeof initNotifBanner === 'function') initNotifBanner(); } catch(e) {}
         try { var sk = document.getElementById('skeleton-screen'); if(sk) sk.style.display = 'none'; } catch(e) {}
-        try { renderRecentTx(); } catch(e) {}
         try { if(typeof checkOnboarding === 'function') checkOnboarding(); } catch(e) {}
         try { if(typeof updateProfileAvatar === 'function') updateProfileAvatar(); } catch(e) {}
         try { checkSwileAutoRecharge(); checkSwileLowAlert(); } catch(e) {}
@@ -3291,9 +3333,9 @@
         const mInc = curData.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0);
         const mExp = curData.filter(e => e.type === 'expense').reduce((s, e) => s + e.amount, 0);
         
-        // Solde réel = compte principal uniquement (acc1)
-        const mainAcc = accounts.find(function(a) { return a.id === 'acc1'; }) || accounts[0];
-        const rAV = mainAcc ? (accBalances[mainAcc.id] || 0) : 0;
+        const mainAccId = accounts[0] ? accounts[0].id : null;
+        const mainData = curData.filter(e => e.accountId === mainAccId);
+        const rAV = mainData.filter(e=>e.type==='income').reduce((s,e)=>s+e.amount,0) - mainData.filter(e=>e.type==='expense').reduce((s,e)=>s+e.amount,0);
         
         animateValue(document.getElementById('dash-inc'), 0, mInc, 800, v => "+" + v.toFixed(0) + " €");
         animateValue(document.getElementById('dash-exp'), 0, mExp, 800, v => "-" + v.toFixed(0) + " €");
@@ -5141,81 +5183,7 @@
     }
 
     
-
-
-    function renderRecentTx() {
-        var container = document.getElementById('dash-recent-tx');
-        if (!container) return;
-        var all = expandExpensesForMonth(viewDate.getFullYear(), viewDate.getMonth())
-            .filter(function(e){ return e.type==='expense'||e.type==='income'; })
-            .slice(0, 8);
-        if (all.length === 0) {
-            container.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:13px;">Aucune transaction ce mois</div>';
-            return;
-        }
-        var html = '';
-        var lastDate = '';
-        all.forEach(function(e) {
-            if (e.date !== lastDate) {
-                html += '<div class="tx-date-sep"><div class="tx-date-pill">' + formatRelativeDate(e.date) + '</div></div>';
-                lastDate = e.date;
-            }
-            var cat = (categories||[]).find(function(c){ return c.id===e.cat; }) || {icon:'📦'};
-            var isInc = e.type==='income';
-            var color = isInc ? 'var(--green)' : 'var(--red)';
-            var sign  = isInc ? '+' : '-';
-            var acc   = (accounts||[]).find(function(a){ return a.id===e.accountId; });
-                        var eid = String(e.originalId || e.id || '').replace(/'/g, '');
-            html += '<div class="tx-swipe-wrap"><div class="tx-delete-bg"><span>🗑️</span></div>'
-                + '<div class="tx-item-content" onclick="if(!window.isSwiping) openEditModal(\u0027' + eid + '\u0027)" ontouchstart="handleTouchStart(event,this)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event,\u0027' + eid + '\u0027)">'
-                + '<div style="display:flex;align-items:center;">'
-                + '<div class="tx-icon-badge">' + cat.icon + '</div>'
-                + '<div><div class="tx-title">' + escapeHTML(e.label||'') + '</div>'
-                + '<div class="tx-subtitle">' + (acc ? escapeHTML(acc.name) : '') + '</div></div>'
-                + '</div>'
-                + '<div class="tx-amount" style="color:' + color + ';">' + sign + parseFloat(e.amount).toFixed(2) + ' €</div>'
-                + '</div></div>';
-        });
-        container.innerHTML = html;
-    }
-
-        function renderComptes() {
-        // Reuse the same accounts rendering but in the new tab
-        var container = document.getElementById('accounts-container-comptes');
-        if (!container) return;
-        // Reuse updateAllViews account rendering logic
-        var now = new Date();
-        var accBalances = {};
-        accounts.forEach(function(a) { accBalances[a.id] = a.initBalance; });
-        expenses.forEach(function(e) {
-            if (accBalances[e.accountId] !== undefined) {
-                var mult = e.type === 'income' || e.type === 'transfer_in' ? 1 : -1;
-                accBalances[e.accountId] += mult * (e.amount * getPastOccurrencesCount(e, now));
-            }
-        });
-        if (!accounts || accounts.length === 0) {
-            container.innerHTML = '<div class="empty-illustrated" style="padding:32px 20px;"><div class="empty-illustrated-icon">🏦</div><div class="empty-illustrated-title">Aucun compte</div></div>';
-            return;
-        }
-        container.innerHTML = accounts.map(function(a) {
-            var bal  = accBalances[a.id] !== undefined ? accBalances[a.id] : 0;
-            var zone = getBalanceZone(bal, a);
-            var zoneLabel = getZoneLabel(zone, a);
-            return '<div class="bank-card zone-' + zone + ' ' + a.color + '" style="min-width:100%;margin-bottom:12px;">'
-                + '<div style="display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:2;">'
-                + '<div style="display:flex;align-items:center;gap:8px;">'
-                + (a.icon ? '<span style="font-size:18px;opacity:.9">' + a.icon + '</span>' : '')
-                + '<span class="acc-name">' + escapeHTML(a.name) + '</span></div>'
-                + '<button onclick="adjustBalance(&quot;' + escapeHTML(a.id) + '&quot;)" style="background:rgba(0,0,0,0.2);border:none;color:white;border-radius:10px;font-size:12px;padding:5px 10px;cursor:pointer;font-weight:600;">Ajuster</button>'
-                + '</div>'
-                + '<div class="acc-val blur-val" style="font-size:32px;font-weight:700;margin:12px 0 4px;font-family:Lora,Georgia,serif;">' + bal.toFixed(2) + ' €</div>'
-                + '<div class="balance-zone-badge">' + zoneLabel + '</div>'
-                + (a.color === 'swile' ? '<div class="swile-fork-bg">🍽️</div>' + renderSwileExtra(bal) : '')
-                + '</div>';
-        }).join('');
-    }
-
-        // ── SEASONAL ──
+    // ── SEASONAL ──
     function getSeason() {
         var m=new Date().getMonth();
         if(m>=2&&m<=4) return 'spring';
@@ -5246,9 +5214,9 @@
         }); });
         btn.classList.add('active'); window.scrollTo(0,0);
         var ms = document.querySelector('.month-selector');
-        if(ms) ms.style.display = (id === 'settings' || id === 'comptes') ? 'none' : 'flex';
+        if(ms) ms.style.display = (id === 'settings') ? 'none' : 'flex';
         var hdr = document.getElementById('app-header');
-        if(hdr) hdr.style.display = (id === 'settings') ? 'none' : 'flex'; // keep header on comptes
+        if(hdr) hdr.style.display = (id === 'settings') ? 'none' : 'flex';
         if(id==='dash') updateAllViews();
         if(id==='tx') renderTransactions();
         if(id==='stats') renderStats();
@@ -5398,21 +5366,8 @@
                 <button class="ob-btn" onclick="obFinish()">Commencer →</button>
             </div>
         </div>
-
-        <!-- CONSEILS intégrés -->
-        <div style="margin-top:32px;padding-top:24px;border-top:1px solid var(--border);">
-            <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;">💡 Conseils</h2>
-            <div id="adv-situation-card2"></div>
-            <div id="adv-rule-rows2" style="margin-bottom:16px;"></div>
-            <div id="adv-tips-list2" style="margin-bottom:16px;"></div>
-        </div>
-
     </div>
 
     <div id="toast-msg"></div>
 </body>
-</html>    <div id="tab-comptes" class="section">
-        <h1 style="font-size:24px;font-weight:600;letter-spacing:-0.3px;margin-bottom:16px;">Comptes</h1>
-        <div class="accounts-scroll" id="accounts-container-comptes" style="margin-bottom:20px;"></div>
-        <button onclick="showAddAccountForm()" style="width:100%;padding:14px;border-radius:12px;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-weight:600;font-size:14px;cursor:pointer;">+ Ajouter un compte</button>
-    </div>
+</html>
