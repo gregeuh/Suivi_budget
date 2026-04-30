@@ -1716,7 +1716,7 @@
                 <svg class="hero-curve" viewBox="0 0 800 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M0,50 C150,20 300,70 450,40 S650,10 800,35 L800,80 L0,80Z" fill="var(--accent)"/>
                 </svg>
-                <div class="hero-label">Dépenses <span id="dash-month-label"></span> · Revenus <span id="dash-prev-month-label"></span></div>
+                <div class="hero-label"><span id="dash-month-label"></span></div>
                     <div class="hero-duo">
                         <div class="hero-duo-col">
                             <div class="hero-duo-label">Dépenses</div>
@@ -3403,15 +3403,13 @@
 
         // Dépenses = mois en cours (hors Swile)
         const mExp = curData.filter(e => e.type === 'expense' && e.accountId !== swileAccId).reduce((s, e) => s + e.amount, 0);
-        // Swile : dépenses du mois précédent (rechargement fin mois → utilisé le mois suivant)
-        const swileExpData = expandExpensesForMonth(prevY, prevM);
-        const swileExp = swileExpData.filter(e => e.type === 'expense' && e.accountId === swileAccId).reduce((s, e) => s + e.amount, 0);
+        // Swile : dépenses du mois en cours
+        const swileExp = curData.filter(e => e.type === 'expense' && e.accountId === swileAccId).reduce((s, e) => s + e.amount, 0);
 
         // Revenus = mois PRÉCÉDENT (le salaire de mars finance avril)
         const prevM = tM === 0 ? 11 : tM - 1;
         const prevY = tM === 0 ? tY - 1 : tY;
-        const prevData = expandExpensesForMonth(prevY, prevM);
-        const mInc = prevData.filter(e => e.type === 'income' && e.accountId !== swileAccId).reduce((s, e) => s + e.amount, 0);
+        const mInc = curData.filter(e => e.type === 'income' && e.accountId !== swileAccId).reduce((s, e) => s + e.amount, 0);
         
         const mainAccId = accounts[0] ? accounts[0].id : null;
         const mainData = curData.filter(e => e.accountId === mainAccId);
@@ -3419,11 +3417,9 @@
         
         // Update month label
         var mlEl = document.getElementById('dash-month-label');
-        if(mlEl) mlEl.textContent = new Date(tY, tM).toLocaleDateString('fr-FR',{month:'long'});
-        var plEl = document.getElementById('dash-prev-month-label');
-        if(plEl) plEl.textContent = new Date(prevY, prevM).toLocaleDateString('fr-FR',{month:'long'});
+        if(mlEl) mlEl.textContent = new Date(tY, tM).toLocaleDateString('fr-FR',{month:'long', year:'numeric'});
         var slEl = document.getElementById('dash-swile-month-label');
-        if(slEl) slEl.textContent = 'Tickets restau utilisés en ' + new Date(prevY, prevM).toLocaleDateString('fr-FR',{month:'long'});
+        if(slEl) slEl.textContent = 'Tickets restau utilisés';
 
         animateValue(document.getElementById('dash-inc'), 0, mInc, 800, v => v.toFixed(0) + ' €');
         animateValue(document.getElementById('dash-exp'), 0, mExp, 800, v => v.toFixed(0) + ' €');
