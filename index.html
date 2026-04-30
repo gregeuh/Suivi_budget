@@ -1724,7 +1724,7 @@
                         </div>
                         <div class="hero-duo-divider"></div>
                         <div class="hero-duo-col">
-                            <div class="hero-duo-label">Revenus</div>
+                            <div class="hero-duo-label" id="dash-inc-label">Revenus</div>
                             <div class="hero-duo-amount hero-duo-inc blur-val" id="dash-inc">0 €</div>
                         </div>
                     </div>
@@ -1971,6 +1971,13 @@
         <h2 style="font-size:22px; margin:28px 0 12px 0; letter-spacing:-0.5px; font-weight:700;">Objectifs</h2>
         <div class="card" style="padding:0 20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 0; border-bottom:1px solid var(--input-bg);">
+                <div style="flex:1;"><div style="font-weight:600; font-size:14px;">💼 Salaire prévisionnel</div><div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Affiché si aucun revenu saisi ce mois</div></div>
+                <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+                    <input type="number" id="set-forecast-salary" class="settings-input" onblur="saveForecastSalary()" placeholder="0">
+                    <span style="font-size:13px;color:var(--text-muted);width:14px;">€</span>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:15px 0;border-bottom:1px solid var(--input-bg);">
                 <div><div style="font-weight:600; font-size:15px;">Épargne cible</div><div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Fin de mois</div></div>
                 <input type="number" id="set-savings-goal" class="input-control" style="width:90px; text-align:right; padding:10px;" onblur="saveSettingsLocally()">
             </div>
@@ -2143,6 +2150,7 @@
     let savingsGoal = 500;
     let emergencyGoal = 5000;
     let swileMonthlyAmount = 0;  // montant rechargé par l'employeur
+    let forecastSalary = 0;       // revenu prévisionnel mensuel
     let swileLowAlert = 5;       // alerte si < X repas restants
     let swileMealPrice = 10;     // prix moyen d'un repas
     let balThresholdWarn = 500;   // below this = orange
@@ -2304,6 +2312,7 @@
                     savingsGoal          = data.savingsGoal          !== undefined ? data.savingsGoal          : 500;
                     emergencyGoal        = data.emergencyGoal        !== undefined ? data.emergencyGoal        : 5000;
                     swileMonthlyAmount   = data.swileMonthlyAmount   || 0;
+                    forecastSalary       = data.forecastSalary       || 0;
                     swileLowAlert        = data.swileLowAlert        || 5;
                     swileMealPrice       = data.swileMealPrice       || 10;
                     balThresholdWarn     = data.balThresholdWarn     !== undefined ? data.balThresholdWarn     : 500;
@@ -2357,6 +2366,7 @@
             savingsGoal: savingsGoal,
             emergencyGoal: emergencyGoal,
             swileMonthlyAmount: swileMonthlyAmount,
+            forecastSalary: forecastSalary,
             swileLowAlert: swileLowAlert,
             swileMealPrice: swileMealPrice,
             balThresholdWarn: balThresholdWarn,
@@ -2414,6 +2424,7 @@
         try { if(typeof updateProfileAvatar === 'function') updateProfileAvatar(); } catch(e) {}
         try { checkSwileAutoRecharge(); checkSwileLowAlert(); } catch(e) {}
         try { var si=document.getElementById('swile-monthly'); if(si) si.value=swileMonthlyAmount;
+        var fsi=document.getElementById('set-forecast-salary'); if(fsi) fsi.value=forecastSalary||'';
         // Pre-fill swile balance from current calculated balance
         var swileAccEl = accounts.find(function(a){ return a.color==='swile'; });
         var swileBalEl = document.getElementById('swile-balance');
@@ -3421,7 +3432,13 @@
         var slEl = document.getElementById('dash-swile-month-label');
         if(slEl) slEl.textContent = 'Tickets restau utilisés';
 
-        animateValue(document.getElementById('dash-inc'), 0, mInc, 800, v => v.toFixed(0) + ' €');
+        var incDisplay = mInc > 0 ? mInc : forecastSalary;
+        var isForecast  = mInc === 0 && forecastSalary > 0;
+        var incEl = document.getElementById('dash-inc');
+        var incLbl = document.getElementById('dash-inc-label');
+        if (incLbl) incLbl.textContent = isForecast ? 'Revenus prévus' : 'Revenus';
+        if (incEl)  incEl.style.opacity = isForecast ? '0.6' : '1';
+        animateValue(incEl, 0, incDisplay, 800, v => v.toFixed(0) + ' €');
         animateValue(document.getElementById('dash-exp'), 0, mExp, 800, v => v.toFixed(0) + ' €');
 
         // Swile block
@@ -3439,7 +3456,7 @@
         // Solde résiduel sous les deux chiffres
         var subEl = document.getElementById('dash-remaining');
         if(subEl) {
-            var diff = mInc - mExp;
+            var diff = incDisplay - mExp;
             var sign = diff >= 0 ? '+' : '';
             subEl.textContent = sign + diff.toFixed(0) + ' € de solde ce mois';
             subEl.style.color = diff >= 0 ? 'rgba(128,207,169,0.7)' : 'rgba(255,138,128,0.7)';
@@ -5288,7 +5305,17 @@
     }
 
     
-    // ── SEASONAL ──
+
+    function saveForecastSalary() {
+        var el = document.getElementById('set-forecast-salary');
+        if (!el) return;
+        forecastSalary = parseFloat(el.value) || 0;
+        saveToCloud();
+        updateAllViews();
+        showToast('Revenu prévisionnel sauvegardé ✓');
+    }
+
+        // ── SEASONAL ──
     function getSeason() {
         var m=new Date().getMonth();
         if(m>=2&&m<=4) return 'spring';
