@@ -688,8 +688,8 @@ button { cursor: pointer; border: none; background: none; }
   <div class="auth-sub">Gérez vos finances simplement</div>
   <div class="auth-card">
     <div class="auth-tabs">
-      <button class="auth-tab active" id="tab-login" onclick="authToggle('login')">Connexion</button>
-      <button class="auth-tab" id="tab-signup" onclick="authToggle('signup')">Créer un compte</button>
+      <button class="auth-tab active" id="tab-login" id="tab-login-btn">Connexion</button>
+      <button class="auth-tab" id="tab-signup" id="tab-signup-btn">Créer un compte</button>
     </div>
     <div class="auth-field">
       <label class="auth-label">Email</label>
@@ -703,7 +703,7 @@ button { cursor: pointer; border: none; background: none; }
       <label class="auth-label">Prénom</label>
       <input class="auth-input" id="auth-name" type="text" placeholder="Votre prénom">
     </div>
-    <button class="auth-btn" id="auth-submit" onclick="authSubmit()">Se connecter</button>
+    <button class="auth-btn" id="auth-submit" id="auth-submit-btn">Se connecter</button>
     <div class="auth-error" id="auth-error"></div>
   </div>
 </div>
@@ -1158,6 +1158,54 @@ button { cursor: pointer; border: none; background: none; }
 <div id="toast"></div>
 
 <!-- Firebase -->
+
+<script>
+// Expose module functions to global scope for onclick handlers
+function authToggle(mode) { if(window._authToggle) window._authToggle(mode); }
+function authSubmit()     { if(window._authSubmit) window._authSubmit(); }
+function signOut()        { if(window._signOut) window._signOut(); }
+function switchPage(id,btn,idx) { if(window._switchPage) window._switchPage(id,btn,idx); }
+function changeMonth(d)   { if(window._changeMonth) window._changeMonth(d); }
+function togglePrivacy()  { if(window._togglePrivacy) window._togglePrivacy(); }
+function openAddModal()   { if(window._openAddModal) window._openAddModal(); }
+function closeModal()     { if(window._closeModal) window._closeModal(); }
+function modalSetType(t)  { if(window._modalSetType) window._modalSetType(t); }
+function numPress(k)      { if(window._numPress) window._numPress(k); }
+function modalDetectCat(v){ if(window._modalDetectCat) window._modalDetectCat(v); }
+function submitTransaction(){ if(window._submitTransaction) window._submitTransaction(); }
+function openEdit(id)     { if(window._openEdit) window._openEdit(id); }
+function saveEdit()       { if(window._saveEdit) window._saveEdit(); }
+function deleteTransaction(){ if(window._deleteTransaction) window._deleteTransaction(); }
+function openAdjust(id)   { if(window._openAdjust) window._openAdjust(id); }
+function saveAdjust()     { if(window._saveAdjust) window._saveAdjust(); }
+function selectCat(id,btn,grid){ if(window._selectCat) window._selectCat(id,btn,grid); }
+function selectAcc(id,btn,row) { if(window._selectAcc) window._selectAcc(id,btn,row); }
+function filterTx(btn,cat){ if(window._filterTx) window._filterTx(btn,cat); }
+function qaSetType(t)     { if(window._qaSetType) window._qaSetType(t); }
+function qaDetect(v)      { if(window._qaDetect) window._qaDetect(v); }
+function qaOpen()         { if(window._qaOpen) window._qaOpen(); }
+function qaClose()        { if(window._qaClose) window._qaClose(); }
+function qaSave()         { if(window._qaSave) window._qaSave(); }
+function fluxSetMode(m)   { if(window._fluxSetMode) window._fluxSetMode(m); }
+function fluxDetectCat(v) { if(window._fluxDetectCat) window._fluxDetectCat(v); }
+function fluxSelectCat(id){ if(window._fluxSelectCat) window._fluxSelectCat(id); }
+function fluxSelectAcc(id,btn){ if(window._fluxSelectAcc) window._fluxSelectAcc(id,btn); }
+function fluxSubmit()     { if(window._fluxSubmit) window._fluxSubmit(); }
+function saveSetting(k)   { if(window._saveSetting) window._saveSetting(k); }
+function saveDisplayName(){ if(window._saveDisplayName) window._saveDisplayName(); }
+function setTheme(v)      { if(window._setTheme) window._setTheme(v); }
+function resetAllData()   { if(window._resetAllData) window._resetAllData(); }
+function exportCSV()      { if(window._exportCSV) window._exportCSV(); }
+function importCSV(el)    { if(window._importCSV) window._importCSV(el); }
+function openChargeModal(){ if(window._openChargeModal) window._openChargeModal(); }
+function saveCharge()     { if(window._saveCharge) window._saveCharge(); }
+function deleteCharge(i)  { if(window._deleteCharge) window._deleteCharge(i); }
+function openProjectModal(){ if(window._openProjectModal) window._openProjectModal(); }
+function saveProject()    { if(window._saveProject) window._saveProject(); }
+function deleteProject(i) { if(window._deleteProject) window._deleteProject(i); }
+function setCatType(id,v) { if(window._setCatType) window._setCatType(id,v); }
+</script>
+
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut as fbSignOut, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
@@ -1234,14 +1282,14 @@ function detectCat(label) {
 }
 
 // ── AUTH ───────────────────────────────────
-window.authToggle = (mode) => {
+window._authToggle = (mode) => {
   const isLogin = mode === 'login';
   document.getElementById('tab-login').classList.toggle('active', isLogin);
   document.getElementById('tab-signup').classList.toggle('active', !isLogin);
   document.getElementById('auth-name-field').style.display = isLogin ? 'none' : 'block';
   document.getElementById('auth-submit').textContent = isLogin ? 'Se connecter' : 'Créer mon compte';
 };
-window.authSubmit = async () => {
+window._authSubmit = async () => {
   console.log('authSubmit called');
   const email = document.getElementById('auth-email').value.trim();
   const pwd   = document.getElementById('auth-pwd').value;
@@ -1264,7 +1312,7 @@ window.authSubmit = async () => {
     errEl.style.display = 'block';
   }
 };
-window.signOut = () => fbSignOut(auth);
+window._signOut = () => fbSignOut(auth);
 
 // ── FIREBASE DATA ──────────────────────────
 let unsubscribe = null;
@@ -1343,7 +1391,7 @@ function applyTheme(pref) {
     document.body.setAttribute('data-theme', pref);
   }
 }
-window.setTheme = (v) => {
+window._setTheme = (v) => {
   settings.theme = v;
   applyTheme(v);
   saveToCloud();
@@ -1371,7 +1419,7 @@ function updateMonthLabel() {
   const m = viewDate.toLocaleDateString('fr-FR', { month:'long', year:'numeric' });
   document.getElementById('month-label').textContent = m.charAt(0).toUpperCase() + m.slice(1);
 }
-window.changeMonth = (dir) => {
+window._changeMonth = (dir) => {
   viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + dir, 1);
   updateMonthLabel();
   renderAll();
@@ -1526,7 +1574,7 @@ function renderFullTx() {
   renderTxList(document.getElementById('full-tx-list'), data);
 }
 
-window.filterTx = (btn, cat) => {
+window._filterTx = (btn, cat) => {
   document.querySelectorAll('.cat-select-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   txFilter = cat;
@@ -1721,8 +1769,8 @@ function renderProjects() {
     </div>`;
   }).join('');
 }
-window.openProjectModal = () => { document.getElementById('project-modal').classList.add('open'); };
-window.saveProject = () => {
+window._openProjectModal = () => { document.getElementById('project-modal').classList.add('open'); };
+window._saveProject = () => {
   const name = document.getElementById('proj-name').value.trim();
   const price = parseFloat(document.getElementById('proj-price').value) || 0;
   if (!name || !price) return;
@@ -1733,7 +1781,7 @@ window.saveProject = () => {
   document.getElementById('proj-price').value = '';
   toast('Projet ajouté ✓');
 };
-window.deleteProject = (i) => {
+window._deleteProject = (i) => {
   projects.splice(i, 1);
   saveToCloud(); renderProjects();
 };
@@ -1755,7 +1803,7 @@ function renderRuleCats() {
       </select>
     </div>`).join('');
 }
-window.setCatType = (id, type) => {
+window._setCatType = (id, type) => {
   const cat = categories.find(c => c.id === id);
   if (cat) cat.type = type;
   catTypeOverrides[id] = type;
@@ -1768,7 +1816,7 @@ window.setCatType = (id, type) => {
 
 
 // ── EXPORT CSV ────────────────────────────
-window.exportCSV = () => {
+window._exportCSV = () => {
   const headers = ['Date','Libellé','Montant','Type','Catégorie','Compte'];
   const rows = expenses.map(e => {
     const cat = categories.find(c => c.id === e.cat) || { label: e.cat || 'Autre' };
@@ -1811,7 +1859,7 @@ window.exportCSV = () => {
 };
 
 // ── IMPORT CSV ────────────────────────────
-window.importCSV = (input) => {
+window._importCSV = (input) => {
   const file = input.files[0];
   if (!file) return;
   const reader = new FileReader();
@@ -1873,7 +1921,7 @@ window.importCSV = (input) => {
   reader.readAsText(file, 'UTF-8');
 };
 
-window.resetAllData = async () => {
+window._resetAllData = async () => {
   if (!confirm('Supprimer TOUTES les données ? Cette action est irréversible.')) return;
   expenses  = [];
   accounts  = DEFAULT_ACCOUNTS.map(a => ({...a, initBalance: 0}));
@@ -1889,7 +1937,7 @@ window.resetAllData = async () => {
   toast('Données réinitialisées');
 };
 
-window.saveDisplayName = async () => {
+window._saveDisplayName = async () => {
   const val = document.getElementById('set-displayname').value.trim();
   if (!val || !currentUser) return;
   try {
@@ -1900,7 +1948,7 @@ window.saveDisplayName = async () => {
   } catch(e) { toast('Erreur: ' + e.message); }
 };
 
-window.saveSetting = (key) => {
+window._saveSetting = (key) => {
   const ids = { forecast:'set-forecast', savings:'set-savings', emergency:'set-emergency', swileAmt:'set-swile-amt', swileMeal:'set-swile-meal', swileBal:'set-swile-bal' };
   const val = parseFloat(document.getElementById(ids[key]).value) || 0;
   settings[key] = val;
@@ -1910,7 +1958,7 @@ window.saveSetting = (key) => {
 };
 
 // ── ADD MODAL ─────────────────────────────
-window.openAddModal = () => {
+window._openAddModal = () => {
   editingId = null;
   modalAmt = '';
   modalType = 'dep';
@@ -1926,14 +1974,14 @@ window.openAddModal = () => {
   buildModalAccs('acc1');
   document.getElementById('add-modal').classList.add('open');
 };
-window.closeModal = () => {
+window._closeModal = () => {
   document.getElementById('add-modal').classList.remove('open');
   document.getElementById('edit-modal').classList.remove('open');
   document.getElementById('project-modal').classList.remove('open');
   document.getElementById('adjust-modal').classList.remove('open');
 };
 
-window.modalSetType = (t) => {
+window._modalSetType = (t) => {
   modalType = t;
   document.getElementById('modal-dep').classList.toggle('active', t==='dep');
   document.getElementById('modal-dep').classList.toggle('dep', t==='dep');
@@ -1950,7 +1998,7 @@ function buildNumpad() {
   }).join('');
 }
 
-window.numPress = (k) => {
+window._numPress = (k) => {
   if (k === '⌫') { modalAmt = modalAmt.slice(0,-1); }
   else if (k === '.' && modalAmt.includes('.')) return;
   else if (modalAmt.length >= 8) return;
@@ -1977,18 +2025,18 @@ function buildModalAccs(selectedId) {
     `<button class="acc-select-btn ${a.id===selectedAcc?'active':''}" onclick="selectAcc('${a.id}',this,'modal-accs')">${a.icon||'🏦'} ${a.name}</button>`).join('');
 }
 
-window.selectCat = (id, btn, gridId) => {
+window._selectCat = (id, btn, gridId) => {
   selectedCat = id;
   document.querySelectorAll(`#${gridId} .cat-btn`).forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 };
-window.selectAcc = (id, btn, rowId) => {
+window._selectAcc = (id, btn, rowId) => {
   selectedAcc = id;
   document.querySelectorAll(`#${rowId} .acc-select-btn`).forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 };
 
-window.modalDetectCat = (val) => {
+window._modalDetectCat = (val) => {
   const cat = detectCat(val);
   selectedCat = cat;
   document.querySelectorAll('#modal-cats .cat-btn').forEach(b => {
@@ -1997,7 +2045,7 @@ window.modalDetectCat = (val) => {
   buildModalCats(cat);
 };
 
-window.submitTransaction = () => {
+window._submitTransaction = () => {
   const amt = parseFloat(modalAmt) || 0;
   if (!amt) { toast('Montant requis'); return; }
   const lbl = document.getElementById('modal-lbl').value.trim() || (modalType==='inc'?'Revenu':'Dépense');
@@ -2009,7 +2057,7 @@ window.submitTransaction = () => {
 };
 
 // ── EDIT MODAL ────────────────────────────
-window.openEdit = (id) => {
+window._openEdit = (id) => {
   const tx = expenses.find(e => e.id === id);
   if (!tx) return;
   editingId = id;
@@ -2028,7 +2076,7 @@ window.openEdit = (id) => {
   document.getElementById('edit-modal').classList.add('open');
 };
 
-window.saveEdit = () => {
+window._saveEdit = () => {
   const idx = expenses.findIndex(e => e.id === editingId);
   if (idx < 0) return;
   expenses[idx] = { ...expenses[idx],
@@ -2040,13 +2088,13 @@ window.saveEdit = () => {
   saveToCloud(); renderAll(); closeModal(); toast('Modifié ✓');
 };
 
-window.deleteTransaction = () => {
+window._deleteTransaction = () => {
   expenses = expenses.filter(e => e.id !== editingId);
   saveToCloud(); renderAll(); closeModal(); toast('Supprimé');
 };
 
 // ── ADJUST BALANCE ────────────────────────
-window.openAdjust = (id) => {
+window._openAdjust = (id) => {
   adjustAccId = id;
   const acc = accounts.find(a => a.id === id);
   if (!acc) return;
@@ -2055,7 +2103,7 @@ window.openAdjust = (id) => {
   document.getElementById('adjust-bal').value = (bals[id] || 0).toFixed(2);
   document.getElementById('adjust-modal').classList.add('open');
 };
-window.saveAdjust = () => {
+window._saveAdjust = () => {
   const newBal = parseFloat(document.getElementById('adjust-bal').value) || 0;
   const bals = calcBalances();
   const curr = bals[adjustAccId] || 0;
@@ -2071,7 +2119,7 @@ window.saveAdjust = () => {
 
 // ── QUICK ADD ─────────────────────────────
 let _qaOpen = false;
-window.qaSetType = (t) => {
+window._qaSetType = (t) => {
   qaType = t;
   document.getElementById('qa-dep-btn').classList.toggle('active', t==='dep');
   document.getElementById('qa-dep-btn').classList.toggle('dep', t==='dep');
@@ -2079,19 +2127,19 @@ window.qaSetType = (t) => {
   document.getElementById('qa-inc-btn').classList.toggle('inc', t==='inc');
   document.getElementById('qa-amt').className = t === 'inc' ? 'inc' : 'dep';
 };
-window.qaDetect = (val) => {
+window._qaDetect = (val) => {
   const id = detectCat(val);
   const cat = categories.find(c => c.id === id) || { icon:'🛒' };
   const el = document.getElementById('qa-icon');
   if (el) { el.textContent = cat.icon; el.style.transform='scale(1.2)'; setTimeout(()=>el.style.transform='',200); }
 };
-window.qaOpen = () => { document.getElementById('qa-wrap').classList.add('open'); _qaOpen=true; };
-window.qaClose = () => {
+window._qaOpen = () => { document.getElementById('qa-wrap').classList.add('open'); _qaOpen=true; };
+window._qaClose = () => {
   const lbl = document.getElementById('qa-lbl').value;
   const amt = document.getElementById('qa-amt').value;
   if (!lbl && !amt) setTimeout(() => { if (document.activeElement?.id!=='qa-lbl'&&document.activeElement?.id!=='qa-amt') { document.getElementById('qa-wrap').classList.remove('open'); _qaOpen=false; }}, 200);
 };
-window.qaSave = () => {
+window._qaSave = () => {
   const lbl = document.getElementById('qa-lbl').value.trim();
   const amt = parseFloat(document.getElementById('qa-amt').value);
   if (!amt || amt <= 0) { document.getElementById('qa-amt').focus(); return; }
@@ -2147,7 +2195,7 @@ function renderCharges() {
     </div>`;
 }
 
-window.openChargeModal = () => {
+window._openChargeModal = () => {
   chargeCat = 'logement';
   chargeAcc = 'acc1';
   document.getElementById('charge-lbl').value = '';
@@ -2165,7 +2213,7 @@ window.openChargeModal = () => {
   document.getElementById('charge-modal').classList.add('open');
 };
 
-window.saveCharge = () => {
+window._saveCharge = () => {
   const lbl = document.getElementById('charge-lbl').value.trim();
   const amt = parseFloat(document.getElementById('charge-amt').value) || 0;
   const day = parseInt(document.getElementById('charge-day').value) || 1;
@@ -2179,7 +2227,7 @@ window.saveCharge = () => {
   toast('Charge ajoutée ✓');
 };
 
-window.deleteCharge = (i) => {
+window._deleteCharge = (i) => {
   charges.splice(i, 1);
   saveToCloud();
   renderCharges();
@@ -2334,7 +2382,7 @@ function initFluxPage() {
 
 // ── NAVIGATION ────────────────────────────
 let currentPage = 'dash';
-window.switchPage = (id, btn, index) => {
+window._switchPage = (id, btn, index) => {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('page-'+id)?.classList.add('active');
@@ -2365,7 +2413,7 @@ window.switchPage = (id, btn, index) => {
 };
 
 // ── PRIVACY ───────────────────────────────
-window.togglePrivacy = () => {
+window._togglePrivacy = () => {
   privacyOn = !privacyOn;
   applyPrivacy();
   document.getElementById('privacy-btn').textContent = privacyOn ? '🙈' : '👁️';
