@@ -83,17 +83,17 @@ button{cursor:pointer;border:none;background:none}
 .tab-wrap{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
   width:calc(100% - 32px);max-width:480px;z-index:200;pointer-events:none}
 .tab-bar{display:flex;align-items:center;
-  background:rgba(255,255,255,0.15);
-  backdrop-filter:blur(40px) saturate(200%);
-  -webkit-backdrop-filter:blur(40px) saturate(200%);
-  border:1px solid rgba(255,255,255,0.4);
+  background:rgba(255,255,255,0.45) !important;
+  backdrop-filter:blur(40px) saturate(200%) !important;
+  -webkit-backdrop-filter:blur(40px) saturate(200%) !important;
+  border:1px solid rgba(255,255,255,0.75) !important;
   border-radius:28px;padding:5px;
-  box-shadow:0 8px 32px rgba(0,0,0,0.18),inset 0 1px 0 rgba(255,255,255,0.5);
+  box-shadow:0 8px 32px rgba(0,0,0,0.14),0 1.5px 0 rgba(255,255,255,0.95) inset,0 -1px 0 rgba(0,0,0,0.04) inset !important;
   pointer-events:auto;position:relative}
 [data-theme="dark"] .tab-bar{
-  background:rgba(30,30,32,0.7);
-  border-color:rgba(255,255,255,0.1);
-  box-shadow:0 8px 32px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.06)}
+  background:rgba(58,58,70,0.72) !important;
+  border-color:rgba(255,255,255,0.22) !important;
+  box-shadow:0 8px 40px rgba(0,0,0,0.55),0 1.5px 0 rgba(255,255,255,0.14) inset,0 -1px 0 rgba(0,0,0,0.3) inset !important}
 .tab-pill{position:absolute;top:5px;bottom:5px;left:5px;
   width:calc((100% - 10px) / 5);
   background:rgba(255,255,255,0.75);
@@ -239,7 +239,7 @@ button{cursor:pointer;border:none;background:none}
 .nk:active{transform:scale(.93);background:var(--border)}
 .amt-big{font-family:'Sora',sans-serif;font-size:52px;font-weight:800;
   text-align:center;letter-spacing:-2px;margin:16px 0;min-height:64px}
-.amt-big.e{color:var(--red)}.amt-big.i{color:var(--green)}
+.amt-big.e{color:var(--red)}.amt-big.i{color:var(--green)}.amt-big.vir{color:var(--accent)}
 
 /* FIELD */
 .field{margin-bottom:13px}
@@ -596,14 +596,36 @@ button{cursor:pointer;border:none;background:none}
     <div class="type-toggle">
       <button class="type-btn on e" id="m-exp" onclick="mType('exp')">💸 Dépense</button>
       <button class="type-btn i" id="m-inc" onclick="mType('inc')">💰 Revenu</button>
+      <button class="type-btn" id="m-vir" onclick="mType('vir')">↔️ Virement</button>
     </div>
     <div class="amt-big e" id="m-amt-display">0</div>
     <div class="numpad" id="numpad"></div>
     <div class="field"><label class="field-lbl">Libellé</label><input class="field-inp" id="m-lbl" type="text" placeholder="ex: Courses Lidl" oninput="mDetect(this.value)"></div>
     <div class="field"><label class="field-lbl">Catégorie</label><div class="cat-grid" id="m-cats"></div></div>
-    <div class="field"><label class="field-lbl">Compte</label><div class="acc-chips" id="m-accs"></div></div>
+    <div class="field"><label class="field-lbl" id="m-acc-lbl">Compte</label><div class="acc-chips" id="m-accs"></div></div>
+    <div class="field" id="m-dest-wrap" style="display:none"><label class="field-lbl">Compte destination</label><div class="acc-chips" id="m-dest-accs"></div></div>
     <div class="field"><label class="field-lbl">Date</label><input class="field-inp" id="m-date" type="date"></div>
     <div class="field"><label class="field-lbl">Note (optionnel)</label><input class="field-inp" id="m-note" type="text" placeholder="Remarque…"></div>
+    <div class="field">
+      <label class="field-lbl">Récurrence</label>
+      <select class="field-inp" id="m-freq" onchange="toggleCustomFreq(this.value)" style="cursor:pointer">
+        <option value="once">Une seule fois</option>
+        <option value="weekly">Chaque semaine</option>
+        <option value="2weeks">Toutes les 2 semaines</option>
+        <option value="monthly">Chaque mois</option>
+        <option value="4weeks">Toutes les 4 semaines</option>
+        <option value="yearly">Chaque année</option>
+        <option value="custom">Personnalisé (X jours)</option>
+      </select>
+    </div>
+    <div class="field" id="m-custom-freq-wrap" style="display:none">
+      <label class="field-lbl">Tous les combien de jours ?</label>
+      <input class="field-inp" id="m-freq-days" type="number" min="1" placeholder="ex: 10">
+    </div>
+    <div class="field" id="m-enddate-wrap" style="display:none">
+      <label class="field-lbl">Date de fin (optionnel)</label>
+      <input class="field-inp" id="m-enddate" type="date">
+    </div>
     <!-- Recurring -->
     <div style="background:var(--input);border-radius:12px;padding:14px 16px;margin-bottom:14px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0" id="recur-header" onclick="toggleRecurring()">
@@ -649,6 +671,26 @@ button{cursor:pointer;border:none;background:none}
     <div class="field"><label class="field-lbl">Montant</label><input class="field-inp" id="e-amt" type="number" step="0.01"></div>
     <div class="field"><label class="field-lbl">Date</label><input class="field-inp" id="e-date" type="date"></div>
     <div class="field"><label class="field-lbl">Note</label><input class="field-inp" id="e-note" type="text"></div>
+    <div class="field">
+      <label class="field-lbl">Récurrence</label>
+      <select class="field-inp" id="e-freq" onchange="toggleCustomFreqEdit(this.value)" style="cursor:pointer">
+        <option value="once">Une seule fois</option>
+        <option value="weekly">Chaque semaine</option>
+        <option value="2weeks">Toutes les 2 semaines</option>
+        <option value="monthly">Chaque mois</option>
+        <option value="4weeks">Toutes les 4 semaines</option>
+        <option value="yearly">Chaque année</option>
+        <option value="custom">Personnalisé (X jours)</option>
+      </select>
+    </div>
+    <div class="field" id="e-custom-freq-wrap" style="display:none">
+      <label class="field-lbl">Tous les combien de jours ?</label>
+      <input class="field-inp" id="e-freq-days" type="number" min="1" placeholder="ex: 10">
+    </div>
+    <div class="field" id="e-enddate-wrap" style="display:none">
+      <label class="field-lbl">Date de fin (optionnel)</label>
+      <input class="field-inp" id="e-enddate" type="date">
+    </div>
     <div class="field"><label class="field-lbl">Catégorie</label><div class="cat-grid" id="e-cats"></div></div>
     <div class="field"><label class="field-lbl">Compte</label><div class="acc-chips" id="e-accs"></div></div>
     <div class="btn-row">
@@ -812,7 +854,7 @@ var expenses=[], accounts=[], categories=[], catBudgets={};
 var displayName='', forecastSalary=0, savingsGoal=500, savedTheme='auto';
 var viewDate=new Date(), privacyOn=false, currentUser=null;
 var editingId=null, mAmt='', mCurrentType='exp', qaCurrentType='exp';
-var selCat='autre', selAcc='acc1', histFilter='all', histCatFilter='all';
+var selCat='autre', selAcc='acc1', selDestAcc='acc_lva', histFilter='all', histCatFilter='all';
 var pieChart=null, evoChart=null;
 
 var DEFAULT_ACCOUNTS=[
@@ -970,6 +1012,25 @@ function makeVirtual(e, date) {
   });
 }
 
+
+// ── RECURRING HELPERS ─────────────────────
+function toggleCustomFreq(val) {
+  document.getElementById('m-custom-freq-wrap').style.display = val==='custom' ? 'block' : 'none';
+  document.getElementById('m-enddate-wrap').style.display = val!=='once' ? 'block' : 'none';
+}
+function toggleCustomFreqEdit(val) {
+  var cw=document.getElementById('e-custom-freq-wrap');
+  var ew=document.getElementById('e-enddate-wrap');
+  if(cw) cw.style.display = val==='custom' ? 'block' : 'none';
+  if(ew) ew.style.display = val!=='once' ? 'block' : 'none';
+}
+
+// Recurring badge in tx list
+var FREQ_LABELS = {
+  weekly:'Hebdo', '2weeks':'2 sem.', monthly:'Mensuel',
+  '4weeks':'4 sem.', yearly:'Annuel', custom:'Récurrent'
+};
+
 // ── BUDGET DETAIL ─────────────────────────
 function bdOpenTx(id){ closeBudgetDetail(); setTimeout(function(){ openEdit(id); }, 250); }
 function openBudgetDetail(catId) {
@@ -1044,7 +1105,7 @@ function renderRecurSettings() {
       +'<div><div class="set-name">'+esc(e.label||'Sans libellé')+'</div>'
       +'<div style="font-size:11px;color:var(--accent);font-weight:600;margin-top:2px">🔄 '+label+' · '+(e.type==='income'?'+':'-')+e.amount.toFixed(2)+' €</div></div>'
       +'</div>'
-      +'<button onclick="deleteRecur(''+e.id+'')" style="font-size:16px;color:var(--txt3);background:none;border:none;cursor:pointer">✕</button>'
+      +'<button onclick="deleteRecur(\'' + e.id + '\')" style="font-size:16px;color:var(--txt3);background:none;border:none;cursor:pointer">✕</button>'
       +'</div>';
   }).join('') + '</div>';
 }
@@ -1316,15 +1377,61 @@ function calcBals(){
   });
   return b;
 }
+function getOccurrences(e, y, m) {
+  var occs = [];
+  if(!e.date) return occs;
+  var start = new Date(e.date + 'T12:00:00');
+  var mStart = new Date(y, m, 1);
+  var mEnd   = new Date(y, m+1, 0);
+  var end    = e.endDate ? new Date(e.endDate + 'T12:00:00') : new Date(2100,0,1);
+  if(!e.recurring || !e.frequency || e.frequency === 'once') {
+    if(start.getFullYear()===y && start.getMonth()===m) occs.push(start.getDate());
+    return occs;
+  }
+  if(e.frequency === 'monthly') {
+    if(start <= mEnd && mStart <= end) {
+      var d = Math.min(start.getDate(), mEnd.getDate());
+      var occ = new Date(y, m, d);
+      if(occ >= start && occ <= end) occs.push(d);
+    }
+  } else if(e.frequency === 'yearly') {
+    if(start.getMonth() === m) {
+      var d = Math.min(start.getDate(), mEnd.getDate());
+      var occ = new Date(y, m, d);
+      if(occ >= start && occ <= end) occs.push(d);
+    }
+  } else {
+    var freqDays = 0;
+    if(e.frequency === 'weekly')  freqDays = 7;
+    if(e.frequency === '2weeks')  freqDays = 14;
+    if(e.frequency === '4weeks')  freqDays = 28;
+    if(e.frequency === 'custom' && e.freqDays) freqDays = parseInt(e.freqDays)||0;
+    if(freqDays > 0) {
+      var cur = new Date(start.getTime());
+      while(cur <= mEnd && cur <= end) {
+        if(cur >= mStart && cur.getFullYear()===y && cur.getMonth()===m) occs.push(cur.getDate());
+        cur.setDate(cur.getDate() + freqDays);
+      }
+    }
+  }
+  return occs;
+}
 function getMonthTx(){
-  var y=viewDate.getFullYear(),m=viewDate.getMonth();
-  var base=expenses.filter(function(e){
-    if(!e.date)return false;
-    var d=new Date(e.date+'T12:00:00');
-    return d.getFullYear()===y&&d.getMonth()===m;
+  var y=viewDate.getFullYear(), m=viewDate.getMonth();
+  var result = [];
+  expenses.forEach(function(e){
+    if(!e.date) return;
+    var occs = getOccurrences(e, y, m);
+    occs.forEach(function(day, i){
+      var dateStr = y+'-'+String(m+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+      result.push(Object.assign({}, e, {
+        date: dateStr,
+        originalId: e.id,
+        id: e.id + (occs.length>1 ? '_occ'+i : '')
+      }));
+    });
   });
-  var virtual=expandRecurring(y,m);
-  return base.concat(virtual).sort(function(a,b){return(b.date||'').localeCompare(a.date||'');});
+  return result.sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
 }
 
 // ── FORMAT ────────────────────────────────
@@ -1569,9 +1676,15 @@ function txHTML(e,showEdit){
   var acc=accounts.find(function(a){return a.id===e.accountId;});
   var isInc=e.type==='income';
   var id=e.originalId||e.id||'';
+  var isResto2=getRestAccs().some(function(a){return a.id===e.accountId;});
+  var isRecur=e.recurring&&e.frequency&&e.frequency!=='once';
+  var FL={weekly:'Hebdo','2weeks':'2 sem.',monthly:'Mensuel','4weeks':'4 sem.',yearly:'Annuel',custom:'Récurrent'};
+  var swileBadge=isResto2?'<span style="font-size:10px;background:rgba(251,191,36,0.15);color:#f59e0b;border-radius:4px;padding:1px 5px;font-weight:700;margin-left:4px">🍽️ Swile</span>':'';
+  var virBadge=e.isVirement?'<span style="font-size:10px;background:rgba(99,102,241,0.12);color:var(--accent);border-radius:4px;padding:1px 5px;font-weight:700;margin-left:4px">↔️ Virement</span>':'';
+  var recurBadge=isRecur?'<span style="font-size:10px;background:rgba(99,102,241,0.12);color:var(--accent);border-radius:4px;padding:1px 5px;font-weight:700;margin-left:4px">🔁 '+(FL[e.frequency]||'Récurrent')+'</span>':'';
   return '<div class="tx-item" onclick="'+(showEdit?'openEdit(\''+id+'\')':'')+'">'
     +'<div class="tx-ico">'+cat.icon+'</div>'
-    +'<div class="tx-info"><div class="tx-name">'+esc(e.label||'Sans libellé')+'</div>'
+    +'<div class="tx-info"><div class="tx-name">'+esc(e.label||'Sans libellé')+swileBadge+recurBadge+virBadge+'</div>'
     +'<div class="tx-sub">'+(acc?esc(acc.name):'')+' '+(e.note?'· '+esc(e.note):'')+'</div></div>'
     +'<div class="tx-amt '+(isInc?'i':'e')+' blur">'+(isInc?'+':'-')+e.amount.toFixed(2)+' €</div></div>';
 }
@@ -1777,6 +1890,13 @@ function openAdd(prefillType){
   document.getElementById('m-amt-display').className='amt-big e';
   document.getElementById('m-lbl').value='';
   document.getElementById('m-note').value='';
+  document.getElementById('m-freq').value='once';
+  selDestAcc='acc_lva';
+  var dw=document.getElementById('m-dest-wrap');if(dw)dw.style.display='none';
+  var al=document.getElementById('m-acc-lbl');if(al)al.textContent='Compte';
+  document.getElementById('m-custom-freq-wrap').style.display='none';
+  document.getElementById('m-enddate-wrap').style.display='none';
+  var ed=document.getElementById('m-enddate');if(ed)ed.value='';
   document.getElementById('m-date').value=new Date().toISOString().split('T')[0];
   selCat='autre';selAcc='acc1';
   resetRecurring();
@@ -1790,7 +1910,15 @@ function mType(t){
   mCurrentType=t;
   document.getElementById('m-exp').className='type-btn'+(t==='exp'?' on e':'');
   document.getElementById('m-inc').className='type-btn'+(t==='inc'?' on i':'');
-  document.getElementById('m-amt-display').className='amt-big '+t;
+  document.getElementById('m-vir').className='type-btn'+(t==='vir'?' on':'');
+  document.getElementById('m-amt-display').className='amt-big '+(t==='vir'?'':t);
+  // Show/hide destination account
+  var destWrap=document.getElementById('m-dest-wrap');
+  var accLbl=document.getElementById('m-acc-lbl');
+  var catField=document.querySelector('#add-overlay .field:has(#m-cats)');
+  if(destWrap){destWrap.style.display=t==='vir'?'block':'none';}
+  if(accLbl){accLbl.textContent=t==='vir'?'Compte source':'Compte';}
+  if(t==='vir'){buildMDestAccs();}
 }
 function buildNumpad(){
   var ks=['1','2','3','4','5','6','7','8','9','.','0','⌫'];
@@ -1811,6 +1939,12 @@ function buildMCats(){
       +'<div class="cat-chip-icon">'+c.icon+'</div><div class="cat-chip-lbl">'+c.label+'</div></div>';
   }).join('');
 }
+function buildMDestAccs(){
+  var el=document.getElementById('m-dest-accs');if(!el)return;
+  el.innerHTML=accounts.filter(function(a){return a.id!==selAcc;}).map(function(a){
+    return '<div class="acc-chip'+(a.id===selDestAcc?' on':'')+'" onclick="selDestAcc=\''+a.id+'\';buildMDestAccs()">'+a.icon+' '+esc(a.name)+'</div>';
+  }).join('');
+}
 function buildMAccs(){
   document.getElementById('m-accs').innerHTML=accounts.map(function(a){
     return '<div class="acc-chip'+(a.id===selAcc?' on':'')+'" onclick="selAcc=\''+a.id+'\';buildMAccs()">'+a.icon+' '+esc(a.name)+'</div>';
@@ -1821,6 +1955,9 @@ function saveTransaction(){
   var lbl=document.getElementById('m-lbl').value.trim()||(mCurrentType==='inc'?'Revenu':'Dépense');
   var note=document.getElementById('m-note').value.trim();
   var date=document.getElementById('m-date').value;
+  var freq=document.getElementById('m-freq').value;
+  var freqDays=document.getElementById('m-freq-days').value;
+  var endDate=document.getElementById('m-enddate').value||null;
   var customDays2 = _recurFreq==='custom' ? (parseInt(document.getElementById('m-custom-days').value)||30) : null;
   var endDate2 = document.getElementById('m-end-date').value || null;
   expenses.unshift({
@@ -1840,12 +1977,16 @@ function saveTransaction(){
 
 // ── EDIT ──────────────────────────────────
 function openEdit(id){
-  var tx=expenses.find(function(e){return e.id===id;});if(!tx)return;
+  var tx=expenses.find(function(e){return e.id===id||e.id===(id+'').replace(/_\d+$/,'');});if(!tx)return;
   editingId=id;selCat=tx.cat||'autre';selAcc=tx.accountId||'acc1';
   document.getElementById('e-lbl').value=tx.label||'';
   document.getElementById('e-amt').value=tx.amount;
   document.getElementById('e-date').value=tx.date||'';
   document.getElementById('e-note').value=tx.note||'';
+  var ef=document.getElementById('e-freq');if(ef)ef.value=tx.frequency||'once';
+  toggleCustomFreqEdit(tx.frequency||'once');
+  var efd=document.getElementById('e-freq-days');if(efd)efd.value=tx.freqDays||'';
+  var eed=document.getElementById('e-enddate');if(eed)eed.value=tx.endDate||'';
   document.getElementById('e-cats').innerHTML=categories.map(function(c){return '<div class="cat-chip'+(c.id===selCat?' on':'')+'" onclick="selCat=\''+c.id+'\';updateEditCats()"><div class="cat-chip-icon">'+c.icon+'</div><div class="cat-chip-lbl">'+c.label+'</div></div>';}).join('');
   document.getElementById('e-accs').innerHTML=accounts.map(function(a){return '<div class="acc-chip'+(a.id===selAcc?' on':'')+'" onclick="selAcc=\''+a.id+'\';updateEditAccs()">'+a.icon+' '+esc(a.name)+'</div>';}).join('');
   document.getElementById('edit-overlay').classList.add('on');
@@ -1860,7 +2001,11 @@ function saveEdit(){
     amount:parseFloat(document.getElementById('e-amt').value)||0,
     date:document.getElementById('e-date').value,
     note:document.getElementById('e-note').value.trim()||null,
-    cat:selCat,accountId:selAcc
+    cat:selCat,accountId:selAcc,
+    recurring:(document.getElementById('e-freq').value||'once')!=='once',
+    frequency:document.getElementById('e-freq').value||'once',
+    freqDays:document.getElementById('e-freq-days').value||null,
+    endDate:document.getElementById('e-enddate').value||null
   });
   save();renderAll();closeEdit();toast('Modifié ✓');
 }
