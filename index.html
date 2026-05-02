@@ -63,7 +63,7 @@ button{cursor:pointer;border:none;background:none}
 .auth-inp::placeholder{color:var(--txt3)}
 .auth-btn{width:100%;padding:15px;background:var(--accent);color:#fff;border-radius:12px;font-size:16px;font-weight:700;margin-top:4px;box-shadow:0 4px 16px rgba(234,88,12,0.35);transition:.15s}
 .auth-btn:active{transform:scale(.98)}
-.auth-err{color:#ef4444;font-size:13px;text-align:center;margin-top:10px;display:none}
+.auth-err{font-size:13px;text-align:center;margin-top:10px;display:none;font-weight:600}
 
 /* ═══ APP SHELL ═══ */
 #app{display:none;flex-direction:column;min-height:100dvh;background:var(--bg);}
@@ -2219,15 +2219,18 @@ function doAuth(){
   var err=document.getElementById('a-err');
   err.style.display='none';
   if(!email||!pwd){err.textContent='Email et mot de passe requis';err.style.display='block';return;}
-  err.textContent='Connexion en cours…';err.style.display='block';err.style.color='rgba(255,255,255,0.5)';
+  err.textContent='Connexion en cours…';err.style.display='block';err.style.color='var(--txt2)';
   initFirebase(function(){
-    if(!auth){err.textContent='Erreur de connexion réseau';err.style.color='#fca5a5';err.style.display='block';return;}
+    if(!auth){err.textContent='Erreur de connexion réseau';err.style.color='var(--red)';err.style.display='block';return;}
     setupAuth();
     var p=_isSignup?auth.createUserWithEmailAndPassword(email,pwd):auth.signInWithEmailAndPassword(email,pwd);
-    p.then(function(c){if(_isSignup&&name)return c.user.updateProfile({displayName:name});err.style.display='none';})
+    p.then(function(c){
+      err.style.display='none';
+      if(_isSignup&&name) c.user.updateProfile({displayName:name}).catch(function(){});
+    })
      .catch(function(e){
       var msgs={'auth/invalid-credential':'Email ou mot de passe incorrect','auth/email-already-in-use':'Email déjà utilisé','auth/weak-password':'Mot de passe trop court','auth/invalid-email':'Email invalide','auth/user-not-found':'Compte introuvable','auth/wrong-password':'Mot de passe incorrect'};
-      err.textContent=msgs[e.code]||e.message;err.style.color='#fca5a5';err.style.display='block';
+      err.textContent=msgs[e.code]||e.message;err.style.color='var(--red)';err.style.display='block';
      });
   });
 }
@@ -2252,9 +2255,11 @@ function doSignOut(){
 
 // ── LOAD DATA ─────────────────────────────
 var unsub=null;
+var _authSetup=false;
 // Auth state — only set up after Firebase loads
 function setupAuth(){
-  if(!auth)return;
+  if(!auth||_authSetup)return;
+  _authSetup=true;
   auth.onAuthStateChanged(function(user){
   currentUser=user;
   if(user){
