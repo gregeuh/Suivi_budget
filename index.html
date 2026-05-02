@@ -138,10 +138,10 @@ button{cursor:pointer;border:none;background:none}
 .hero-bal{font-family:'Sora',sans-serif;font-size:44px;font-weight:800;
   color:#fff;letter-spacing:-1.5px;line-height:1;margin-bottom:18px}
 .hero-pills{display:flex;gap:8px}
-.hero-pill{flex:1;background:rgba(255,255,255,0.09);border-radius:13px;padding:10px 12px}
+.hero-pill{flex:1;background:rgba(255,255,255,0.2);border-radius:13px;padding:10px 12px;border:1px solid rgba(255,255,255,0.35);transition:background .4s,border-color .4s}
 .hp-lbl{font-size:10px;color:rgba(255,255,255,0.9);font-weight:600;margin-bottom:3px}
 .hp-val{font-family:'Sora',sans-serif;font-size:15px;font-weight:800;color:#fff}
-.hp-val.g{color:#6ee7b7}.hp-val.r{color:#fca5a5}
+.hp-val.g{color:#fff}.hp-val.r{color:#fff}
 
 /* CHART CARD */
 .chart-card{background:var(--card);border-radius:var(--r);padding:18px;border:1px solid var(--border);box-shadow:var(--sh);margin-bottom:12px}
@@ -860,17 +860,17 @@ button{cursor:pointer;border:none;background:none}
         <div class="hero-lbl">Solde disponible</div>
         <div class="hero-bal blur" id="h-bal">—</div>
         <div class="hero-pills">
-          <div class="hero-pill">
+          <div class="hero-pill" id="pill-exp">
             <div class="hp-lbl">Dépenses</div>
-            <div class="hp-val r blur" id="h-exp">—</div>
+            <div class="hp-val blur" id="h-exp">—</div>
           </div>
-          <div class="hero-pill">
+          <div class="hero-pill" id="pill-inc">
             <div class="hp-lbl">Revenus</div>
-            <div class="hp-val g blur" id="h-inc">—</div>
+            <div class="hp-val blur" id="h-inc">—</div>
           </div>
-          <div class="hero-pill">
+          <div class="hero-pill" id="pill-save">
             <div class="hp-lbl">Épargne totale</div>
-            <div class="hp-val g blur" id="h-save">—</div>
+            <div class="hp-val blur" id="h-save">—</div>
           </div>
         </div>
         <!-- Épargne row -->
@@ -886,9 +886,9 @@ button{cursor:pointer;border:none;background:none}
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
             <div style="display:flex;align-items:center;gap:6px">
               <span style="font-size:15px">🍽️</span>
-              <span style="font-size:11px;color:rgba(255,255,255,0.45);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Tickets restau</span>
+              <span style="font-size:11px;color:#7c2d12;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Tickets restau</span>
             </div>
-            <div style="font-size:11px;color:var(--txt3);font-weight:500" id="swile-used-lbl"></div>
+            <div style="font-size:11px;color:#b45309;font-weight:500" id="swile-used-lbl"></div>
           </div>
           <div style="display:flex;align-items:baseline;gap:10px">
             <div style="font-family:Sora,sans-serif;font-size:24px;font-weight:800;color:#92400e" id="h-swile">—</div>
