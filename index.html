@@ -841,6 +841,7 @@ function initFirebase(cb) {
         auth = firebase.auth();
         db = firebase.firestore();
         FIREBASE_READY = true;
+        setupAuth(); // start listening to auth state
         cb();
       }
     };
@@ -1248,6 +1249,7 @@ function doAuth(){
   err.textContent='Connexion en cours…';err.style.display='block';err.style.color='rgba(255,255,255,0.5)';
   initFirebase(function(){
     if(!auth){err.textContent='Erreur de connexion réseau';err.style.color='#fca5a5';err.style.display='block';return;}
+    setupAuth();
     var p=_isSignup?auth.createUserWithEmailAndPassword(email,pwd):auth.signInWithEmailAndPassword(email,pwd);
     p.then(function(c){if(_isSignup&&name)return c.user.updateProfile({displayName:name});err.style.display='none';})
      .catch(function(e){
