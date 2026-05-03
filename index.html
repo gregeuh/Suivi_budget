@@ -2748,7 +2748,11 @@ function setupAuth(){
       document.getElementById('s-theme').value=savedTheme;
       applyTheme(savedTheme);
       updateGreeting();
-      renderAll();
+      // Reset viewDate to current month on every fresh load
+      viewDate = new Date();
+      viewDate.setDate(1);
+      updateMonthLabel();
+      setTimeout(renderAll, 50); // Small delay to ensure DOM is ready
     });
   } else {
     if(unsub){unsub();unsub=null;}
@@ -3586,7 +3590,7 @@ function goTo(page,btn,idx){
     renderCatsSettings();updateGreeting();renderAccsSettings();renderRecurSettings();
     var mp=document.getElementById('s-meal-price');if(mp)mp.value=swileMealPrice||10;
   }
-  if(page==='dash')renderCharts();
+  if(page==='dash') setTimeout(renderCharts, 50);
 }
 
 // ── PRIVACY ───────────────────────────────
@@ -3741,6 +3745,8 @@ function loadDemo() {
   badge.style.cssText = 'position:fixed;top:12px;right:12px;background:var(--accent);color:#fff;font-size:10px;font-weight:800;padding:4px 10px;border-radius:50px;z-index:9999;letter-spacing:.5px';
   document.body.appendChild(badge);
 
+  viewDate = new Date();
+  viewDate.setDate(1);
   applyTheme(currentTheme||'orange');
   setTimeout(renderThemePicker, 100);
   updateGreeting();
