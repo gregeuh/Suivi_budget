@@ -2725,9 +2725,18 @@ function setupAuth(){
       var defaultIds=DEFAULT_ACCOUNTS.map(function(a){return a.id;});
       var mergedDefaults=DEFAULT_ACCOUNTS.map(function(def){
         var s=saved.find(function(a){return a.id===def.id;});
-        return s?Object.assign({},def,s):Object.assign({},def);
+        // Merger saved sur def MAIS toujours garder color/icon du DEFAULT
+        var merged = s ? Object.assign({},def,s) : Object.assign({},def);
+        merged.color = def.color; // forcer couleur DEFAULT toujours
+        merged.icon  = merged.icon || def.icon;
+        return merged;
       });
       var customAccounts=saved.filter(function(a){return defaultIds.indexOf(a.id)===-1;});
+      // Assigner une couleur par défaut aux comptes custom sans couleur
+      customAccounts=customAccounts.map(function(a){
+        if(!a.color) a.color='blue';
+        return a;
+      });
       accounts=mergedDefaults.concat(customAccounts);
       // Categories
       var customCats=Array.isArray(d.categories)?d.categories.filter(function(c){return c&&c.isCustom;}):[];
@@ -2748,10 +2757,12 @@ function setupAuth(){
       viewDate.setDate(1);
       updateMonthLabel();
 
-      // Attendre que le DOM soit prêt avant de render
+      // Render immédiat + re-render de sécurité après 500ms
       requestAnimationFrame(function(){
         requestAnimationFrame(function(){
           renderAll();
+          // Re-render de sécurité au cas où le premier est trop tôt
+          setTimeout(function(){ renderAll(); }, 500);
         });
       });
     });
