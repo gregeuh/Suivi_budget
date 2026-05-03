@@ -835,6 +835,9 @@ button{cursor:pointer;border:none;background:none}
 
 </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body data-theme="light" style="background:var(--bg)">
 
@@ -1441,37 +1444,19 @@ var FIREBASE_READY = false;
 
 function initFirebase(cb) {
   if(FIREBASE_READY){ cb(); return; }
-  // Load scripts dynamically
-  var scripts = [
-    'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js',
-    'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js',
-    'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js'
-  ];
-  var loaded = 0;
-  scripts.forEach(function(src) {
-    var s = document.createElement('script');
-    s.src = src;
-    s.onload = function() {
-      loaded++;
-      if(loaded === scripts.length) {
-        firebase.initializeApp({
-          apiKey:"AIzaSyBQjRSVB-BgA2FtBUA70Si0auURGZlh1DE",
-          authDomain:"suivi-budget-8f2d2.firebaseapp.com",
-          projectId:"suivi-budget-8f2d2",
-          storageBucket:"suivi-budget-8f2d2.firebasestorage.app",
-          messagingSenderId:"829941841512",
-          appId:"1:829941841512:web:cb9e416a0b3aa0c0026a1a"
-        });
-        auth = firebase.auth();
-        db = firebase.firestore();
-        FIREBASE_READY = true;
-        setupAuth(); // start listening to auth state
-        cb();
-      }
-    };
-    s.onerror = function() { loaded++; if(loaded===scripts.length) cb(); };
-    document.head.appendChild(s);
-  });
+  try { firebase.initializeApp({
+    apiKey:"AIzaSyBQjRSVB-BgA2FtBUA70Si0auURGZlh1DE",
+    authDomain:"suivi-budget-8f2d2.firebaseapp.com",
+    projectId:"suivi-budget-8f2d2",
+    storageBucket:"suivi-budget-8f2d2.firebasestorage.app",
+    messagingSenderId:"829941841512",
+    appId:"1:829941841512:web:cb9e416a0b3aa0c0026a1a"
+  }); } catch(e) {}
+  auth = firebase.auth();
+  db   = firebase.firestore();
+  FIREBASE_READY = true;
+  setupAuth();
+  cb();
 }
 
 // ── STATE ─────────────────────────────────
@@ -3759,6 +3744,24 @@ updateMonthLabel();
 applyTheme('orange');
 buildNumpad();
 setTimeout(renderThemePicker, 200);
+
+// Auto-init Firebase on page load to restore session
+(function autoInit() {
+  try {
+    firebase.initializeApp({
+      apiKey:"AIzaSyBQjRSVB-BgA2FtBUA70Si0auURGZlh1DE",
+      authDomain:"suivi-budget-8f2d2.firebaseapp.com",
+      projectId:"suivi-budget-8f2d2",
+      storageBucket:"suivi-budget-8f2d2.firebasestorage.app",
+      messagingSenderId:"829941841512",
+      appId:"1:829941841512:web:cb9e416a0b3aa0c0026a1a"
+    });
+  } catch(e) {} // already initialized
+  auth = firebase.auth();
+  db   = firebase.firestore();
+  FIREBASE_READY = true;
+  setupAuth(); // detect existing session immediately
+})();
 </script>
 </body>
 </html</body>
