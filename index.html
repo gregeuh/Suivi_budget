@@ -70,7 +70,7 @@ button{cursor:pointer;border:none;background:none}
 .auth-err{font-size:13px;text-align:center;margin-top:10px;display:none;font-weight:600}
 
 /* ═══ APP SHELL ═══ */
-#app{display:none;flex-direction:column;min-height:100dvh;background:var(--bg);}
+#app{display:none;flex-direction:column;height:100dvh;background:var(--bg);overflow:hidden;}
 #app.on{display:flex;background:var(--bg);}
 
 /* TOP BAR */
@@ -90,7 +90,7 @@ button{cursor:pointer;border:none;background:none}
 .m-label{font-size:14px;font-weight:600;color:var(--txt);text-transform:capitalize}
 
 /* CONTENT */
-.content{flex:1;overflow-y:auto;padding:0 16px 110px;background:var(--bg);}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 16px 110px;background:var(--bg);}
 .page{display:none;animation:up .22s ease;background:var(--bg);}
 .page.on{display:block;background:var(--bg);}
 @keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -2743,9 +2743,9 @@ function setupAuth(){
       var defaultIds=DEFAULT_CATS.map(function(c){return c.id;});
       categories=DEFAULT_CATS.concat(customCats.filter(function(c){return defaultIds.indexOf(c.id)===-1;}));
       // Apply settings
-      document.getElementById('s-forecast').value=forecastSalary||'';
-      document.getElementById('s-savings').value=savingsGoal||'';
-      document.getElementById('s-theme').value=savedTheme;
+      var sfc=document.getElementById('s-forecast');if(sfc)sfc.value=forecastSalary||'';
+      var ssv=document.getElementById('s-savings');if(ssv)ssv.value=savingsGoal||'';
+      var sTheme=document.getElementById('s-theme');if(sTheme)sTheme.value=savedTheme;
       // Thème
       if(d.theme && THEMES[d.theme]) applyTheme(d.theme, d.isDark||false);
       else applyTheme('orange', false);
