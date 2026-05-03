@@ -1066,13 +1066,8 @@ button{cursor:pointer;border:none;background:none}
 
     <!-- 🎯 BUDGETS -->
     <div class="page" id="p-budget">
-      <!-- Rule 50/30/20 summary -->
-      <div class="card" style="margin-bottom:16px;background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)">
-        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:10px">Règle 50 / 30 / 20</div>
-        <div style="display:flex;gap:8px" id="rule-pills"></div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:10px">Basé sur <span id="rule-income-lbl" style="color:rgba(255,255,255,0.7);font-weight:600">—</span> de revenus</div>
-      </div>
-      <div id="budget-summary" style="margin-bottom:12px"></div>
+      
+      
       <div id="budget-list"></div>
     </div>
 
@@ -3325,39 +3320,9 @@ function renderBudgets(){
     autoBudgets[c.id]=mInc>0?Math.round(mInc*alloc/count):0;
   });
 
-  // Rule pills
-  var pillsEl=document.getElementById('rule-pills');
-  if(pillsEl&&mInc>0){
-    var ruleData=[
-      {lbl:'Fixe',pct:50,color:'#ef4444',amt:mInc*0.5},
-      {lbl:'Vie',pct:30,color:'#ea580c',amt:mInc*0.3},
-      {lbl:'Loisirs',pct:20,color:'#10b981',amt:mInc*0.2}
-    ];
-    pillsEl.innerHTML=ruleData.map(function(r){
-      return '<div style="flex:1;background:rgba(255,255,255,0.08);border-radius:12px;padding:10px 8px;text-align:center">'
-        +'<div style="font-size:10px;color:rgba(255,255,255,0.5);font-weight:600;margin-bottom:4px">'+r.lbl+'</div>'
-        +'<div style="font-family:Sora,sans-serif;font-size:16px;font-weight:800;color:'+r.color+'">'+r.pct+'%</div>'
-        +'<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px">'+fmt(r.amt)+'</div>'
-        +'</div>';
-    }).join('');
-  }
-  var incLbl=document.getElementById('rule-income-lbl');
-  if(incLbl)incLbl.textContent=fmt(mInc)+(mIncR===0?' (prévu)':'');
 
-  // Total summary
-  var totalSpent=categories.reduce(function(s,c){return s+(byCat[c.id]||0);},0);
-  var totalBudget=categories.reduce(function(s,c){return s+(autoBudgets[c.id]||0);},0);
-  var sumEl=document.getElementById('budget-summary');
-  if(sumEl&&mInc>0){
-    var saveRate=Math.round((mInc-totalSpent)/mInc*100);
-    sumEl.innerHTML='<div class="card" style="display:flex;gap:12px;margin-bottom:0">'
-      +'<div style="flex:1;text-align:center"><div style="font-size:11px;color:var(--txt2);margin-bottom:4px">Dépensé</div><div style="font-family:Sora,sans-serif;font-size:18px;font-weight:800;color:var(--red)">'+fmt(totalSpent)+'</div></div>'
-      +'<div style="width:1px;background:var(--border)"></div>'
-      +'<div style="flex:1;text-align:center"><div style="font-size:11px;color:var(--txt2);margin-bottom:4px">Restant</div><div style="font-family:Sora,sans-serif;font-size:18px;font-weight:800;color:'+(mInc-totalSpent>=0?'var(--green)':'var(--red)')+'">'+fmt(mInc-totalSpent)+'</div></div>'
-      +'<div style="width:1px;background:var(--border)"></div>'
-      +'<div style="flex:1;text-align:center"><div style="font-size:11px;color:var(--txt2);margin-bottom:4px">Épargne</div><div style="font-family:Sora,sans-serif;font-size:18px;font-weight:800;color:var(--accent)">'+saveRate+'%</div></div>'
-      +'</div>';
-  }
+
+
 
   // List
   var el=document.getElementById('budget-list');if(!el)return;
