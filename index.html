@@ -128,7 +128,7 @@ button{cursor:pointer;border:none;background:none}
 /* ═══ COMPONENTS ═══ */
 .card{background:var(--card);border-radius:var(--r);padding:18px;border:1px solid var(--border);box-shadow:var(--sh);margin-bottom:12px}
 .sec{display:flex;justify-content:space-between;align-items:center;margin:20px 0 10px}
-.sec-title{font-family:'Sora',sans-serif;font-size:16px;font-weight:800;color:var(--txt)}
+.sec-title{font-family:'Sora',sans-serif;font-size:16px;font-weight:800;background:linear-gradient(135deg,var(--txt) 0%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .sec-link{font-size:13px;font-weight:600;color:var(--accent);background:none;border:none;cursor:pointer}
 
 /* HERO CARD */
@@ -139,12 +139,12 @@ button{cursor:pointer;border:none;background:none}
   width:200px;height:200px;background:rgba(255,255,255,0.04);border-radius:50%}
 .hero-lbl{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;
   color:rgba(255,255,255,0.9);margin-bottom:6px}
-.hero-bal{font-family:'Sora',sans-serif;font-size:44px;font-weight:800;
-  color:#fff;letter-spacing:-1.5px;line-height:1;margin-bottom:18px}
+.hero-bal{font-family:'Sora',sans-serif;font-size:46px;font-weight:800;
+  color:#fff;letter-spacing:-1.5px;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,0.15);margin-bottom:18px}
 .hero-pills{display:flex;gap:8px}
-.hero-pill{flex:1;background:rgba(255,255,255,0.2);border-radius:13px;padding:10px 12px;border:1px solid rgba(255,255,255,0.35);transition:background .4s,border-color .4s}
-.hp-lbl{font-size:10px;color:rgba(255,255,255,0.9);font-weight:600;margin-bottom:3px}
-.hp-val{font-family:'Sora',sans-serif;font-size:15px;font-weight:800;color:#fff}
+.hero-pill{flex:1;background:rgba(255,255,255,0.22);border-radius:13px;padding:10px 12px;border:1px solid rgba(255,255,255,0.45);transition:background .4s,border-color .4s;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.hp-lbl{font-size:10px;color:rgba(255,255,255,0.85);font-weight:700;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px}
+.hp-val{font-family:'Sora',sans-serif;font-size:16px;font-weight:800;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.15)}
 .hp-val.g{color:#fff}.hp-val.r{color:#fff}
 
 /* CHART CARD */
@@ -170,7 +170,7 @@ button{cursor:pointer;border:none;background:none}
 .tx-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tx-sub{font-size:12px;color:var(--txt3);margin-top:1px}
 .tx-amt{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;white-space:nowrap}
-.tx-amt.e{color:var(--red)}.tx-amt.i{color:var(--green)}
+.tx-amt.e{color:#dc2626;font-weight:800}.tx-amt.i{color:#059669;font-weight:800}
 .date-sep{text-align:center;padding:10px 0 4px;font-size:11px;font-weight:600;color:#aeaeb2;text-transform:uppercase;letter-spacing:.8px;background:var(--bg);}
 
 /* SEARCH & FILTERS */
@@ -629,6 +629,8 @@ button{cursor:pointer;border:none;background:none}
 
 
 
+.stat-card { border-top: 3px solid var(--accent) !important; }
+
 /* ════ BODY ════ */
 
 /* ════ TOP BAR ════ */
@@ -645,6 +647,7 @@ button{cursor:pointer;border:none;background:none}
   box-shadow: var(--sh) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+  transition: box-shadow .2s, transform .2s;
 }
 
 /* ════ MODAL ════ */
@@ -1863,17 +1866,17 @@ var THEMES = {
   orange: {
     name: 'Été ☀️',
     light: {
-      bg:'#fff7ed', card:'#ffffff', card2:'#ffedd5',
-      border:'rgba(251,146,60,0.15)', input:'#ffedd5',
+      bg:'#f5ede0', card:'#fffaf5', card2:'#fde8cc',
+      border:'rgba(251,146,60,0.15)', input:'#fde8cc',
       accent:'#ea580c', accentD:'#c2410c',
       txt:'#1c1c1e', txt2:'#78350f', txt3:'#d97706',
-      sh:'0 1px 3px rgba(234,88,12,0.08), 0 4px 12px rgba(234,88,12,0.06)',
+      sh:'0 1px 4px rgba(234,88,12,0.10), 0 4px 16px rgba(234,88,12,0.08)',
       hero:'linear-gradient(135deg,#fb923c,#f97316,#ea580c)',
-      authBg:'linear-gradient(145deg,#ffedd5,#fed7aa,#fdba74)',
+      authBg:'linear-gradient(145deg,#f5ede0,#fde8cc,#fbd9b0)',
       tabBg:'rgba(255,247,237,0.92)', tabBorder:'rgba(251,146,60,0.2)',
     },
     dark: {
-      bg:'#1c1208', card:'#2d1f0e', card2:'#3d2a12',
+      bg:'#1e1408', card:'#2e200f', card2:'#3d2a12',
       border:'rgba(251,146,60,0.2)', input:'#3d2a12',
       accent:'#fb923c', accentD:'#ea580c',
       txt:'#fef3e2', txt2:'#fed7aa', txt3:'#f97316',
@@ -1886,11 +1889,11 @@ var THEMES = {
   lavande: {
     name: 'Lavande 💜',
     light: {
-      bg:'#faf5ff', card:'#ffffff', card2:'#f3e8ff',
-      border:'rgba(168,85,247,0.15)', input:'#f3e8ff',
+      bg:'#ede8f7', card:'#fffaf5', card2:'#e8ddf7',
+      border:'rgba(168,85,247,0.15)', input:'#e8ddf7',
       accent:'#9333ea', accentD:'#7e22ce',
       txt:'#1c1c1e', txt2:'#581c87', txt3:'#a855f7',
-      sh:'0 1px 3px rgba(147,51,234,0.08), 0 4px 12px rgba(147,51,234,0.06)',
+      sh:'0 1px 4px rgba(147,51,234,0.10), 0 4px 16px rgba(147,51,234,0.08)',
       hero:'linear-gradient(135deg,#c084fc,#a855f7,#9333ea)',
       authBg:'linear-gradient(145deg,#faf5ff,#f3e8ff,#e9d5ff)',
       tabBg:'rgba(250,245,255,0.92)', tabBorder:'rgba(168,85,247,0.2)',
@@ -1909,11 +1912,11 @@ var THEMES = {
   menthe: {
     name: 'Menthe 🌿',
     light: {
-      bg:'#f0fdf4', card:'#ffffff', card2:'#dcfce7',
-      border:'rgba(34,197,94,0.15)', input:'#dcfce7',
+      bg:'#e2f5e8', card:'#fffaf5', card2:'#d0f0da',
+      border:'rgba(34,197,94,0.15)', input:'#d0f0da',
       accent:'#16a34a', accentD:'#15803d',
       txt:'#1c1c1e', txt2:'#14532d', txt3:'#22c55e',
-      sh:'0 1px 3px rgba(22,163,74,0.08), 0 4px 12px rgba(22,163,74,0.06)',
+      sh:'0 1px 4px rgba(22,163,74,0.10), 0 4px 16px rgba(22,163,74,0.08)',
       hero:'linear-gradient(135deg,#4ade80,#22c55e,#16a34a)',
       authBg:'linear-gradient(145deg,#f0fdf4,#dcfce7,#bbf7d0)',
       tabBg:'rgba(240,253,244,0.92)', tabBorder:'rgba(34,197,94,0.2)',
@@ -1932,11 +1935,11 @@ var THEMES = {
   ciel: {
     name: 'Ciel 🩵',
     light: {
-      bg:'#f0f9ff', card:'#ffffff', card2:'#e0f2fe',
-      border:'rgba(14,165,233,0.15)', input:'#e0f2fe',
+      bg:'#e2f2fd', card:'#fffaf5', card2:'#d0eafb',
+      border:'rgba(14,165,233,0.15)', input:'#d0eafb',
       accent:'#0284c7', accentD:'#0369a1',
       txt:'#1c1c1e', txt2:'#0c4a6e', txt3:'#38bdf8',
-      sh:'0 1px 3px rgba(2,132,199,0.08), 0 4px 12px rgba(2,132,199,0.06)',
+      sh:'0 1px 4px rgba(2,132,199,0.10), 0 4px 16px rgba(2,132,199,0.08)',
       hero:'linear-gradient(135deg,#38bdf8,#0ea5e9,#0284c7)',
       authBg:'linear-gradient(145deg,#f0f9ff,#e0f2fe,#bae6fd)',
       tabBg:'rgba(240,249,255,0.92)', tabBorder:'rgba(14,165,233,0.2)',
@@ -1955,11 +1958,11 @@ var THEMES = {
   rose: {
     name: 'Rose 🌸',
     light: {
-      bg:'#fff1f2', card:'#ffffff', card2:'#ffe4e6',
-      border:'rgba(244,63,94,0.15)', input:'#ffe4e6',
+      bg:'#f7e4e6', card:'#fffaf5', card2:'#f5d5d8',
+      border:'rgba(244,63,94,0.15)', input:'#f5d5d8',
       accent:'#e11d48', accentD:'#be123c',
       txt:'#1c1c1e', txt2:'#881337', txt3:'#f43f5e',
-      sh:'0 1px 3px rgba(225,29,72,0.08), 0 4px 12px rgba(225,29,72,0.06)',
+      sh:'0 1px 4px rgba(225,29,72,0.10), 0 4px 16px rgba(225,29,72,0.08)',
       hero:'linear-gradient(135deg,#fb7185,#f43f5e,#e11d48)',
       authBg:'linear-gradient(145deg,#fff1f2,#ffe4e6,#fecdd3)',
       tabBg:'rgba(255,241,242,0.92)', tabBorder:'rgba(244,63,94,0.2)',
@@ -2717,12 +2720,15 @@ function setupAuth(){
   if(d.theme && THEMES[d.theme]) { isDark = d.isDark||false; applyTheme(d.theme, isDark); }
   wishlist=Array.isArray(d.wishlist)?d.wishlist:[];
   var mpEl=document.getElementById('s-meal-price');if(mpEl)mpEl.value=swileMealPrice;
-      // Accounts
+      // Accounts — merge defaults with saved, include custom accounts
       var saved=Array.isArray(d.accounts)?d.accounts:[];
-      accounts=DEFAULT_ACCOUNTS.map(function(def){
+      var defaultIds=DEFAULT_ACCOUNTS.map(function(a){return a.id;});
+      var mergedDefaults=DEFAULT_ACCOUNTS.map(function(def){
         var s=saved.find(function(a){return a.id===def.id;});
         return s?Object.assign({},def,s):Object.assign({},def);
       });
+      var customAccounts=saved.filter(function(a){return defaultIds.indexOf(a.id)===-1;});
+      accounts=mergedDefaults.concat(customAccounts);
       // Categories
       var customCats=Array.isArray(d.categories)?d.categories.filter(function(c){return c&&c.isCustom;}):[];
       var defaultIds=DEFAULT_CATS.map(function(c){return c.id;});
@@ -2731,13 +2737,23 @@ function setupAuth(){
       document.getElementById('s-forecast').value=forecastSalary||'';
       document.getElementById('s-savings').value=savingsGoal||'';
       document.getElementById('s-theme').value=savedTheme;
-      applyTheme(savedTheme);
+      // Thème
+      if(d.theme && THEMES[d.theme]) applyTheme(d.theme, d.isDark||false);
+      else applyTheme('orange', false);
+
       updateGreeting();
-      // Reset viewDate to current month on every fresh load
+
+      // Toujours afficher le mois courant au chargement
       viewDate = new Date();
       viewDate.setDate(1);
       updateMonthLabel();
-      setTimeout(renderAll, 50); // Small delay to ensure DOM is ready
+
+      // Attendre que le DOM soit prêt avant de render
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){
+          renderAll();
+        });
+      });
     });
   } else {
     if(unsub){unsub();unsub=null;}
@@ -3021,7 +3037,8 @@ function renderPie(){
     if(cv){var ctx=cv.getContext('2d');ctx.clearRect(0,0,cv.width,cv.height);}
     return;
   }
-  var COLORS=['#ea580c','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316','#84cc16','#ec4899','#14b8a6','#a3a3a3'];
+  var accentC = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#ea580c';
+  var COLORS=[accentC,'#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316','#84cc16','#ec4899','#14b8a6','#a3a3a3'];
   var labels=cats.map(function(id){var c=categories.find(function(c){return c.id===id;});return c?c.icon+' '+c.label:id;});
   var values=cats.map(function(id){return byCat[id];});
   var ctx=document.getElementById('pie-chart').getContext('2d');
