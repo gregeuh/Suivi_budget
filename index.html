@@ -1685,7 +1685,7 @@ function renderWishlist() {
       ? '<span class="wish-time">~' + months + ' mois à ce rythme</span>'
       : '';
     var linkHtml = w.url
-      ? '<a href="' + w.url + '" target="_blank" class="wish-link" onclick="event.stopPropagation()">🔗 Voir le produit</a>'
+      ? '<a href="' + safeUrl(w.url) + '" target="_blank" class="wish-link" onclick="event.stopPropagation()">🔗 Voir le produit</a>'
       : '';
 
     return '<div class="wish-card ' + cls + '" onclick="openWish(\'' + w.id + '\')">'  
@@ -1747,6 +1747,7 @@ function saveWish() {
   var price = parseFloat(document.getElementById('w-price').value) || 0;
   var icon  = document.getElementById('w-icon').value.trim() || '🎯';
   var url   = document.getElementById('w-url').value.trim() || null;
+  if(url && !/^https?:\/\//i.test(url)) url = null;
   if(!name || !price) { toast('Nom et prix requis'); return; }
 
   if(_wishEditId) {
@@ -2720,9 +2721,7 @@ function setupAuth(){
       var defaultIds=DEFAULT_ACCOUNTS.map(function(a){return a.id;});
       var mergedDefaults=DEFAULT_ACCOUNTS.map(function(def){
         var s=saved.find(function(a){return a.id===def.id;});
-        // Merger saved sur def MAIS toujours garder color/icon du DEFAULT
         var merged = s ? Object.assign({},def,s) : Object.assign({},def);
-        merged.color = def.color; // forcer couleur DEFAULT toujours
         merged.icon  = merged.icon || def.icon;
         return merged;
       });
@@ -3043,7 +3042,7 @@ function renderPie(){
     if(cv){var ctx=cv.getContext('2d');ctx.clearRect(0,0,cv.width,cv.height);}
     return;
   }
-  var accentC = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#ea580c';
+  var accentC = (getComputedStyle(document.documentElement).getPropertyValue('--accent')||'').trim()||'#ea580c';
   var COLORS=[accentC,'#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316','#84cc16','#ec4899','#14b8a6','#a3a3a3'];
   var labels=cats.map(function(id){var c=categories.find(function(c){return c.id===id;});return c?c.icon+' '+c.label:id;});
   var values=cats.map(function(id){return byCat[id];});
@@ -3403,6 +3402,8 @@ function saveNewCat(){
   toast('Catégorie créée ✓');
 }
 function deleteCat(id){
+  var count=expenses.filter(function(e){return e.cat===id;}).length;
+  if(count>0&&!confirm('Cette catégorie contient '+count+' transaction(s). Supprimer quand même ?'))return;
   categories=categories.filter(function(c){return c.id!==id;});
   save();renderCatsSettings();renderAll();toast('Catégorie supprimée');
 }
@@ -3486,6 +3487,26 @@ function saveTransaction(){
   var endDate=document.getElementById('m-enddate').value||null;
   var customDays2 = _recurFreq==='custom' ? (parseInt(document.getElementById('m-custom-days').value)||30) : null;
   var endDate2 = document.getElementById('m-end-date').value || null;
+  if(mCurrentType==='vir'){
+    var virId='vir_'+Date.now();
+    expenses.unshift({
+      id:virId+'_out', label:lbl, amount:amt,
+      type:'expense', isVirement:true,
+      cat:'autre', accountId:selAcc, date:date,
+      note:note||null, recurring:false, frequency:null,
+      customDays:null, endDate:null, linkedVir:virId
+    });
+    expenses.unshift({
+      id:virId+'_in', label:lbl, amount:amt,
+      type:'income', isVirement:true,
+      cat:'autre', accountId:selDestAcc, date:date,
+      note:note||null, recurring:false, frequency:null,
+      customDays:null, endDate:null, linkedVir:virId
+    });
+    save();renderAll();closeModal();
+    toast('↔️ Virement de '+amt.toFixed(2)+' € effectué','success');
+    return;
+  }
   expenses.unshift({
     id:'tx_'+Date.now(), label:lbl, amount:amt,
     type:mCurrentType==='inc'?'income':'expense',
@@ -3626,7 +3647,8 @@ function resetData(){
 }
 
 // ── UTILS ─────────────────────────────────
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function safeUrl(u){return (u&&/^https?:\/\//i.test(u))?u:'#';}
 function toast(msg, type) {
   var el   = document.getElementById('toast');
   var icon = document.getElementById('toast-icon');
@@ -3757,5 +3779,4 @@ setTimeout(renderThemePicker, 200);
 })();
 </script>
 </body>
-</html</body>
 </html>
