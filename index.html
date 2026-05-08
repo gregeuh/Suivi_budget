@@ -1851,6 +1851,102 @@ function obFinish() {
 
 // ── THÈMES PASTELS ────────────────────────
 var isDark = false;
+var autoMode = false;
+var _autoTimer = null;
+var _sunLat = null, _sunLng = null;
+
+/* ── Calcul lever/coucher (algorithme Jean Meeus, précision ~5 min) ── */
+function calcSunTimes(lat, lng) {
+  var rad = Math.PI / 180;
+  var now = new Date();
+  var JD = now.getTime() / 86400000 + 2440587.5;
+  var n  = JD - 2451545.0 + 0.0008;
+  var Js = n - lng / 360;
+  var M  = ((357.5291 + 0.98560028 * Js) % 360 + 360) % 360;
+  var Mr = M * rad;
+  var C  = 1.9148 * Math.sin(Mr) + 0.02 * Math.sin(2*Mr) + 0.0003 * Math.sin(3*Mr);
+  var lam = ((M + C + 180 + 102.9372) % 360) * rad;
+  var Jt  = 2451545.0 + Js + 0.0053 * Math.sin(Mr) - 0.0069 * Math.sin(2*lam);
+  var sinD = Math.sin(lam) * Math.sin(23.4397 * rad);
+  var cosH = (Math.sin(-0.833 * rad) - Math.sin(lat * rad) * sinD) /
+             (Math.cos(lat * rad) * Math.cos(Math.asin(sinD)));
+  if(cosH < -1 || cosH > 1) return null; // nuit polaire ou jour polaire
+  var H0 = Math.acos(cosH) / rad;
+  var msPerDay = 86400000;
+  return {
+    sunrise: new Date((Jt - H0/360 - 2440587.5) * msPerDay),
+    sunset:  new Date((Jt + H0/360 - 2440587.5) * msPerDay)
+  };
+}
+
+function _scheduleAutoSwitch(sun) {
+  if(_autoTimer) clearTimeout(_autoTimer);
+  var now = Date.now();
+  var next = null;
+  if(now < sun.sunrise) next = sun.sunrise;
+  else if(now < sun.sunset) next = sun.sunset;
+  if(!next) return; // recalcul demain géré par le switch lui-même
+  var delay = next - now + 60000; // +1 min de marge
+  _autoTimer = setTimeout(function(){ _applyAutoMode(true); }, delay);
+}
+
+function _applyAutoMode(rerender) {
+  if(!autoMode) return;
+  var lat = _sunLat, lng = _sunLng;
+  if(lat === null || lng === null) {
+    // Fallback système
+    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches;
+    isDark = prefersDark;
+    applyTheme(currentTheme, isDark);
+    if(rerender) renderThemePicker();
+    return;
+  }
+  var sun = calcSunTimes(lat, lng);
+  if(!sun) { isDark = false; applyTheme(currentTheme, isDark); return; }
+  var now = Date.now();
+  isDark = (now < sun.sunrise || now > sun.sunset);
+  applyTheme(currentTheme, isDark);
+  _scheduleAutoSwitch(sun);
+  if(rerender) renderThemePicker();
+}
+
+function enableAutoMode() {
+  autoMode = true;
+  // Coords en cache localStorage
+  var cached = null;
+  try { cached = JSON.parse(localStorage.getItem('mb_sun_pos')); } catch(e){}
+  if(cached && cached.lat !== undefined) {
+    _sunLat = cached.lat; _sunLng = cached.lng;
+    _applyAutoMode(true);
+    return;
+  }
+  if(!navigator.geolocation) { _applyAutoMode(true); return; }
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      _sunLat = pos.coords.latitude; _sunLng = pos.coords.longitude;
+      try { localStorage.setItem('mb_sun_pos', JSON.stringify({lat:_sunLat,lng:_sunLng})); } catch(e){}
+      _applyAutoMode(true);
+    },
+    function() { _applyAutoMode(true); } // fallback système si refus
+  );
+}
+
+function disableAutoMode() {
+  autoMode = false;
+  if(_autoTimer){ clearTimeout(_autoTimer); _autoTimer = null; }
+}
+
+function setDarkMode(mode) {
+  if(mode === 'auto') {
+    enableAutoMode();
+  } else {
+    disableAutoMode();
+    isDark = (mode === 'dark');
+    applyTheme(currentTheme, isDark);
+  }
+  if(currentUser || !cloudDoc) save();
+  renderThemePicker();
+}
 
 var THEMES = {
   orange: {
@@ -2067,25 +2163,46 @@ function applyTheme(themeKey, dark) {
   if(typeof renderAll === 'function') renderAll();
 
   renderThemePicker();
-  if(currentUser) { settings.theme = themeKey; settings.isDark = isDark; save(); }
+  if(currentUser) { settings.theme = themeKey; settings.isDark = isDark; settings.autoMode = autoMode; save(); }
 }
 
 function renderThemePicker() {
   var el = document.getElementById('theme-picker');
   if(!el) return;
   var accentColor = THEMES[currentTheme] ? (isDark ? THEMES[currentTheme].dark.accent : THEMES[currentTheme].light.accent) : '#ea580c';
-  var txt2Color = isDark ? 'rgba(255,255,255,0.5)' : '#78350f';
+  var txt2Color = isDark ? 'rgba(255,255,255,0.5)' : 'var(--txt2)';
+  var activeMode = autoMode ? 'auto' : (isDark ? 'dark' : 'light');
 
-  // Dark toggle
-  var toggleHtml = '<div style="width:100%;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding:10px 14px;background:' + (isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.04)') + ';border-radius:12px">'
-    + '<div style="display:flex;align-items:center;gap:8px">'
-    + '<span style="font-size:18px">' + (isDark?'🌙':'☀️') + '</span>'
-    + '<span style="font-size:14px;font-weight:600;color:var(--txt)">' + (isDark?'Mode sombre':'Mode clair') + '</span>'
-    + '</div>'
-    + '<div id="dark-toggle" onclick="toggleDark()" style="width:48px;height:26px;border-radius:13px;background:' + (isDark?accentColor:'rgba(0,0,0,0.15)') + ';position:relative;cursor:pointer;transition:background .25s">'
-    + '<div style="position:absolute;top:3px;' + (isDark?'right:3px':'left:3px') + ';width:20px;height:20px;border-radius:50%;background:#fff;transition:all .25s;box-shadow:0 1px 4px rgba(0,0,0,0.2)"></div>'
-    + '</div>'
-    + '</div>';
+  // Sun info line (shown when auto mode is active)
+  var sunInfoHtml = '';
+  if(autoMode && _sunLat !== null) {
+    var sun = calcSunTimes(_sunLat, _sunLng);
+    if(sun) {
+      var fmt2 = function(d){ return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0'); };
+      sunInfoHtml = '<div style="font-size:12px;color:'+txt2Color+';text-align:center;margin-bottom:10px;padding:6px 10px;background:var(--input);border-radius:8px">'
+        + '🌅 ' + fmt2(sun.sunrise) + ' &nbsp;·&nbsp; 🌇 ' + fmt2(sun.sunset)
+        + '</div>';
+    }
+  } else if(autoMode) {
+    sunInfoHtml = '<div style="font-size:12px;color:'+txt2Color+';text-align:center;margin-bottom:10px">Localisation en cours…</div>';
+  }
+
+  // 3-state mode selector
+  var modes = [
+    {id:'light', icon:'☀️', lbl:'Clair'},
+    {id:'auto',  icon:'🌓', lbl:'Auto'},
+    {id:'dark',  icon:'🌙', lbl:'Sombre'}
+  ];
+  var modeHtml = '<div style="display:flex;background:var(--input);border-radius:12px;padding:3px;gap:3px;margin-bottom:' + (autoMode?'8px':'16px') + '">';
+  modes.forEach(function(m) {
+    var on = (activeMode === m.id);
+    modeHtml += '<button onclick="setDarkMode(\''+m.id+'\')" style="flex:1;padding:9px 4px;border-radius:9px;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:background .2s,color .2s;'
+      + (on ? 'background:'+accentColor+';color:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.15)' : 'background:transparent;color:var(--txt2)')
+      + '">' + m.icon + ' ' + m.lbl + '</button>';
+  });
+  modeHtml += '</div>';
+
+  var toggleHtml = modeHtml + sunInfoHtml;
 
   // Color swatches
   var swatches = Object.keys(THEMES).map(function(key) {
@@ -2107,8 +2224,10 @@ function renderThemePicker() {
 }
 
 function toggleDark() {
+  disableAutoMode();
   isDark = !isDark;
   applyTheme(currentTheme, isDark);
+  renderThemePicker();
 }
 
 
@@ -2708,7 +2827,10 @@ function setupAuth(){
       savedTheme=d.theme||'auto';
       catBudgets=d.catBudgets||{};
   swileMealPrice=d.swileMealPrice||10;
-  if(d.theme && THEMES[d.theme]) { isDark = d.isDark||false; applyTheme(d.theme, isDark); }
+  if(d.theme && THEMES[d.theme]) {
+    isDark = d.isDark||false;
+    if(d.autoMode) { enableAutoMode(); } else { applyTheme(d.theme, isDark); }
+  }
   wishlist=Array.isArray(d.wishlist)?d.wishlist:[];
   var mpEl=document.getElementById('s-meal-price');if(mpEl)mpEl.value=swileMealPrice;
       // Accounts — merge defaults with saved, include custom accounts
@@ -2736,8 +2858,9 @@ function setupAuth(){
       var ssv=document.getElementById('s-savings');if(ssv)ssv.value=savingsGoal||'';
       var sTheme=document.getElementById('s-theme');if(sTheme)sTheme.value=savedTheme;
       // Thème
-      if(d.theme && THEMES[d.theme]) applyTheme(d.theme, d.isDark||false);
-      else applyTheme('orange', false);
+      if(d.theme && THEMES[d.theme]) {
+        if(d.autoMode) { enableAutoMode(); } else { applyTheme(d.theme, d.isDark||false); }
+      } else applyTheme('orange', false);
 
       updateGreeting();
 
@@ -2781,7 +2904,7 @@ function save(){
         expenses:expenses,accounts:accounts,
         categories:categories.filter(function(c){return c.isCustom;}),
         displayName:displayName,forecastSalary:forecastSalary,savingsGoal:savingsGoal,
-        catBudgets:catBudgets,swileMealPrice:swileMealPrice,wishlist:wishlist,theme:savedTheme
+        catBudgets:catBudgets,swileMealPrice:swileMealPrice,wishlist:wishlist,theme:savedTheme,isDark:isDark,autoMode:autoMode
       }));
     } catch(e){}
     return;
@@ -2790,7 +2913,7 @@ function save(){
   cloudDoc.set({
     expenses:expenses,accounts:accounts,categories:customCats,
     displayName:displayName,forecastSalary:forecastSalary,savingsGoal:savingsGoal,
-    catBudgets:catBudgets,swileMealPrice:swileMealPrice,wishlist:wishlist,theme:savedTheme
+    catBudgets:catBudgets,swileMealPrice:swileMealPrice,wishlist:wishlist,theme:savedTheme,isDark:isDark,autoMode:autoMode
   },{merge:true}).catch(function(e){console.error(e);});
 }
 
