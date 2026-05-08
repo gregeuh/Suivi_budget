@@ -28,7 +28,7 @@
   --card2:    #ffedd5;
   --txt:      #1c1c1e; /* overridden by applyTheme */
   --txt2:     #78350f;
-  --txt3:     #d97706;
+  --txt3:     #a16207;
   --border:   rgba(251,146,60,0.15);
   --input:    #ffedd5;
   --sh:       0 1px 3px rgba(234,88,12,0.08), 0 4px 12px rgba(234,88,12,0.06);
@@ -320,7 +320,9 @@ button{cursor:pointer;border:none;background:none}
 /* MISC */
 .empty{text-align:center;padding:40px 20px;color:var(--txt2)}
 .empty-ico{font-size:44px;margin-bottom:12px}
-.blur{filter:blur(0);transition:.3s}.blurred{filter:blur(8px)}
+.blur{filter:blur(0);transition:filter .4s ease}.blurred{filter:blur(8px)}
+@keyframes catPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1);background:rgba(234,88,12,0.18)}}
+.cat-chip.detected{animation:catPulse .5s ease}
 .acc-card{border-radius:var(--r);padding:18px;margin-bottom:10px;position:relative;overflow:hidden;cursor:pointer}
 .acc-card-inner::after{content:'';position:absolute;top:-30px;right:-30px;
   width:120px;height:120px;background:rgba(255,255,255,0.08);border-radius:50%}
@@ -1130,7 +1132,7 @@ button{cursor:pointer;border:none;background:none}
           <label style="font-size:18px;cursor:pointer">📥<input type="file" accept=".csv" onchange="importCSV(this)" style="display:none"></label>
         </div>
       </div>
-      <button class="btn btn-danger" onclick="doSignOut()" style="margin-bottom:8px">Se déconnecter</button>
+      <button class="btn btn-danger" onclick="if(confirm('Se déconnecter ?'))doSignOut()" style="margin-bottom:8px">Se déconnecter</button>
       <button onclick="resetData()" style="width:100%;padding:14px;border-radius:var(--r-sm);background:transparent;border:1.5px solid var(--red);color:var(--red);font-size:14px;font-weight:700;cursor:pointer">🗑️ Réinitialiser les données</button>
     </div>
 
@@ -1195,11 +1197,11 @@ button{cursor:pointer;border:none;background:none}
     </div>
     <div class="amt-big e" id="m-amt-display">0</div>
     <div class="numpad" id="numpad"></div>
+    <div class="field"><label class="field-lbl">Date</label><input class="field-inp" id="m-date" type="date"></div>
     <div class="field"><label class="field-lbl">Libellé</label><input class="field-inp" id="m-lbl" type="text" placeholder="ex: Courses Lidl" oninput="mDetect(this.value)"></div>
     <div class="field"><label class="field-lbl">Catégorie</label><div class="cat-grid" id="m-cats"></div></div>
     <div class="field"><label class="field-lbl" id="m-acc-lbl">Compte</label><div class="acc-chips" id="m-accs"></div></div>
     <div class="field" id="m-dest-wrap" style="display:none"><label class="field-lbl">Compte destination</label><div class="acc-chips" id="m-dest-accs"></div></div>
-    <div class="field"><label class="field-lbl">Date</label><input class="field-inp" id="m-date" type="date"></div>
     <div class="field"><label class="field-lbl">Note (optionnel)</label><input class="field-inp" id="m-note" type="text" placeholder="Remarque…"></div>
     <!-- Recurring -->
     <div style="background:var(--input);border-radius:12px;padding:14px 16px;margin-bottom:14px">
@@ -3036,7 +3038,7 @@ function renderPie(){
   var values=cats.map(function(id){return byCat[id];});
   var ctx=document.getElementById('pie-chart').getContext('2d');
   if(pieChart)pieChart.destroy();
-  pieChart=new Chart(ctx,{type:'doughnut',data:{labels:labels,datasets:[{data:values,backgroundColor:COLORS.slice(0,cats.length),borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'right',labels:{font:{family:'Plus Jakarta Sans',size:11},color:getComputedStyle(document.body).getPropertyValue('--txt').trim(),padding:8,boxWidth:10,boxHeight:10}}}}});
+  pieChart=new Chart(ctx,{type:'doughnut',data:{labels:labels,datasets:[{data:values,backgroundColor:COLORS.slice(0,cats.length),borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:window.innerWidth<480?'bottom':'right',labels:{font:{family:'Plus Jakarta Sans',size:11},color:getComputedStyle(document.body).getPropertyValue('--txt').trim(),padding:8,boxWidth:10,boxHeight:10}}}}});
 }
 function renderEvo(){
   var restoIds = getRestoIds();
@@ -3126,7 +3128,7 @@ function renderEvo(){
       scales:{
         x:{
           grid:{color: border},
-          ticks:{color: txt, font:{size:10}}
+          ticks:{color:txt,font:{size:10},maxRotation:window.innerWidth<480?45:0,maxTicksLimit:window.innerWidth<480?5:12}
         },
         y:{
           grid:{color: border},
@@ -3414,8 +3416,6 @@ function openAdd(prefillType){
   var dw=document.getElementById('m-dest-wrap');if(dw)dw.style.display='none';
   var al=document.getElementById('m-acc-lbl');if(al)al.textContent='Compte';
   document.getElementById('m-custom-freq-wrap').style.display='none';
-  document.getElementById('m-enddate-wrap').style.display='none';
-  var ed=document.getElementById('m-enddate');if(ed)ed.value='';
   document.getElementById('m-date').value=new Date().toISOString().split('T')[0];
   selCat='autre';selAcc='acc1';
   resetRecurring();
@@ -3455,7 +3455,15 @@ function nkPress(k){
   var v=parseFloat(mAmt)||0;
   document.getElementById('m-amt-display').textContent=v.toFixed(mAmt.includes('.')?mAmt.split('.')[1].length:0)||'0';
 }
-function mDetect(v){selCat=detectCat(v);buildMCats();}
+function mDetect(v){
+  var prev=selCat;
+  selCat=detectCat(v);
+  buildMCats();
+  if(selCat!==prev){
+    var chip=document.querySelector('#m-cats .cat-chip.on');
+    if(chip){chip.classList.add('detected');setTimeout(function(){chip.classList.remove('detected');},600);}
+  }
+}
 function buildMCats(){
   document.getElementById('m-cats').innerHTML=categories.map(function(c){
     return '<div class="cat-chip'+(c.id===selCat?' on':'')+'" onclick="selCat=\''+c.id+'\';buildMCats()">'
