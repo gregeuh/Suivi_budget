@@ -16,27 +16,28 @@
 
 
 :root {
-  --accent:   #ea580c;
-  --accent-d: #c2410c;
-  --green:    #10b981;
-  --red:      #ef4444;
-  --orange:   #f97316;
-  --r:        18px;
-  --r-sm:     12px;
-  --bg:       #fff7ed;
-  --card:     #ffffff;
-  --card2:    #ffedd5;
-  --txt:      #1c1c1e; /* overridden by applyTheme */
-  --txt2:     #78350f;
-  --txt3:     #a16207;
-  --border:   rgba(251,146,60,0.15);
-  --input:    #ffedd5;
-  --sh:       0 1px 3px rgba(234,88,12,0.08), 0 4px 12px rgba(234,88,12,0.06);
-  --sh-lg:    0 4px 24px rgba(234,88,12,0.12);
-  --hero-bg:  linear-gradient(135deg,#fb923c,#f97316,#ea580c);
-  --auth-bg:  linear-gradient(145deg,#ffedd5,#fed7aa,#fdba74);
-  --tab-bg:   rgba(255,247,237,0.92);
-  --tab-bdr:  rgba(251,146,60,0.2);
+  --accent:      #ea580c;
+  --accent-d:    #c2410c;
+  --accent-soft: rgba(234,88,12,0.10);
+  --green:       #10b981;
+  --red:         #ef4444;
+  --orange:      #f97316;
+  --r:           18px;
+  --r-sm:        12px;
+  --bg:          #f9f7f5;
+  --card:        #ffffff;
+  --card2:       #f0ece8;
+  --txt:         #1c1c1e; /* overridden by applyTheme */
+  --txt2:        #6b7280;
+  --txt3:        #a16207;
+  --border:      rgba(251,146,60,0.15);
+  --input:       #f3f0ee;
+  --sh:          0 1px 3px rgba(234,88,12,0.08), 0 4px 12px rgba(234,88,12,0.06);
+  --sh-lg:       0 4px 24px rgba(234,88,12,0.12);
+  --hero-bg:     linear-gradient(135deg,#fb923c,#f97316,#ea580c);
+  --auth-bg:     linear-gradient(145deg,#ffedd5,#fed7aa,#fdba74);
+  --tab-bg:      rgba(255,255,255,0.88);
+  --tab-bdr:     rgba(251,146,60,0.2);
 }
 
 
@@ -138,7 +139,9 @@ button{cursor:pointer;border:none;background:none}
   border-radius:22px;padding:22px;margin-bottom:14px;
   box-shadow:0 8px 32px rgba(234,88,12,0.2);position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;top:-50px;right:-50px;
-  width:200px;height:200px;background:rgba(255,255,255,0.04);border-radius:50%}
+  width:200px;height:200px;background:rgba(255,255,255,0.07);border-radius:50%}
+.hero::after{content:'';position:absolute;bottom:-60px;left:-30px;
+  width:160px;height:160px;background:rgba(255,255,255,0.04);border-radius:50%}
 .hero-lbl{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;
   color:rgba(255,255,255,0.9);margin-bottom:6px}
 .hero-bal{font-family:'Sora',sans-serif;font-size:46px;font-weight:800;
@@ -173,7 +176,8 @@ button{cursor:pointer;border:none;background:none}
 .tx-sub{font-size:12px;color:var(--txt3);margin-top:1px}
 .tx-amt{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;white-space:nowrap}
 .tx-amt.e{color:#dc2626;font-weight:800}.tx-amt.i{color:#059669;font-weight:800}
-.date-sep{text-align:center;padding:10px 0 4px;font-size:11px;font-weight:600;color:#aeaeb2;text-transform:uppercase;letter-spacing:.8px;background:var(--bg);}
+.date-sep{display:flex;align-items:center;gap:10px;padding:14px 0 6px;font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:1px;background:var(--bg);}
+.date-sep::before,.date-sep::after{content:'';flex:1;height:1px;background:var(--border)}
 
 /* SEARCH & FILTERS */
 .search-row{display:flex;gap:8px;margin-bottom:12px}
@@ -198,8 +202,8 @@ button{cursor:pointer;border:none;background:none}
 .budget-amounts{text-align:right}
 .budget-spent{font-family:'Sora',sans-serif;font-size:14px;font-weight:700}
 .budget-limit{font-size:11px;color:var(--txt3)}
-.budget-track{height:6px;background:var(--input);border-radius:3px;overflow:hidden}
-.budget-fill{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.16,1,.3,1)}
+.budget-track{height:9px;background:var(--input);border-radius:5px;overflow:hidden}
+.budget-fill{height:100%;border-radius:5px;transition:width .6s cubic-bezier(.16,1,.3,1);opacity:.9}
 .budget-msg{font-size:12px;margin-top:6px;font-weight:600}
 
 /* SETTINGS */
@@ -230,13 +234,13 @@ button{cursor:pointer;border:none;background:none}
 .cat-chip{display:flex;flex-direction:column;align-items:center;gap:4px;
   padding:11px 6px;border-radius:var(--r-sm);background:var(--input);
   border:2px solid transparent;transition:.15s;cursor:pointer}
-.cat-chip.on{border-color:var(--accent);background:rgba(234,88,12,0.08)}
+.cat-chip.on{border-color:var(--accent);background:var(--accent-soft)}
 .cat-chip-icon{font-size:21px}
 
 /* FREQ BUTTONS */
 .freq-btn{padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;background:var(--input);color:var(--txt2);border:2px solid transparent;transition:background .15s,border-color .15s,color .15s;cursor:pointer;text-align:center}
 .freq-btn:hover{background:var(--border)}
-.freq-btn.on{background:rgba(234,88,12,0.1);border-color:var(--accent);color:var(--accent)}
+.freq-btn.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
 .cat-chip-lbl{font-size:10px;font-weight:600;color:var(--txt2);text-align:center}
 
 /* ACC CHIPS */
@@ -245,7 +249,7 @@ button{cursor:pointer;border:none;background:none}
 .acc-chip{padding:8px 14px;border-radius:50px;font-size:13px;font-weight:600;
   background:var(--input);border:2px solid transparent;white-space:nowrap;
   flex-shrink:0;transition:.15s;cursor:pointer;color:var(--txt2)}
-.acc-chip.on{border-color:var(--accent);color:var(--accent);background:rgba(234,88,12,0.08)}
+.acc-chip.on{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
 
 /* NUMPAD */
 .numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}
@@ -645,7 +649,7 @@ button{cursor:pointer;border:none;background:none}
 /* ════ TOP BAR ════ */
 .top { background: var(--bg) !important; border-bottom: 1px solid rgba(0,0,0,0.06); backdrop-filter: none !important; }
 .month-bar { background: var(--bg) !important; backdrop-filter: none !important; }
-.m-nav { background: #fff !important; border: 1.5px solid #fed7aa !important; box-shadow: 0 1px 4px rgba(234,88,12,0.1) !important; backdrop-filter: none !important; color: var(--txt2) !important; }
+.m-nav { background: var(--card) !important; border: 1.5px solid var(--border) !important; box-shadow: var(--sh) !important; backdrop-filter: none !important; color: var(--txt2) !important; }
 .icon-btn { background: var(--card) !important; border: 1px solid var(--border) !important; box-shadow: var(--sh) !important; backdrop-filter: none !important; }
 
 /* ════ CARDS — solides, opaques ════ */
@@ -691,7 +695,7 @@ button{cursor:pointer;border:none;background:none}
   backdrop-filter: none !important;
 }
 .cat-chip.on {
-  background: rgba(234,88,12,0.12) !important;
+  background: var(--accent-soft) !important;
   border-color: var(--accent) !important;
 }
 .chip {
@@ -714,16 +718,16 @@ button{cursor:pointer;border:none;background:none}
 /* ════ TAB BAR — liquid glass uniquement ici ════ */
 .tab-bar {
   background: var(--tab-bg) !important;
-  backdrop-filter: blur(24px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  backdrop-filter: blur(32px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
   border: 1px solid var(--tab-bdr) !important;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.10), 0 1px 0 rgba(255,255,255,0.9) inset !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 1px 0 rgba(255,255,255,0.95) inset !important;
 }
 
 .tab-pill {
-  background: #ffffff !important;
+  background: var(--card) !important;
   border: 1px solid var(--border) !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.10) !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08) !important;
 }
 
 
@@ -1847,14 +1851,14 @@ var THEMES = {
   orange: {
     name: 'Été ☀️',
     light: {
-      bg:'#f5ede0', card:'#fffaf5', card2:'#fde8cc',
-      border:'rgba(251,146,60,0.15)', input:'#fde8cc',
-      accent:'#ea580c', accentD:'#c2410c',
-      txt:'#1c1c1e', txt2:'#78350f', txt3:'#d97706',
-      sh:'0 1px 4px rgba(234,88,12,0.10), 0 4px 16px rgba(234,88,12,0.08)',
+      bg:'#f9f7f5', card:'#ffffff', card2:'#f0ece8',
+      border:'rgba(251,146,60,0.15)', input:'#f3f0ee',
+      accent:'#ea580c', accentD:'#c2410c', accentSoft:'rgba(234,88,12,0.10)',
+      txt:'#1c1c1e', txt2:'#6b7280', txt3:'#a16207',
+      sh:'0 1px 4px rgba(234,88,12,0.08), 0 4px 16px rgba(234,88,12,0.06)',
       hero:'linear-gradient(135deg,#fb923c,#f97316,#ea580c)',
       authBg:'linear-gradient(145deg,#f5ede0,#fde8cc,#fbd9b0)',
-      tabBg:'rgba(255,247,237,0.92)', tabBorder:'rgba(251,146,60,0.2)',
+      tabBg:'rgba(255,255,255,0.88)', tabBorder:'rgba(251,146,60,0.2)',
     },
     dark: {
       bg:'#1e1408', card:'#2e200f', card2:'#3d2a12',
@@ -1870,14 +1874,14 @@ var THEMES = {
   lavande: {
     name: 'Lavande 💜',
     light: {
-      bg:'#ede8f7', card:'#fffaf5', card2:'#e8ddf7',
-      border:'rgba(168,85,247,0.15)', input:'#e8ddf7',
-      accent:'#9333ea', accentD:'#7e22ce',
-      txt:'#1c1c1e', txt2:'#581c87', txt3:'#a855f7',
-      sh:'0 1px 4px rgba(147,51,234,0.10), 0 4px 16px rgba(147,51,234,0.08)',
+      bg:'#f8f7fb', card:'#ffffff', card2:'#eeeaf6',
+      border:'rgba(168,85,247,0.15)', input:'#f0eef8',
+      accent:'#9333ea', accentD:'#7e22ce', accentSoft:'rgba(147,51,234,0.10)',
+      txt:'#1c1c1e', txt2:'#6b7280', txt3:'#9333ea',
+      sh:'0 1px 4px rgba(147,51,234,0.08), 0 4px 16px rgba(147,51,234,0.06)',
       hero:'linear-gradient(135deg,#c084fc,#a855f7,#9333ea)',
       authBg:'linear-gradient(145deg,#faf5ff,#f3e8ff,#e9d5ff)',
-      tabBg:'rgba(250,245,255,0.92)', tabBorder:'rgba(168,85,247,0.2)',
+      tabBg:'rgba(255,255,255,0.88)', tabBorder:'rgba(168,85,247,0.2)',
     },
     dark: {
       bg:'#0f0a1a', card:'#1e1030', card2:'#2d1f45',
@@ -1893,14 +1897,14 @@ var THEMES = {
   menthe: {
     name: 'Menthe 🌿',
     light: {
-      bg:'#e2f5e8', card:'#fffaf5', card2:'#d0f0da',
-      border:'rgba(34,197,94,0.15)', input:'#d0f0da',
-      accent:'#16a34a', accentD:'#15803d',
-      txt:'#1c1c1e', txt2:'#14532d', txt3:'#22c55e',
-      sh:'0 1px 4px rgba(22,163,74,0.10), 0 4px 16px rgba(22,163,74,0.08)',
+      bg:'#f5f9f6', card:'#ffffff', card2:'#e8f5eb',
+      border:'rgba(34,197,94,0.15)', input:'#ecf4ee',
+      accent:'#16a34a', accentD:'#15803d', accentSoft:'rgba(22,163,74,0.10)',
+      txt:'#1c1c1e', txt2:'#6b7280', txt3:'#16a34a',
+      sh:'0 1px 4px rgba(22,163,74,0.08), 0 4px 16px rgba(22,163,74,0.06)',
       hero:'linear-gradient(135deg,#4ade80,#22c55e,#16a34a)',
       authBg:'linear-gradient(145deg,#f0fdf4,#dcfce7,#bbf7d0)',
-      tabBg:'rgba(240,253,244,0.92)', tabBorder:'rgba(34,197,94,0.2)',
+      tabBg:'rgba(255,255,255,0.88)', tabBorder:'rgba(34,197,94,0.2)',
     },
     dark: {
       bg:'#071a0e', card:'#0f2d1a', card2:'#1a4228',
@@ -1916,14 +1920,14 @@ var THEMES = {
   ciel: {
     name: 'Ciel 🩵',
     light: {
-      bg:'#e2f2fd', card:'#fffaf5', card2:'#d0eafb',
-      border:'rgba(14,165,233,0.15)', input:'#d0eafb',
-      accent:'#0284c7', accentD:'#0369a1',
-      txt:'#1c1c1e', txt2:'#0c4a6e', txt3:'#38bdf8',
-      sh:'0 1px 4px rgba(2,132,199,0.10), 0 4px 16px rgba(2,132,199,0.08)',
+      bg:'#f5f9fd', card:'#ffffff', card2:'#e5f0f8',
+      border:'rgba(14,165,233,0.15)', input:'#e8f3fb',
+      accent:'#0284c7', accentD:'#0369a1', accentSoft:'rgba(2,132,199,0.10)',
+      txt:'#1c1c1e', txt2:'#6b7280', txt3:'#0284c7',
+      sh:'0 1px 4px rgba(2,132,199,0.08), 0 4px 16px rgba(2,132,199,0.06)',
       hero:'linear-gradient(135deg,#38bdf8,#0ea5e9,#0284c7)',
       authBg:'linear-gradient(145deg,#f0f9ff,#e0f2fe,#bae6fd)',
-      tabBg:'rgba(240,249,255,0.92)', tabBorder:'rgba(14,165,233,0.2)',
+      tabBg:'rgba(255,255,255,0.88)', tabBorder:'rgba(14,165,233,0.2)',
     },
     dark: {
       bg:'#07111a', card:'#0c2233', card2:'#153348',
@@ -1939,14 +1943,14 @@ var THEMES = {
   rose: {
     name: 'Rose 🌸',
     light: {
-      bg:'#f7e4e6', card:'#fffaf5', card2:'#f5d5d8',
-      border:'rgba(244,63,94,0.15)', input:'#f5d5d8',
-      accent:'#e11d48', accentD:'#be123c',
-      txt:'#1c1c1e', txt2:'#881337', txt3:'#f43f5e',
-      sh:'0 1px 4px rgba(225,29,72,0.10), 0 4px 16px rgba(225,29,72,0.08)',
+      bg:'#faf7f7', card:'#ffffff', card2:'#f2eaeb',
+      border:'rgba(244,63,94,0.15)', input:'#f5eeef',
+      accent:'#e11d48', accentD:'#be123c', accentSoft:'rgba(225,29,72,0.10)',
+      txt:'#1c1c1e', txt2:'#6b7280', txt3:'#e11d48',
+      sh:'0 1px 4px rgba(225,29,72,0.08), 0 4px 16px rgba(225,29,72,0.06)',
       hero:'linear-gradient(135deg,#fb7185,#f43f5e,#e11d48)',
       authBg:'linear-gradient(145deg,#fff1f2,#ffe4e6,#fecdd3)',
-      tabBg:'rgba(255,241,242,0.92)', tabBorder:'rgba(244,63,94,0.2)',
+      tabBg:'rgba(255,255,255,0.88)', tabBorder:'rgba(244,63,94,0.2)',
     },
     dark: {
       bg:'#1a0710', card:'#2d0f1e', card2:'#42162c',
@@ -1978,9 +1982,10 @@ function applyTheme(themeKey, dark) {
   root.style.setProperty('--card2',    t.card2);
   root.style.setProperty('--border',   t.border);
   root.style.setProperty('--input',    t.input);
-  root.style.setProperty('--accent',   t.accent);
-  root.style.setProperty('--accent-d', t.accentD);
-  root.style.setProperty('--txt',      t.txt);
+  root.style.setProperty('--accent',      t.accent);
+  root.style.setProperty('--accent-d',   t.accentD);
+  root.style.setProperty('--accent-soft', t.accentSoft || 'rgba(234,88,12,0.10)');
+  root.style.setProperty('--txt',         t.txt);
   root.style.setProperty('--txt2',     t.txt2);
   root.style.setProperty('--txt3',     t.txt3);
   root.style.setProperty('--sh',       t.sh);
