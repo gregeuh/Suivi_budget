@@ -47,6 +47,7 @@
 html,body{background:var(--bg);min-height:100%;}
 body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--txt);min-height:100dvh;overflow-x:hidden;}
 button,input,select,textarea{font-family:inherit}
+input,select,textarea{font-size:16px}
 button{cursor:pointer;border:none;background:none}
 
 /* ═══ AUTH ═══ */
@@ -79,12 +80,12 @@ button{cursor:pointer;border:none;background:none}
 .top-left .greeting{font-size:12px;color:var(--txt2);font-weight:500}
 .top-left .name{font-family:'Sora',sans-serif;font-size:21px;font-weight:800}
 .top-actions{display:flex;gap:8px}
-.icon-btn{width:38px;height:38px;border-radius:11px;background:var(--card);border:1px solid var(--border);
+.icon-btn{width:44px;height:44px;border-radius:11px;background:var(--card);border:1px solid var(--border);
   display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:var(--sh)}
 
 /* MONTH BAR */
 .month-bar{display:flex;align-items:center;justify-content:space-between;padding:0 20px 14px}
-.m-nav{width:32px;height:32px;border-radius:9px;background:var(--card);border:1px solid var(--border);
+.m-nav{width:40px;height:40px;border-radius:9px;background:var(--card);border:1px solid var(--border);
   display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--txt2);transition:.15s}
 .m-nav:active{transform:scale(.9)}
 .m-label{font-size:14px;font-weight:600;color:var(--txt);text-transform:capitalize}
@@ -94,6 +95,7 @@ button{cursor:pointer;border:none;background:none}
 .page{display:none;animation:up .22s ease;background:var(--bg);}
 .page.on{display:block;background:var(--bg);}
 @keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
 /* TAB BAR */
 .tab-wrap{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
@@ -1199,26 +1201,6 @@ button{cursor:pointer;border:none;background:none}
     <div class="field" id="m-dest-wrap" style="display:none"><label class="field-lbl">Compte destination</label><div class="acc-chips" id="m-dest-accs"></div></div>
     <div class="field"><label class="field-lbl">Date</label><input class="field-inp" id="m-date" type="date"></div>
     <div class="field"><label class="field-lbl">Note (optionnel)</label><input class="field-inp" id="m-note" type="text" placeholder="Remarque…"></div>
-    <div class="field">
-      <label class="field-lbl">Récurrence</label>
-      <select class="field-inp" id="m-freq" onchange="toggleCustomFreq(this.value)" style="cursor:pointer">
-        <option value="once">Une seule fois</option>
-        <option value="weekly">Chaque semaine</option>
-        <option value="2weeks">Toutes les 2 semaines</option>
-        <option value="monthly">Chaque mois</option>
-        <option value="4weeks">Toutes les 4 semaines</option>
-        <option value="yearly">Chaque année</option>
-        <option value="custom">Personnalisé (X jours)</option>
-      </select>
-    </div>
-    <div class="field" id="m-custom-freq-wrap" style="display:none">
-      <label class="field-lbl">Tous les combien de jours ?</label>
-      <input class="field-inp" id="m-freq-days" type="number" min="1" placeholder="ex: 10">
-    </div>
-    <div class="field" id="m-enddate-wrap" style="display:none">
-      <label class="field-lbl">Date de fin (optionnel)</label>
-      <input class="field-inp" id="m-enddate" type="date">
-    </div>
     <!-- Recurring -->
     <div style="background:var(--input);border-radius:12px;padding:14px 16px;margin-bottom:14px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0" id="recur-header" onclick="toggleRecurring()">
@@ -1250,7 +1232,7 @@ button{cursor:pointer;border:none;background:none}
     </div>
     <div class="btn-row">
       <button class="btn-sm btn-ghost" onclick="closeModal()">✕</button>
-      <button class="btn btn-primary" onclick="saveTransaction()">Enregistrer</button>
+      <button class="btn btn-primary" id="m-save-btn" onclick="saveTransaction()">Enregistrer</button>
     </div>
   </div>
 </div>
@@ -1623,10 +1605,6 @@ function makeVirtual(e, date) {
 
 
 // ── RECURRING HELPERS ─────────────────────
-function toggleCustomFreq(val) {
-  document.getElementById('m-custom-freq-wrap').style.display = val==='custom' ? 'block' : 'none';
-  document.getElementById('m-enddate-wrap').style.display = val!=='once' ? 'block' : 'none';
-}
 function toggleCustomFreqEdit(val) {
   var cw=document.getElementById('e-custom-freq-wrap');
   var ew=document.getElementById('e-enddate-wrap');
@@ -3339,6 +3317,11 @@ function renderBudgets(){
     el.innerHTML='<div class="empty"><div class="empty-ico">💼</div>Configurez votre salaire prévisionnel<br><button onclick="goTo(\'profil\')" style="margin-top:12px;padding:10px 20px;border-radius:10px;background:var(--accent);color:#fff;border:none;cursor:pointer;font-weight:600">Aller dans Profil</button></div>';
     return;
   }
+  var totalSpent=Object.values(byCat).reduce(function(s,v){return s+v;},0);
+  if(!totalSpent){
+    el.innerHTML='<div class="empty"><div class="empty-ico">🎉</div><div style="font-weight:700;margin-bottom:4px">Aucune dépense ce mois</div><div style="font-size:13px;color:var(--txt3)">Vos budgets sont intacts</div></div>';
+    return;
+  }
   // Group by type
   var typeOrder=['fixe','vie','loisirs'];
   var typeLabels={fixe:'🏠 Besoins fixes — 50%',vie:'🛒 Vie quotidienne — 30%',loisirs:'🎬 Loisirs — 20%'};
@@ -3427,7 +3410,6 @@ function openAdd(prefillType){
   document.getElementById('m-amt-display').className='amt-big e';
   document.getElementById('m-lbl').value='';
   document.getElementById('m-note').value='';
-  document.getElementById('m-freq').value='once';
   selDestAcc='acc_lva';
   var dw=document.getElementById('m-dest-wrap');if(dw)dw.style.display='none';
   var al=document.getElementById('m-acc-lbl');if(al)al.textContent='Compte';
@@ -3442,7 +3424,11 @@ function openAdd(prefillType){
   buildNumpad();buildMCats();buildMAccs();
   document.getElementById('add-overlay').classList.add('on');
 }
-function closeModal(){document.getElementById('add-overlay').classList.remove('on');}
+function closeModal(){
+  document.getElementById('add-overlay').classList.remove('on');
+  var btn=document.getElementById('m-save-btn');
+  if(btn){btn.disabled=false;btn.textContent='Enregistrer';}
+}
 function mType(t){
   mCurrentType=t;
   document.getElementById('m-exp').className='type-btn'+(t==='exp'?' on e':'');
@@ -3488,13 +3474,15 @@ function buildMAccs(){
   }).join('');
 }
 function saveTransaction(){
-  var amt=parseFloat(mAmt)||0;if(!amt){toast('Montant requis');return;}
+  var amt=parseFloat(mAmt)||0;
+  var dateEl=document.getElementById('m-date');
+  var date=dateEl.value;
+  if(!amt){toast('Montant requis','error');return;}
+  if(!date){dateEl.style.borderColor='var(--red)';toast('Date requise','error');setTimeout(function(){dateEl.style.borderColor='';},2000);return;}
   var lbl=document.getElementById('m-lbl').value.trim()||(mCurrentType==='inc'?'Revenu':'Dépense');
   var note=document.getElementById('m-note').value.trim();
-  var date=document.getElementById('m-date').value;
-  var freq=document.getElementById('m-freq').value;
-  var freqDays=document.getElementById('m-freq-days').value;
-  var endDate=document.getElementById('m-enddate').value||null;
+  var btn=document.getElementById('m-save-btn');
+  if(btn){btn.disabled=true;btn.textContent='Enregistrement…';}
   var customDays2 = _recurFreq==='custom' ? (parseInt(document.getElementById('m-custom-days').value)||30) : null;
   var endDate2 = document.getElementById('m-end-date').value || null;
   if(mCurrentType==='vir'){
@@ -3670,11 +3658,12 @@ function toast(msg, type) {
   var txt  = document.getElementById('toast-text');
   type = type || 'success';
   var icons = { success:'✓', error:'✕', info:'ℹ' };
-  if(icon) { icon.textContent = icons[type]||'✓'; icon.className = 'success'; icon.className = type; }
+  if(icon) { icon.textContent = icons[type]||'✓'; icon.className = type; }
   if(txt)  txt.textContent = msg;
+  el.style.background = type === 'error' ? 'var(--red)' : '';
   el.classList.add('on');
   clearTimeout(el._t);
-  el._t = setTimeout(function(){ el.classList.remove('on'); }, 2800);
+  el._t = setTimeout(function(){ el.classList.remove('on'); el.style.background=''; }, type === 'error' ? 4000 : 3500);
 }
 
 
