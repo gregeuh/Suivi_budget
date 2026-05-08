@@ -732,7 +732,12 @@ button{cursor:pointer;border:none;background:none}
 
 
 /* ════ FAB LABELS ════ */
-[data-theme="light"] .fab-item-lbl { background: #fff !important; color: var(--txt) !important; border: 1px solid rgba(0,0,0,0.08) !important; }
+.fab-item-lbl {
+  background: var(--card) !important;
+  color: var(--txt) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
+}
 
 
 /* ═══ ACCOUNT CARDS DASHBOARD ═══ */
