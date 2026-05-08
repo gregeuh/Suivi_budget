@@ -1856,10 +1856,12 @@ var _autoTimer = null;
 var _sunLat = null, _sunLng = null;
 
 /* ── Calcul lever/coucher (algorithme Jean Meeus, précision ~5 min) ── */
-function calcSunTimes(lat, lng) {
+function calcSunTimes(lat, lng, refDate) {
   var rad = Math.PI / 180;
-  var now = new Date();
-  var JD = now.getTime() / 86400000 + 2440587.5;
+  var d = refDate || new Date();
+  // Utiliser midi local pour éviter les glissements de jour selon timezone
+  var noon = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12, 0, 0);
+  var JD = noon.getTime() / 86400000 + 2440587.5;
   var n  = JD - 2451545.0 + 0.0008;
   var Js = n - lng / 360;
   var M  = ((357.5291 + 0.98560028 * Js) % 360 + 360) % 360;
@@ -1870,41 +1872,46 @@ function calcSunTimes(lat, lng) {
   var sinD = Math.sin(lam) * Math.sin(23.4397 * rad);
   var cosH = (Math.sin(-0.833 * rad) - Math.sin(lat * rad) * sinD) /
              (Math.cos(lat * rad) * Math.cos(Math.asin(sinD)));
-  if(cosH < -1 || cosH > 1) return null; // nuit polaire ou jour polaire
+  if(cosH < -1 || cosH > 1) return null;
   var H0 = Math.acos(cosH) / rad;
-  var msPerDay = 86400000;
+  var DAY = 86400000;
   return {
-    sunrise: new Date((Jt - H0/360 - 2440587.5) * msPerDay),
-    sunset:  new Date((Jt + H0/360 - 2440587.5) * msPerDay)
+    sunrise: new Date((Jt - H0/360 - 2440587.5) * DAY),
+    sunset:  new Date((Jt + H0/360 - 2440587.5) * DAY)
   };
 }
 
 function _scheduleAutoSwitch(sun) {
   if(_autoTimer) clearTimeout(_autoTimer);
   var now = Date.now();
-  var next = null;
-  if(now < sun.sunrise) next = sun.sunrise;
-  else if(now < sun.sunset) next = sun.sunset;
-  if(!next) return; // recalcul demain géré par le switch lui-même
-  var delay = next - now + 60000; // +1 min de marge
-  _autoTimer = setTimeout(function(){ _applyAutoMode(true); }, delay);
+  var riseMs = sun.sunrise.getTime();
+  var setMs  = sun.sunset.getTime();
+  var nextMs = null;
+
+  if(now < riseMs)      nextMs = riseMs;       // avant lever → attendre lever
+  else if(now < setMs)  nextMs = setMs;         // entre lever/coucher → attendre coucher
+  else {                                        // après coucher → attendre lever demain
+    var tomorrow = new Date(now + 86400000);
+    var tSun = calcSunTimes(_sunLat, _sunLng, tomorrow);
+    if(tSun) nextMs = tSun.sunrise.getTime();
+  }
+  if(!nextMs) return;
+  _autoTimer = setTimeout(function(){ _applyAutoMode(true); }, nextMs - now + 30000);
 }
 
 function _applyAutoMode(rerender) {
   if(!autoMode) return;
-  var lat = _sunLat, lng = _sunLng;
-  if(lat === null || lng === null) {
-    // Fallback système
-    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches;
-    isDark = prefersDark;
+  if(_sunLat === null || _sunLng === null) {
+    // Fallback prefers-color-scheme
+    isDark = !!(window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches);
     applyTheme(currentTheme, isDark);
     if(rerender) renderThemePicker();
     return;
   }
-  var sun = calcSunTimes(lat, lng);
+  var sun = calcSunTimes(_sunLat, _sunLng);
   if(!sun) { isDark = false; applyTheme(currentTheme, isDark); return; }
   var now = Date.now();
-  isDark = (now < sun.sunrise || now > sun.sunset);
+  isDark = (now < sun.sunrise.getTime() || now > sun.sunset.getTime());
   applyTheme(currentTheme, isDark);
   _scheduleAutoSwitch(sun);
   if(rerender) renderThemePicker();
@@ -1912,10 +1919,11 @@ function _applyAutoMode(rerender) {
 
 function enableAutoMode() {
   autoMode = true;
-  // Coords en cache localStorage
+  // Coords en cache localStorage (validées)
   var cached = null;
   try { cached = JSON.parse(localStorage.getItem('mb_sun_pos')); } catch(e){}
-  if(cached && cached.lat !== undefined) {
+  if(cached && typeof cached.lat === 'number' && typeof cached.lng === 'number'
+     && !isNaN(cached.lat) && !isNaN(cached.lng)) {
     _sunLat = cached.lat; _sunLng = cached.lng;
     _applyAutoMode(true);
     return;
@@ -1927,7 +1935,8 @@ function enableAutoMode() {
       try { localStorage.setItem('mb_sun_pos', JSON.stringify({lat:_sunLat,lng:_sunLng})); } catch(e){}
       _applyAutoMode(true);
     },
-    function() { _applyAutoMode(true); } // fallback système si refus
+    function() { _applyAutoMode(true); }, // fallback système si refus
+    {timeout: 8000, maximumAge: 3600000}
   );
 }
 
@@ -2175,16 +2184,21 @@ function renderThemePicker() {
 
   // Sun info line (shown when auto mode is active)
   var sunInfoHtml = '';
-  if(autoMode && _sunLat !== null) {
-    var sun = calcSunTimes(_sunLat, _sunLng);
-    if(sun) {
-      var fmt2 = function(d){ return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0'); };
-      sunInfoHtml = '<div style="font-size:12px;color:'+txt2Color+';text-align:center;margin-bottom:10px;padding:6px 10px;background:var(--input);border-radius:8px">'
-        + '🌅 ' + fmt2(sun.sunrise) + ' &nbsp;·&nbsp; 🌇 ' + fmt2(sun.sunset)
-        + '</div>';
+  if(autoMode) {
+    var fmt2 = function(d){ return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0'); };
+    if(_sunLat !== null && _sunLng !== null) {
+      var sunNow = calcSunTimes(_sunLat, _sunLng);
+      if(sunNow) {
+        var nowMs = Date.now();
+        var isNight = nowMs < sunNow.sunrise.getTime() || nowMs > sunNow.sunset.getTime();
+        sunInfoHtml = '<div style="font-size:12px;color:'+txt2Color+';text-align:center;margin-bottom:10px;padding:7px 12px;background:var(--input);border-radius:8px;line-height:1.6">'
+          + '🌅 <b>' + fmt2(sunNow.sunrise) + '</b> &nbsp;·&nbsp; 🌇 <b>' + fmt2(sunNow.sunset) + '</b>'
+          + '<br><span style="font-size:11px;opacity:.7">' + (isNight ? '🌙 Mode sombre actif' : '☀️ Mode clair actif') + '</span>'
+          + '</div>';
+      }
+    } else {
+      sunInfoHtml = '<div style="font-size:12px;color:'+txt2Color+';text-align:center;margin-bottom:10px;padding:7px 12px;background:var(--input);border-radius:8px">📍 Localisation en cours…</div>';
     }
-  } else if(autoMode) {
-    sunInfoHtml = '<div style="font-size:12px;color:'+txt2Color+';text-align:center;margin-bottom:10px">Localisation en cours…</div>';
   }
 
   // 3-state mode selector
