@@ -1199,7 +1199,7 @@ button{cursor:pointer;border:none;background:none}
           <label style="font-size:18px;cursor:pointer">📥<input type="file" accept=".csv" onchange="importCSV(this)" style="display:none"></label>
         </div>
       </div>
-      <button class="btn btn-danger" onclick="if(confirm('Se déconnecter ?'))doSignOut()" style="margin-bottom:8px">Se déconnecter</button>
+      <button class="btn btn-danger" id="signout-btn" onclick="confirmSignOut()" style="margin-bottom:8px">Se déconnecter</button>
       <button onclick="resetData()" style="width:100%;padding:14px;border-radius:var(--r-sm);background:transparent;border:1.5px solid var(--red);color:var(--red);font-size:14px;font-weight:700;cursor:pointer">🗑️ Réinitialiser les données</button>
     </div>
 
@@ -2851,6 +2851,23 @@ function doAuth(){
      });
   });
 }
+var _signOutPending = false, _signOutTimer = null;
+function confirmSignOut() {
+  var btn = document.getElementById('signout-btn');
+  if(!_signOutPending) {
+    _signOutPending = true;
+    if(btn){ btn.textContent = 'Confirmer ?'; btn.style.background = '#b91c1c'; }
+    _signOutTimer = setTimeout(function(){
+      _signOutPending = false;
+      if(btn){ btn.textContent = 'Se déconnecter'; btn.style.background = ''; }
+    }, 3000);
+  } else {
+    clearTimeout(_signOutTimer);
+    _signOutPending = false;
+    doSignOut();
+  }
+}
+
 function doSignOut(){
   showLoaderOut();
   setTimeout(function(){
