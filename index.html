@@ -337,7 +337,11 @@ button{cursor:pointer;border:none;background:none}
   0%   { width: 0% }
   60%  { width: 75% }
   85%  { width: 88% }
-  100% { width: 95% } /* s'arrête à 95%, le reste se comble au hideLoader() */
+  100% { width: 95% }
+}
+@keyframes loaderDrain {
+  0%   { width: 100% }
+  100% { width: 0% }
 }
 
 /* TOAST */
@@ -2848,22 +2852,24 @@ function doAuth(){
   });
 }
 function doSignOut(){
-  if(auth && currentUser) {
-    auth.signOut();
-  } else {
-    // Mode démo — reset et retour à l'écran auth
-    currentUser = null;
-    expenses = []; accounts = []; wishlist = []; charges = [];
-    settings = {}; catBudgets = {}; cloudDoc = null;
-    document.getElementById('app').classList.remove('on');
-    document.getElementById('auth').style.display = 'flex';
-    // Reset auth form
-    document.getElementById('a-email').value = '';
-    document.getElementById('a-pwd').value = '';
-    document.getElementById('a-err').style.display = 'none';
-    // Remove demo badge if present
-    document.querySelectorAll('[style*="DÉMO"]').forEach(function(el){ el.remove(); });
-  }
+  showLoaderOut();
+  setTimeout(function(){
+    if(auth && currentUser) {
+      auth.signOut();
+    } else {
+      // Mode démo — reset et retour à l'écran auth
+      currentUser = null;
+      expenses = []; accounts = []; wishlist = []; charges = [];
+      settings = {}; catBudgets = {}; cloudDoc = null;
+      document.getElementById('app').classList.remove('on');
+      document.getElementById('auth').style.display = 'flex';
+      document.getElementById('a-email').value = '';
+      document.getElementById('a-pwd').value = '';
+      document.getElementById('a-err').style.display = 'none';
+      document.querySelectorAll('[style*="DÉMO"]').forEach(function(el){ el.remove(); });
+      hideLoader();
+    }
+  }, 900);
 }
 
 // ── LOAD DATA ─────────────────────────────
@@ -2886,13 +2892,29 @@ function showLoader(msg) {
 
 function hideLoader() {
   var el = document.getElementById('loader');
-  if(!el) return;
+  if(!el || el.style.display === 'none') return;
   var bar = document.getElementById('loader-bar');
-  if(bar) bar.style.width = '100%';
+  if(bar) { bar.style.animation = 'none'; bar.style.width = '100%'; }
   setTimeout(function() {
     el.classList.add('hide');
     setTimeout(function(){ el.style.display = 'none'; }, 460);
   }, 180);
+}
+
+function showLoaderOut() {
+  var el = document.getElementById('loader');
+  if(!el) return;
+  el.style.display = 'flex';
+  el.classList.remove('hide');
+  var bar = document.getElementById('loader-bar');
+  if(bar) {
+    bar.style.animation = 'none';
+    bar.style.width = '100%';
+    void bar.offsetWidth;
+    bar.style.animation = 'loaderDrain .9s cubic-bezier(.4,0,.6,1) forwards';
+  }
+  var msgEl = document.getElementById('loader-msg');
+  if(msgEl) msgEl.textContent = 'À bientôt 👋';
 }
 
   auth.onAuthStateChanged(function(user){
@@ -2969,6 +2991,7 @@ function hideLoader() {
     if(unsub){unsub();unsub=null;}
     document.getElementById('auth').style.display='flex';
     document.getElementById('app').classList.remove('on');
+    hideLoader();
   }
   });
 }
