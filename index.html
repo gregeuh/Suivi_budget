@@ -165,9 +165,15 @@ button{cursor:pointer;border:none;background:none}
 .conseil-sub{font-size:12px;color:rgba(255,255,255,0.85);margin-top:4px}
 
 /* TX ITEMS */
+.tx-swipe-wrap{position:relative;overflow:hidden;margin-bottom:4px;border-radius:var(--r-sm);}
+.tx-del-bg{position:absolute;right:0;top:0;bottom:0;width:80px;background:#ef4444;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  gap:2px;color:#fff;font-size:20px;border-radius:0 var(--r-sm) var(--r-sm) 0;cursor:pointer;}
+.tx-del-bg span{font-size:10px;font-weight:700;letter-spacing:.3px}
 .tx-item{display:flex;align-items:center;gap:12px;padding:13px 16px;
   border-radius:var(--r-sm);background:var(--card);border:1px solid var(--border);
-  cursor:pointer;transition:background .15s;margin-bottom:4px}
+  cursor:pointer;transition:background .15s;margin-bottom:0;
+  position:relative;z-index:1;will-change:transform;}
 .tx-item:active{background:var(--card2)}
 .tx-ico{width:40px;height:40px;border-radius:12px;background:var(--input);
   display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
@@ -3494,11 +3500,14 @@ function txHTML(e,showEdit){
   var swileBadge=isResto2?'<span style="font-size:10px;background:rgba(251,191,36,0.15);color:#f59e0b;border-radius:4px;padding:1px 5px;font-weight:700;margin-left:4px">🍽️ Swile</span>':'';
   var virBadge=e.isVirement?'<span style="font-size:10px;background:rgba(234,88,12,0.12);color:var(--accent);border-radius:4px;padding:1px 5px;font-weight:700;margin-left:4px">↔️ Virement</span>':'';
   var recurBadge=isRecur?'<span style="font-size:10px;background:rgba(234,88,12,0.12);color:var(--accent);border-radius:4px;padding:1px 5px;font-weight:700;margin-left:4px">🔁 '+(FL[e.frequency]||'Récurrent')+'</span>':'';
-  return '<div class="tx-item" onclick="'+(showEdit?'openEdit(\''+id+'\')':'')+'">'
+  var inner='<div class="tx-item" data-txid="'+id+'" onclick="'+(showEdit?'openEdit(\''+id+'\')':'')+'">'
     +'<div class="tx-ico">'+cat.icon+'</div>'
     +'<div class="tx-info"><div class="tx-name">'+esc(e.label||'Sans libellé')+swileBadge+recurBadge+virBadge+'</div>'
     +'<div class="tx-sub">'+(acc?esc(acc.name):'')+' '+(e.note?'· '+esc(e.note):'')+'</div></div>'
     +'<div class="tx-amt '+(isInc?'i':'e')+' blur">'+(isInc?'+':'-')+e.amount.toFixed(2)+' €</div></div>';
+  return '<div class="tx-swipe-wrap">'
+    +'<div class="tx-del-bg" data-delbg="'+id+'">🗑️<span>Supprimer</span></div>'
+    +inner+'</div>';
 }
 function renderTxList(el,items,showEdit){
   if(!el)return;
@@ -3510,6 +3519,7 @@ function renderTxList(el,items,showEdit){
     html+=txHTML(e,showEdit);
   });
   el.innerHTML=html;
+  setupSwipeTx(el);
 }
 function renderDashTx(){
   var data=getMonthTx().filter(function(e){return e.type==='expense'||e.type==='income';}).sort(function(a,b){return(b.date||'').localeCompare(a.date||'');}).slice(0,6);
@@ -4074,6 +4084,131 @@ setTimeout(renderThemePicker, 200);
   FIREBASE_READY = true;
   setupAuth(); // detect existing session immediately
 })();
+
+// ── SWIPE-TO-DELETE sur les transactions ──────────────────────────────
+var _swipeRevealedItem = null; // tx-item actuellement révélé
+
+function _swipeDeleteTx(id, wrap) {
+  expenses = expenses.filter(function(e){ return (e.id||e.originalId) !== id && e.originalId !== id && e.id !== id; });
+  save(); renderAll();
+  toast('Transaction supprimée', 'success');
+}
+
+function setupSwipeTx(container) {
+  var REVEAL = 80;       // px pour révéler le bouton
+  var DELETE_TH = 200;   // px pour déclencher suppression directe
+
+  container.querySelectorAll('.tx-swipe-wrap').forEach(function(wrap) {
+    var item = wrap.querySelector('.tx-item');
+    var delBg = wrap.querySelector('.tx-del-bg');
+    if(!item || !delBg) return;
+
+    var startX, startY, currentX = 0, revealed = false, wasSwiped = false;
+
+    function snapTo(px, animate) {
+      if(animate) item.style.transition = 'transform .22s cubic-bezier(.4,0,.2,1)';
+      else item.style.transition = 'none';
+      item.style.transform = px === 0 ? '' : 'translateX('+px+'px)';
+      currentX = px;
+      revealed = (px <= -REVEAL + 5);
+      if(!revealed && _swipeRevealedItem === item) _swipeRevealedItem = null;
+    }
+
+    function closeReveal(animate) { snapTo(0, animate !== false); }
+
+    // Fermer si on tape ailleurs
+    document.addEventListener('touchstart', function(e) {
+      if(revealed && !wrap.contains(e.target)) closeReveal(true);
+    }, {passive: true});
+
+    item.addEventListener('touchstart', function(e) {
+      // Fermer l'autre item révélé
+      if(_swipeRevealedItem && _swipeRevealedItem !== item) {
+        _swipeRevealedItem.style.transition = 'transform .22s cubic-bezier(.4,0,.2,1)';
+        _swipeRevealedItem.style.transform = '';
+        _swipeRevealedItem = null;
+      }
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      wasSwiped = false;
+      item.style.transition = 'none';
+    }, {passive: true});
+
+    item.addEventListener('touchmove', function(e) {
+      var dx = e.touches[0].clientX - startX;
+      var dy = e.touches[0].clientY - startY;
+      // Ignorer si principalement vertical
+      if(!wasSwiped && Math.abs(dy) > Math.abs(dx) + 5) return;
+      wasSwiped = true;
+      var base = revealed ? -REVEAL : 0;
+      var offset = Math.min(0, base + dx); // jamais vers la droite au-delà de 0
+      item.style.transform = 'translateX('+offset+'px)';
+      // Feedback visuel sur le bg : intensité selon distance
+      var pct = Math.min(1, Math.abs(offset) / DELETE_TH);
+      delBg.style.background = 'hsl('+(0 - pct*0)+','+Math.round(80+pct*20)+'%,'+Math.round(52-pct*8)+'%)';
+    }, {passive: true});
+
+    item.addEventListener('touchend', function(e) {
+      if(!wasSwiped) return;
+      var dx = e.changedTouches[0].clientX - startX;
+      var base = revealed ? -REVEAL : 0;
+      var offset = Math.min(0, base + dx);
+      delBg.style.background = '';
+
+      if(offset < -DELETE_TH) {
+        // Suppression directe : glissement long
+        item.style.transition = 'transform .2s ease, opacity .2s ease';
+        item.style.transform = 'translateX(-110%)';
+        item.style.opacity = '0';
+        haptic('error');
+        var txId = item.getAttribute('data-txid') || '';
+        setTimeout(function() {
+          wrap.style.transition = 'max-height .2s ease, opacity .15s ease';
+          wrap.style.overflow = 'hidden';
+          wrap.style.maxHeight = wrap.offsetHeight + 'px';
+          requestAnimationFrame(function(){
+            wrap.style.maxHeight = '0';
+            wrap.style.marginBottom = '0';
+            wrap.style.opacity = '0';
+          });
+          setTimeout(function(){ _swipeDeleteTx(txId, wrap); }, 220);
+        }, 180);
+      } else if(offset < -REVEAL / 2) {
+        // Révéler le bouton
+        snapTo(-REVEAL, true);
+        _swipeRevealedItem = item;
+        haptic('light');
+      } else {
+        closeReveal(true);
+      }
+    }, {passive: true});
+
+    // Tap sur le bouton rouge → suppression confirmée
+    delBg.addEventListener('click', function() {
+      var txId = item.getAttribute('data-txid') || '';
+      haptic('error');
+      item.style.transition = 'transform .18s ease, opacity .18s ease';
+      item.style.transform = 'translateX(-110%)';
+      item.style.opacity = '0';
+      setTimeout(function() {
+        wrap.style.transition = 'max-height .2s ease, opacity .15s ease';
+        wrap.style.overflow = 'hidden';
+        wrap.style.maxHeight = wrap.offsetHeight + 'px';
+        requestAnimationFrame(function(){
+          wrap.style.maxHeight = '0';
+          wrap.style.marginBottom = '0';
+          wrap.style.opacity = '0';
+        });
+        setTimeout(function(){ _swipeDeleteTx(txId, wrap); }, 220);
+      }, 160);
+    });
+
+    // Bloquer le click si c'était un swipe
+    item.addEventListener('click', function(e) {
+      if(revealed || wasSwiped) { e.stopImmediatePropagation(); e.preventDefault(); closeReveal(true); }
+    }, true);
+  });
+}
 
 // ── MOBILE FIX 6 : retour haptique ────────────────────────────────────
 function haptic(type) {
