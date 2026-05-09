@@ -4117,6 +4117,48 @@ function _renderBankImportModal(iDate, iLabel, iAmt, iDebit, iCredit) {
   document.getElementById('bi-body').innerHTML = html;
 }
 
+// Détection catégorie + virement par mots-clés dans le libellé
+function _detectCatAndVir(label, type) {
+  var l = label.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  var isVir = false;
+
+  // Virements (entre comptes ou reçus/émis)
+  if(/\b(vir |virt |virement|vir sepa|vir inst)\b/.test(l)) isVir = true;
+
+  // Prélèvements automatiques (pas des virements utilisateur)
+  var isPrlv = /\b(prlv|prelevement|echeance|ech )\b/.test(l);
+
+  // Catégories par mots-clés
+  var cat = type === 'income' ? 'salaire' : 'autre';
+  if(type === 'income') {
+    if(/\b(salaire|sal |paie|remuneration|traitement)\b/.test(l)) cat = 'salaire';
+    else if(isVir) cat = 'autre'; // virement reçu → autre par défaut
+  } else {
+    // Alimentation / courses
+    if(/carrefour|leclerc|auchan|lidl|intermarche|picard|monoprix|franprix|casino|super u|biocoop|naturalia|marche|epicerie|boulanger|boulangerie|patisserie/.test(l)) cat = 'alimentation';
+    // Restaurants / livraison
+    else if(/restaurant|brasserie|bistro|mcdonald|burger|kfc|pizza|sushi|uber eat|deliveroo|just eat|rapido|cafe |bar /.test(l)) cat = 'alimentation';
+    // Transport
+    else if(/sncf|ratp|ouigo|tgv|ter |navigo|velib|lime |bird |blabla|taxi|uber|bolt|hertz|avis|total|shell|bp |esso|essence|parking|peage|autoroute/.test(l)) cat = 'transport';
+    // Logement / énergie
+    else if(/loyer|edf|engie|gdf|total energies|veolia|saur|eau |gaz |electricite|charges/.test(l)) cat = 'logement';
+    // Abonnements / télécom
+    else if(/orange|sfr|bouygue|free |sosh|red by|b&you|numericable|darty box|internet|mobile|forfait/.test(l)) cat = 'abonnements';
+    // Streaming / loisirs
+    else if(/netflix|spotify|disney|amazon prime|apple|deezer|canal|ocs |paramount|youtube|xbox|playstation|steam/.test(l)) cat = 'loisirs';
+    // Shopping
+    else if(/amazon|ebay|zalando|fnac|darty|cdiscount|boulanger|ikea|zara|hm |h&m|primark|decathlon|sport/.test(l)) cat = 'shopping';
+    // Santé
+    else if(/pharmacie|medecin|docteur|hopital|clinique|dentiste|opticien|kiné|kinesith|mutuelle|ameli|cpam|sante/.test(l)) cat = 'sante';
+    // Prélèvement générique → abonnements
+    else if(isPrlv) cat = 'abonnements';
+    // Virement émis → autre
+    else if(isVir) cat = 'autre';
+  }
+
+  return { cat: cat, isVir: isVir };
+}
+
 function runBankImport() {
   var iDate   = parseInt(document.getElementById('bi-date').value);
   var iLabel  = parseInt(document.getElementById('bi-label').value);
@@ -4125,7 +4167,7 @@ function runBankImport() {
   var iCredit = parseInt(document.getElementById('bi-credit').value);
   var accId   = document.getElementById('bi-account').value;
 
-  var ok=0, skip=0;
+  var ok=0, skip=0, virCount=0;
   _biRows.forEach(function(row) {
     // Date
     var date = iDate>=0 ? _parseDate(row[iDate]||'') : new Date().toISOString().split('T')[0];
@@ -4135,7 +4177,7 @@ function runBankImport() {
     var label = iLabel>=0 ? (row[iLabel]||'').trim() : 'Importé';
     if(!label) label = 'Importé';
 
-    // Montant
+    // Montant + direction (income/expense)
     var amt=0, type='expense';
     if(iAmt>=0) {
       var raw = (row[iAmt]||'').replace(/\s/g,'').replace(',','.').replace(/[^\d.\-+]/g,'');
@@ -4159,10 +4201,15 @@ function runBankImport() {
     });
     if(dup) { skip++; return; }
 
+    // Catégorie + virement
+    var detected = _detectCatAndVir(label, type);
+    if(detected.isVir) virCount++;
+
     expenses.push({
       id: 'bi_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
       label: label, amount: amt, type: type,
-      cat: type==='income'?'salaire':'autre',
+      cat: detected.cat,
+      isVirement: detected.isVir,
       accountId: accId, date: date,
       note: null, recurring: false, frequency: null, customDays: null, endDate: null
     });
@@ -4171,7 +4218,10 @@ function runBankImport() {
 
   expenses.sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
   save(); renderAll(); closeBankImport();
-  toast(ok+' transaction'+(ok>1?'s':'')+' importée'+(ok>1?'s':'')+(skip?' · '+skip+' ignorée'+(skip>1?'s':''):''), 'success');
+  var msg = ok+' transaction'+(ok>1?'s':'')+' importée'+(ok>1?'s':'');
+  if(virCount) msg += ' · '+virCount+' virement'+(virCount>1?'s':'');
+  if(skip) msg += ' · '+skip+' ignorée'+(skip>1?'s':'');
+  toast(msg, 'success');
 }
 
 function closeBankImport() {
