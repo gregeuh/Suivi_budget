@@ -63,7 +63,7 @@ button{cursor:pointer;border:none;background:none}
 .auth-tab{flex:1;padding:9px;border-radius:9px;font-size:13px;font-weight:600;color:var(--accent);transition:.2s}
 .auth-tab.on{background:var(--accent);color:#fff}
 .auth-lbl{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--txt2);margin-bottom:6px;display:block}
-.auth-inp{width:100%;padding:13px 15px;background:#fff;border:1.5px solid var(--border);border-radius:12px;color:var(--txt);font-size:15px;outline:none;margin-bottom:12px;transition:.2s}
+.auth-inp{width:100%;padding:13px 15px;background:var(--card);border:1.5px solid var(--border);border-radius:12px;color:var(--txt);font-size:15px;outline:none;margin-bottom:12px;transition:.2s}
 .auth-inp:focus{border-color:var(--accent);outline:none}
 .auth-inp::placeholder{color:var(--txt3)}
 .auth-btn{width:100%;padding:15px;background:var(--accent);color:#fff;border-radius:12px;font-size:16px;font-weight:700;margin-top:4px;box-shadow:0 4px 16px rgba(var(--accent-rgb),0.35);transition:.15s}
@@ -454,7 +454,7 @@ button{cursor:pointer;border:none;background:none}
 }
 .ob-inp {
   width: 100%; padding: 16px 18px;
-  background: #fff;
+  background: var(--card);
   border: 1.5px solid var(--border);
   border-radius: 16px; color: var(--txt);
   font-size: 18px; font-weight: 600;
@@ -495,7 +495,7 @@ button{cursor:pointer;border:none;background:none}
 .ob-acc-card {
   padding: 16px 12px; border-radius: 14px;
   border: 2px solid var(--border);
-  background: #fff;
+  background: var(--card);
   cursor: pointer; text-align: center;
   transition: all .2s cubic-bezier(.34,1.56,.64,1);
 }
@@ -709,7 +709,7 @@ button{cursor:pointer;border:none;background:none}
   backdrop-filter: blur(24px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
   border: 1px solid var(--tab-bdr) !important;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.10), 0 1px 0 rgba(255,255,255,0.9) inset !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10), 0 1px 0 rgba(255,255,255,0.6) inset !important;
 }
 
 .tab-pill {
@@ -842,6 +842,34 @@ button{cursor:pointer;border:none;background:none}
 .overlay[data-vp-active] .modal {
   max-height: 92%;
 }
+
+/* ═══ DARK MODE OVERRIDES ═══ */
+[data-theme="dark"] .auth-inp          { background: var(--input) !important; color: var(--txt) !important; }
+[data-theme="dark"] .ob-inp            { background: var(--input) !important; color: var(--txt) !important; border-color: var(--border) !important; }
+[data-theme="dark"] .ob-acc-card       { background: var(--card) !important; border-color: var(--border) !important; }
+[data-theme="dark"] .tab-pill          { background: var(--card2) !important; box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important; }
+[data-theme="dark"] .tab-bar           { box-shadow: 0 4px 24px rgba(0,0,0,0.5) !important; }
+[data-theme="dark"] .fab-item-lbl      { background: var(--card) !important; color: var(--txt) !important; border: 1px solid var(--border) !important; }
+[data-theme="dark"] .sec-title         { background: linear-gradient(135deg,var(--txt) 0%,var(--accent) 100%) !important; -webkit-background-clip: text !important; background-clip: text !important; }
+[data-theme="dark"] .modal             { background: var(--card) !important; }
+[data-theme="dark"] .bi-preview        { background: var(--input) !important; color: var(--txt) !important; }
+[data-theme="dark"] .bi-prev-cell      { color: var(--txt) !important; }
+[data-theme="dark"] select.bi-sel,
+[data-theme="dark"] input.bi-sel       { background: var(--input) !important; color: var(--txt) !important; border-color: var(--border) !important; }
+[data-theme="dark"] #swile-row         { background: var(--card2) !important; border-color: var(--border) !important; }
+[data-theme="dark"] .m-handle          { background: var(--border) !important; }
+[data-theme="dark"] .set-row           { border-color: var(--border) !important; }
+[data-theme="dark"] .field-inp,
+[data-theme="dark"] .search-inp        { background: var(--input) !important; color: var(--txt) !important; }
+[data-theme="dark"] .nk                { background: var(--card2) !important; color: var(--txt) !important; }
+[data-theme="dark"] .type-toggle       { background: var(--input) !important; }
+[data-theme="dark"] .type-btn.on       { background: var(--card2) !important; }
+[data-theme="dark"] .auth-box          { color: var(--txt) !important; }
+[data-theme="dark"] .auth-h,
+[data-theme="dark"] .auth-sub          { color: var(--txt2) !important; }
+[data-theme="dark"] .acc-type-btn      { background: var(--input) !important; color: var(--txt) !important; border-color: var(--border) !important; }
+[data-theme="dark"] .acc-type-btn.on   { background: rgba(var(--accent-rgb),0.15) !important; border-color: var(--accent) !important; }
+[data-theme="dark"] .bi-row            { color: var(--txt) !important; }
 
 </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1011,7 +1039,7 @@ button{cursor:pointer;border:none;background:none}
           <div style="font-family:Sora,sans-serif;font-size:15px;font-weight:700;color:#6ee7b7" id="h-epargne">—</div>
         </div>
         <!-- Swile row — only shown if Swile expenses exist -->
-        <div id="swile-row" style="display:none;margin-top:10px;padding:12px 14px;background:#fffbeb;border:1.5px solid #fcd34d;border-radius:14px">
+        <div id="swile-row" style="display:none;margin-top:10px;padding:12px 14px;background:var(--card2);border:1.5px solid var(--border);border-radius:14px">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
             <div style="display:flex;align-items:center;gap:6px">
               <span style="font-size:15px">🍽️</span>
@@ -1899,6 +1927,10 @@ function applyTheme(themeKey, dark) {
   currentTheme = 'premium';
   if(dark !== undefined) isDark = dark;
   var t = isDark ? theme.dark : theme.light;
+
+  // Mettre à jour l'attribut data-theme sur body pour les sélecteurs CSS
+  document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
 
   // Update ALL CSS variables on :root
   var root = document.documentElement;
