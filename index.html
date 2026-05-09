@@ -4040,39 +4040,68 @@ function _guessCol(headers, keywords) {
 function openBankImport(input) {
   var file = input.files[0];
   if(!file) return;
-  var r = new FileReader();
-  r.onload = function(e) {
-    var text = e.target.result;
-    var sep = _detectSep(text);
-    var lines = text.replace(/\r/g,'').split('\n').filter(function(l){ return l.trim(); });
-    if(lines.length < 2) { toast('Fichier vide ou invalide', 'error'); return; }
 
-    // Parser les lignes CSV (gère les guillemets)
+  function processText(text) {
+    // Nettoyage BOM et espaces
+    text = text.replace(/^﻿/,'').replace(/\r/g,'');
+    var sep = _detectSep(text);
+    var allLines = text.split('\n').filter(function(l){ return l.trim(); });
+    if(allLines.length < 2) { toast('Fichier vide ou invalide', 'error'); return; }
+
+    // Parser une ligne CSV (gère les guillemets)
     function parseLine(line) {
       var res=[], cur='', inQ=false;
       for(var i=0;i<line.length;i++){
         var c=line[i];
         if(c==='"'){ if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ; }
-        else if(c===sep&&!inQ){ res.push(cur.trim());cur=''; }
+        else if(c===sep&&!inQ){ res.push(cur.trim().replace(/^"|"$/g,''));cur=''; }
         else cur+=c;
       }
-      res.push(cur.trim());
+      res.push(cur.trim().replace(/^"|"$/g,''));
       return res;
     }
 
-    _biHeaders = parseLine(lines[0]);
-    _biRows = lines.slice(1).map(parseLine).filter(function(r){ return r.some(function(c){return c;}); });
+    // LCL et certaines banques mettent des métadonnées avant l'en-tête réel.
+    // On cherche la première ligne qui contient des mots-clés d'en-tête.
+    var headerKeywords = ['date','libelle','libellé','debit','débit','credit','crédit','montant','operation','opération'];
+    var headerIdx = 0;
+    for(var i=0;i<Math.min(allLines.length,10);i++){
+      var low = allLines[i].toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+      if(headerKeywords.some(function(k){ return low.indexOf(k)!==-1; })){
+        headerIdx = i; break;
+      }
+    }
+
+    _biHeaders = parseLine(allLines[headerIdx]).filter(function(h){ return h; }); // retirer colonnes vides
+    _biRows = allLines.slice(headerIdx+1)
+      .map(parseLine)
+      .filter(function(r){ return r.some(function(c){ return c; }); });
 
     // Détection automatique des colonnes
     var iDate   = _guessCol(_biHeaders, ['date','jour','day']);
-    var iLabel  = _guessCol(_biHeaders, ['libelle','label','description','operation','motif','intitule','detail']);
-    var iAmt    = _guessCol(_biHeaders, ['montant','amount','valeur','solde']);
+    var iLabel  = _guessCol(_biHeaders, ['libelle','libelle','label','description','operation','motif','intitule','detail']);
+    var iAmt    = _guessCol(_biHeaders, ['montant','amount','valeur']);
     var iDebit  = _guessCol(_biHeaders, ['debit','debi','sortie','retrait','paiement']);
-    var iCredit = _guessCol(_biHeaders, ['credit','credi','entree','versement','virement entrant']);
+    var iCredit = _guessCol(_biHeaders, ['credit','credi','entree','versement']);
 
     input.value = '';
     _renderBankImportModal(iDate, iLabel, iAmt, iDebit, iCredit);
     document.getElementById('bank-import-overlay').classList.add('on');
+  }
+
+  // Essayer UTF-8 d'abord, puis ISO-8859-1 si le résultat contient des caractères illisibles
+  var r = new FileReader();
+  r.onload = function(e) {
+    var text = e.target.result;
+    // Détecter si l'encodage semble correct (présence de caractères spéciaux cassés)
+    if(text.indexOf('�') !== -1) {
+      // Relire en ISO-8859-1 (Latin-1) — format LCL et certaines banques françaises
+      var r2 = new FileReader();
+      r2.onload = function(e2){ processText(e2.target.result); };
+      r2.readAsText(input.files[0], 'ISO-8859-1');
+    } else {
+      processText(text);
+    }
   };
   r.readAsText(file, 'UTF-8');
 }
