@@ -4181,12 +4181,16 @@ function _hideUndoBar() {
 
 function undoDelete() {
   if(!_pendingDelete) return;
-  clearTimeout(_pendingDelete.saveTimer);
+  clearTimeout(_pendingDelete.hideTimer);
   var tx = _pendingDelete.tx;
   _pendingDelete = null;
-  // Réinsérer la transaction à sa position d'origine
-  expenses.push(tx);
+  // Retirer de la corbeille et remettre dans expenses
+  trash = trash.filter(function(t){ return t.id !== tx.id; });
+  var restored = Object.assign({}, tx);
+  delete restored.deletedAt;
+  expenses.push(restored);
   expenses.sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+  save(); // sauvegarde immédiate
   _hideUndoBar();
   renderAll();
   haptic('success');
@@ -4197,12 +4201,11 @@ function _animateDelete(item, wrap, txId) {
   var tx = expenses.find(function(e){ return e.id === txId || e.originalId === txId; });
   if(!tx) return;
 
-  // Annuler un undo en attente précédent → le confirmer immédiatement
+  // Fermer un undo en cours (l'ancien reste en corbeille, déjà sauvegardé)
   if(_pendingDelete) {
-    clearTimeout(_pendingDelete.saveTimer);
-    trash.push(Object.assign({}, _pendingDelete.tx, { deletedAt: Date.now() }));
-    save();
+    clearTimeout(_pendingDelete.hideTimer);
     _pendingDelete = null;
+    _hideUndoBar();
   }
 
   // Animation de sortie
@@ -4222,21 +4225,19 @@ function _animateDelete(item, wrap, txId) {
       wrap.style.opacity = '0';
     });
     setTimeout(function() {
-      // Retirer de expenses mais NE PAS sauvegarder encore
+      // Retirer de expenses ET mettre en corbeille immédiatement
       expenses = expenses.filter(function(e){ return e.id !== txId && e.originalId !== txId; });
+      trash.push(Object.assign({}, tx, { deletedAt: Date.now() }));
+      save(); // sauvegarde immédiate — pas de race condition possible
       renderAll();
 
-      // Préparer l'undo pendant 5s
-      var saveTimer = setTimeout(function() {
-        // L'utilisateur n'a pas annulé → envoyer en corbeille
-        trash.push(Object.assign({}, tx, { deletedAt: Date.now() }));
-        save();
+      // Timer uniquement pour masquer le bandeau après 5s
+      var hideTimer = setTimeout(function() {
         _pendingDelete = null;
         _hideUndoBar();
-        _updateTrashCountLabel();
       }, 5000);
 
-      _pendingDelete = { tx: tx, saveTimer: saveTimer };
+      _pendingDelete = { tx: tx, hideTimer: hideTimer };
       _showUndoBar(tx.label || 'Transaction');
     }, 220);
   }, 170);
