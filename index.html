@@ -300,6 +300,10 @@ button{cursor:pointer;border:none;background:none}
 .btn-sm{padding:16px 20px;border-radius:var(--r-sm);font-size:16px;font-weight:700;
   border:none;cursor:pointer;flex-shrink:0}
 
+/* iOS body scroll lock */
+body.locked,
+body[style*="position: fixed"] { touch-action: none; }
+
 /* LOADER */
 #loader {
   position: fixed; inset: 0; z-index: 998;
@@ -4043,6 +4047,56 @@ setTimeout(renderThemePicker, 200);
   db   = firebase.firestore();
   FIREBASE_READY = true;
   setupAuth(); // detect existing session immediately
+// ── MOBILE FIX 1 : lock body scroll quand un overlay est ouvert ──────
+var _lockCount = 0;
+var _lockScrollY = 0;
+function lockBodyScroll() {
+  if(_lockCount === 0) {
+    _lockScrollY = window.pageYOffset || 0;
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = '-' + _lockScrollY + 'px';
+    document.body.style.width = '100%';
+  }
+  _lockCount++;
+}
+function unlockBodyScroll() {
+  _lockCount = Math.max(0, _lockCount - 1);
+  if(_lockCount === 0) {
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    window.scrollTo(0, _lockScrollY);
+  }
+}
+// Observer sur tous les overlays — aucune modification des fonctions open/close
+(function() {
+  function watchOverlay(el) {
+    var wasOn = false;
+    new MutationObserver(function() {
+      var isOn = el.classList.contains('on');
+      if(isOn && !wasOn) { lockBodyScroll(); }
+      if(!isOn && wasOn) { unlockBodyScroll(); }
+      wasOn = isOn;
+    }).observe(el, { attributes: true, attributeFilter: ['class'] });
+  }
+  document.querySelectorAll('.overlay').forEach(watchOverlay);
+})();
+
+// ── MOBILE FIX 2 : clavier virtuel iOS — ajuster max-height de la modal ─
+(function() {
+  if(!window.visualViewport) return;
+  function onVpResize() {
+    var vh = window.visualViewport.height;
+    var maxH = Math.floor(vh * 0.93);
+    document.querySelectorAll('.overlay.on .modal').forEach(function(m) {
+      m.style.maxHeight = maxH + 'px';
+    });
+  }
+  window.visualViewport.addEventListener('resize', onVpResize);
+  // Reset quand le clavier se referme
+  window.visualViewport.addEventListener('scroll', onVpResize);
 })();
 </script>
 </body>
