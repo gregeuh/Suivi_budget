@@ -299,6 +299,47 @@ button{cursor:pointer;border:none;background:none}
 .btn-sm{padding:16px 20px;border-radius:var(--r-sm);font-size:16px;font-weight:700;
   border:none;cursor:pointer;flex-shrink:0}
 
+/* LOADER */
+#loader {
+  position: fixed; inset: 0; z-index: 998;
+  background: var(--auth-bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 28px;
+  opacity: 1; transition: opacity .45s ease;
+  pointer-events: auto;
+}
+#loader.hide { opacity: 0; pointer-events: none; }
+.loader-logo {
+  width: 72px; height: 72px; border-radius: 20px;
+  background: var(--accent); display: flex; align-items: center;
+  justify-content: center; font-size: 32px;
+  box-shadow: 0 8px 28px rgba(234,88,12,0.35);
+  animation: loaderPulse 1.6s ease-in-out infinite;
+}
+@keyframes loaderPulse {
+  0%,100% { transform: scale(1);   box-shadow: 0 8px 28px rgba(234,88,12,0.35); }
+  50%      { transform: scale(1.06); box-shadow: 0 12px 36px rgba(234,88,12,0.5); }
+}
+.loader-text {
+  font-size: 15px; font-weight: 600; color: var(--txt2);
+  letter-spacing: .2px;
+}
+.loader-bar-wrap {
+  width: 200px; height: 4px; background: var(--accent-soft);
+  border-radius: 2px; overflow: hidden;
+}
+.loader-bar {
+  height: 100%; width: 0%; border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--orange));
+  animation: loaderFill 1.6s cubic-bezier(.4,0,.2,1) forwards;
+}
+@keyframes loaderFill {
+  0%   { width: 0% }
+  60%  { width: 75% }
+  85%  { width: 88% }
+  100% { width: 95% } /* s'arrête à 95%, le reste se comble au hideLoader() */
+}
+
 /* TOAST */
 #toast {
   position: fixed; bottom: 110px; left: 50%;
@@ -863,6 +904,14 @@ button{cursor:pointer;border:none;background:none}
 <body data-theme="light" style="background:var(--bg)">
 
 <!-- AUTH -->
+<div id="loader" style="display:none">
+  <div class="loader-logo">💰</div>
+  <div>
+    <div class="loader-text" id="loader-msg">Chargement de vos données…</div>
+  </div>
+  <div class="loader-bar-wrap"><div class="loader-bar" id="loader-bar"></div></div>
+</div>
+
 <div id="auth">
   <div class="auth-box">
     <div class="auth-logo">💰</div>
@@ -2824,11 +2873,34 @@ var _authSetup=false;
 function setupAuth(){
   if(!auth||_authSetup)return;
   _authSetup=true;
+function showLoader(msg) {
+  var el = document.getElementById('loader');
+  if(!el) return;
+  el.style.display = 'flex';
+  el.classList.remove('hide');
+  var bar = document.getElementById('loader-bar');
+  if(bar) { bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = ''; }
+  var msgEl = document.getElementById('loader-msg');
+  if(msgEl) msgEl.textContent = msg || 'Chargement de vos données…';
+}
+
+function hideLoader() {
+  var el = document.getElementById('loader');
+  if(!el) return;
+  var bar = document.getElementById('loader-bar');
+  if(bar) bar.style.width = '100%';
+  setTimeout(function() {
+    el.classList.add('hide');
+    setTimeout(function(){ el.style.display = 'none'; }, 460);
+  }, 180);
+}
+
   auth.onAuthStateChanged(function(user){
   currentUser=user;
   if(user){
     document.getElementById('auth').style.display='none';
     document.getElementById('app').classList.add('on');
+    showLoader();
     cloudDoc=db.collection('users').doc(user.uid);
     if(unsub)unsub();
     unsub=cloudDoc.onSnapshot(function(snap){
@@ -2887,7 +2959,7 @@ function setupAuth(){
       requestAnimationFrame(function(){
         requestAnimationFrame(function(){
           renderAll();
-          // Re-render de sécurité au cas où le premier est trop tôt
+          hideLoader();
           setTimeout(function(){ renderAll(); }, 500);
         });
       });
