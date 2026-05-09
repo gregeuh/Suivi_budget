@@ -304,6 +304,31 @@ button{cursor:pointer;border:none;background:none}
 body.locked,
 body[style*="position: fixed"] { touch-action: none; }
 
+/* Fix 3 — safe area paysage (notch iPhone) */
+.content {
+  padding-left:  calc(16px + var(--safe-left));
+  padding-right: calc(16px + var(--safe-right));
+}
+.top, .month-bar {
+  padding-left:  calc(20px + var(--safe-left));
+  padding-right: calc(20px + var(--safe-right));
+}
+
+/* Fix 4 — suppression tap delay 300ms */
+button, a, [onclick], .tab-btn, .nk, .cat-chip, .acc-chip,
+.chip, .freq-btn, .type-btn, .icon-btn, .m-nav, .set-row,
+.tx-item, .fab-item-btn, .auth-btn, .btn {
+  touch-action: manipulation;
+}
+
+/* Fix 5 — modal petits iPhone : hauteur max plus conservative */
+@media (max-height: 600px) {
+  .modal { max-height: 85dvh; padding: 16px 16px; }
+  .amt-big { font-size: 38px; margin: 8px 0; min-height: 48px; }
+  .numpad { gap: 5px; margin: 8px 0; }
+  .nk { padding: 12px; font-size: 18px; }
+}
+
 /* LOADER */
 #loader {
   position: fixed; inset: 0; z-index: 998;
@@ -3912,6 +3937,7 @@ function toast(msg, type) {
   if(txt)  txt.textContent = msg;
   el.style.background = type === 'error' ? 'var(--red)' : '';
   el.classList.add('on');
+  haptic(type === 'error' ? 'error' : 'success');
   clearTimeout(el._t);
   el._t = setTimeout(function(){ el.classList.remove('on'); el.style.background=''; }, type === 'error' ? 4000 : 3500);
 }
@@ -4047,6 +4073,15 @@ setTimeout(renderThemePicker, 200);
   db   = firebase.firestore();
   FIREBASE_READY = true;
   setupAuth(); // detect existing session immediately
+// ── MOBILE FIX 6 : retour haptique ────────────────────────────────────
+function haptic(type) {
+  if(!navigator.vibrate) return;
+  if(type === 'light')   navigator.vibrate(8);
+  else if(type === 'success') navigator.vibrate([10, 30, 10]);
+  else if(type === 'error')   navigator.vibrate([40, 20, 40]);
+  else navigator.vibrate(12);
+}
+
 // ── MOBILE FIX 1 : lock body scroll quand un overlay est ouvert ──────
 var _lockCount = 0;
 var _lockScrollY = 0;
@@ -4097,6 +4132,71 @@ function unlockBodyScroll() {
   window.visualViewport.addEventListener('resize', onVpResize);
   // Reset quand le clavier se referme
   window.visualViewport.addEventListener('scroll', onVpResize);
+})();
+
+// ── MOBILE FIX 7 : swipe-to-dismiss — glisser vers le bas pour fermer ─────
+(function() {
+  var THRESHOLD = 80; // px minimum pour déclencher la fermeture
+  var overlayClosers = {
+    'add-overlay':         function(){ closeModal(); },
+    'edit-overlay':        function(){ closeEdit(); },
+    'budget-overlay':      function(){ closeBudget(); },
+    'budget-detail-overlay': function(){ closeBudgetDetail(); },
+    'wish-overlay':        function(){ closeWish(); },
+    'adjust-overlay':      function(){ closeAdjust(); },
+    'acc-overlay':         function(){ closeAccModal(); },
+    'cat-overlay':         function(){ closeCatModal(); }
+  };
+
+  Object.keys(overlayClosers).forEach(function(id) {
+    var overlay = document.getElementById(id);
+    if(!overlay) return;
+    var modal = overlay.querySelector('.modal');
+    if(!modal) return;
+
+    var startY = 0, startX = 0, dragging = false;
+
+    modal.addEventListener('touchstart', function(e) {
+      if(e.touches.length !== 1) return;
+      startY = e.touches[0].clientY;
+      startX = e.touches[0].clientX;
+      dragging = true;
+      modal.style.transition = 'none';
+    }, { passive: true });
+
+    modal.addEventListener('touchmove', function(e) {
+      if(!dragging || e.touches.length !== 1) return;
+      var dy = e.touches[0].clientY - startY;
+      var dx = e.touches[0].clientX - startX;
+      // Seulement si mouvement principalement vertical vers le bas
+      if(dy > 0 && dy > Math.abs(dx)) {
+        modal.style.transform = 'translateY(' + dy + 'px)';
+        modal.style.opacity = String(Math.max(0, 1 - dy / 300));
+      }
+    }, { passive: true });
+
+    modal.addEventListener('touchend', function(e) {
+      if(!dragging) return;
+      dragging = false;
+      var changedTouch = e.changedTouches[0];
+      var dy = changedTouch.clientY - startY;
+      modal.style.transition = '';
+
+      if(dy > THRESHOLD) {
+        modal.style.transform = 'translateY(100%)';
+        modal.style.opacity = '0';
+        haptic('light');
+        setTimeout(function() {
+          modal.style.transform = '';
+          modal.style.opacity = '';
+          overlayClosers[id]();
+        }, 200);
+      } else {
+        modal.style.transform = '';
+        modal.style.opacity = '';
+      }
+    }, { passive: true });
+  });
 })();
 </script>
 </body>
