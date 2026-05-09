@@ -2225,7 +2225,7 @@ function applyTheme(themeKey, dark) {
   if(typeof renderAll === 'function') renderAll();
 
   renderThemePicker();
-  if(currentUser) { settings.theme = themeKey; settings.isDark = isDark; settings.autoMode = autoMode; save(); }
+  if(currentUser) { save(); }
 }
 
 function renderThemePicker() {
@@ -2900,11 +2900,6 @@ function doSignOut(){
 
 // ── LOAD DATA ─────────────────────────────
 var unsub=null;
-var _authSetup=false;
-// Auth state — only set up after Firebase loads
-function setupAuth(){
-  if(!auth||_authSetup)return;
-  _authSetup=true;
 function showLoader(msg) {
   var el = document.getElementById('loader');
   if(!el) return;
@@ -2942,6 +2937,12 @@ function showLoaderOut() {
   var msgEl = document.getElementById('loader-msg');
   if(msgEl) msgEl.textContent = 'À bientôt 👋';
 }
+
+var _authSetup=false;
+// Auth state — only set up after Firebase loads
+function setupAuth(){
+  if(!auth||_authSetup)return;
+  _authSetup=true;
 
   auth.onAuthStateChanged(function(user){
   currentUser=user;
