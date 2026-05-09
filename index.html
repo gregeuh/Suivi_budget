@@ -409,6 +409,33 @@ button, a, [onclick], .tab-btn, .nk, .cat-chip, .acc-chip,
 #toast-icon.info    { background: rgba(234,88,12,0.2); }
 #toast-text { flex: 1; }
 
+/* UNDO BAR */
+#undo-bar {
+  position: fixed; bottom: 110px; left: 16px; right: 16px;
+  background: #1c1917; color: #fff;
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; border-radius: 16px;
+  font-size: 14px; font-weight: 600;
+  z-index: 997; opacity: 0; pointer-events: none;
+  transform: translateY(24px) scale(0.95);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+  transition: opacity .28s ease, transform .28s cubic-bezier(.34,1.56,.64,1);
+  overflow: hidden;
+}
+#undo-bar.on { opacity: 1; pointer-events: all; transform: translateY(0) scale(1); }
+#undo-progress {
+  position: absolute; bottom: 0; left: 0; height: 3px;
+  background: var(--accent); width: 100%;
+  transform-origin: left; border-radius: 0 0 0 16px;
+}
+#undo-label { flex: 1; }
+#undo-btn {
+  background: var(--accent); color: #fff; border: none;
+  padding: 7px 14px; border-radius: 10px; font-size: 13px;
+  font-weight: 700; cursor: pointer; flex-shrink: 0;
+  font-family: inherit;
+}
+
 /* MISC */
 .empty{text-align:center;padding:40px 20px;color:var(--txt2)}
 .empty-ico{font-size:44px;margin-bottom:12px}
@@ -1227,6 +1254,13 @@ button, a, [onclick], .tab-btn, .nk, .cat-chip, .acc-chip,
       </div>
       <div class="set-group">
         <div class="set-sec">Données</div>
+        <div class="set-row" style="cursor:pointer" onclick="openTrash()">
+          <div>
+            <div class="set-name">🗑️ Corbeille</div>
+            <div class="set-sub" id="trash-count-label">Transactions supprimées récemment</div>
+          </div>
+          <div style="font-size:18px">›</div>
+        </div>
         <div class="set-row" style="cursor:pointer" onclick="exportPDF()">
           <div>
             <div class="set-name">Exporter PDF</div>
@@ -1529,6 +1563,25 @@ button, a, [onclick], .tab-btn, .nk, .cat-chip, .acc-chip,
 </div>
 
 <div id="toast"><div id="toast-icon" class="success">✓</div><div id="toast-text"></div></div>
+
+<!-- UNDO BAR -->
+<div id="undo-bar">
+  <div id="undo-progress"></div>
+  <div id="undo-label">Transaction supprimée</div>
+  <button id="undo-btn" onclick="undoDelete()">Annuler</button>
+</div>
+
+<!-- CORBEILLE MODAL -->
+<div class="overlay" id="trash-overlay" onclick="if(event.target===this)closeTrash()">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">🗑️ Corbeille</div>
+      <button class="modal-close" onclick="closeTrash()">✕</button>
+    </div>
+    <div style="font-size:13px;color:var(--txt2);padding:0 0 12px">Les transactions supprimées sont conservées 30 jours.</div>
+    <div id="trash-list"></div>
+  </div>
+</div>
 <script>
 // ── FIREBASE (chargé dynamiquement) ──────
 var auth=null, db=null, cloudDoc=null;
@@ -1552,7 +1605,7 @@ function initFirebase(cb) {
 }
 
 // ── STATE ─────────────────────────────────
-var expenses=[], accounts=[], categories=[], catBudgets={};
+var expenses=[], accounts=[], categories=[], catBudgets={}, trash=[];
 var displayName='', forecastSalary=0, savingsGoal=500, savedTheme='auto';
 var viewDate=new Date(), privacyOn=false, currentUser=null;
 var editingId=null, mAmt='', mCurrentType='exp', qaCurrentType='exp';
@@ -2969,6 +3022,8 @@ function setupAuth(){
     if(d.autoMode) { enableAutoMode(); } else { applyTheme(d.theme, isDark); }
   }
   wishlist=Array.isArray(d.wishlist)?d.wishlist:[];
+  var thirtyDaysAgo=Date.now()-30*24*3600*1000;
+  trash=Array.isArray(d.trash)?d.trash.filter(function(t){return t&&(t.deletedAt||0)>thirtyDaysAgo;}):[];
   var mpEl=document.getElementById('s-meal-price');if(mpEl)mpEl.value=swileMealPrice;
       // Accounts — merge defaults with saved, include custom accounts
       var saved=Array.isArray(d.accounts)?d.accounts:[];
@@ -3042,7 +3097,8 @@ function save(){
         expenses:expenses,accounts:accounts,
         categories:categories.filter(function(c){return c.isCustom;}),
         displayName:displayName,forecastSalary:forecastSalary,savingsGoal:savingsGoal,
-        catBudgets:catBudgets,swileMealPrice:swileMealPrice,wishlist:wishlist,theme:savedTheme,isDark:isDark,autoMode:autoMode
+        catBudgets:catBudgets,swileMealPrice:swileMealPrice,wishlist:wishlist,theme:savedTheme,isDark:isDark,autoMode:autoMode,
+        trash:trash
       }));
     } catch(e){}
     return;
@@ -3051,7 +3107,8 @@ function save(){
   cloudDoc.set({
     expenses:expenses,accounts:accounts,categories:customCats,
     displayName:displayName,forecastSalary:forecastSalary,savingsGoal:savingsGoal,
-    catBudgets:catBudgets,swileMealPrice:swileMealPrice,wishlist:wishlist,theme:savedTheme,isDark:isDark,autoMode:autoMode
+    catBudgets:catBudgets,swileMealPrice:swileMealPrice,wishlist:wishlist,theme:savedTheme,isDark:isDark,autoMode:autoMode,
+    trash:trash
   },{merge:true}).catch(function(e){console.error(e);});
 }
 
@@ -3235,6 +3292,7 @@ function renderAll(){
   renderBudgets();
   renderCatsSettings();
   applyPrivacy();
+  _updateTrashCountLabel();
 }
 
 // ── HERO ──────────────────────────────────
@@ -4087,8 +4145,9 @@ setTimeout(renderThemePicker, 200);
   setupAuth(); // detect existing session immediately
 })();
 
-// ── SWIPE-TO-DELETE sur les transactions ──────────────────────────────
+// ── SWIPE-TO-DELETE + UNDO + CORBEILLE ───────────────────────────────
 var _swipeRevealedItem = null;
+var _pendingDelete = null; // { tx, timer, saveTimer }
 
 // Listener unique sur document pour fermer l'item révélé si on tape ailleurs
 document.addEventListener('touchstart', function(e) {
@@ -4099,11 +4158,59 @@ document.addEventListener('touchstart', function(e) {
   }
 }, {passive: true});
 
+function _showUndoBar(label) {
+  var bar = document.getElementById('undo-bar');
+  var lbl = document.getElementById('undo-label');
+  var prog = document.getElementById('undo-progress');
+  if(lbl) lbl.textContent = '"' + label + '" supprimée';
+  // Reset & démarrer la barre de progression
+  if(prog) {
+    prog.style.transition = 'none';
+    prog.style.transform = 'scaleX(1)';
+    requestAnimationFrame(function() {
+      prog.style.transition = 'transform 5s linear';
+      prog.style.transform = 'scaleX(0)';
+    });
+  }
+  bar.classList.add('on');
+}
+
+function _hideUndoBar() {
+  document.getElementById('undo-bar').classList.remove('on');
+}
+
+function undoDelete() {
+  if(!_pendingDelete) return;
+  clearTimeout(_pendingDelete.saveTimer);
+  var tx = _pendingDelete.tx;
+  _pendingDelete = null;
+  // Réinsérer la transaction à sa position d'origine
+  expenses.push(tx);
+  expenses.sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+  _hideUndoBar();
+  renderAll();
+  haptic('success');
+  toast('Restaurée ✓', 'success');
+}
+
 function _animateDelete(item, wrap, txId) {
+  var tx = expenses.find(function(e){ return e.id === txId || e.originalId === txId; });
+  if(!tx) return;
+
+  // Annuler un undo en attente précédent → le confirmer immédiatement
+  if(_pendingDelete) {
+    clearTimeout(_pendingDelete.saveTimer);
+    trash.push(Object.assign({}, _pendingDelete.tx, { deletedAt: Date.now() }));
+    save();
+    _pendingDelete = null;
+  }
+
+  // Animation de sortie
   item.style.transition = 'transform .18s ease, opacity .18s ease';
   item.style.transform = 'translateX(-110%)';
   item.style.opacity = '0';
   haptic('error');
+
   setTimeout(function() {
     var h = wrap.offsetHeight;
     wrap.style.overflow = 'hidden';
@@ -4115,11 +4222,84 @@ function _animateDelete(item, wrap, txId) {
       wrap.style.opacity = '0';
     });
     setTimeout(function() {
+      // Retirer de expenses mais NE PAS sauvegarder encore
       expenses = expenses.filter(function(e){ return e.id !== txId && e.originalId !== txId; });
-      save(); renderAll();
-      toast('Transaction supprimée', 'success');
+      renderAll();
+
+      // Préparer l'undo pendant 5s
+      var saveTimer = setTimeout(function() {
+        // L'utilisateur n'a pas annulé → envoyer en corbeille
+        trash.push(Object.assign({}, tx, { deletedAt: Date.now() }));
+        save();
+        _pendingDelete = null;
+        _hideUndoBar();
+        _updateTrashCountLabel();
+      }, 5000);
+
+      _pendingDelete = { tx: tx, saveTimer: saveTimer };
+      _showUndoBar(tx.label || 'Transaction');
     }, 220);
   }, 170);
+}
+
+// ── CORBEILLE ─────────────────────────────────────────────────────────
+function _updateTrashCountLabel() {
+  var el = document.getElementById('trash-count-label');
+  if(!el) return;
+  var n = trash.length;
+  el.textContent = n === 0 ? 'Aucun élément' : n + ' élément' + (n > 1 ? 's' : '') + ' · conservé' + (n > 1 ? 's' : '') + ' 30 jours';
+}
+
+function renderTrash() {
+  var el = document.getElementById('trash-list');
+  if(!el) return;
+  _updateTrashCountLabel();
+  if(!trash.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-ico">🗑️</div>La corbeille est vide</div>';
+    return;
+  }
+  var cats = categories;
+  var accs = accounts;
+  var html = '';
+  var sorted = trash.slice().sort(function(a,b){ return (b.deletedAt||0)-(a.deletedAt||0); });
+  sorted.forEach(function(t) {
+    var cat = cats.find(function(c){ return c.id===t.cat; }) || { icon:'💸' };
+    var acc = accs.find(function(a){ return a.id===t.accountId; });
+    var isInc = t.type === 'income';
+    var daysLeft = Math.max(0, Math.ceil((30*24*3600*1000 - (Date.now()-(t.deletedAt||0))) / 86400000));
+    html += '<div class="tx-item" style="margin-bottom:8px;opacity:.85">'
+      + '<div class="tx-ico">' + cat.icon + '</div>'
+      + '<div class="tx-info">'
+      + '<div class="tx-name">' + esc(t.label||'Sans libellé') + '</div>'
+      + '<div class="tx-sub">' + (acc ? esc(acc.name) : '') + ' · expire dans ' + daysLeft + 'j</div>'
+      + '</div>'
+      + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">'
+      + '<div class="tx-amt ' + (isInc?'i':'e') + '">' + (isInc?'+':'-') + t.amount.toFixed(2) + ' €</div>'
+      + '<button onclick="restoreFromTrash(\'' + t.id + '\')" style="font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);border:none;border-radius:8px;padding:4px 10px;cursor:pointer">Restaurer</button>'
+      + '</div></div>';
+  });
+  el.innerHTML = html;
+}
+
+function restoreFromTrash(id) {
+  var tx = trash.find(function(t){ return t.id===id; });
+  if(!tx) return;
+  trash = trash.filter(function(t){ return t.id!==id; });
+  var restored = Object.assign({}, tx);
+  delete restored.deletedAt;
+  expenses.push(restored);
+  expenses.sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+  save(); renderAll(); renderTrash();
+  haptic('success');
+  toast('Transaction restaurée ✓', 'success');
+}
+
+function openTrash() {
+  renderTrash();
+  document.getElementById('trash-overlay').classList.add('on');
+}
+function closeTrash() {
+  document.getElementById('trash-overlay').classList.remove('on');
 }
 
 function setupSwipeTx(container) {
