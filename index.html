@@ -2901,10 +2901,11 @@ function hideLoader() {
     document.getElementById('auth').style.display='none';
     document.getElementById('app').classList.add('on');
     showLoader();
+    setTimeout(function(){ hideLoader(); }, 6000); // sécurité si onSnapshot ne répond pas
     cloudDoc=db.collection('users').doc(user.uid);
     if(unsub)unsub();
     unsub=cloudDoc.onSnapshot(function(snap){
-      if(!snap.exists){init(); return;}
+      if(!snap.exists){init(); hideLoader(); return;}
       var d=snap.data()||{};
       expenses=Array.isArray(d.expenses)?d.expenses.filter(function(e){return e;}):[];
       displayName=d.displayName||user.displayName||user.email.split('@')[0];
