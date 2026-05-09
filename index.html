@@ -4042,13 +4042,11 @@ function openBankImport(input) {
   if(!file) return;
 
   function processText(text) {
-    // Nettoyage BOM et espaces
     text = text.replace(/^﻿/,'').replace(/\r/g,'');
     var sep = _detectSep(text);
     var allLines = text.split('\n').filter(function(l){ return l.trim(); });
     if(allLines.length < 2) { toast('Fichier vide ou invalide', 'error'); return; }
 
-    // Parser une ligne CSV (gère les guillemets)
     function parseLine(line) {
       var res=[], cur='', inQ=false;
       for(var i=0;i<line.length;i++){
@@ -4061,50 +4059,58 @@ function openBankImport(input) {
       return res;
     }
 
-    // Chercher la ligne d'en-tête : la ligne dont les cellules contiennent
-    // le plus de mots-clés connus (et pas des valeurs numériques/dates)
-    var headerKeywords = ['date','libelle','debit','credit','montant','operation','libelle','valeur','motif','intitule'];
-    function lineScore(line) {
-      var low = line.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
-      var score = 0;
-      headerKeywords.forEach(function(k){ if(low.indexOf(k)!==-1) score++; });
-      // Pénaliser les lignes qui ressemblent à des données (contiennent une date DD/MM/YYYY seule)
-      if(/^\d{2}\/\d{2}\/\d{4}/.test(line.trim())) score -= 5;
-      return score;
-    }
-    var headerIdx = 0, bestScore = -1;
-    for(var i=0;i<Math.min(allLines.length,15);i++){
-      var s = lineScore(allLines[i]);
-      if(s > bestScore){ bestScore = s; headerIdx = i; }
-      if(s >= 2) break; // on a trouvé une ligne avec au moins 2 mots-clés → c'est l'en-tête
-    }
+    var firstCells = parseLine(allLines[0]);
+    var noHeader = /^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4}$/.test((firstCells[0]||'').trim());
 
-    // Garder TOUS les headers (y compris vides) pour que les index
-    // correspondent aux colonnes des lignes de données
-    _biHeaders = parseLine(allLines[headerIdx]);
-    _biRows = allLines.slice(headerIdx+1)
-      .map(parseLine)
-      .filter(function(r){ return r.some(function(c){ return c; }); });
+    var iDate, iLabel, iAmt, iDebit, iCredit;
 
-    // Détection automatique des colonnes
-    var iDate   = _guessCol(_biHeaders, ['date','jour','day']);
-    var iLabel  = _guessCol(_biHeaders, ['libelle','label','description','operation','motif','intitule','detail']);
-    var iAmt    = _guessCol(_biHeaders, ['montant','amount','valeur']);
-    var iDebit  = _guessCol(_biHeaders, ['debit','debi','sortie','retrait','paiement']);
-    var iCredit = _guessCol(_biHeaders, ['credit','credi','entree','versement']);
+    if(noHeader) {
+      // Format LCL (et similaires) : pas d'en-tête, données dès la 1ère ligne
+      // Colonnes LCL : Date(0) ; Montant(1) ; Type(2) ; vide(3) ; Libellé(4 ou 5)
+      // Ignorer les lignes de solde (< 5 colonnes ou col3 = numéro de compte)
+      _biRows = allLines.map(parseLine).filter(function(r){
+        if(r.length < 5) return false;                  // ligne solde (4 colonnes)
+        if(/^0+\d{6,}/.test(r[3]||'')) return false;   // col3 = numéro de compte
+        return true;
+      });
+      // En-têtes synthétiques pour l'affichage dans les selects
+      _biHeaders = ['Date', 'Montant', 'Type opération', '', 'Libellé', 'Libellé (virt. reçus)', '', ''];
+      iDate = 0; iAmt = 1; iLabel = 4; iDebit = -1; iCredit = -1;
+    } else {
+      // Format avec en-tête : chercher la meilleure ligne d'en-tête
+      var headerKeywords = ['date','libelle','debit','credit','montant','operation','valeur','motif'];
+      function lineScore(line) {
+        var low = line.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+        var score = 0;
+        headerKeywords.forEach(function(k){ if(low.indexOf(k)!==-1) score++; });
+        if(/^\d{2}\/\d{2}\/\d{4}/.test(line.trim())) score -= 5;
+        return score;
+      }
+      var headerIdx = 0, bestScore = -1;
+      for(var i=0;i<Math.min(allLines.length,15);i++){
+        var s = lineScore(allLines[i]);
+        if(s > bestScore){ bestScore = s; headerIdx = i; }
+        if(s >= 2) break;
+      }
+      _biHeaders = parseLine(allLines[headerIdx]);
+      _biRows = allLines.slice(headerIdx+1).map(parseLine)
+        .filter(function(r){ return r.some(function(c){ return c; }); });
+      iDate   = _guessCol(_biHeaders, ['date','jour','day']);
+      iLabel  = _guessCol(_biHeaders, ['libelle','label','description','operation','motif','intitule','detail']);
+      iAmt    = _guessCol(_biHeaders, ['montant','amount','valeur']);
+      iDebit  = _guessCol(_biHeaders, ['debit','debi','sortie','retrait','paiement']);
+      iCredit = _guessCol(_biHeaders, ['credit','credi','entree','versement']);
+    }
 
     input.value = '';
     _renderBankImportModal(iDate, iLabel, iAmt, iDebit, iCredit);
     document.getElementById('bank-import-overlay').classList.add('on');
   }
 
-  // Essayer UTF-8 d'abord, puis ISO-8859-1 si le résultat contient des caractères illisibles
   var r = new FileReader();
   r.onload = function(e) {
     var text = e.target.result;
-    // Détecter si l'encodage semble correct (présence de caractères spéciaux cassés)
     if(text.indexOf('�') !== -1) {
-      // Relire en ISO-8859-1 (Latin-1) — format LCL et certaines banques françaises
       var r2 = new FileReader();
       r2.onload = function(e2){ processText(e2.target.result); };
       r2.readAsText(input.files[0], 'ISO-8859-1');
@@ -4211,8 +4217,9 @@ function runBankImport() {
     var date = iDate>=0 ? _parseDate(row[iDate]||'') : new Date().toISOString().split('T')[0];
     if(!date || date.length<8) { skip++; return; }
 
-    // Libellé
-    var label = iLabel>=0 ? (row[iLabel]||'').trim() : 'Importé';
+    // Libellé — LCL : col4 pour dépenses, col5 pour virements reçus
+    var label = iLabel>=0 ? (row[iLabel]||'').trim() : '';
+    if(!label && iLabel>=0) label = (row[iLabel+1]||'').trim(); // fallback col suivante
     if(!label) label = 'Importé';
 
     // Montant + direction (income/expense)
