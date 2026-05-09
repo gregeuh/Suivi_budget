@@ -409,6 +409,22 @@ button, a, [onclick], .tab-btn, .nk, .cat-chip, .acc-chip,
 #toast-icon.info    { background: rgba(234,88,12,0.2); }
 #toast-text { flex: 1; }
 
+/* BANK IMPORT */
+.bi-row { display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border); gap:10px; }
+.bi-row:last-child { border-bottom:none; }
+.bi-lbl { font-size:13px; font-weight:600; color:var(--txt2); flex-shrink:0; width:90px; }
+.bi-sel { flex:1; background:var(--input); border:1.5px solid var(--border); border-radius:10px; padding:8px 10px; font-size:13px; color:var(--txt); font-family:inherit; }
+.bi-preview { margin-top:12px; border-radius:12px; overflow:hidden; border:1px solid var(--border); }
+.bi-prev-row { display:flex; gap:0; font-size:12px; }
+.bi-prev-row:nth-child(even) { background:var(--input); }
+.bi-prev-cell { padding:7px 10px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; border-right:1px solid var(--border); }
+.bi-prev-cell:last-child { border-right:none; }
+.bi-prev-head { background:var(--card2); font-weight:700; font-size:11px; color:var(--txt2); }
+.bi-stat { display:flex; gap:8px; margin-top:12px; }
+.bi-stat-box { flex:1; background:var(--input); border-radius:10px; padding:10px; text-align:center; }
+.bi-stat-n { font-size:22px; font-weight:800; font-family:'Sora',sans-serif; color:var(--accent); }
+.bi-stat-l { font-size:11px; color:var(--txt2); margin-top:2px; }
+
 /* UNDO BAR */
 #undo-bar {
   position: fixed; bottom: 110px; left: 16px; right: 16px;
@@ -1271,8 +1287,16 @@ button, a, [onclick], .tab-btn, .nk, .cat-chip, .acc-chip,
         <div class="set-row" style="cursor:pointer" onclick="exportCSV()">
           <div class="set-name">Exporter CSV</div><div style="font-size:18px">📤</div>
         </div>
+        <div class="set-row" style="cursor:pointer" onclick="document.getElementById('bank-csv-input').click()">
+          <div>
+            <div class="set-name">📥 Import relevé bancaire</div>
+            <div class="set-sub">Détection automatique des colonnes</div>
+          </div>
+          <div style="font-size:18px">›</div>
+          <input type="file" id="bank-csv-input" accept=".csv,.txt" onchange="openBankImport(this)" style="display:none">
+        </div>
         <div class="set-row">
-          <div class="set-name">Importer CSV</div>
+          <div class="set-name">Importer CSV (format app)</div>
           <label style="font-size:18px;cursor:pointer">📥<input type="file" accept=".csv" onchange="importCSV(this)" style="display:none"></label>
         </div>
       </div>
@@ -1569,6 +1593,17 @@ button, a, [onclick], .tab-btn, .nk, .cat-chip, .acc-chip,
   <div id="undo-progress"></div>
   <div id="undo-label">Transaction supprimée</div>
   <button id="undo-btn" onclick="undoDelete()">Annuler</button>
+</div>
+
+<!-- IMPORT BANCAIRE MODAL -->
+<div class="overlay" id="bank-import-overlay" onclick="if(event.target===this)closeBankImport()">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">📥 Import relevé bancaire</div>
+      <button class="modal-close" onclick="closeBankImport()">✕</button>
+    </div>
+    <div id="bi-body"></div>
+  </div>
 </div>
 
 <!-- CORBEILLE MODAL -->
@@ -3968,6 +4003,183 @@ function exportCSV(){
   a.download='budget-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
   toast('CSV exporté ✓');
 }
+// ── IMPORT BANCAIRE INTELLIGENT ───────────────────────────────────────
+var _biRows = [], _biHeaders = [];
+
+function _detectSep(text) {
+  var counts = { ';':0, ',':0, '\t':0, '|':0 };
+  var first = text.split('\n')[0] || '';
+  Object.keys(counts).forEach(function(s){ counts[s] = (first.split(s).length - 1); });
+  return Object.keys(counts).reduce(function(a,b){ return counts[a]>=counts[b]?a:b; });
+}
+
+function _parseDate(s) {
+  if(!s) return '';
+  s = s.trim();
+  // DD/MM/YYYY ou DD-MM-YYYY
+  var m = s.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})$/);
+  if(m) return m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0');
+  // YYYY-MM-DD
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  // MM/DD/YYYY (US)
+  var m2 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if(m2 && parseInt(m2[1])<=12 && parseInt(m2[2])>12) return m2[3]+'-'+m2[1].padStart(2,'0')+'-'+m2[2].padStart(2,'0');
+  return s;
+}
+
+function _guessCol(headers, keywords) {
+  var h = headers.map(function(h){ return h.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); });
+  for(var i=0;i<keywords.length;i++) {
+    for(var j=0;j<h.length;j++) {
+      if(h[j].indexOf(keywords[i])!==-1) return j;
+    }
+  }
+  return -1;
+}
+
+function openBankImport(input) {
+  var file = input.files[0];
+  if(!file) return;
+  var r = new FileReader();
+  r.onload = function(e) {
+    var text = e.target.result;
+    var sep = _detectSep(text);
+    var lines = text.replace(/\r/g,'').split('\n').filter(function(l){ return l.trim(); });
+    if(lines.length < 2) { toast('Fichier vide ou invalide', 'error'); return; }
+
+    // Parser les lignes CSV (gère les guillemets)
+    function parseLine(line) {
+      var res=[], cur='', inQ=false;
+      for(var i=0;i<line.length;i++){
+        var c=line[i];
+        if(c==='"'){ if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ; }
+        else if(c===sep&&!inQ){ res.push(cur.trim());cur=''; }
+        else cur+=c;
+      }
+      res.push(cur.trim());
+      return res;
+    }
+
+    _biHeaders = parseLine(lines[0]);
+    _biRows = lines.slice(1).map(parseLine).filter(function(r){ return r.some(function(c){return c;}); });
+
+    // Détection automatique des colonnes
+    var iDate   = _guessCol(_biHeaders, ['date','jour','day']);
+    var iLabel  = _guessCol(_biHeaders, ['libelle','label','description','operation','motif','intitule','detail']);
+    var iAmt    = _guessCol(_biHeaders, ['montant','amount','valeur','solde']);
+    var iDebit  = _guessCol(_biHeaders, ['debit','debi','sortie','retrait','paiement']);
+    var iCredit = _guessCol(_biHeaders, ['credit','credi','entree','versement','virement entrant']);
+
+    input.value = '';
+    _renderBankImportModal(iDate, iLabel, iAmt, iDebit, iCredit);
+    document.getElementById('bank-import-overlay').classList.add('on');
+  };
+  r.readAsText(file, 'UTF-8');
+}
+
+function _renderBankImportModal(iDate, iLabel, iAmt, iDebit, iCredit) {
+  var colOpts = '<option value="-1">— Ignorer —</option>' +
+    _biHeaders.map(function(h,i){ return '<option value="'+i+'">'+h+'</option>'; }).join('');
+
+  function sel(id, idx) {
+    return '<select class="bi-sel" id="'+id+'">' +
+      colOpts.replace('value="'+idx+'"','value="'+idx+'" selected') + '</select>';
+  }
+
+  var accOpts = accounts.map(function(a){
+    return '<option value="'+a.id+'">'+a.name+'</option>';
+  }).join('');
+
+  var html = '<div style="font-size:13px;color:var(--txt2);margin-bottom:12px">'+
+    _biRows.length+' lignes détectées · Séparateur : «'+(_biHeaders.length>1?'détecté':'auto')+'»</div>';
+
+  html += '<div class="bi-row"><span class="bi-lbl">📅 Date</span>'+sel('bi-date',iDate)+'</div>';
+  html += '<div class="bi-row"><span class="bi-lbl">📝 Libellé</span>'+sel('bi-label',iLabel)+'</div>';
+  html += '<div class="bi-row" id="bi-amt-row"><span class="bi-lbl">💶 Montant</span>'+sel('bi-amt',iAmt)+'</div>';
+  html += '<div class="bi-row"><span class="bi-lbl">🔴 Débit</span>'+sel('bi-debit',iDebit)+'</div>';
+  html += '<div class="bi-row"><span class="bi-lbl">🟢 Crédit</span>'+sel('bi-credit',iCredit)+'</div>';
+  html += '<div class="bi-row"><span class="bi-lbl">💳 Compte</span><select class="bi-sel" id="bi-account">'+accOpts+'</select></div>';
+
+  // Aperçu des 4 premières lignes
+  html += '<div class="bi-preview" style="margin-top:16px">';
+  html += '<div class="bi-prev-row bi-prev-head">'+_biHeaders.slice(0,4).map(function(h){
+    return '<div class="bi-prev-cell">'+h+'</div>';
+  }).join('')+'</div>';
+  _biRows.slice(0,4).forEach(function(row){
+    html += '<div class="bi-prev-row">'+row.slice(0,4).map(function(c){
+      return '<div class="bi-prev-cell">'+c+'</div>';
+    }).join('')+'</div>';
+  });
+  html += '</div>';
+
+  html += '<button class="btn btn-primary" onclick="runBankImport()" style="margin-top:16px;width:100%">Importer '+_biRows.length+' transactions</button>';
+
+  document.getElementById('bi-body').innerHTML = html;
+}
+
+function runBankImport() {
+  var iDate   = parseInt(document.getElementById('bi-date').value);
+  var iLabel  = parseInt(document.getElementById('bi-label').value);
+  var iAmt    = parseInt(document.getElementById('bi-amt').value);
+  var iDebit  = parseInt(document.getElementById('bi-debit').value);
+  var iCredit = parseInt(document.getElementById('bi-credit').value);
+  var accId   = document.getElementById('bi-account').value;
+
+  var ok=0, skip=0;
+  _biRows.forEach(function(row) {
+    // Date
+    var date = iDate>=0 ? _parseDate(row[iDate]||'') : new Date().toISOString().split('T')[0];
+    if(!date || date.length<8) { skip++; return; }
+
+    // Libellé
+    var label = iLabel>=0 ? (row[iLabel]||'').trim() : 'Importé';
+    if(!label) label = 'Importé';
+
+    // Montant
+    var amt=0, type='expense';
+    if(iAmt>=0) {
+      var raw = (row[iAmt]||'').replace(/\s/g,'').replace(',','.').replace(/[^\d.\-+]/g,'');
+      amt = parseFloat(raw)||0;
+      type = amt>=0 ? 'income' : 'expense';
+      amt = Math.abs(amt);
+    } else if(iDebit>=0 || iCredit>=0) {
+      var dRaw = iDebit>=0 ? (row[iDebit]||'').replace(/\s/g,'').replace(',','.').replace(/[^\d.]/g,'') : '';
+      var cRaw = iCredit>=0 ? (row[iCredit]||'').replace(/\s/g,'').replace(',','.').replace(/[^\d.]/g,'') : '';
+      var d=parseFloat(dRaw)||0, c=parseFloat(cRaw)||0;
+      if(d>0){ amt=d; type='expense'; }
+      else if(c>0){ amt=c; type='income'; }
+      else { skip++; return; }
+    } else { skip++; return; }
+
+    if(!amt || amt<=0) { skip++; return; }
+
+    // Doublon
+    var dup = expenses.some(function(ex){
+      return ex.date===date && ex.label===label && Math.abs(ex.amount-amt)<0.01;
+    });
+    if(dup) { skip++; return; }
+
+    expenses.push({
+      id: 'bi_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
+      label: label, amount: amt, type: type,
+      cat: type==='income'?'salaire':'autre',
+      accountId: accId, date: date,
+      note: null, recurring: false, frequency: null, customDays: null, endDate: null
+    });
+    ok++;
+  });
+
+  expenses.sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+  save(); renderAll(); closeBankImport();
+  toast(ok+' transaction'+(ok>1?'s':'')+' importée'+(ok>1?'s':'')+(skip?' · '+skip+' ignorée'+(skip>1?'s':''):''), 'success');
+}
+
+function closeBankImport() {
+  document.getElementById('bank-import-overlay').classList.remove('on');
+  document.getElementById('bi-body').innerHTML='';
+  _biRows=[]; _biHeaders=[];
+}
+
 function importCSV(input){
   var file=input.files[0];if(!file)return;
   var r=new FileReader();
