@@ -1199,7 +1199,7 @@ button{cursor:pointer;border:none;background:none}
           <label style="font-size:18px;cursor:pointer">📥<input type="file" accept=".csv" onchange="importCSV(this)" style="display:none"></label>
         </div>
       </div>
-      <button class="btn btn-danger" id="signout-btn" onclick="confirmSignOut(this)" style="margin-bottom:8px">Se déconnecter</button>
+      <button class="btn btn-danger" onclick="firebase.auth().signOut()" style="margin-bottom:8px">Se déconnecter</button>
       <button onclick="resetData()" style="width:100%;padding:14px;border-radius:var(--r-sm);background:transparent;border:1.5px solid var(--red);color:var(--red);font-size:14px;font-weight:700;cursor:pointer">🗑️ Réinitialiser les données</button>
     </div>
 
