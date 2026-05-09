@@ -3006,14 +3006,16 @@ function setupAuth(){
     showLoader();
     setTimeout(function(){ hideLoader(); }, 6000); // sécurité si onSnapshot ne répond pas
     cloudDoc=db.collection('users').doc(user.uid);
+    var _dataLoaded = false; // flag : données chargées au moins une fois
     if(unsub)unsub();
     unsub=cloudDoc.onSnapshot(function(snap){
       if(!snap.exists){
-        // Document inexistant : seulement pour les NOUVEAUX utilisateurs
-        // Vérifier qu'on n'a pas déjà des données locales avant d'écraser
-        if(expenses.length > 0) { hideLoader(); return; } // données déjà chargées → ignorer
+        // N'appeler init() QUE si c'est vraiment un nouvel utilisateur
+        // (jamais si on a déjà chargé des données dans cette session)
+        if(_dataLoaded) { hideLoader(); return; }
         init(); hideLoader(); return;
       }
+      _dataLoaded = true;
       var d=snap.data()||{};
       expenses=Array.isArray(d.expenses)?d.expenses.filter(function(e){return e;}):[];
       displayName=d.displayName||user.displayName||user.email.split('@')[0];
