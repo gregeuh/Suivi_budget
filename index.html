@@ -4061,15 +4061,22 @@ function openBankImport(input) {
       return res;
     }
 
-    // LCL et certaines banques mettent des métadonnées avant l'en-tête réel.
-    // On cherche la première ligne qui contient des mots-clés d'en-tête.
-    var headerKeywords = ['date','libelle','libellé','debit','débit','credit','crédit','montant','operation','opération'];
-    var headerIdx = 0;
-    for(var i=0;i<Math.min(allLines.length,10);i++){
-      var low = allLines[i].toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
-      if(headerKeywords.some(function(k){ return low.indexOf(k)!==-1; })){
-        headerIdx = i; break;
-      }
+    // Chercher la ligne d'en-tête : la ligne dont les cellules contiennent
+    // le plus de mots-clés connus (et pas des valeurs numériques/dates)
+    var headerKeywords = ['date','libelle','debit','credit','montant','operation','libelle','valeur','motif','intitule'];
+    function lineScore(line) {
+      var low = line.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+      var score = 0;
+      headerKeywords.forEach(function(k){ if(low.indexOf(k)!==-1) score++; });
+      // Pénaliser les lignes qui ressemblent à des données (contiennent une date DD/MM/YYYY seule)
+      if(/^\d{2}\/\d{2}\/\d{4}/.test(line.trim())) score -= 5;
+      return score;
+    }
+    var headerIdx = 0, bestScore = -1;
+    for(var i=0;i<Math.min(allLines.length,15);i++){
+      var s = lineScore(allLines[i]);
+      if(s > bestScore){ bestScore = s; headerIdx = i; }
+      if(s >= 2) break; // on a trouvé une ligne avec au moins 2 mots-clés → c'est l'en-tête
     }
 
     // Garder TOUS les headers (y compris vides) pour que les index
