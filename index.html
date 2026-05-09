@@ -835,6 +835,10 @@ button{cursor:pointer;border:none;background:none}
   max-height: calc(92dvh - var(--safe-bottom));
   overflow-y: auto;
 }
+/* Quand JS a recalibré l'overlay via visualViewport, la modal prend 92% de sa hauteur */
+.overlay[data-vp-active] .modal {
+  max-height: 92%;
+}
 
 </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -4079,6 +4083,49 @@ setTimeout(renderThemePicker, 200);
   db   = firebase.firestore();
   FIREBASE_READY = true;
   setupAuth(); // detect existing session immediately
+})();
+
+// ── FIX MODAL iOS KEYBOARD ─────────────────────────────────────────────
+// Sur iOS Safari, position:fixed ne tient pas compte du clavier.
+// visualViewport donne la vraie zone visible → on recale tous les overlays ouverts.
+(function(){
+  if(!window.visualViewport) return;
+  function _syncOverlays(){
+    var vv = window.visualViewport;
+    var overlays = document.querySelectorAll('.overlay.on');
+    overlays.forEach(function(el){
+      el.setAttribute('data-vp-active','1');
+      el.style.top    = vv.offsetTop + 'px';
+      el.style.left   = vv.offsetLeft + 'px';
+      el.style.width  = vv.width + 'px';
+      el.style.height = vv.height + 'px';
+    });
+  }
+  function _resetOverlays(){
+    document.querySelectorAll('.overlay').forEach(function(el){
+      el.removeAttribute('data-vp-active');
+      el.style.top = el.style.left = el.style.width = el.style.height = '';
+    });
+  }
+  window.visualViewport.addEventListener('resize', function(){
+    var hasOpen = !!document.querySelector('.overlay.on');
+    if(hasOpen) _syncOverlays(); else _resetOverlays();
+  });
+  window.visualViewport.addEventListener('scroll', function(){
+    if(document.querySelector('.overlay.on')) _syncOverlays();
+  });
+  // Recalibrer aussi à l'ouverture d'une modale (changement de classe "on")
+  var _ovObs = new MutationObserver(function(mutations){
+    mutations.forEach(function(m){
+      if(m.target.classList.contains('overlay')){
+        if(m.target.classList.contains('on')) _syncOverlays();
+        else _resetOverlays();
+      }
+    });
+  });
+  document.querySelectorAll('.overlay').forEach(function(el){
+    _ovObs.observe(el, { attributes: true, attributeFilter: ['class'] });
+  });
 })();
 </script>
 </body>
