@@ -3008,7 +3008,12 @@ function setupAuth(){
     cloudDoc=db.collection('users').doc(user.uid);
     if(unsub)unsub();
     unsub=cloudDoc.onSnapshot(function(snap){
-      if(!snap.exists){init(); hideLoader(); return;}
+      if(!snap.exists){
+        // Document inexistant : seulement pour les NOUVEAUX utilisateurs
+        // Vérifier qu'on n'a pas déjà des données locales avant d'écraser
+        if(expenses.length > 0) { hideLoader(); return; } // données déjà chargées → ignorer
+        init(); hideLoader(); return;
+      }
       var d=snap.data()||{};
       expenses=Array.isArray(d.expenses)?d.expenses.filter(function(e){return e;}):[];
       displayName=d.displayName||user.displayName||user.email.split('@')[0];
