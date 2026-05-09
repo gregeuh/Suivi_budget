@@ -4072,14 +4072,16 @@ function openBankImport(input) {
       }
     }
 
-    _biHeaders = parseLine(allLines[headerIdx]).filter(function(h){ return h; }); // retirer colonnes vides
+    // Garder TOUS les headers (y compris vides) pour que les index
+    // correspondent aux colonnes des lignes de données
+    _biHeaders = parseLine(allLines[headerIdx]);
     _biRows = allLines.slice(headerIdx+1)
       .map(parseLine)
       .filter(function(r){ return r.some(function(c){ return c; }); });
 
     // Détection automatique des colonnes
     var iDate   = _guessCol(_biHeaders, ['date','jour','day']);
-    var iLabel  = _guessCol(_biHeaders, ['libelle','libelle','label','description','operation','motif','intitule','detail']);
+    var iLabel  = _guessCol(_biHeaders, ['libelle','label','description','operation','motif','intitule','detail']);
     var iAmt    = _guessCol(_biHeaders, ['montant','amount','valeur']);
     var iDebit  = _guessCol(_biHeaders, ['debit','debi','sortie','retrait','paiement']);
     var iCredit = _guessCol(_biHeaders, ['credit','credi','entree','versement']);
@@ -4207,16 +4209,22 @@ function runBankImport() {
     if(!label) label = 'Importé';
 
     // Montant + direction (income/expense)
+    function parseAmt(str) {
+      // Gère : "1 234,56" "1.234,56" "1234.56" "0,00" "" etc.
+      var s = (str||'').trim();
+      if(!s || s==='0,00' || s==='0.00' || s==='0') return 0;
+      // Si séparateur milliers = espace ou point, et décimale = virgule
+      s = s.replace(/\s/g,'').replace(/\.(?=\d{3})/g,'').replace(',','.');
+      return parseFloat(s.replace(/[^\d.\-]/g,''))||0;
+    }
     var amt=0, type='expense';
     if(iAmt>=0) {
-      var raw = (row[iAmt]||'').replace(/\s/g,'').replace(',','.').replace(/[^\d.\-+]/g,'');
-      amt = parseFloat(raw)||0;
+      amt = parseAmt(row[iAmt]);
       type = amt>=0 ? 'income' : 'expense';
       amt = Math.abs(amt);
     } else if(iDebit>=0 || iCredit>=0) {
-      var dRaw = iDebit>=0 ? (row[iDebit]||'').replace(/\s/g,'').replace(',','.').replace(/[^\d.]/g,'') : '';
-      var cRaw = iCredit>=0 ? (row[iCredit]||'').replace(/\s/g,'').replace(',','.').replace(/[^\d.]/g,'') : '';
-      var d=parseFloat(dRaw)||0, c=parseFloat(cRaw)||0;
+      var d = iDebit>=0  ? parseAmt(row[iDebit])  : 0;
+      var c = iCredit>=0 ? parseAmt(row[iCredit]) : 0;
       if(d>0){ amt=d; type='expense'; }
       else if(c>0){ amt=c; type='income'; }
       else { skip++; return; }
