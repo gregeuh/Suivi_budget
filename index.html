@@ -4073,6 +4073,8 @@ setTimeout(renderThemePicker, 200);
   db   = firebase.firestore();
   FIREBASE_READY = true;
   setupAuth(); // detect existing session immediately
+})();
+
 // ── MOBILE FIX 6 : retour haptique ────────────────────────────────────
 function haptic(type) {
   if(!navigator.vibrate) return;
