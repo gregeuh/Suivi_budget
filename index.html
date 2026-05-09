@@ -829,15 +829,13 @@ button{cursor:pointer;border:none;background:none}
 /* Fix modal height sur iOS — évite le clavier qui pousse */
 .overlay {
   position: fixed;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden;                  /* bloque tout scroll horizontal */
 }
 .modal {
   max-height: calc(92dvh - var(--safe-bottom));
+  overflow-x: hidden;                /* empêche le glissement horizontal */
   overflow-y: auto;
-}
-/* Quand JS a recalibré l'overlay via visualViewport, la modal prend 92% de sa hauteur */
-.overlay[data-vp-active] .modal {
-  max-height: 92%;
+  touch-action: pan-y;               /* iOS : seul le scroll vertical autorisé */
 }
 /* Quand JS a recalibré l'overlay via visualViewport, la modal prend 92% de sa hauteur */
 .overlay[data-vp-active] .modal {
@@ -4101,8 +4099,8 @@ setTimeout(renderThemePicker, 200);
     overlays.forEach(function(el){
       el.setAttribute('data-vp-active','1');
       el.style.top    = vv.offsetTop + 'px';
-      el.style.left   = vv.offsetLeft + 'px';
-      el.style.width  = vv.width + 'px';
+      el.style.left   = '0';
+      el.style.width  = '100%';
       el.style.height = vv.height + 'px';
     });
   }
