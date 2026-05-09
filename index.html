@@ -1199,7 +1199,7 @@ button{cursor:pointer;border:none;background:none}
           <label style="font-size:18px;cursor:pointer">📥<input type="file" accept=".csv" onchange="importCSV(this)" style="display:none"></label>
         </div>
       </div>
-      <button class="btn btn-danger" id="signout-btn" onclick="confirmSignOut()" style="margin-bottom:8px">Se déconnecter</button>
+      <button class="btn btn-danger" id="signout-btn" onclick="confirmSignOut(this)" style="margin-bottom:8px">Se déconnecter</button>
       <button onclick="resetData()" style="width:100%;padding:14px;border-radius:var(--r-sm);background:transparent;border:1.5px solid var(--red);color:var(--red);font-size:14px;font-weight:700;cursor:pointer">🗑️ Réinitialiser les données</button>
     </div>
 
@@ -2851,19 +2851,19 @@ function doAuth(){
      });
   });
 }
-var _signOutPending = false, _signOutTimer = null;
-function confirmSignOut() {
-  var btn = document.getElementById('signout-btn');
-  if(!_signOutPending) {
-    _signOutPending = true;
-    if(btn){ btn.textContent = 'Confirmer ?'; btn.style.background = '#b91c1c'; }
+var _signOutConfirmed = false, _signOutTimer = null;
+function confirmSignOut(btn) {
+  if(!_signOutConfirmed) {
+    _signOutConfirmed = true;
+    if(btn){ btn.textContent = 'Confirmer ?'; btn.style.opacity = '.75'; }
     _signOutTimer = setTimeout(function(){
-      _signOutPending = false;
-      if(btn){ btn.textContent = 'Se déconnecter'; btn.style.background = ''; }
+      _signOutConfirmed = false;
+      if(btn){ btn.textContent = 'Se déconnecter'; btn.style.opacity = ''; }
     }, 3000);
   } else {
     clearTimeout(_signOutTimer);
-    _signOutPending = false;
+    _signOutConfirmed = false;
+    if(btn){ btn.textContent = 'Se déconnecter'; btn.style.opacity = ''; }
     doSignOut();
   }
 }
@@ -2871,20 +2871,29 @@ function confirmSignOut() {
 function doSignOut(){
   showLoaderOut();
   setTimeout(function(){
-    if(auth && currentUser) {
-      auth.signOut();
-    } else {
-      // Mode démo — reset et retour à l'écran auth
-      currentUser = null;
-      expenses = []; accounts = []; wishlist = []; charges = [];
-      settings = {}; catBudgets = {}; cloudDoc = null;
-      document.getElementById('app').classList.remove('on');
-      document.getElementById('auth').style.display = 'flex';
-      document.getElementById('a-email').value = '';
-      document.getElementById('a-pwd').value = '';
-      document.getElementById('a-err').style.display = 'none';
-      document.querySelectorAll('[style*="DÉMO"]').forEach(function(el){ el.remove(); });
+    try {
+      var fbAuth = (typeof firebase !== 'undefined') ? firebase.auth() : null;
+      if(fbAuth && fbAuth.currentUser) {
+        fbAuth.signOut().catch(function(e){
+          console.error('signOut:', e);
+          hideLoader();
+          toast('Erreur de déconnexion', 'error');
+        });
+      } else {
+        // Mode démo
+        currentUser = null; cloudDoc = null;
+        expenses = []; accounts = []; wishlist = [];
+        try { localStorage.removeItem('mb_demo'); } catch(e2){}
+        document.getElementById('app').classList.remove('on');
+        document.getElementById('auth').style.display = 'flex';
+        var em = document.getElementById('a-email'); if(em) em.value = '';
+        var pw = document.getElementById('a-pwd');   if(pw) pw.value = '';
+        hideLoader();
+      }
+    } catch(e){
+      console.error('doSignOut:', e);
       hideLoader();
+      toast('Erreur', 'error');
     }
   }, 900);
 }
