@@ -1460,6 +1460,7 @@ button{cursor:pointer;border:none;background:none}
         <select id="cf-account" class="field-inp" style="width:100%"></select>
       </div>
       <button class="btn btn-primary" style="width:100%;margin-bottom:8px" onclick="saveCredit()">Enregistrer</button>
+      <button id="cf-link-btn" class="btn" style="width:100%;margin-bottom:8px;background:var(--bg2);border:1.5px solid var(--border);display:none" onclick="closeCreditForm();openLinkTx(_editingCreditId)">🔗 Lier des transactions</button>
       <button id="cf-delete-btn" class="btn" style="width:100%;background:transparent;border:1.5px solid var(--red);color:var(--red);display:none" onclick="deleteCredit()">Supprimer ce crédit</button>
       <button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="closeCreditForm()">Annuler</button>
     </div>
@@ -4037,6 +4038,7 @@ function openCreditForm(id){
   var accSel = document.getElementById('cf-account');
   accSel.innerHTML = accounts.map(function(a){ return '<option value="'+esc(a.id)+'"'+(c&&c.accountId===a.id?' selected':'')+'>'+esc(a.name)+'</option>'; }).join('');
   document.getElementById('cf-delete-btn').style.display = c ? 'block' : 'none';
+  document.getElementById('cf-link-btn').style.display  = c ? 'block' : 'none';
   document.getElementById('credit-form-overlay').classList.add('on');
 }
 function closeCreditForm(){ document.getElementById('credit-form-overlay').classList.remove('on'); }
