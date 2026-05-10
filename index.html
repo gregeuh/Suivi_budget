@@ -61,6 +61,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 @keyframes fadeSlideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes popIn{from{opacity:0;transform:scale(0.92)}to{opacity:1;transform:scale(1)}}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 .tx-item{animation:fadeSlideUp .28s cubic-bezier(0.16,1,0.3,1) both}
 .card,.stat-card,.evo-card,.budget-item{animation:fadeSlideUp .32s cubic-bezier(0.16,1,0.3,1) both}
@@ -1278,8 +1279,12 @@ button{cursor:pointer;border:none;background:none}
       </div>
 
       <!-- Conseils -->
-      <div class="sec"><div class="sec-title"><span class="ico">💡</span> Conseils</div></div>
+      <div class="sec">
+        <div class="sec-title"><span class="ico">💡</span> Conseils</div>
+        <button class="sec-link" id="ai-conseil-btn" onclick="fetchAIConseils()">✨ IA</button>
+      </div>
       <div id="conseils-list"></div>
+      <div id="ai-conseil-box" style="display:none;margin-bottom:12px"></div>
 
       <!-- Récentes -->
       <div class="sec">
@@ -3563,6 +3568,91 @@ function renderConseils(){
   if(!conseils.length){el.innerHTML='<div class="empty" style="padding:20px"><div class="empty-ico">💡</div>Ajoutez des transactions pour voir vos conseils</div>';return;}
   el.innerHTML=conseils.slice(0,3).map(function(c){return '<div class="conseil"><div class="conseil-icon">'+c.icon+'</div><div class="conseil-text">'+c.text+'</div><div class="conseil-sub">'+c.sub+'</div></div>';}).join('');
 }
+
+// ── CONSEILS IA (Gemini) ───────────────────
+var _GEMINI_KEY = 'AIzaSyBxUfrUhFvt6EMJUiMTLPjpRmMiAW7sAaI';
+var _aiCacheKey = function(){ return 'ai_conseil_'+viewDate.getFullYear()+'_'+viewDate.getMonth(); };
+
+function fetchAIConseils(){
+  var box = document.getElementById('ai-conseil-box'); if(!box) return;
+  var btn = document.getElementById('ai-conseil-btn');
+
+  // Serve from cache if available
+  var cached = localStorage.getItem(_aiCacheKey());
+  if(cached){ _renderAIBox(cached); return; }
+
+  // Build financial summary (no PII)
+  var data = getMonthTx();
+  var restoIds = getRestoIds();
+  var mExp = data.filter(function(e){return e.type==='expense'&&restoIds.indexOf(e.accountId)===-1&&getEpargneIds().indexOf(e.accountId)===-1;}).reduce(function(s,e){return s+e.amount;},0);
+  var mIncR = data.filter(function(e){return e.type==='income'&&restoIds.indexOf(e.accountId)===-1;}).reduce(function(s,e){return s+e.amount;},0);
+  var mInc = mIncR>0?mIncR:forecastSalary;
+  var saveRate = mInc>0?Math.round((mInc-mExp)/mInc*100):0;
+  var byCat = {};
+  data.filter(function(e){return e.type==='expense'&&restoIds.indexOf(e.accountId)===-1;}).forEach(function(e){byCat[e.cat]=(byCat[e.cat]||0)+e.amount;});
+  var catLines = categories.filter(function(c){return byCat[c.id]>0;}).sort(function(a,b){return (byCat[b.id]||0)-(byCat[a.id]||0);}).slice(0,6).map(function(c){
+    var budget = mInc>0 ? Math.round(mInc*({fixe:0.5,vie:0.3,loisirs:0.2}[c.type]||0.2)/Math.max(categories.filter(function(x){return x.type===c.type;}).length,1)) : 0;
+    return c.label+' : '+Math.round(byCat[c.id])+'€'+(budget>0?' (budget '+budget+'€)':'');
+  }).join(', ');
+  var creditLines = credits.length ? credits.map(function(c){return c.label+' '+c.monthlyPayment+'€/m';}).join(', ') : 'aucun';
+  var topWish = wishlist.length ? wishlist[0].name+' '+wishlist[0].price+'€' : 'aucun';
+  var today = new Date(); var daysLeft = new Date(today.getFullYear(),today.getMonth()+1,0).getDate()-today.getDate();
+
+  var prompt = 'Tu es conseiller financier. Voici la situation budgétaire de ce mois :\n'
+    +'- Revenus : '+Math.round(mInc)+'€, Dépenses : '+Math.round(mExp)+'€, Taux épargne : '+saveRate+'%\n'
+    +'- Dépenses par catégorie : '+catLines+'\n'
+    +'- Crédits : '+creditLines+'\n'
+    +'- Projet en cours : '+topWish+'\n'
+    +'- Jours restants dans le mois : '+daysLeft+'\n\n'
+    +'Donne exactement 3 conseils financiers personnalisés, courts (1-2 phrases chacun), en français, en tutoyant. '
+    +'Format : commence chaque conseil par un emoji pertinent puis le texte. Sois précis avec les chiffres réels. '
+    +'Sépare les conseils par des sauts de ligne.';
+
+  // Loading state
+  box.style.display = 'block';
+  box.innerHTML = '<div style="background:var(--card);border-radius:16px;padding:16px;border:1px solid var(--border);display:flex;align-items:center;gap:10px;color:var(--txt2);font-size:13px"><span style="font-size:20px;animation:spin 1s linear infinite;display:inline-block">✨</span> Analyse en cours…</div>';
+  if(btn){ btn.textContent='…'; btn.style.opacity='.5'; btn.disabled=true; }
+
+  fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key='+_GEMINI_KEY, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:400,temperature:0.7}})
+  })
+  .then(function(r){return r.json();})
+  .then(function(d){
+    var text = d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts&&d.candidates[0].content.parts[0]&&d.candidates[0].content.parts[0].text;
+    if(!text) throw new Error('no text');
+    localStorage.setItem(_aiCacheKey(), text);
+    _renderAIBox(text);
+  })
+  .catch(function(){
+    box.innerHTML='<div style="background:var(--card);border-radius:16px;padding:14px;border:1px solid var(--border);font-size:13px;color:var(--red)">❌ Impossible de charger les conseils IA. Vérifie ta connexion.</div>';
+  })
+  .finally(function(){
+    if(btn){ btn.textContent='✨ IA'; btn.style.opacity='1'; btn.disabled=false; }
+  });
+}
+
+function _renderAIBox(text){
+  var box = document.getElementById('ai-conseil-box'); if(!box) return;
+  var lines = text.split('\n').map(function(l){return l.trim();}).filter(function(l){return l.length>0;});
+  var html = '<div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;padding:16px;border:1px solid rgba(255,255,255,0.08)">'
+    +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:12px">'
+    +'<span style="font-size:14px">✨</span>'
+    +'<span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:.5px">Analyse IA · Gemini</span>'
+    +'<span style="margin-left:auto;font-size:10px;color:rgba(255,255,255,0.3);cursor:pointer" onclick="localStorage.removeItem(\''+_aiCacheKey()+'\');document.getElementById(\'ai-conseil-box\').style.display=\'none\'">↺ Recharger</span>'
+    +'</div>'
+    + lines.map(function(l){
+        return '<div style="display:flex;gap:10px;margin-bottom:10px;last-child:margin-bottom:0">'
+          +'<span style="font-size:18px;flex-shrink:0;line-height:1.4">'+l.match(/^\p{Emoji}/u)?.[0]+'</span>'
+          +'<span style="font-size:13px;color:rgba(255,255,255,0.88);line-height:1.5">'+esc(l.replace(/^\p{Emoji}\s*/u,''))+'</span>'
+          +'</div>';
+    }).join('')
+    +'</div>';
+  box.style.display = 'block';
+  box.innerHTML = html;
+}
+
 function getPrevMonthCat(catId){
   var y=viewDate.getFullYear(),m=viewDate.getMonth();
   var py=m===0?y-1:y,pm=m===0?11:m-1;
