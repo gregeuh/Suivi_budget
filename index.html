@@ -3957,6 +3957,154 @@ function applyPrivacy(){
 
 // ── EXPORT / IMPORT ───────────────────────
 // ══════════════════════════════════════════════════════════════
+// CRÉDITS
+// ══════════════════════════════════════════════════════════════
+
+var _editingCreditId = null;
+
+function openCredits(){
+  document.getElementById('credits-overlay').classList.add('on');
+  renderCreditsOverlay();
+}
+function closeCredits(){ document.getElementById('credits-overlay').classList.remove('on'); }
+
+function openCreditForm(id){
+  _editingCreditId = id || null;
+  var c = id ? credits.find(function(x){return x.id===id;}) : null;
+  document.getElementById('credit-form-title').textContent = c ? 'Modifier le crédit' : 'Nouveau crédit';
+  document.getElementById('cf-icon').value    = c ? (c.icon||'🏠') : '🏠';
+  document.getElementById('cf-label').value   = c ? (c.label||'')  : '';
+  document.getElementById('cf-total').value   = c ? (c.totalAmount||'') : '';
+  document.getElementById('cf-remaining').value = c ? (c.remainingAmount||'') : '';
+  document.getElementById('cf-monthly').value = c ? (c.monthlyPayment||'') : '';
+  document.getElementById('cf-rate').value    = c ? (c.rate||'') : '';
+  document.getElementById('cf-enddate').value = c ? (c.endDate||'') : '';
+  var accSel = document.getElementById('cf-account');
+  accSel.innerHTML = accounts.map(function(a){ return '<option value="'+esc(a.id)+'"'+(c&&c.accountId===a.id?' selected':'')+'>'+esc(a.name)+'</option>'; }).join('');
+  document.getElementById('cf-delete-btn').style.display = c ? 'block' : 'none';
+  document.getElementById('credit-form-overlay').classList.add('on');
+}
+function closeCreditForm(){ document.getElementById('credit-form-overlay').classList.remove('on'); }
+
+function saveCredit(){
+  var label   = document.getElementById('cf-label').value.trim();
+  var monthly = parseFloat(document.getElementById('cf-monthly').value)||0;
+  if(!label){ toast('Libellé requis'); return; }
+  if(!monthly){ toast('Mensualité requise'); return; }
+  var obj = {
+    id:              _editingCreditId || _uid('cr'),
+    label:           label,
+    icon:            document.getElementById('cf-icon').value.trim() || '🏠',
+    totalAmount:     parseFloat(document.getElementById('cf-total').value)||0,
+    remainingAmount: parseFloat(document.getElementById('cf-remaining').value)||0,
+    monthlyPayment:  monthly,
+    rate:            parseFloat(document.getElementById('cf-rate').value)||0,
+    endDate:         document.getElementById('cf-enddate').value||null,
+    accountId:       document.getElementById('cf-account').value
+  };
+  if(_editingCreditId){
+    var idx=credits.findIndex(function(c){return c.id===_editingCreditId;});
+    if(idx>=0) credits[idx]=obj; else credits.push(obj);
+  } else {
+    credits.push(obj);
+  }
+  save(); closeCreditForm(); renderCreditsOverlay(); renderCreditHero();
+  toast((obj.icon||'🏦')+' '+label+' enregistré ✓','success');
+}
+
+function deleteCredit(){
+  if(!_editingCreditId) return;
+  var c=credits.find(function(x){return x.id===_editingCreditId;});
+  if(!confirm('Supprimer "'+((c&&c.label)||'ce crédit')+'" ?')) return;
+  credits=credits.filter(function(x){return x.id!==_editingCreditId;});
+  save(); closeCreditForm(); renderCreditsOverlay(); renderCreditHero();
+  toast('Crédit supprimé');
+}
+
+function _monthsRemaining(endDate){
+  if(!endDate) return null;
+  var end=new Date(endDate), now=new Date();
+  var diff=(end.getFullYear()-now.getFullYear())*12+(end.getMonth()-now.getMonth());
+  return Math.max(0,diff);
+}
+
+function renderCreditsOverlay(){
+  var body=document.getElementById('credits-body'); if(!body) return;
+  var totalMonthly=credits.reduce(function(s,c){return s+c.monthlyPayment;},0);
+  var totalRemaining=credits.reduce(function(s,c){return s+c.remainingAmount;},0);
+
+  var html='';
+  // Résumé
+  html+='<div class="credit-summary">'
+    +'<div>'
+    +'<div style="font-size:11px;opacity:.8;font-weight:600;letter-spacing:.4px;text-transform:uppercase;margin-bottom:4px">Crédits en cours</div>'
+    +'<div style="font-family:Sora,sans-serif;font-size:24px;font-weight:800">'+fmt(totalMonthly)+'/mois</div>'
+    +'<div style="font-size:12px;opacity:.85;margin-top:2px">en mensualités</div>'
+    +'</div>'
+    +'<div style="text-align:right">'
+    +'<div style="font-family:Sora,sans-serif;font-size:14px;font-weight:700">'+fmt(totalRemaining)+'</div>'
+    +'<div style="font-size:10px;opacity:.75;margin-top:3px">capital restant total</div>'
+    +'<div style="font-size:10px;opacity:.75;margin-top:2px">'+credits.length+' crédit'+(credits.length>1?'s':'')+'</div>'
+    +'</div>'
+    +'</div>';
+
+  if(!credits.length){
+    html+='<div style="text-align:center;padding:32px 20px;color:var(--txt2);font-size:14px">Aucun crédit enregistré</div>';
+  } else {
+    html+=credits.map(function(c){
+      var paid=c.totalAmount>0?(c.totalAmount-c.remainingAmount):0;
+      var pct=c.totalAmount>0?Math.min(100,Math.round(paid/c.totalAmount*100)):0;
+      var months=_monthsRemaining(c.endDate);
+      var interestEst=c.rate&&months?(c.remainingAmount*c.rate/100/12*months).toFixed(0):null;
+      return '<div class="credit-card" onclick="openCreditForm(\''+c.id+'\')">'
+        +'<div class="credit-hd">'
+        +'<div class="credit-icon">'+(c.icon||'🏦')+'</div>'
+        +'<div class="credit-info">'
+        +'<div class="credit-label">'+esc(c.label)+'</div>'
+        +'<div class="credit-meta">'
+        +(c.rate?'Taux '+c.rate+'% · ':'')
+        +(months!==null?months+' mois restants':'')
+        +(c.endDate?' · fin '+new Date(c.endDate).toLocaleDateString('fr-FR',{month:'short',year:'numeric'}):'')
+        +'</div>'
+        +'</div>'
+        +'<div class="credit-monthly">-'+fmt(c.monthlyPayment)+'/m</div>'
+        +'</div>'
+        +'<div class="credit-bar-bg"><div class="credit-bar-fill" style="width:'+pct+'%"></div></div>'
+        +'<div class="credit-stats">'
+        +'<div class="credit-stat"><div class="credit-stat-val" style="color:var(--green)">'+fmt(paid)+'</div><div class="credit-stat-lbl">remboursé</div></div>'
+        +'<div class="credit-stat"><div class="credit-stat-val">'+pct+'%</div><div class="credit-stat-lbl">avancement</div></div>'
+        +'<div class="credit-stat"><div class="credit-stat-val" style="color:var(--red)">'+fmt(c.remainingAmount)+'</div><div class="credit-stat-lbl">restant</div></div>'
+        +(interestEst?'<div class="credit-stat"><div class="credit-stat-val" style="color:var(--txt2)">~'+fmt(parseFloat(interestEst))+'</div><div class="credit-stat-lbl">intérêts est.</div></div>':'')
+        +'</div>'
+        +'</div>';
+    }).join('');
+  }
+
+  html+='<button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="openCreditForm(null)">+ Ajouter un crédit</button>';
+  body.innerHTML=html;
+}
+
+function renderCreditHero(){
+  var row=document.getElementById('hero-credits-row');
+  var teaser=document.getElementById('credits-teaser-sub');
+  if(!credits.length){
+    if(row) row.style.display='none';
+    if(teaser) teaser.textContent='Capital restant et mensualités';
+    return;
+  }
+  var totalMonthly=credits.reduce(function(s,c){return s+c.monthlyPayment;},0);
+  var totalRemaining=credits.reduce(function(s,c){return s+c.remainingAmount;},0);
+  if(row){
+    row.style.display='block';
+    var mEl=document.getElementById('h-credits-monthly');
+    var rEl=document.getElementById('h-credits-remaining');
+    if(mEl) mEl.textContent='-'+fmt(totalMonthly)+'/mois';
+    if(rEl) rEl.textContent=fmt(totalRemaining)+' restants';
+  }
+  if(teaser) teaser.textContent=credits.length+' crédit'+(credits.length>1?'s':'')+' · '+fmt(totalMonthly)+'/mois · '+fmt(totalRemaining)+' restants';
+}
+
+// ══════════════════════════════════════════════════════════════
 // NORDIGEN / GOCARDLESS — import bancaire automatique
 // ══════════════════════════════════════════════════════════════
 
