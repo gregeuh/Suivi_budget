@@ -28,7 +28,7 @@
   --card:       #fffef9;
   --card2:      #f0ece0;
   --txt:        #1e1a12;
-  --txt2:       #9a9080;
+  --txt2:       #6e6458;
   --txt3:       #c8a06a;
   --border:     rgba(120,90,30,0.07);
   --input:      #ede9df;
@@ -118,11 +118,13 @@ button{cursor:pointer;border:none;background:none}
   display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:var(--sh)}
 
 /* MONTH BAR */
-.month-bar{display:flex;align-items:center;justify-content:space-between;padding:0 20px 14px}
-.m-nav{width:32px;height:32px;border-radius:9px;background:var(--card);border:1px solid var(--border);
-  display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--txt2);transition:.15s}
-.m-nav:active{transform:scale(.9)}
-.m-label{font-size:14px;font-weight:600;color:var(--txt);text-transform:capitalize}
+.month-bar{display:flex;align-items:center;justify-content:space-between;padding:0 16px 14px}
+.m-nav{width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--accent);
+  box-shadow:var(--sh);transition:transform .18s cubic-bezier(0.34,1.56,0.64,1),box-shadow .18s}
+.m-nav:hover{transform:scale(1.08);box-shadow:0 4px 14px rgba(var(--accent-rgb),0.2)}
+.m-nav:active{transform:scale(.93)}
+.m-label{font-family:'Sora',sans-serif;font-size:16px;font-weight:800;color:var(--txt);text-transform:capitalize;letter-spacing:-.2px}
 
 /* CONTENT */
 .content{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 16px 110px;background:var(--bg);}
@@ -210,8 +212,12 @@ button{cursor:pointer;border:none;background:none}
 /* TX ITEMS */
 .tx-item{display:flex;align-items:center;gap:12px;padding:13px 16px;
   border-radius:var(--r-sm);background:var(--card);border:1px solid var(--border);
-  cursor:pointer;transition:background .15s;margin-bottom:4px}
+  border-left:3.5px solid transparent;
+  cursor:pointer;transition:background .15s,border-color .15s;margin-bottom:4px}
 .tx-item:active{background:var(--card2)}
+.tx-item.tx-income { border-left-color: var(--green); }
+.tx-item.tx-expense{ border-left-color: var(--red); }
+.tx-item.tx-vir    { border-left-color: var(--accent); }
 .tx-ico{width:40px;height:40px;border-radius:12px;background:var(--input);
   display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .tx-info{flex:1;min-width:0}
@@ -235,7 +241,8 @@ button{cursor:pointer;border:none;background:none}
 
 /* BUDGET BARS */
 .budget-item{background:var(--card);border-radius:var(--r);padding:16px;
-  border:1px solid var(--border);margin-bottom:10px}
+  border:1px solid var(--border);margin-bottom:10px;transition:background .2s,border-color .2s}
+.budget-item.budget-over{background:rgba(224,92,92,0.05);border-color:rgba(224,92,92,0.28)}
 .budget-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .budget-cat{display:flex;align-items:center;gap:8px}
 .budget-ico{width:34px;height:34px;border-radius:10px;background:var(--input);
@@ -773,12 +780,21 @@ button{cursor:pointer;border:none;background:none}
 
 
 /* ═══ ACCOUNT CARDS DASHBOARD ═══ */
+.acc-scroll-wrap {
+  position: relative; margin: 0 -16px;
+}
+.acc-scroll-wrap::after {
+  content: ''; position: absolute; top: 0; right: 0; bottom: 8px;
+  width: 48px; pointer-events: none;
+  background: linear-gradient(to left, var(--bg) 0%, transparent 100%);
+  transition: opacity .3s;
+}
+.acc-scroll-wrap.scrolled-end::after { opacity: 0; }
 .acc-scroll {
   display: flex; gap: 12px;
   overflow-x: auto; scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
-  padding: 4px 0 8px;
-  margin: 0 -16px; padding-left: 16px; padding-right: 16px;
+  padding: 4px 16px 8px;
 }
 .acc-scroll::-webkit-scrollbar { display: none; }
 .acc-mini {
@@ -1138,7 +1154,9 @@ button{cursor:pointer;border:none;background:none}
       <div class="sec" style="margin-top:20px">
         <div class="sec-title"><span class="ico">💳</span> Mes comptes</div>
       </div>
-      <div class="acc-scroll" id="acc-mini-list"></div>
+      <div class="acc-scroll-wrap" id="acc-scroll-wrap">
+        <div class="acc-scroll" id="acc-mini-list"></div>
+      </div>
 
       <!-- Graphique camembert -->
       <div class="chart-card">
@@ -1980,7 +1998,7 @@ var THEMES = {
       bg:'#f8f5ee', card:'#fffef9', card2:'#f0ece0',
       border:'rgba(120,90,30,0.07)', input:'#ede9df',
       accent:'#c8913a', accentD:'#a06820', accentRgb:'200,145,58',
-      txt:'#1e1a12', txt2:'#9a9080', txt3:'#c8a06a',
+      txt:'#1e1a12', txt2:'#6e6458', txt3:'#c8a06a',
       sh:'0 1px 3px rgba(100,70,10,0.04), 0 4px 12px rgba(100,70,10,0.06)',
       hero:'linear-gradient(135deg,#d4a85a,#c8913a,#a06820)',
       authBg:'linear-gradient(145deg,#f8f5ee,#f0ece0,#e8e0d0)',
@@ -1990,7 +2008,7 @@ var THEMES = {
       bg:'#0e0b08', card:'#181510', card2:'#221e16',
       border:'rgba(255,255,255,0.05)', input:'#221e16',
       accent:'#d4a85a', accentD:'#c8913a', accentRgb:'212,168,90',
-      txt:'#f0ece4', txt2:'#9a9080', txt3:'#c8a06a',
+      txt:'#f0ece4', txt2:'#b0a898', txt3:'#c8a06a',
       sh:'0 1px 3px rgba(0,0,0,0.4), 0 4px 12px rgba(0,0,0,0.35)',
       hero:'linear-gradient(135deg,#3a2a10,#5a3f18,#7a5520)',
       authBg:'linear-gradient(145deg,#0e0b08,#181510,#221e16)',
@@ -2379,13 +2397,23 @@ function renderAccMini() {
     var bal = bals[a.id] || 0;
     var bg = ACC_COLORS[a.color] || ACC_COLORS.blue;
     var label = typeLabels[a.accType] || 'Compte';
-    return '<div class="acc-mini" data-goto="profil" style="background:' + bg + '">'  
+    return '<div class="acc-mini" data-goto="profil" style="background:' + bg + '">'
       + '<div class="acc-mini-icon">' + (a.icon||'🏦') + '</div>'
       + '<div class="acc-mini-name">' + esc(a.name) + '</div>'
       + '<div class="acc-mini-bal blur">' + fmt(bal) + '</div>'
       + '<div class="acc-mini-type">' + label + '</div>'
       + '</div>';
   }).join('');
+
+  // Scroll fade indicator
+  var wrap = document.getElementById('acc-scroll-wrap');
+  if(wrap) {
+    var updateFade = function(){ wrap.classList.toggle('scrolled-end', el.scrollLeft + el.clientWidth >= el.scrollWidth - 4); };
+    el.removeEventListener('scroll', el._scrollFade);
+    el._scrollFade = updateFade;
+    el.addEventListener('scroll', updateFade, {passive:true});
+    updateFade();
+  }
 }
 
 // ── WISHLIST BANDEAU (dashboard) ──────────
@@ -3252,7 +3280,8 @@ function txHTML(e,showEdit){
   var swileBadge=isResto2?'<span style="font-size:10px;background:rgba(251,191,36,0.15);color:#f59e0b;border-radius:4px;padding:1px 5px;font-weight:700;margin-left:4px">🍽️ Swile</span>':'';
   var virBadge=e.isVirement?'<span style="font-size:10px;background:rgba(var(--accent-rgb),0.1);color:var(--accent);border-radius:4px;padding:1px 5px;font-weight:700;margin-left:4px">↔️ Virement</span>':'';
   var recurBadge=isRecur?'<span style="font-size:10px;background:rgba(var(--accent-rgb),0.1);color:var(--accent);border-radius:4px;padding:1px 5px;font-weight:700;margin-left:4px">🔁 '+(FL[e.frequency]||'Récurrent')+'</span>':'';
-  return '<div class="tx-item" onclick="'+(showEdit?'openEdit(\''+id+'\')':'')+'">'
+  var txCls = e.isVirement ? 'tx-vir' : isInc ? 'tx-income' : 'tx-expense';
+  return '<div class="tx-item '+txCls+'" onclick="'+(showEdit?'openEdit(\''+id+'\')':'')+'">'
     +'<div class="tx-ico">'+cat.icon+'</div>'
     +'<div class="tx-info"><div class="tx-name">'+esc(e.label||'Sans libellé')+swileBadge+recurBadge+virBadge+'</div>'
     +'<div class="tx-sub">'+(acc?esc(acc.name):'')+' '+(e.note?'· '+esc(e.note):'')+'</div></div>'
@@ -3382,7 +3411,7 @@ function renderBudgets(){
       var pct=budget>0?Math.min(spent/budget*100,100):0;
       var over=spent>budget;
       var color=over?'var(--red)':pct>80?'var(--orange)':'var(--green)';
-      html+='<div class="budget-item" style="cursor:pointer" onclick="openBudgetDetail(\'' + c.id + '\')">'
+      html+='<div class="budget-item'+(over?' budget-over':'')+'" style="cursor:pointer" onclick="openBudgetDetail(\'' + c.id + '\')">'
         +'<div class="budget-hd">'
         +'<div class="budget-cat"><div class="budget-ico">'+c.icon+'</div><div><div class="budget-name">'+c.label+'</div><div style="font-size:11px;color:var(--txt3)">'+Math.round((typeAlloc[type]||0.2)/typeCounts[type]*100)+'% des revenus</div></div></div>'
         +'<div class="budget-amounts"><div class="budget-spent" style="color:'+color+'">'+fmt(spent)+'</div><div class="budget-limit">/ '+fmt(budget)+'</div></div>'
