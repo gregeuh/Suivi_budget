@@ -1,0 +1,15 @@
+{
+  "name": "Suivi Budget",
+  "short_name": "Budget",
+  "description": "Suivi de budget personnel — dépenses, revenus et épargne",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f8f5ee",
+  "theme_color": "#c8913a",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ],
+  "categories": ["finance", "productivity"],
+  "lang": "fr"
+}

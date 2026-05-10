@@ -5,10 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Budget">
 <meta name="apple-touch-fullscreen" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
-<title>Mon Budget</title>
+<meta name="theme-color" content="#c8913a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>Suivi Budget</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
@@ -1156,6 +1159,17 @@ button{cursor:pointer;border:none;background:none}
           </div>
 
         </div>
+        <!-- Projection fin de mois -->
+        <div id="hero-projection" style="display:none;margin-top:10px;padding:11px 14px;background:rgba(0,0,0,0.12);border-radius:12px;display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:14px">📅</span>
+            <span style="font-size:11px;color:rgba(255,255,255,0.8);font-weight:600;text-transform:uppercase;letter-spacing:.4px">Fin de mois estimé</span>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:'Sora',sans-serif;font-size:15px;font-weight:800;color:#fff" class="blur" id="h-proj-bal">—</div>
+            <div style="font-size:10px;font-weight:600;margin-top:1px" id="h-proj-delta"></div>
+          </div>
+        </div>
         <!-- Épargne row -->
         <div id="hero-epargne-row" style="display:none;margin-top:10px;padding:12px 14px;background:var(--card2);border:1px solid rgba(var(--accent-rgb),0.25);border-radius:12px;display:flex;align-items:center;justify-content:space-between">
           <div style="display:flex;align-items:center;gap:8px">
@@ -1688,8 +1702,31 @@ var QA_MAP={
   cadeaux:['cadeau','anniversaire','noel']
 };
 
+// ── CATÉGORISATION APPRISE ───────────────────────────────────
+var _learnedCats = {};
+(function(){
+  try { _learnedCats = JSON.parse(localStorage.getItem('_learnedCats')||'{}'); } catch(_){}
+})();
+function _saveLearnedCats(){ try{localStorage.setItem('_learnedCats',JSON.stringify(_learnedCats));}catch(_){} }
+function learnCat(label, catId){
+  if(!label||!catId||catId==='autre') return;
+  var key = (label||'').toLowerCase().trim().slice(0,50);
+  if(!key||_learnedCats[key]===catId) return;
+  _learnedCats[key]=catId; _saveLearnedCats();
+}
 function detectCat(lbl){
-  var l=(lbl||'').toLowerCase();
+  var l=(lbl||'').toLowerCase().trim();
+  // 1. Correspondance exacte apprise
+  if(_learnedCats[l.slice(0,50)]) return _learnedCats[l.slice(0,50)];
+  // 2. Correspondance partielle apprise (libellé contient une clé mémorisée)
+  var learnedKeys=Object.keys(_learnedCats);
+  for(var k=0;k<learnedKeys.length;k++){
+    if(learnedKeys[k].length>3&&l.indexOf(learnedKeys[k])!==-1){
+      var cat=categories.find(function(c){return c.id===_learnedCats[learnedKeys[k]];});
+      if(cat) return cat.id;
+    }
+  }
+  // 3. Règles par mots-clés
   var keys=Object.keys(QA_MAP);
   for(var i=0;i<keys.length;i++){
     var words=QA_MAP[keys[i]];
@@ -3078,6 +3115,23 @@ function renderAll(){
 }
 
 // ── HERO ──────────────────────────────────
+function calcMonthProjection(){
+  var today=new Date();
+  // N'afficher que si on consulte le mois en cours
+  if(viewDate.getFullYear()!==today.getFullYear()||viewDate.getMonth()!==today.getMonth()) return null;
+  var y=today.getFullYear(), m=today.getMonth(), todayDay=today.getDate();
+  var restoIds=getRestoIds();
+  var delta=0;
+  expenses.filter(function(e){return e.recurring&&e.frequency&&restoIds.indexOf(e.accountId)===-1;})
+    .forEach(function(e){
+      var occs=getOccurrences(e,y,m);
+      occs.forEach(function(day){
+        if(day>todayDay) delta+=(e.type==='income'?e.amount:-e.amount);
+      });
+    });
+  return delta;
+}
+
 function renderHero(){
   ['h-bal','h-exp','h-inc','h-swile','h-epargne'].forEach(function(id){
     var el=document.getElementById(id);if(el)el.textContent='0 €';
@@ -3094,6 +3148,24 @@ function renderHero(){
   animV(document.getElementById('h-bal'),bal);
   var eEl=document.getElementById('h-exp');if(eEl)animV(eEl,mExp,600,function(v){return'-'+fmt(v);});
   var iEl=document.getElementById('h-inc');if(iEl)animV(iEl,mInc,700,function(v){return(mIncR>0?'':'~')+fmt(v);});
+
+  // Projection fin de mois
+  var projEl=document.getElementById('hero-projection');
+  if(projEl){
+    var proj=calcMonthProjection();
+    if(proj!==null){
+      projEl.style.display='flex';
+      var projBal=bal+proj;
+      var projBalEl=document.getElementById('h-proj-bal');
+      if(projBalEl) projBalEl.textContent='~'+fmt(projBal);
+      var projDeltaEl=document.getElementById('h-proj-delta');
+      if(projDeltaEl){
+        var sign=proj>=0?'+':'';
+        projDeltaEl.textContent=sign+fmt(proj)+' récurrentes restantes';
+        projDeltaEl.style.color=proj>=0?'rgba(150,255,180,0.9)':'rgba(255,150,150,0.9)';
+      }
+    } else { projEl.style.display='none'; }
+  }
 
   // Épargne row — show total savings accounts
   var epargneAccs = getEpargneAccs();
@@ -3645,6 +3717,7 @@ function saveTransaction(){
     customDays:customDays2,
     endDate:endDate2||null
   });
+  learnCat(lbl, selCat);
   save();renderAll();closeModal();
   var cat=categories.find(function(c){return c.id===selCat;})||{icon:'📦'};
   toast(cat.icon+' '+lbl+' ajouté — '+(mCurrentType==='inc'?'+':'-')+amt.toFixed(2)+' €', mCurrentType==='inc'?'success':'info');
@@ -3685,6 +3758,7 @@ function saveEdit(){
     customDays:parseInt(document.getElementById('e-freq-days').value)||null,
     endDate:document.getElementById('e-enddate').value||null
   });
+  learnCat(expenses[idx].label, selCat);
   save();renderAll();closeEdit();toast('Modifié ✓');
 }
 function deleteTx(){
@@ -4429,6 +4503,11 @@ setTimeout(renderThemePicker, 200);
     _ovObs.observe(el, { attributes: true, attributeFilter: ['class'] });
   });
 })();
+
+// ── PWA SERVICE WORKER ─────────────────────────────────────────────────────
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').catch(function(){});
+}
 </script>
 </body>
 </html>
