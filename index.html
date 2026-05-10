@@ -3143,7 +3143,7 @@ function updateGreeting(){
   document.getElementById('top-name').textContent=(displayName||'—')+' 👋';
   // Profile
   var init=(displayName||'?').substring(0,2).toUpperCase();
-  document.getElementById('profile-card').innerHTML='<div class="profile-av">'+init+'</div><div><div class="profile-name">'+(displayName||'—')+'</div><div class="profile-email">'+(currentUser?currentUser.email:'')+'</div></div>';
+  document.getElementById('profile-card').innerHTML='<div class="profile-av">'+esc(init)+'</div><div><div class="profile-name">'+esc(displayName||'—')+'</div><div class="profile-email">'+esc(currentUser?currentUser.email:'')+'</div></div>';
   var sn=document.getElementById('s-name');if(sn)sn.value=displayName||'';
 }
 function saveName(){
