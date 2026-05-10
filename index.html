@@ -4160,10 +4160,11 @@ function _creditCardHtml(c, fullWidth, extraInner){
   var bg = ACC_COLORS[c.color||'red'] || ACC_COLORS.red;
   var paid = c.totalAmount>0 ? (c.totalAmount-c.remainingAmount) : 0;
   var pct  = c.totalAmount>0 ? Math.min(100,Math.round(paid/c.totalAmount*100)) : 0;
+  var pctLeft = c.totalAmount>0 ? (100-pct) : 0;
   var months = _monthsRemaining(c.endDate);
   var subParts = [];
   if(months!==null) subParts.push(months+' mois restants');
-  if(c.rate) subParts.push(c.rate+'%');
+  if(pctLeft>0) subParts.push(pctLeft+'% restant');
   var sub = subParts.join(' · ') || (c.remainingAmount ? fmt(c.remainingAmount)+' restants' : '');
   var w = fullWidth ? 'width:100%;box-sizing:border-box;' : '';
   return '<div class="credit-mini" style="background:'+bg+';position:relative;'+w+'" onclick="openCreditForm(\''+c.id+'\')">'
