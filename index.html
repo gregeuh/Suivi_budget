@@ -1295,7 +1295,17 @@ button{cursor:pointer;border:none;background:none}
       </div>
 
       <!-- RÉCURRENTES -->
-      <div class="section-hd" style="margin-top:4px"><div class="sec-title"><span class="ico">🔄</span> Récurrentes</div><button class="sec-link" onclick="openAbonnements()">📋 Vue globale</button></div>
+      <div class="section-hd" style="margin-top:4px"><div class="sec-title"><span class="ico">🔄</span> Récurrentes</div></div>
+      <div id="abo-teaser" onclick="openAbonnements()" style="cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--accent-d));border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;transition:opacity .15s" onmouseenter="this.style.opacity='.88'" onmouseleave="this.style.opacity='1'">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:22px">📋</span>
+          <div>
+            <div style="font-family:'Sora',sans-serif;font-size:14px;font-weight:800;color:#fff">Vue globale des abonnements</div>
+            <div id="abo-teaser-sub" style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:2px">Coûts mensuels et annuels</div>
+          </div>
+        </div>
+        <span style="font-size:20px;color:rgba(255,255,255,0.8)">›</span>
+      </div>
       <div id="recur-settings" style="margin-bottom:4px"></div>
 
       <!-- COMPTES -->
@@ -2657,6 +2667,14 @@ function closeBudgetDetail(){ document.getElementById('budget-detail-overlay').c
 function renderRecurSettings() {
   var el = document.getElementById('recur-settings'); if(!el) return;
   var recurs = expenses.filter(function(e){ return e.recurring && e.frequency; });
+  // Mettre à jour le teaser avec le vrai total
+  var teaserSub = document.getElementById('abo-teaser-sub');
+  if(teaserSub && recurs.length){
+    var deps = recurs.filter(function(e){ return e.type==='expense'; });
+    var totalM = deps.reduce(function(s,e){ return s+_toMonthly(e); },0);
+    var totalA = deps.reduce(function(s,e){ return s+_toAnnual(e); },0);
+    teaserSub.textContent = deps.length+' abonnement'+(deps.length>1?'s':'')+' · '+fmt(totalM)+'/mois · '+fmt(totalA)+'/an';
+  }
   var freqLabels = { monthly:'Mensuelle', weekly:'Hebdo', biweekly:'Toutes les 2 sem.', '2weeks':'Toutes les 2 sem.', '4weekly':'Toutes les 4 sem.', '4weeks':'Toutes les 4 sem.', yearly:'Annuelle', custom:'Perso' };
   if(!recurs.length) {
     el.innerHTML = '<div class="set-group"><div class="set-row"><div class="set-name" style="color:var(--txt3)">Aucune transaction récurrente</div></div></div>';
