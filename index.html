@@ -1231,19 +1231,6 @@ button{cursor:pointer;border:none;background:none}
             <div style="font-size:13px;color:var(--txt2);font-weight:600" id="swile-repas-lbl"></div>
           </div>
         </div>
-        <!-- Crédits row -->
-        <div id="hero-credits-row" style="display:none;margin-top:10px;padding:12px 14px;background:rgba(224,92,92,0.12);border:1px solid rgba(224,92,92,0.2);border-radius:12px;cursor:pointer" onclick="goTo('profil',document.getElementById('tb-profil'),4)">
-          <div style="display:flex;align-items:center;justify-content:space-between">
-            <div style="display:flex;align-items:center;gap:8px">
-              <span style="font-size:16px">🏦</span>
-              <div style="font-size:11px;color:rgba(224,92,92,0.9);font-weight:700;text-transform:uppercase;letter-spacing:.5px">Crédits en cours</div>
-            </div>
-            <div style="text-align:right">
-              <div style="font-family:Sora,sans-serif;font-size:15px;font-weight:800;color:var(--red)" id="h-credits-monthly">—</div>
-              <div style="font-size:10px;color:var(--txt2);margin-top:1px" id="h-credits-remaining"></div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- Soldes par compte -->
@@ -4227,13 +4214,11 @@ function renderCreditsOverlay(){
 }
 
 function renderCreditHero(){
-  var row    = document.getElementById('hero-credits-row');
   var teaser = document.getElementById('credits-teaser-sub');
   var section= document.getElementById('credits-dash-section');
   var list   = document.getElementById('credits-mini-list');
 
   if(!credits.length){
-    if(row)     row.style.display='none';
     if(section) section.style.display='none';
     if(teaser)  teaser.textContent='Capital restant et mensualités';
     return;
@@ -4241,17 +4226,7 @@ function renderCreditHero(){
   var totalMonthly  = credits.reduce(function(s,c){return s+c.monthlyPayment;},0);
   var totalRemaining= credits.reduce(function(s,c){return s+c.remainingAmount;},0);
 
-  // Hero row
-  if(row){
-    row.style.display='block';
-    var mEl=document.getElementById('h-credits-monthly');
-    var rEl=document.getElementById('h-credits-remaining');
-    if(mEl) mEl.textContent='-'+fmt(totalMonthly)+'/mois';
-    if(rEl) rEl.textContent=fmt(totalRemaining)+' restants';
-  }
-  // Teaser Profil
   if(teaser) teaser.textContent=credits.length+' crédit'+(credits.length>1?'s':'')+' · '+fmt(totalMonthly)+'/mois · '+fmt(totalRemaining)+' restants';
-  // Strip dashboard
   if(section) section.style.display='block';
   if(list) list.innerHTML=credits.map(function(c){ return _creditCardHtml(c, false); }).join('');
 }
