@@ -47,6 +47,40 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:var(--bg);min-height:100%;}
 body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--txt);min-height:100dvh;overflow-x:hidden;}
+
+/* ═══ GRAIN DE FOND ═══ */
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.022;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat:repeat;background-size:128px 128px}
+#app{position:relative;z-index:1}
+
+/* ═══ ANIMATIONS D'ENTRÉE ═══ */
+@keyframes fadeSlideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes popIn{from{opacity:0;transform:scale(0.92)}to{opacity:1;transform:scale(1)}}
+
+.tx-item{animation:fadeSlideUp .28s cubic-bezier(0.16,1,0.3,1) both}
+.card,.stat-card,.chart-card,.evo-card,.budget-item{animation:fadeSlideUp .32s cubic-bezier(0.16,1,0.3,1) both}
+.wish-card{animation:popIn .3s cubic-bezier(0.34,1.56,0.64,1) both}
+
+/* Décalage en cascade pour les listes */
+.tx-item:nth-child(1){animation-delay:.03s}.tx-item:nth-child(2){animation-delay:.06s}
+.tx-item:nth-child(3){animation-delay:.09s}.tx-item:nth-child(4){animation-delay:.12s}
+.tx-item:nth-child(5){animation-delay:.15s}.tx-item:nth-child(n+6){animation-delay:.18s}
+
+/* ═══ HOVER CARTES ═══ */
+.card,.stat-card,.chart-card,.evo-card{
+  transition:transform .22s cubic-bezier(0.34,1.56,0.64,1),box-shadow .22s ease}
+.card:hover,.stat-card:hover,.chart-card:hover,.evo-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 28px rgba(var(--accent-rgb),0.13)}
+[data-theme="dark"] .card:hover,[data-theme="dark"] .stat-card:hover,
+[data-theme="dark"] .chart-card:hover,[data-theme="dark"] .evo-card:hover{
+  box-shadow:0 8px 28px rgba(0,0,0,0.4)}
+
+/* Transactions — highlight au survol */
+.tx-item{transition:transform .18s ease,background .18s ease,box-shadow .18s ease}
+.tx-item:hover{transform:translateX(3px);background:var(--card2) !important;}
 button,input,select,textarea{font-family:inherit}
 button{cursor:pointer;border:none;background:none}
 
@@ -127,7 +161,7 @@ button{cursor:pointer;border:none;background:none}
 .tab-btn.on .t-lbl{color:var(--accent)}
 
 /* ═══ COMPONENTS ═══ */
-.card{background:var(--card);border-radius:var(--r);padding:18px;border:1px solid var(--border);box-shadow:var(--sh);margin-bottom:12px}
+.card{background:var(--card);border-radius:var(--r);padding:18px;border:1px solid var(--border);box-shadow:var(--sh);margin-bottom:12px;will-change:transform}
 .sec{display:flex;justify-content:space-between;align-items:center;margin:20px 0 10px}
 .sec-title{font-family:'Sora',sans-serif;font-size:16px;font-weight:800;background:linear-gradient(135deg,var(--txt) 0%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .sec-link{font-size:13px;font-weight:600;color:var(--accent);background:none;border:none;cursor:pointer}
@@ -159,6 +193,18 @@ button{cursor:pointer;border:none;background:none}
 .conseil-icon{font-size:20px;margin-bottom:6px}
 .conseil-text{font-size:14px;font-weight:600;color:#fff;line-height:1.4;text-shadow:0 1px 2px rgba(0,0,0,0.1)}
 .conseil-sub{font-size:12px;color:rgba(255,255,255,0.85);margin-top:4px}
+
+/* ═══ BUDGET EMPTY STATE ═══ */
+.budget-empty-state{text-align:center;padding:32px 20px 40px;display:flex;flex-direction:column;align-items:center;gap:16px}
+@keyframes floatIco{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.bes-icon{font-size:64px;line-height:1;animation:floatIco 3s ease-in-out infinite}
+.bes-title{font-family:'Sora',sans-serif;font-size:20px;font-weight:800;color:var(--txt);letter-spacing:-.3px}
+.bes-sub{font-size:14px;color:var(--txt2);line-height:1.6;max-width:300px}
+.bes-steps{display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px;text-align:left}
+.bes-step{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--txt2)}
+.bes-step-num{width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bes-btn{padding:14px 28px;border-radius:50px;background:var(--accent);color:#fff;font-family:inherit;font-size:15px;font-weight:700;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(var(--accent-rgb),0.35);transition:transform .2s,box-shadow .2s}
+.bes-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(var(--accent-rgb),0.4)}
 
 /* TX ITEMS */
 .tx-item{display:flex;align-items:center;gap:12px;padding:13px 16px;
@@ -228,8 +274,9 @@ button{cursor:pointer;border:none;background:none}
 .cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:14px}
 .cat-chip{display:flex;flex-direction:column;align-items:center;gap:4px;
   padding:11px 6px;border-radius:var(--r-sm);background:var(--input);
-  border:2px solid transparent;transition:.15s;cursor:pointer}
-.cat-chip.on{border-color:var(--accent);background:rgba(var(--accent-rgb),0.08)}
+  border:2px solid transparent;transition:transform .18s cubic-bezier(0.34,1.56,0.64,1),border-color .15s,background .15s,box-shadow .18s;cursor:pointer}
+.cat-chip:hover{transform:scale(1.06);box-shadow:0 4px 12px rgba(var(--accent-rgb),0.15)}
+.cat-chip.on{border-color:var(--accent);background:rgba(var(--accent-rgb),0.08);transform:scale(1.06)}
 .cat-chip-icon{font-size:21px}
 .cat-chip-lbl{font-size:10px;font-weight:600;color:var(--txt2);text-align:center}
 
@@ -238,7 +285,8 @@ button{cursor:pointer;border:none;background:none}
 .acc-chips::-webkit-scrollbar{display:none}
 .acc-chip{padding:8px 14px;border-radius:50px;font-size:13px;font-weight:600;
   background:var(--input);border:2px solid transparent;white-space:nowrap;
-  flex-shrink:0;transition:.15s;cursor:pointer;color:var(--txt2)}
+  flex-shrink:0;transition:transform .18s cubic-bezier(0.34,1.56,0.64,1),border-color .15s,background .15s;cursor:pointer;color:var(--txt2)}
+.acc-chip:hover{transform:scale(1.05) translateY(-1px)}
 .acc-chip.on{border-color:var(--accent);color:var(--accent);background:rgba(var(--accent-rgb),0.08)}
 
 /* NUMPAD */
@@ -1664,7 +1712,7 @@ function expandRecurring(year, month) {
       }
     } else {
       // weekly / biweekly / 4weekly / custom
-      var intervalDays = freq === 'weekly' ? 7 : freq === 'biweekly' ? 14 : freq === '4weekly' ? 28 : customDays;
+      var intervalDays = (freq==='weekly') ? 7 : (freq==='biweekly'||freq==='2weeks') ? 14 : (freq==='4weekly'||freq==='4weeks') ? 28 : customDays;
       var curr = new Date(startDate.getTime());
       while(curr <= monthEnd && curr <= endDate) {
         if(curr >= monthStart && !(curr.getFullYear()===origYear && curr.getMonth()===origMonth && curr.getDate()===startDate.getDate() && year===origYear && month===origMonth)) {
@@ -1702,8 +1750,8 @@ function toggleCustomFreqEdit(val) {
 
 // Recurring badge in tx list
 var FREQ_LABELS = {
-  weekly:'Hebdo', '2weeks':'2 sem.', monthly:'Mensuel',
-  '4weeks':'4 sem.', yearly:'Annuel', custom:'Récurrent'
+  weekly:'Hebdo', '2weeks':'2 sem.', biweekly:'2 sem.', monthly:'Mensuel',
+  '4weeks':'4 sem.', '4weekly':'4 sem.', yearly:'Annuel', custom:'Récurrent'
 };
 
 
@@ -1820,7 +1868,7 @@ function saveWish() {
     var idx = wishlist.findIndex(function(w){return w.id==_wishEditId;});
     if(idx >= 0) wishlist[idx] = Object.assign({}, wishlist[idx], {name,price,icon,url,accId:_wishSelAcc});
   } else {
-    wishlist.push({id:'w_'+Date.now(), name, price, icon, url, accId:_wishSelAcc});
+    wishlist.push({id:_uid('w'), name, price, icon, url, accId:_wishSelAcc});
   }
   save(); renderWishlist(); closeWish();
   toast(icon + ' ' + name + ' ' + (_wishEditId ? 'modifié' : 'ajouté') + ' ✓');
@@ -2136,9 +2184,9 @@ function exportPDF() {
       var contentW = pageW - margin * 2;
 
       // Couleurs du thème
-      var theme = THEMES[currentTheme] || THEMES.orange;
-      var t = isDark ? theme.dark : theme.light;
-      var accentHex = t.accent || '#4f46e5';
+      var theme = THEMES['premium'];
+      var t = theme.light; // PDF toujours en mode clair (lisibilité)
+      var accentHex = t.accent || '#c8913a';
       // Convert hex to RGB
       function hexRGB(hex) {
         var r = parseInt(hex.slice(1,3),16);
@@ -2188,10 +2236,10 @@ function exportPDF() {
       doc.roundedRect(margin, y, contentW, 38, 3, 3, 'S');
 
       var cols = [
-        { label:'Revenus', val: pdfFmt(mInc), color:[22,163,74] },
-        { label:'Dépenses', val: pdfFmt(mExp), color:[220,38,38] },
-        { label:'Solde', val: (solde>=0?'+':'')+pdfFmt(solde), color: solde>=0?[22,163,74]:[220,38,38] },
-        { label:'Épargne', val: pdfFmt(epTotal), color:[99,102,241] },
+        { label:'Revenus',  val: pdfFmt(mInc),  color:[76,175,130] },
+        { label:'Dépenses', val: pdfFmt(mExp),  color:[224,92,92] },
+        { label:'Solde',    val: (solde>=0?'+':'')+pdfFmt(solde), color: solde>=0?[76,175,130]:[224,92,92] },
+        { label:'Épargne',  val: pdfFmt(epTotal), color:[200,145,58] },
       ];
       var colW = contentW / cols.length;
       cols.forEach(function(col, i) {
@@ -2224,7 +2272,7 @@ function exportPDF() {
         doc.setTextColor(40,40,40);
         doc.text(stripEmoji(a.name), margin + 2, y);
         doc.setFont('helvetica','bold');
-        doc.setTextColor(bal >= 0 ? 22 : 220, bal >= 0 ? 163 : 38, bal >= 0 ? 74 : 38);
+        doc.setTextColor(bal >= 0 ? 76 : 224, bal >= 0 ? 175 : 92, bal >= 0 ? 130 : 92);
         doc.text(pdfFmt(bal), pageW - margin, y, { align:'right' });
         y += 7;
         if(y > 270) { doc.addPage(); y = 20; }
@@ -2279,7 +2327,7 @@ function exportPDF() {
         doc.text((cat.label||'').substring(0,18), margin+100, y);
         doc.text((acc.name||'').substring(0,16), margin+138, y);
         doc.setFont('helvetica','bold');
-        doc.setTextColor(isInc?22:220, isInc?163:38, isInc?74:38);
+        doc.setTextColor(isInc?76:224, isInc?175:92, isInc?130:92);
         doc.text((isInc?'+':'-')+pdfFmt(e.amount), pageW-margin, y, { align:'right' });
         y += 7;
       });
@@ -2456,7 +2504,7 @@ function closeBudgetDetail(){ document.getElementById('budget-detail-overlay').c
 function renderRecurSettings() {
   var el = document.getElementById('recur-settings'); if(!el) return;
   var recurs = expenses.filter(function(e){ return e.recurring && e.frequency; });
-  var freqLabels = { monthly:'Mensuelle', weekly:'Hebdo', biweekly:'Toutes les 2 sem.', '4weekly':'Toutes les 4 sem.', yearly:'Annuelle', custom:'Perso' };
+  var freqLabels = { monthly:'Mensuelle', weekly:'Hebdo', biweekly:'Toutes les 2 sem.', '2weeks':'Toutes les 2 sem.', '4weekly':'Toutes les 4 sem.', '4weeks':'Toutes les 4 sem.', yearly:'Annuelle', custom:'Perso' };
   if(!recurs.length) {
     el.innerHTML = '<div class="set-group"><div class="set-row"><div class="set-name" style="color:var(--txt3)">Aucune transaction récurrente</div></div></div>';
     return;
@@ -2839,12 +2887,13 @@ function getOccurrences(e, y, m) {
     }
 
   } else {
-    // Weekly / 2weeks / 4weeks / custom — intervalles fixes depuis la date de début
+    // Weekly / biweekly / 4weekly / custom — intervalles fixes depuis la date de début
+    // Note: '2weeks'='biweekly', '4weeks'='4weekly' (les deux nommages coexistent)
     var freqDays = 0;
     if(e.frequency === 'weekly')  freqDays = 7;
-    if(e.frequency === '2weeks')  freqDays = 14;
-    if(e.frequency === '4weeks')  freqDays = 28;
-    if(e.frequency === 'custom' && e.freqDays) freqDays = parseInt(e.freqDays)||0;
+    if(e.frequency === '2weeks' || e.frequency === 'biweekly')  freqDays = 14;
+    if(e.frequency === '4weeks' || e.frequency === '4weekly')   freqDays = 28;
+    if(e.frequency === 'custom') freqDays = parseInt(e.customDays || e.freqDays)||0;
     if(freqDays > 0) {
       var cur = new Date(start.getTime());
       // Avancer jusqu'au début du mois demandé
@@ -3198,7 +3247,7 @@ function txHTML(e,showEdit){
   var id=e.originalId||e.id||'';
   var isResto2=getRestAccs().some(function(a){return a.id===e.accountId;});
   var isRecur=e.recurring&&e.frequency&&e.frequency!=='once';
-  var FL={weekly:'Hebdo','2weeks':'2 sem.',monthly:'Mensuel','4weeks':'4 sem.',yearly:'Annuel',custom:'Récurrent'};
+  var FL={weekly:'Hebdo','2weeks':'2 sem.',biweekly:'2 sem.',monthly:'Mensuel','4weeks':'4 sem.','4weekly':'4 sem.',yearly:'Annuel',custom:'Récurrent'};
   var swileBadge=isResto2?'<span style="font-size:10px;background:rgba(251,191,36,0.15);color:#f59e0b;border-radius:4px;padding:1px 5px;font-weight:700;margin-left:4px">🍽️ Swile</span>':'';
   var virBadge=e.isVirement?'<span style="font-size:10px;background:rgba(var(--accent-rgb),0.1);color:var(--accent);border-radius:4px;padding:1px 5px;font-weight:700;margin-left:4px">↔️ Virement</span>':'';
   var recurBadge=isRecur?'<span style="font-size:10px;background:rgba(var(--accent-rgb),0.1);color:var(--accent);border-radius:4px;padding:1px 5px;font-weight:700;margin-left:4px">🔁 '+(FL[e.frequency]||'Récurrent')+'</span>':'';
@@ -3292,7 +3341,27 @@ function renderBudgets(){
   // List
   var el=document.getElementById('budget-list');if(!el)return;
   if(!mInc){
-    el.innerHTML='<div class="empty"><div class="empty-ico">💼</div>Configurez votre salaire prévisionnel<br><button onclick="goTo(\'profil\')" style="margin-top:12px;padding:10px 20px;border-radius:10px;background:var(--accent);color:#fff;border:none;cursor:pointer;font-weight:600">Aller dans Profil</button></div>';
+    el.innerHTML='<div class="budget-empty-state">'
+      +'<div class="bes-icon">📊</div>'
+      +'<div class="bes-title">Vos budgets vous attendent</div>'
+      +'<div class="bes-sub">L\'app répartit automatiquement vos revenus selon la règle <strong>50/30/20</strong> :<br>50 % besoins fixes · 30 % vie courante · 20 % loisirs</div>'
+      +'<div class="bes-steps">'
+        +'<div class="bes-step"><div class="bes-step-num">1</div><div>Saisissez votre <strong>salaire prévisionnel</strong> dans Profil</div></div>'
+        +'<div class="bes-step"><div class="bes-step-num">2</div><div>Ajoutez vos <strong>dépenses du mois</strong> avec le bouton +</div></div>'
+        +'<div class="bes-step"><div class="bes-step-num">3</div><div>Suivez vos <strong>budgets en temps réel</strong> ici</div></div>'
+      +'</div>'
+      +'<button onclick="goTo(\'profil\')" class="bes-btn">⚙️ Configurer mon salaire</button>'
+    +'</div>';
+    return;
+  }
+  var noTx = !Object.keys(byCat).length;
+  if(noTx){
+    el.innerHTML='<div class="budget-empty-state">'
+      +'<div class="bes-icon" style="animation-delay:.1s">💳</div>'
+      +'<div class="bes-title">Aucune dépense ce mois-ci</div>'
+      +'<div class="bes-sub">Ajoutez vos premières transactions pour voir vos budgets se remplir automatiquement.</div>'
+      +'<button onclick="openAdd(\'exp\')" class="bes-btn">+ Ajouter une dépense</button>'
+    +'</div>';
     return;
   }
   // Group by type
@@ -3867,7 +3936,7 @@ function runBankImport() {
     if(detected.isVir) virCount++;
 
     expenses.push({
-      id: 'bi_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
+      id: _uid('bi'),
       label: label, amount: amt, type: type,
       cat: detected.cat,
       isVirement: detected.isVir,
@@ -3904,7 +3973,7 @@ function importCSV(input){
       if(isNaN(amt)){skip++;return;}
       var dup=expenses.some(function(ex){return ex.date===c[0]&&ex.label===c[1]&&Math.abs(ex.amount-Math.abs(amt))<0.01;});
       if(dup){skip++;return;}
-      expenses.push({id:'imp_'+Date.now()+'_'+Math.random().toString(36).slice(2,5),label:c[1]||'Importé',amount:Math.abs(amt),type:(c[3]||'').indexOf('Revenu')!==-1||amt>0?'income':'expense',cat:'autre',accountId:'acc1',date:c[0]||new Date().toISOString().split('T')[0],recurring:false});
+      expenses.push({id:_uid('imp'),label:c[1]||'Importé',amount:Math.abs(amt),type:(c[3]||'').indexOf('Revenu')!==-1||amt>0?'income':'expense',cat:'autre',accountId:'acc1',date:c[0]||new Date().toISOString().split('T')[0],recurring:false});
       ok++;
     });
     save();renderAll();toast(ok+' importée(s)'+(skip?' · '+skip+' ignorée(s)':''));
