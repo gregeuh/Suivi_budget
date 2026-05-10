@@ -1258,6 +1258,7 @@ button{cursor:pointer;border:none;background:none}
       <div id="credits-dash-section" style="display:none;margin-top:20px">
         <div class="sec" style="margin-bottom:8px">
           <div class="sec-title"><span class="ico">🏦</span> Crédits en cours</div>
+          <button class="sec-link" onclick="openCreditForm(null)">+ Ajouter</button>
         </div>
         <div class="acc-scroll-wrap" id="credits-scroll-wrap">
           <div class="acc-scroll" id="credits-mini-list"></div>
@@ -1498,6 +1499,10 @@ button{cursor:pointer;border:none;background:none}
 
   <!-- FAB MENU -->
   <div class="fab-menu" id="fab-menu">
+    <div class="fab-item" id="fab-credit">
+      <div class="fab-item-lbl">🏦 Crédit</div>
+      <div class="fab-item-btn" style="background:linear-gradient(135deg,#e05c5c,#b83a3a)" onclick="closeFab();openCreditForm(null)">🏦</div>
+    </div>
     <div class="fab-item" id="fab-projet">
       <div class="fab-item-lbl">✨ Projet</div>
       <div class="fab-item-btn" style="background:linear-gradient(135deg,#4c1d95,#7c3aed)" onclick="closeFab();openWish()">✨</div>
