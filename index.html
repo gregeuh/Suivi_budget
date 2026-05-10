@@ -2405,7 +2405,7 @@ function openFab() {
   document.getElementById('fab-overlay').classList.add('open');
   document.getElementById('add-circle').classList.add('open');
   document.getElementById('fab-menu').classList.add('open');
-  var items = ['fab-dep','fab-rev','fab-vir','fab-projet'];
+  var items = ['fab-dep','fab-rev','fab-vir','fab-projet','fab-credit'];
   items.forEach(function(id, i) {
     setTimeout(function() {
       var el = document.getElementById(id);
@@ -2420,7 +2420,7 @@ function closeFab() {
   document.getElementById('fab-overlay').classList.remove('open');
   document.getElementById('add-circle').classList.remove('open');
   document.getElementById('fab-menu').classList.remove('open');
-  ['fab-dep','fab-rev','fab-vir','fab-projet'].forEach(function(id) {
+  ['fab-dep','fab-rev','fab-vir','fab-projet','fab-credit'].forEach(function(id) {
     var el = document.getElementById(id);
     if(el) el.classList.remove('show');
   });
