@@ -164,6 +164,7 @@ button{cursor:pointer;border:none;background:none}
 .card{background:var(--card);border-radius:var(--r);padding:18px;border:1px solid var(--border);box-shadow:var(--sh);margin-bottom:12px;will-change:transform}
 .sec{display:flex;justify-content:space-between;align-items:center;margin:20px 0 10px}
 .sec-title{font-family:'Sora',sans-serif;font-size:16px;font-weight:800;background:linear-gradient(135deg,var(--txt) 0%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sec-title .ico{-webkit-text-fill-color:initial;background:none;margin-right:4px}
 .sec-link{font-size:13px;font-weight:600;color:var(--accent);background:none;border:none;cursor:pointer}
 
 /* HERO CARD */
@@ -1135,7 +1136,7 @@ button{cursor:pointer;border:none;background:none}
 
       <!-- Soldes par compte -->
       <div class="sec" style="margin-top:20px">
-        <div class="sec-title">💳 Mes comptes</div>
+        <div class="sec-title"><span class="ico">💳</span> Mes comptes</div>
       </div>
       <div class="acc-scroll" id="acc-mini-list"></div>
 
@@ -1152,7 +1153,7 @@ button{cursor:pointer;border:none;background:none}
       </div>
 
       <!-- Conseils -->
-      <div class="sec"><div class="sec-title">💡 Conseils</div></div>
+      <div class="sec"><div class="sec-title"><span class="ico">💡</span> Conseils</div></div>
       <div id="conseils-list"></div>
 
       <!-- Récentes -->
@@ -1211,11 +1212,11 @@ button{cursor:pointer;border:none;background:none}
       </div>
 
       <!-- RÉCURRENTES -->
-      <div class="section-hd" style="margin-top:4px"><div class="sec-title">🔄 Récurrentes</div></div>
+      <div class="section-hd" style="margin-top:4px"><div class="sec-title"><span class="ico">🔄</span> Récurrentes</div></div>
       <div id="recur-settings" style="margin-bottom:4px"></div>
 
       <!-- COMPTES -->
-      <div class="section-hd" style="margin-top:4px"><div class="sec-title">💳 Comptes</div><button class="sec-link" onclick="openAddAccModal()">+ Ajouter</button></div>
+      <div class="section-hd" style="margin-top:4px"><div class="sec-title"><span class="ico">💳</span> Comptes</div><button class="sec-link" onclick="openAddAccModal()">+ Ajouter</button></div>
       <div id="accs-settings" style="margin-bottom:4px"></div>
 
       <div class="set-group">
