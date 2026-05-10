@@ -4161,15 +4161,17 @@ function _creditCardHtml(c, fullWidth, extraInner){
   var paid = c.totalAmount>0 ? (c.totalAmount-c.remainingAmount) : 0;
   var pct  = c.totalAmount>0 ? Math.min(100,Math.round(paid/c.totalAmount*100)) : 0;
   var months = _monthsRemaining(c.endDate);
-  var sub = (months!==null ? months+' mois restants' : '')
-           + (c.rate ? (months!==null?' · ':'')+'Taux '+c.rate+'%' : '');
+  var subParts = [];
+  if(months!==null) subParts.push(months+' mois restants');
+  if(c.rate) subParts.push(c.rate+'%');
+  var sub = subParts.join(' · ') || (c.remainingAmount ? fmt(c.remainingAmount)+' restants' : '');
   var w = fullWidth ? 'width:100%;box-sizing:border-box;' : '';
   return '<div class="credit-mini" style="background:'+bg+';position:relative;'+w+'" onclick="openCreditForm(\''+c.id+'\')">'
     +'<div class="credit-mini-icon">'+(c.icon||'🏦')+'</div>'
     +'<div class="credit-mini-name">'+esc(c.label)+'</div>'
-    +'<div class="credit-mini-bal">-'+fmt(c.monthlyPayment)+'/m</div>'
+    +'<div class="credit-mini-bal">'+fmt(c.monthlyPayment)+'/m</div>'
     +'<div class="credit-mini-bar"><div class="credit-mini-bar-fill" style="width:'+pct+'%"></div></div>'
-    +'<div class="credit-mini-sub">'+(sub||fmt(c.remainingAmount)+' restants')+'</div>'
+    +'<div class="credit-mini-sub">'+sub+'</div>'
     +(extraInner||'')
     +'</div>';
 }
