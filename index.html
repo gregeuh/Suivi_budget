@@ -171,8 +171,8 @@ button{cursor:pointer;border:none;background:none}
 .tx-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tx-sub{font-size:12px;color:var(--txt3);margin-top:1px}
 .tx-amt{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;white-space:nowrap}
-.tx-amt.e{color:#dc2626;font-weight:800}.tx-amt.i{color:#059669;font-weight:800}
-.date-sep{text-align:center;padding:10px 0 4px;font-size:11px;font-weight:600;color:#aeaeb2;text-transform:uppercase;letter-spacing:.8px;background:var(--bg);}
+.tx-amt.e{color:var(--red);font-weight:800}.tx-amt.i{color:var(--green);font-weight:800}
+.date-sep{text-align:center;padding:10px 0 4px;font-size:11px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.8px;background:var(--bg);}
 
 /* SEARCH & FILTERS */
 .search-row{display:flex;gap:8px;margin-bottom:12px}
@@ -713,7 +713,7 @@ button{cursor:pointer;border:none;background:none}
 }
 
 .tab-pill {
-  background: #ffffff !important;
+  background: var(--card) !important;
   border: 1px solid var(--border) !important;
   box-shadow: 0 2px 8px rgba(0,0,0,0.10) !important;
 }
@@ -870,6 +870,37 @@ button{cursor:pointer;border:none;background:none}
 [data-theme="dark"] .acc-type-btn      { background: var(--input) !important; color: var(--txt) !important; border-color: var(--border) !important; }
 [data-theme="dark"] .acc-type-btn.on   { background: rgba(var(--accent-rgb),0.15) !important; border-color: var(--accent) !important; }
 [data-theme="dark"] .bi-row            { color: var(--txt) !important; }
+
+/* ═══ WISH CARDS ═══ */
+.wish-card {
+  border-radius: 18px; padding: 18px; cursor: pointer;
+  position: relative; overflow: hidden;
+  transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s;
+  color: #fff;
+}
+.wish-card:hover { transform: scale(1.03) translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.25); }
+.wish-c0 { background: linear-gradient(135deg,#c8913a,#a06820); }
+.wish-c1 { background: linear-gradient(135deg,#4caf82,#2d8a5e); }
+.wish-c2 { background: linear-gradient(135deg,#c07050,#8a3a28); }
+.wish-c3 { background: linear-gradient(135deg,#6888c8,#3a5090); }
+.wish-c4 { background: linear-gradient(135deg,#c86888,#8a3060); }
+.wish-card::after {
+  content:''; position:absolute; top:0; left:0; right:0;
+  height:55%; border-radius:18px 18px 0 0;
+  background:linear-gradient(160deg,rgba(255,255,255,0.15) 0%,rgba(255,255,255,0) 100%);
+  pointer-events:none;
+}
+.wish-bar-bg {
+  height: 5px; border-radius: 3px;
+  background: rgba(255,255,255,0.2); overflow: hidden;
+}
+.wish-bar-fill { height: 100%; border-radius: 3px; transition: width .6s ease; }
+.wish-name { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.85); }
+.wish-done { font-size: 12px; color: rgba(255,255,255,0.9); font-weight: 700; }
+.wish-status { font-size: 12px; color: rgba(255,255,255,0.75); margin-top: 8px; }
+.wish-time { font-size: 11px; color: rgba(255,255,255,0.6); margin-left: 6px; }
+.wish-link { font-size: 12px; color: rgba(255,255,255,0.8); display: block; margin-top: 8px; text-decoration: none; }
+.wish-price { font-family: 'Sora',sans-serif; font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -.5px; margin: 4px 0 10px; }
 
 </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1031,25 +1062,25 @@ button{cursor:pointer;border:none;background:none}
 
         </div>
         <!-- Épargne row -->
-        <div id="hero-epargne-row" style="display:none;margin-top:10px;padding:12px 14px;background:#f0fdf4;border:1px solid #6ee7b7;border-radius:12px;display:flex;align-items:center;justify-content:space-between">
+        <div id="hero-epargne-row" style="display:none;margin-top:10px;padding:12px 14px;background:var(--card2);border:1px solid rgba(var(--accent-rgb),0.25);border-radius:12px;display:flex;align-items:center;justify-content:space-between">
           <div style="display:flex;align-items:center;gap:8px">
             <span style="font-size:16px">💰</span>
-            <div style="font-size:11px;color:#065f46;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Épargne totale</div>
+            <div style="font-size:11px;color:var(--txt2);font-weight:700;text-transform:uppercase;letter-spacing:.5px">Épargne totale</div>
           </div>
-          <div style="font-family:Sora,sans-serif;font-size:15px;font-weight:700;color:#6ee7b7" id="h-epargne">—</div>
+          <div style="font-family:Sora,sans-serif;font-size:15px;font-weight:700;color:var(--green)" id="h-epargne">—</div>
         </div>
         <!-- Swile row — only shown if Swile expenses exist -->
         <div id="swile-row" style="display:none;margin-top:10px;padding:12px 14px;background:var(--card2);border:1.5px solid var(--border);border-radius:14px">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
             <div style="display:flex;align-items:center;gap:6px">
               <span style="font-size:15px">🍽️</span>
-              <span style="font-size:11px;color:#7c2d12;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Tickets restau</span>
+              <span style="font-size:11px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:.5px">Tickets restau</span>
             </div>
-            <div style="font-size:11px;color:#b45309;font-weight:500" id="swile-used-lbl"></div>
+            <div style="font-size:11px;color:var(--txt2);font-weight:500" id="swile-used-lbl"></div>
           </div>
           <div style="display:flex;align-items:baseline;gap:10px">
             <div style="font-family:Sora,sans-serif;font-size:24px;font-weight:800;color:var(--txt2)" id="h-swile">—</div>
-            <div style="font-size:13px;color:#b45309;font-weight:600" id="swile-repas-lbl"></div>
+            <div style="font-size:13px;color:var(--txt2);font-weight:600" id="swile-repas-lbl"></div>
           </div>
         </div>
       </div>
