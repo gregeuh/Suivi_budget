@@ -1465,6 +1465,28 @@ button{cursor:pointer;border:none;background:none}
     </div>
   </div>
 
+  <!-- POST-CREDIT OPTIONS OVERLAY -->
+  <div class="overlay" id="post-credit-overlay" onclick="if(event.target===this)closePostCredit()">
+    <div class="modal">
+      <div class="m-handle"></div>
+      <div style="font-family:'Sora',sans-serif;font-size:18px;font-weight:800;margin-bottom:6px">Et maintenant ?</div>
+      <div style="font-size:13px;color:var(--txt2);margin-bottom:20px">Voulez-vous associer des transactions à ce crédit ?</div>
+      <div id="post-credit-buttons" style="display:flex;flex-direction:column;gap:10px"></div>
+      <button class="btn btn-ghost" style="width:100%;margin-top:12px" onclick="closePostCredit()">Passer</button>
+    </div>
+  </div>
+
+  <!-- LINK TRANSACTION PICKER OVERLAY -->
+  <div class="overlay" id="link-tx-overlay" onclick="if(event.target===this)closeLinkTx()">
+    <div class="modal" style="max-height:88dvh;display:flex;flex-direction:column">
+      <div class="m-handle"></div>
+      <div style="font-family:'Sora',sans-serif;font-size:17px;font-weight:800;margin-bottom:12px">Lier une transaction</div>
+      <input id="link-tx-search" class="field-inp" placeholder="Rechercher…" oninput="renderLinkTxList()" style="margin-bottom:12px">
+      <div id="link-tx-list" style="overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:8px"></div>
+      <button class="btn btn-ghost" style="width:100%;margin-top:12px" onclick="closeLinkTx()">Fermer</button>
+    </div>
+  </div>
+
   <!-- ABONNEMENTS OVERLAY -->
   <div class="overlay" id="abonnements-overlay" onclick="if(event.target===this)closeAbonnements()">
     <div class="modal" style="max-height:88dvh;overflow-y:auto">
@@ -3875,7 +3897,7 @@ function saveTransaction(){
     toast('↔️ Virement de '+amt.toFixed(2)+' € effectué','success');
     return;
   }
-  expenses.unshift({
+  var newTx = {
     id:_uid('tx'), label:lbl, amount:amt,
     type:mCurrentType==='inc'?'income':'expense',
     cat:selCat, accountId:selAcc, date:date,
@@ -3884,7 +3906,9 @@ function saveTransaction(){
     frequency:_recurOn?_recurFreq:null,
     customDays:customDays2,
     endDate:endDate2||null
-  });
+  };
+  if(window._pendingCreditId){ newTx.creditId = window._pendingCreditId; window._pendingCreditId = null; }
+  expenses.unshift(newTx);
   learnCat(lbl, selCat);
   save();renderAll();closeModal();
   var cat=categories.find(function(c){return c.id===selCat;})||{icon:'📦'};
@@ -4034,6 +4058,7 @@ function saveCredit(){
     accountId:       document.getElementById('cf-account').value,
     color:           window._cfColor || 'red'
   };
+  var isNew = !_editingCreditId;
   if(_editingCreditId){
     var idx=credits.findIndex(function(c){return c.id===_editingCreditId;});
     if(idx>=0) credits[idx]=obj; else credits.push(obj);
@@ -4042,15 +4067,101 @@ function saveCredit(){
   }
   save(); closeCreditForm(); renderCreditsOverlay(); renderCreditHero();
   toast((obj.icon||'🏦')+' '+label+' enregistré ✓','success');
+  if(isNew) setTimeout(function(){ _showPostCreditOptions(obj.id); }, 350);
 }
 
 function deleteCredit(){
   if(!_editingCreditId) return;
   var c=credits.find(function(x){return x.id===_editingCreditId;});
   if(!confirm('Supprimer "'+((c&&c.label)||'ce crédit')+'" ?')) return;
+  expenses.forEach(function(e){ if(e.creditId===_editingCreditId) delete e.creditId; });
   credits=credits.filter(function(x){return x.id!==_editingCreditId;});
   save(); closeCreditForm(); renderCreditsOverlay(); renderCreditHero();
   toast('Crédit supprimé');
+}
+
+// ── POST-CREDIT OPTIONS ────────────────────
+var _postCreditId = null;
+function _showPostCreditOptions(creditId){
+  _postCreditId = creditId;
+  var c = credits.find(function(x){return x.id===creditId;});
+  var btns = document.getElementById('post-credit-buttons'); if(!btns) return;
+  btns.innerHTML =
+    '<button class="btn btn-primary" style="width:100%;display:flex;align-items:center;gap:10px;justify-content:center" onclick="closePostCredit();_openCreditNewTx(\''+creditId+'\')">'
+    +'<span style="font-size:18px">🔄</span><div style="text-align:left"><div style="font-weight:700">Créer une opération récurrente</div>'
+    +'<div style="font-size:11px;opacity:.75;font-weight:400">Mensualité automatique de '+(c?fmt(c.monthlyPayment):'?')+'</div></div></button>'
+    +'<button class="btn" style="width:100%;display:flex;align-items:center;gap:10px;justify-content:center;background:var(--bg2);border:1.5px solid var(--border)" onclick="closePostCredit();openLinkTx(\''+creditId+'\')">'
+    +'<span style="font-size:18px">🔗</span><div style="text-align:left"><div style="font-weight:700">Lier une transaction existante</div>'
+    +'<div style="font-size:11px;opacity:.6;font-weight:400">Associer une dépense déjà saisie</div></div></button>';
+  document.getElementById('post-credit-overlay').classList.add('on');
+}
+function closePostCredit(){ document.getElementById('post-credit-overlay').classList.remove('on'); }
+
+function _openCreditNewTx(creditId){
+  var c = credits.find(function(x){return x.id===creditId;}); if(!c) return;
+  window._pendingCreditId = creditId;
+  openAdd('exp');
+  setTimeout(function(){
+    document.getElementById('m-lbl').value = c.label;
+    mAmt = String(c.monthlyPayment);
+    var v = parseFloat(mAmt)||0;
+    document.getElementById('m-amt-display').textContent = v.toFixed(2);
+    if(c.accountId){ selAcc=c.accountId; buildMAccs(); }
+  }, 50);
+}
+
+// ── LINK EXISTING TRANSACTION ──────────────
+var _linkTxCreditId = null;
+function openLinkTx(creditId){
+  _linkTxCreditId = creditId;
+  document.getElementById('link-tx-search').value = '';
+  renderLinkTxList();
+  document.getElementById('link-tx-overlay').classList.add('on');
+}
+function closeLinkTx(){ document.getElementById('link-tx-overlay').classList.remove('on'); }
+
+function renderLinkTxList(){
+  var search = (document.getElementById('link-tx-search').value||'').toLowerCase();
+  var list = document.getElementById('link-tx-list'); if(!list) return;
+  var filtered = expenses.filter(function(e){
+    if(e.isVirement) return false;
+    if(search && e.label.toLowerCase().indexOf(search)<0) return false;
+    return true;
+  }).slice(0,80);
+  if(!filtered.length){
+    list.innerHTML='<div style="text-align:center;padding:24px;color:var(--txt2);font-size:13px">Aucune transaction trouvée</div>';
+    return;
+  }
+  list.innerHTML = filtered.map(function(e){
+    var linked = e.creditId === _linkTxCreditId;
+    var otherCredit = e.creditId && e.creditId !== _linkTxCreditId ? credits.find(function(x){return x.id===e.creditId;}) : null;
+    var sign = e.type==='income' ? '+' : '-';
+    var color = e.type==='income' ? 'var(--green)' : 'var(--red)';
+    var cat = categories.find(function(x){return x.id===e.cat;})||{icon:'📦'};
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--bg2);'
+      +(linked?'outline:2px solid var(--accent);':'')+'">'
+      +'<div style="font-size:20px">'+cat.icon+'</div>'
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(e.label)+'</div>'
+      +'<div style="font-size:11px;color:var(--txt2)">'+(e.date||'')+(otherCredit?' · Lié à '+esc(otherCredit.label):'')+'</div>'
+      +'</div>'
+      +'<div style="font-weight:700;font-size:13px;color:'+color+';white-space:nowrap">'+sign+fmt(e.amount)+'</div>'
+      +'<button onclick="_toggleLinkTx(\''+e.id+'\')" style="border:none;background:'+(linked?'var(--accent)':'var(--border)')+';color:'+(linked?'#fff':'var(--txt2)')+';border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0">'
+      +(linked?'Délier':'Lier')+'</button>'
+      +'</div>';
+  }).join('');
+}
+
+function _toggleLinkTx(expId){
+  var e = expenses.find(function(x){return x.id===expId;}); if(!e) return;
+  if(e.creditId === _linkTxCreditId){
+    delete e.creditId;
+  } else {
+    e.creditId = _linkTxCreditId;
+  }
+  save();
+  renderLinkTxList();
+  renderCreditsOverlay();
 }
 
 function _monthsRemaining(endDate){
@@ -4060,7 +4171,7 @@ function _monthsRemaining(endDate){
   return Math.max(0,diff);
 }
 
-function _creditCardHtml(c, fullWidth){
+function _creditCardHtml(c, fullWidth, extraInner){
   var bg = ACC_COLORS[c.color||'red'] || ACC_COLORS.red;
   var paid = c.totalAmount>0 ? (c.totalAmount-c.remainingAmount) : 0;
   var pct  = c.totalAmount>0 ? Math.min(100,Math.round(paid/c.totalAmount*100)) : 0;
@@ -4068,12 +4179,35 @@ function _creditCardHtml(c, fullWidth){
   var sub = (months!==null ? months+' mois restants' : '')
            + (c.rate ? (months!==null?' · ':'')+'Taux '+c.rate+'%' : '');
   var w = fullWidth ? 'width:100%;box-sizing:border-box;' : '';
-  return '<div class="credit-mini" style="background:'+bg+';'+w+'" onclick="openCreditForm(\''+c.id+'\')">'
+  return '<div class="credit-mini" style="background:'+bg+';position:relative;'+w+'" onclick="openCreditForm(\''+c.id+'\')">'
     +'<div class="credit-mini-icon">'+(c.icon||'🏦')+'</div>'
     +'<div class="credit-mini-name">'+esc(c.label)+'</div>'
     +'<div class="credit-mini-bal">-'+fmt(c.monthlyPayment)+'/m</div>'
     +'<div class="credit-mini-bar"><div class="credit-mini-bar-fill" style="width:'+pct+'%"></div></div>'
     +'<div class="credit-mini-sub">'+(sub||fmt(c.remainingAmount)+' restants')+'</div>'
+    +(extraInner||'')
+    +'</div>';
+}
+
+function _creditLinkedTxHtml(creditId){
+  var linked = expenses.filter(function(e){ return e.creditId === creditId; });
+  if(!linked.length) return '<div style="font-size:12px;color:var(--txt2);padding:8px 0 4px">Aucune transaction liée — <span style="color:var(--accent);cursor:pointer;font-weight:600" onclick="openLinkTx(\''+creditId+'\')">+ Lier</span></div>';
+  var rows = linked.slice(0,5).map(function(e){
+    var cat = categories.find(function(x){return x.id===e.cat;})||{icon:'📦'};
+    return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">'
+      +'<span style="font-size:14px">'+cat.icon+'</span>'
+      +'<span style="flex:1;font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(e.label)+'</span>'
+      +'<span style="font-size:11px;color:var(--txt2)">'+e.date+'</span>'
+      +'<span style="font-size:12px;font-weight:700;color:var(--red)">-'+fmt(e.amount)+'</span>'
+      +'</div>';
+  }).join('');
+  var more = linked.length>5 ? '<div style="font-size:11px;color:var(--txt2);padding:4px 0">+' +(linked.length-5)+' autres…</div>' : '';
+  return '<div style="margin-top:4px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">'
+    +'<div style="font-size:11px;color:var(--txt2);font-weight:600;text-transform:uppercase;letter-spacing:.4px">'+linked.length+' transaction'+(linked.length>1?'s':'')+' liée'+(linked.length>1?'s':'')+'</div>'
+    +'<span style="font-size:11px;color:var(--accent);cursor:pointer;font-weight:600" onclick="openLinkTx(\''+creditId+'\')">Gérer</span>'
+    +'</div>'
+    +rows+more
     +'</div>';
 }
 
@@ -4093,7 +4227,12 @@ function renderCreditsOverlay(){
   if(!credits.length){
     html+='<div style="text-align:center;padding:32px 20px;color:var(--txt2);font-size:14px">Aucun crédit enregistré</div>';
   } else {
-    html+=credits.map(function(c){ return _creditCardHtml(c, true); }).join('');
+    html+=credits.map(function(c){
+      var txCount = expenses.filter(function(e){return e.creditId===c.id;}).length;
+      var badge = txCount>0 ? '<div style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,0.25);border-radius:20px;padding:2px 7px;font-size:10px;font-weight:700">'+txCount+' tx</div>' : '';
+      return '<div style="margin-bottom:4px">'+_creditCardHtml(c, true, badge)+'</div>'
+        +'<div style="padding:0 4px 14px">'+_creditLinkedTxHtml(c.id)+'</div>';
+    }).join('');
   }
   html+='<button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="openCreditForm(null)">+ Ajouter un crédit</button>';
   body.innerHTML=html;
