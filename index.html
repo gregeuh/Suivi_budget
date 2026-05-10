@@ -1279,12 +1279,8 @@ button{cursor:pointer;border:none;background:none}
       </div>
 
       <!-- Conseils -->
-      <div class="sec">
-        <div class="sec-title"><span class="ico">💡</span> Conseils</div>
-        <button class="sec-link" id="ai-conseil-btn" onclick="fetchAIConseils()">✨ IA</button>
-      </div>
+      <div class="sec"><div class="sec-title"><span class="ico">💡</span> Conseils</div></div>
       <div id="conseils-list"></div>
-      <div id="ai-conseil-box" style="display:none;margin-bottom:12px"></div>
 
       <!-- Récentes -->
       <div class="sec">
@@ -3514,148 +3510,135 @@ function renderEvo(){
 function renderConseils(){
   var el=document.getElementById('conseils-list');if(!el)return;
   var data=getMonthTx();
-  var restoIds=getRestoIds(); var swileId=restoIds[0]||null;
+  var restoIds=getRestoIds();
+  var today=new Date();
+  var daysInMonth=new Date(today.getFullYear(),today.getMonth()+1,0).getDate();
+  var dayOfMonth=today.getDate();
+  var monthProgress=dayOfMonth/daysInMonth; // 0→1
+
   var mExp=data.filter(function(e){return e.type==='expense'&&restoIds.indexOf(e.accountId)===-1&&getEpargneIds().indexOf(e.accountId)===-1;}).reduce(function(s,e){return s+e.amount;},0);
   var mIncR=data.filter(function(e){return e.type==='income'&&restoIds.indexOf(e.accountId)===-1;}).reduce(function(s,e){return s+e.amount;},0);
   var mInc=mIncR>0?mIncR:forecastSalary;
-  var saveRate=mInc>0?Math.round((mInc-mExp)/mInc*100):0;
-  var conseils=[];
-  // Conseil 1 — taux épargne
-  if(mInc>0){
-    if(saveRate>=20)conseils.push({icon:'🎉',text:'Excellent taux d\'épargne !',sub:'Vous épargnez '+saveRate+'% de vos revenus ce mois. Objectif 20% atteint !'});
-    else if(saveRate>0)conseils.push({icon:'💡',text:'Taux d\'épargne : '+saveRate+'%',sub:'Essayez d\'atteindre 20%. Il vous manque '+fmt(mInc*0.2-(mInc-mExp))+' à économiser.'});
-    else conseils.push({icon:'⚠️',text:'Dépenses supérieures aux revenus',sub:'Vous dépensez '+fmt(mExp-mInc)+' de plus que vous ne gagnez ce mois.'});
-  }
-  // Conseil 2 — catégorie la plus dépensière
+
+  // byCat
   var byCat={};
   data.filter(function(e){return e.type==='expense'&&restoIds.indexOf(e.accountId)===-1;}).forEach(function(e){byCat[e.cat]=(byCat[e.cat]||0)+e.amount;});
-  var topCat=Object.keys(byCat).sort(function(a,b){return byCat[b]-byCat[a];})[0];
-  if(topCat&&mExp>0){
-    var cat=categories.find(function(c){return c.id===topCat;})||{icon:'📦',label:'Autre'};
-    var pct=Math.round(byCat[topCat]/mExp*100);
-    if(pct>30)conseils.push({icon:cat.icon,text:cat.label+' représente '+pct+'% des dépenses',sub:fmt(byCat[topCat])+' ce mois. Pensez-y si vous souhaitez réduire.'});
-  }
-  // Conseil 3 — budget resto
-  var resto=byCat['resto']||0;
-  var prevResto=getPrevMonthCat('resto');
-  if(resto>0&&prevResto>0&&resto>prevResto*1.2){
-    conseils.push({icon:'🍽️',text:'Restaurants +'+Math.round((resto/prevResto-1)*100)+'% vs mois dernier',sub:'Vous avez dépensé '+fmt(resto)+' vs '+fmt(prevResto)+' le mois précédent.'});
-  }
-  // Conseil 4 — objectif épargne
-  if(savingsGoal>0&&mInc>0){
-    var onTrack=(mInc-mExp)>=savingsGoal;
-    if(!onTrack)conseils.push({icon:'🎯',text:'Objectif épargne : '+fmt(savingsGoal),sub:'Il manque '+fmt(savingsGoal-(mInc-mExp))+' pour atteindre votre objectif ce mois.'});
-  }
 
-  // Budget alert
-  if(mInc>0){
-    var typeAlloc2={fixe:0.5,vie:0.3,loisirs:0.2};
-    var typeCounts2={fixe:0,vie:0,loisirs:0};
-    categories.forEach(function(c){if(typeCounts2[c.type]!==undefined)typeCounts2[c.type]++;});
-    var overBudget=[];
-    categories.forEach(function(c){
-      var budget=mInc*(typeAlloc2[c.type]||0.2)/(typeCounts2[c.type]||1);
-      var spent=byCat[c.id]||0;
-      if(spent>budget&&spent>10)overBudget.push({cat:c,spent:spent,budget:budget});
-    });
-    if(overBudget.length){
-      overBudget.sort(function(a,b){return(b.spent-b.budget)-(a.spent-a.budget);});
-      var o=overBudget[0];
-      conseils.push({icon:o.cat.icon,text:o.cat.label+' dépasse le budget de '+fmt(o.spent-o.budget),sub:'Budget : '+fmt(o.budget)+' · Dépensé : '+fmt(o.spent)+'. Pensez à réduire ce poste.'});
+  // 3-month averages per category
+  var avg3={}; // catId -> avg monthly spend over last 3 months
+  for(var mi=1;mi<=3;mi++){
+    var py=viewDate.getMonth()-mi<0?viewDate.getFullYear()-1:viewDate.getFullYear();
+    var pm=(viewDate.getMonth()-mi+12)%12;
+    expenses.filter(function(e){
+      if(!e.date||e.isVirement||e.type!=='expense') return false;
+      var d=new Date(e.date+'T12:00:00');
+      return d.getFullYear()===py&&d.getMonth()===pm&&restoIds.indexOf(e.accountId)===-1;
+    }).forEach(function(e){ avg3[e.cat]=(avg3[e.cat]||0)+e.amount; });
+  }
+  Object.keys(avg3).forEach(function(k){avg3[k]=avg3[k]/3;});
+
+  // auto budgets
+  var typeAlloc={fixe:0.5,vie:0.3,loisirs:0.2};
+  var typeCounts={fixe:0,vie:0,loisirs:0};
+  categories.forEach(function(c){if(typeCounts[c.type]!==undefined)typeCounts[c.type]++;});
+  var autoBudget=function(c){ return mInc>0?Math.round(mInc*(typeAlloc[c.type]||0.2)/(typeCounts[c.type]||1)):0; };
+
+  var conseils=[];
+
+  // ① Rythme de dépenses — à ce rythme, vas-tu dépasser ?
+  if(mInc>0&&mExp>0&&monthProgress>0.1){
+    var projectedExp=Math.round(mExp/monthProgress);
+    var projectedSave=mInc-projectedExp;
+    var daysLeft=daysInMonth-dayOfMonth;
+    if(projectedExp>mInc){
+      var overrun=projectedExp-mInc;
+      conseils.push({priority:10,icon:'⚡',text:'À ce rythme tu dépasseras tes revenus de '+fmt(overrun),sub:'Tu as dépensé '+fmt(mExp)+' en '+dayOfMonth+' jours. Il te reste '+daysLeft+' jours — limite-toi à '+fmt(Math.max(mInc-mExp,0))+' jusqu\'à la fin du mois.'});
+    } else if(projectedSave>0){
+      var saveRate=Math.round(projectedSave/mInc*100);
+      if(saveRate>=20){
+        conseils.push({priority:1,icon:'🎉',text:'En bonne voie — taux d\'épargne projeté '+saveRate+'%',sub:'Tu as dépensé '+fmt(mExp)+' sur '+dayOfMonth+' jours. Projection fin de mois : +'+fmt(projectedSave)+' épargnés.'});
+      } else {
+        var missing=Math.round(mInc*0.2-projectedSave);
+        conseils.push({priority:3,icon:'💡',text:'Taux d\'épargne projeté : '+saveRate+'% (objectif 20%)',sub:'Pour atteindre 20%, dépense '+fmt(missing)+' de moins d\'ici fin de mois. Reste '+daysLeft+' jours.'});
+      }
     }
   }
 
-  if(!conseils.length){el.innerHTML='<div class="empty" style="padding:20px"><div class="empty-ico">💡</div>Ajoutez des transactions pour voir vos conseils</div>';return;}
-  el.innerHTML=conseils.slice(0,3).map(function(c){return '<div class="conseil"><div class="conseil-icon">'+c.icon+'</div><div class="conseil-text">'+c.text+'</div><div class="conseil-sub">'+c.sub+'</div></div>';}).join('');
-}
-
-// ── CONSEILS IA (Gemini) ───────────────────
-var _GEMINI_KEY = 'AIzaSyCJU6GfOO4TbK8BlBO0atzDetw2tYzXOE4';
-var _aiCacheKey = function(){ return 'ai_conseil_'+viewDate.getFullYear()+'_'+viewDate.getMonth(); };
-
-function fetchAIConseils(){
-  var box = document.getElementById('ai-conseil-box'); if(!box) return;
-  var btn = document.getElementById('ai-conseil-btn');
-
-  // Serve from cache if available
-  var cached = localStorage.getItem(_aiCacheKey());
-  if(cached){ _renderAIBox(cached); return; }
-
-  // Build financial summary (no PII)
-  var data = getMonthTx();
-  var restoIds = getRestoIds();
-  var mExp = data.filter(function(e){return e.type==='expense'&&restoIds.indexOf(e.accountId)===-1&&getEpargneIds().indexOf(e.accountId)===-1;}).reduce(function(s,e){return s+e.amount;},0);
-  var mIncR = data.filter(function(e){return e.type==='income'&&restoIds.indexOf(e.accountId)===-1;}).reduce(function(s,e){return s+e.amount;},0);
-  var mInc = mIncR>0?mIncR:forecastSalary;
-  var saveRate = mInc>0?Math.round((mInc-mExp)/mInc*100):0;
-  var byCat = {};
-  data.filter(function(e){return e.type==='expense'&&restoIds.indexOf(e.accountId)===-1;}).forEach(function(e){byCat[e.cat]=(byCat[e.cat]||0)+e.amount;});
-  var catLines = categories.filter(function(c){return byCat[c.id]>0;}).sort(function(a,b){return (byCat[b.id]||0)-(byCat[a.id]||0);}).slice(0,6).map(function(c){
-    var budget = mInc>0 ? Math.round(mInc*({fixe:0.5,vie:0.3,loisirs:0.2}[c.type]||0.2)/Math.max(categories.filter(function(x){return x.type===c.type;}).length,1)) : 0;
-    return c.label+' : '+Math.round(byCat[c.id])+'€'+(budget>0?' (budget '+budget+'€)':'');
-  }).join(', ');
-  var creditLines = credits.length ? credits.map(function(c){return c.label+' '+c.monthlyPayment+'€/m';}).join(', ') : 'aucun';
-  var topWish = wishlist.length ? wishlist[0].name+' '+wishlist[0].price+'€' : 'aucun';
-  var today = new Date(); var daysLeft = new Date(today.getFullYear(),today.getMonth()+1,0).getDate()-today.getDate();
-
-  var prompt = 'Tu es conseiller financier. Voici la situation budgétaire de ce mois :\n'
-    +'- Revenus : '+Math.round(mInc)+'€, Dépenses : '+Math.round(mExp)+'€, Taux épargne : '+saveRate+'%\n'
-    +'- Dépenses par catégorie : '+catLines+'\n'
-    +'- Crédits : '+creditLines+'\n'
-    +'- Projet en cours : '+topWish+'\n'
-    +'- Jours restants dans le mois : '+daysLeft+'\n\n'
-    +'Donne exactement 3 conseils financiers personnalisés, courts (1-2 phrases chacun), en français, en tutoyant. '
-    +'Format : commence chaque conseil par un emoji pertinent puis le texte. Sois précis avec les chiffres réels. '
-    +'Sépare les conseils par des sauts de ligne.';
-
-  // Loading state
-  box.style.display = 'block';
-  box.innerHTML = '<div style="background:var(--card);border-radius:16px;padding:16px;border:1px solid var(--border);display:flex;align-items:center;gap:10px;color:var(--txt2);font-size:13px"><span style="font-size:20px;animation:spin 1s linear infinite;display:inline-block">✨</span> Analyse en cours…</div>';
-  if(btn){ btn.textContent='…'; btn.style.opacity='.5'; btn.disabled=true; }
-
-  fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key='+_GEMINI_KEY, {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:400,temperature:0.7}})
-  })
-  .then(function(r){return r.json();})
-  .then(function(d){
-    if(d.error){
-      var msg = d.error.message||'Erreur API';
-      box.innerHTML='<div style="background:var(--card);border-radius:16px;padding:14px;border:1px solid var(--border);font-size:13px;color:var(--red)">❌ '+esc(msg)+'</div>';
-      return;
-    }
-    var text = d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts&&d.candidates[0].content.parts[0]&&d.candidates[0].content.parts[0].text;
-    if(!text) throw new Error('Réponse vide');
-    localStorage.setItem(_aiCacheKey(), text);
-    _renderAIBox(text);
-  })
-  .catch(function(e){
-    box.innerHTML='<div style="background:var(--card);border-radius:16px;padding:14px;border:1px solid var(--border);font-size:13px;color:var(--red)">❌ '+(e&&e.message?esc(e.message):'Erreur réseau')+'</div>';
-  })
-  .finally(function(){
-    if(btn){ btn.textContent='✨ IA'; btn.style.opacity='1'; btn.disabled=false; }
+  // ② Catégorie en dérive vs moyenne 3 mois
+  var drifts=[];
+  categories.forEach(function(c){
+    var spent=byCat[c.id]||0; if(spent<10) return;
+    var avg=avg3[c.id]||0; if(avg<10) return;
+    var pctDrift=Math.round((spent-avg)/avg*100);
+    if(pctDrift>40) drifts.push({cat:c,spent:spent,avg:avg,drift:pctDrift,extra:Math.round(spent-avg)});
   });
-}
+  if(drifts.length){
+    drifts.sort(function(a,b){return b.extra-a.extra;});
+    var d=drifts[0];
+    conseils.push({priority:8,icon:d.cat.icon,text:d.cat.label+' : +'+d.drift+'% vs ta moyenne (+'+fmt(d.extra)+')',sub:'Ce mois : '+fmt(d.spent)+' · Moyenne 3 mois : '+fmt(Math.round(d.avg))+'. C\'est ton plus gros écart.'});
+  }
 
-function _renderAIBox(text){
-  var box = document.getElementById('ai-conseil-box'); if(!box) return;
-  var lines = text.split('\n').map(function(l){return l.trim();}).filter(function(l){return l.length>0;});
-  var html = '<div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;padding:16px;border:1px solid rgba(255,255,255,0.08)">'
-    +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:12px">'
-    +'<span style="font-size:14px">✨</span>'
-    +'<span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:.5px">Analyse IA · Gemini</span>'
-    +'<span style="margin-left:auto;font-size:10px;color:rgba(255,255,255,0.3);cursor:pointer" onclick="localStorage.removeItem(\''+_aiCacheKey()+'\');document.getElementById(\'ai-conseil-box\').style.display=\'none\'">↺ Recharger</span>'
-    +'</div>'
-    + lines.map(function(l){
-        return '<div style="display:flex;gap:10px;margin-bottom:10px;last-child:margin-bottom:0">'
-          +'<span style="font-size:18px;flex-shrink:0;line-height:1.4">'+l.match(/^\p{Emoji}/u)?.[0]+'</span>'
-          +'<span style="font-size:13px;color:rgba(255,255,255,0.88);line-height:1.5">'+esc(l.replace(/^\p{Emoji}\s*/u,''))+'</span>'
-          +'</div>';
-    }).join('')
-    +'</div>';
-  box.style.display = 'block';
-  box.innerHTML = html;
+  // ③ Budget le plus tendu — projection dépassement
+  if(mInc>0&&monthProgress>0.1){
+    var tensions=[];
+    categories.forEach(function(c){
+      var budget=autoBudget(c); if(!budget) return;
+      var spent=byCat[c.id]||0; if(!spent) return;
+      var projected=Math.round(spent/monthProgress);
+      if(projected>budget) tensions.push({cat:c,budget:budget,spent:spent,projected:projected,over:projected-budget});
+    });
+    if(tensions.length){
+      tensions.sort(function(a,b){return b.over-a.over;});
+      var t=tensions[0];
+      conseils.push({priority:7,icon:t.cat.icon,text:t.cat.label+' devrait dépasser le budget de '+fmt(t.over),sub:'Dépensé '+fmt(t.spent)+' en '+dayOfMonth+' jours → projection '+fmt(t.projected)+' vs budget '+fmt(t.budget)+'.'});
+    }
+  }
+
+  // ④ Taux d'effort crédit
+  if(credits.length&&mInc>0){
+    var totalMonthly=credits.reduce(function(s,c){return s+c.monthlyPayment;},0);
+    var effort=Math.round(totalMonthly/mInc*100);
+    if(effort>33){
+      conseils.push({priority:9,icon:'🏦',text:'Taux d\'effort crédit élevé : '+effort+'% de tes revenus',sub:fmt(totalMonthly)+'/mois en mensualités sur '+fmt(mInc)+' de revenus. Le seuil recommandé est 33%.'});
+    } else {
+      conseils.push({priority:2,icon:'🏦',text:'Taux d\'effort crédit : '+effort+'% — dans les clous',sub:fmt(totalMonthly)+'/mois en mensualités sur '+fmt(mInc)+' de revenus. Seuil max recommandé : 33%.'});
+    }
+  }
+
+  // ⑤ Objectif épargne
+  if(savingsGoal>0&&mInc>0){
+    var saved=mInc-mExp;
+    var onTrack=saved>=savingsGoal;
+    if(!onTrack&&saved>0){
+      conseils.push({priority:5,icon:'🎯',text:'Objectif épargne '+fmt(savingsGoal)+' — il manque '+fmt(savingsGoal-saved),sub:'Tu as mis de côté '+fmt(saved)+' ce mois. Encore '+fmt(savingsGoal-saved)+' pour atteindre ton objectif.'});
+    } else if(onTrack){
+      conseils.push({priority:2,icon:'🎯',text:'Objectif épargne atteint — '+fmt(saved)+' épargnés !',sub:'Tu visais '+fmt(savingsGoal)+', tu as fait '+fmt(saved)+'. '+(saved>savingsGoal?'Surplus de '+fmt(saved-savingsGoal)+'.':'')});
+    }
+  }
+
+  // ⑥ Projet en bonne voie
+  if(wishlist.length){
+    var w=wishlist[0];
+    var bals=calcBals();
+    var accBal=w.accId?(bals[w.accId]||0):getEpargneAccs().reduce(function(s,a){return s+(bals[a.id]||0);},0);
+    var miss=Math.max(w.price-accBal,0);
+    var epargneMois=Math.max(mInc-mExp,0);
+    if(miss>0&&epargneMois>0){
+      var months=Math.ceil(miss/epargneMois);
+      conseils.push({priority:4,icon:w.icon||'🎯',text:esc(w.name)+' : encore ~'+months+' mois à ce rythme',sub:fmt(accBal)+' épargnés sur '+fmt(w.price)+'. En épargnant '+fmt(epargneMois)+'/mois il manque '+fmt(miss)+'.'});
+    } else if(miss<=0){
+      conseils.push({priority:1,icon:w.icon||'🎯',text:esc(w.name)+' — financement atteint ! 🎉',sub:'Tu as '+fmt(accBal)+' de côté pour ce projet.'});
+    }
+  }
+
+  if(!conseils.length){
+    el.innerHTML='<div class="empty" style="padding:20px"><div class="empty-ico">💡</div>Ajoute des transactions pour voir tes conseils</div>';
+    return;
+  }
+  conseils.sort(function(a,b){return b.priority-a.priority;});
+  el.innerHTML=conseils.slice(0,3).map(function(c){
+    return '<div class="conseil"><div class="conseil-icon">'+c.icon+'</div><div class="conseil-text">'+c.text+'</div><div class="conseil-sub">'+c.sub+'</div></div>';
+  }).join('');
 }
 
 function getPrevMonthCat(catId){
