@@ -258,6 +258,27 @@ button{cursor:pointer;border:none;background:none}
 .budget-fill{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.16,1,.3,1)}
 .budget-msg{font-size:12px;margin-top:6px;font-weight:600}
 
+/* ═══ ABONNEMENTS ═══ */
+.abo-summary{background:linear-gradient(135deg,var(--accent),var(--accent-d));border-radius:16px;padding:18px 20px;margin-bottom:20px;color:#fff;display:flex;justify-content:space-between;align-items:center}
+.abo-sum-main{font-family:'Sora',sans-serif;font-size:24px;font-weight:800}
+.abo-sum-sub{font-size:12px;opacity:.85;margin-top:2px}
+.abo-sum-right{text-align:right}
+.abo-sum-year{font-family:'Sora',sans-serif;font-size:14px;font-weight:700;opacity:.9}
+.abo-section-lbl{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--txt2);margin:16px 0 8px}
+.abo-card{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px 14px;margin-bottom:8px;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.abo-card:hover{transform:translateY(-1px);box-shadow:var(--sh-lg)}
+.abo-icon{width:40px;height:40px;border-radius:12px;background:var(--input);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.abo-info{flex:1;min-width:0}
+.abo-label{font-size:14px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.abo-freq{font-size:11px;color:var(--txt2);margin-top:2px}
+.abo-amt{text-align:right;flex-shrink:0}
+.abo-monthly{font-family:'Sora',sans-serif;font-size:14px;font-weight:800}
+.abo-annual{font-size:10px;color:var(--txt2);margin-top:1px}
+.abo-net{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-top:16px;display:flex;justify-content:space-between;align-items:center}
+.abo-net-lbl{font-size:13px;font-weight:700;color:var(--txt)}
+.abo-net-val{font-family:'Sora',sans-serif;font-size:15px;font-weight:800}
+.abo-empty{text-align:center;padding:24px;color:var(--txt2);font-size:13px}
+
 /* ═══ BANK CONNECT (GoCardless) ═══ */
 .bank-search-wrap{position:sticky;top:0;background:var(--card);z-index:1;padding:0 0 12px}
 .bank-search-inp{width:100%;padding:11px 14px 11px 36px;border-radius:12px;
@@ -1274,7 +1295,7 @@ button{cursor:pointer;border:none;background:none}
       </div>
 
       <!-- RÉCURRENTES -->
-      <div class="section-hd" style="margin-top:4px"><div class="sec-title"><span class="ico">🔄</span> Récurrentes</div></div>
+      <div class="section-hd" style="margin-top:4px"><div class="sec-title"><span class="ico">🔄</span> Récurrentes</div><button class="sec-link" onclick="openAbonnements()">📋 Vue globale</button></div>
       <div id="recur-settings" style="margin-bottom:4px"></div>
 
       <!-- COMPTES -->
@@ -1319,6 +1340,14 @@ button{cursor:pointer;border:none;background:none}
   </div><!-- /content -->
 
   
+
+  <!-- ABONNEMENTS OVERLAY -->
+  <div class="overlay" id="abonnements-overlay" onclick="if(event.target===this)closeAbonnements()">
+    <div class="modal" style="max-height:88dvh;overflow-y:auto">
+      <div class="m-handle"></div>
+      <div id="abonnements-body"></div>
+    </div>
+  </div>
 
   <!-- BANK CONNECT OVERLAY -->
   <div class="overlay" id="bank-connect-overlay" onclick="if(event.target===this)closeBankConnect()">
@@ -3978,6 +4007,129 @@ function runNordigenImport(txsJson) {
   var msg = ok + ' transaction' + (ok > 1 ? 's' : '') + ' importée' + (ok > 1 ? 's' : '');
   if (skip) msg += ' · ' + skip + ' doublon' + (skip > 1 ? 's' : '') + ' ignoré' + (skip > 1 ? 's' : '');
   toast(msg, 'success');
+}
+
+// ══════════════════════════════════════════════════════════════
+// VUE ABONNEMENTS
+// ══════════════════════════════════════════════════════════════
+
+function _toMonthly(e){
+  var f=e.frequency, a=e.amount;
+  if(f==='monthly') return a;
+  if(f==='weekly')  return a*52/12;
+  if(f==='2weeks'||f==='biweekly')  return a*26/12;
+  if(f==='4weeks'||f==='4weekly')   return a*13/12;
+  if(f==='yearly')  return a/12;
+  if(f==='custom'){ var d=parseInt(e.customDays||e.freqDays)||30; return a*30/d; }
+  return a;
+}
+function _toAnnual(e){
+  var f=e.frequency, a=e.amount;
+  if(f==='monthly') return a*12;
+  if(f==='weekly')  return a*52;
+  if(f==='2weeks'||f==='biweekly')  return a*26;
+  if(f==='4weeks'||f==='4weekly')   return a*13;
+  if(f==='yearly')  return a;
+  if(f==='custom'){ var d=parseInt(e.customDays||e.freqDays)||30; return a*365/d; }
+  return a*12;
+}
+function _freqLabel(e){
+  var m={monthly:'Mensuel',weekly:'Hebdomadaire',yearly:'Annuel',
+    '2weeks':'Toutes les 2 sem.','biweekly':'Toutes les 2 sem.',
+    '4weeks':'Toutes les 4 sem.','4weekly':'Toutes les 4 sem.'};
+  if(e.frequency==='custom') return 'Tous les '+(e.customDays||e.freqDays||'?')+' jours';
+  return m[e.frequency]||e.frequency;
+}
+
+function openAbonnements(){
+  var el=document.getElementById('abonnements-overlay');
+  if(!el) return;
+  el.classList.add('on');
+  renderAbonnements();
+}
+function closeAbonnements(){ document.getElementById('abonnements-overlay').classList.remove('on'); }
+
+function renderAbonnements(){
+  var body=document.getElementById('abonnements-body'); if(!body) return;
+  var recurs=expenses.filter(function(e){ return e.recurring&&e.frequency&&e.frequency!=='once'; });
+  var restoIds=getRestoIds();
+  var deps=recurs.filter(function(e){ return e.type==='expense'&&restoIds.indexOf(e.accountId)===-1; });
+  var revs=recurs.filter(function(e){ return e.type==='income'; });
+
+  // Trier par montant mensuel décroissant
+  function byMonthly(a,b){ return _toMonthly(b)-_toMonthly(a); }
+  deps.sort(byMonthly); revs.sort(byMonthly);
+
+  var totalDepM=deps.reduce(function(s,e){ return s+_toMonthly(e); },0);
+  var totalDepA=deps.reduce(function(s,e){ return s+_toAnnual(e); },0);
+  var totalRevM=revs.reduce(function(s,e){ return s+_toMonthly(e); },0);
+  var totalRevA=revs.reduce(function(s,e){ return s+_toAnnual(e); },0);
+  var netM=totalRevM-totalDepM;
+  var netA=totalRevA-totalDepA;
+
+  function cardHtml(e){
+    var cat=categories.find(function(c){ return c.id===e.cat; })||{icon:'📦'};
+    var monthly=_toMonthly(e);
+    var annual=_toAnnual(e);
+    var isInc=e.type==='income';
+    var color=isInc?'var(--green)':'var(--red)';
+    var sign=isInc?'+':'-';
+    return '<div class="abo-card" onclick="closeAbonnements();setTimeout(function(){openEdit(\''+e.id+'\')},220)">'
+      +'<div class="abo-icon">'+cat.icon+'</div>'
+      +'<div class="abo-info">'
+      +'<div class="abo-label">'+esc(e.label||'Sans libellé')+'</div>'
+      +'<div class="abo-freq">🔄 '+_freqLabel(e)+'</div>'
+      +'</div>'
+      +'<div class="abo-amt">'
+      +'<div class="abo-monthly" style="color:'+color+'">'+sign+fmt(monthly)+'/m</div>'
+      +'<div class="abo-annual">'+sign+fmt(annual)+'/an</div>'
+      +'</div>'
+      +'</div>';
+  }
+
+  var html='';
+
+  // Résumé global
+  html+='<div class="abo-summary">'
+    +'<div>'
+    +'<div style="font-size:11px;opacity:.8;font-weight:600;letter-spacing:.4px;text-transform:uppercase;margin-bottom:4px">Abonnements &amp; récurrentes</div>'
+    +'<div class="abo-sum-main">'+fmt(totalDepM)+'/mois</div>'
+    +'<div class="abo-sum-sub">en dépenses fixes</div>'
+    +'</div>'
+    +'<div class="abo-sum-right">'
+    +'<div class="abo-sum-year">'+fmt(totalDepA)+'/an</div>'
+    +'<div style="font-size:10px;opacity:.75;margin-top:3px">'+deps.length+' abonnement'+(deps.length>1?'s':'')+'</div>'
+    +'</div>'
+    +'</div>';
+
+  // Dépenses
+  if(deps.length){
+    html+='<div class="abo-section-lbl">💸 Dépenses fixes ('+deps.length+')</div>';
+    html+=deps.map(cardHtml).join('');
+    html+='<div style="text-align:right;font-size:12px;color:var(--txt2);margin:4px 0 2px">Total : <strong style="color:var(--red)">'+fmt(totalDepM)+'/mois</strong> · '+fmt(totalDepA)+'/an</div>';
+  } else {
+    html+='<div class="abo-empty">Aucune dépense récurrente</div>';
+  }
+
+  // Revenus
+  if(revs.length){
+    html+='<div class="abo-section-lbl">💰 Revenus fixes ('+revs.length+')</div>';
+    html+=revs.map(cardHtml).join('');
+    html+='<div style="text-align:right;font-size:12px;color:var(--txt2);margin:4px 0 2px">Total : <strong style="color:var(--green)">'+fmt(totalRevM)+'/mois</strong> · '+fmt(totalRevA)+'/an</div>';
+  }
+
+  // Bilan net
+  if(deps.length||revs.length){
+    var netColor=netM>=0?'var(--green)':'var(--red)';
+    var netSign=netM>=0?'+':'';
+    html+='<div class="abo-net">'
+      +'<div><div class="abo-net-lbl">Bilan net mensuel</div><div style="font-size:11px;color:var(--txt2);margin-top:2px">Revenus − dépenses fixes</div></div>'
+      +'<div><div class="abo-net-val" style="color:'+netColor+'">'+netSign+fmt(netM)+'/m</div>'
+      +'<div style="font-size:10px;color:var(--txt2);text-align:right;margin-top:2px">'+netSign+fmt(netA)+'/an</div>'
+      +'</div></div>';
+  }
+
+  body.innerHTML=html;
 }
 
 function exportCSV(){
