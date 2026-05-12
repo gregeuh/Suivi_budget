@@ -1,5 +1,5 @@
-var CACHE = 'suivi-budget-v13';
-var SHELL = ['./index.html', './icon.svg', './manifest.json'];
+var CACHE = 'suivi-budget-v14';
+var SHELL = ['./icon.svg', './manifest.json'];
 
 self.addEventListener('install', function(e) {
   self.skipWaiting();
@@ -18,25 +18,40 @@ self.addEventListener('activate', function(e) {
 });
 
 self.addEventListener('fetch', function(e) {
-  // Ne pas intercepter les requêtes Firebase / GoCardless / CDN
   var url = e.request.url;
+
+  // Ne pas intercepter Firebase / CDN
   if (url.indexOf('firestore') !== -1 || url.indexOf('firebase') !== -1 ||
       url.indexOf('gstatic') !== -1 || url.indexOf('gocardless') !== -1 ||
       url.indexOf('googleapis') !== -1) {
     return;
   }
+
+  // Network-first pour index.html : toujours chercher la version fraîche
+  if (e.request.mode === 'navigate' || url.indexOf('index.html') !== -1) {
+    e.respondWith(
+      fetch(e.request).then(function(resp) {
+        var clone = resp.clone();
+        caches.open(CACHE).then(function(c) { c.put(e.request, clone); });
+        return resp;
+      }).catch(function() {
+        return caches.match('./index.html');
+      })
+    );
+    return;
+  }
+
+  // Cache-first pour les autres ressources statiques
   e.respondWith(
     caches.match(e.request).then(function(cached) {
       return cached || fetch(e.request).then(function(resp) {
-        // Mettre en cache uniquement les ressources locales
-        if (e.request.url.indexOf(self.location.origin) === 0) {
+        if (url.indexOf(self.location.origin) === 0) {
           var clone = resp.clone();
           caches.open(CACHE).then(function(c) { c.put(e.request, clone); });
         }
         return resp;
       });
     }).catch(function() {
-      // Offline : servir index.html pour les navigations
       if (e.request.mode === 'navigate') return caches.match('./index.html');
     })
   );
