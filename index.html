@@ -3257,7 +3257,7 @@ function getMonthTx(){
   var result = [];
   expenses.forEach(function(e){
     if(!e.date) return;
-    if(e.isAdjustment) return;
+    if(e.isAdjustment || (e.id && e.id.indexOf('adj_')===0)) return;
     var occs = getOccurrences(e, y, m);
     occs.forEach(function(day, i){
       var dateStr = y+'-'+String(m+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
