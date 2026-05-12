@@ -3068,6 +3068,9 @@ function setupAuth(){
   if(user){
     document.getElementById('auth').style.display='none';
     document.getElementById('app').classList.add('on');
+    // Afficher le prénom dès l'auth, sans attendre Firestore
+    if(!displayName) displayName=user.displayName||user.email.split('@')[0]||'';
+    updateGreeting();
     cloudDoc=db.collection('users').doc(user.uid);
     if(unsub)unsub();
     unsub=cloudDoc.onSnapshot(function(snap){
@@ -3337,6 +3340,7 @@ function animNum(el, to, prefix, suffix, decimals) {
 
 function renderAll(){
   updateMonthLabel();
+  updateGreeting();
   renderThemePicker();
   renderHero();
   renderCreditHero();
