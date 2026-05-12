@@ -1763,7 +1763,10 @@ button{cursor:pointer;border:none;background:none}
     <p style="font-size:13px;color:var(--txt2);margin-bottom:16px">Saisissez le solde réel de votre compte. Un ajustement sera créé automatiquement.</p>
     <div class="field">
       <label class="field-lbl">Solde actuel réel</label>
-      <input class="field-inp" id="adjust-bal-inp" type="number" step="0.01" placeholder="0.00">
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="adjust-sign-btn" onclick="toggleAdjustSign()" style="flex-shrink:0;width:42px;height:42px;border-radius:10px;border:1.5px solid var(--border);background:var(--input);font-size:18px;font-weight:700;cursor:pointer;color:var(--txt)">+</button>
+        <input class="field-inp" id="adjust-bal-inp" type="number" min="0" step="0.01" placeholder="0.00" style="flex:1">
+      </div>
     </div>
     <button class="btn btn-primary" onclick="saveAdjustBal()">Confirmer</button>
   </div>
@@ -2872,7 +2875,7 @@ function renderAccsSettings() {
       + '<span style="font-size:20px">' + (a.icon||'🏦') + '</span>'
       + '<div><div class="set-name">' + esc(a.name) + '</div>'
       + '<div style="font-size:11px;margin-top:2px"><span style="color:' + typeColors[type] + ';font-weight:600">' + (typeLabels[type]||type) + '</span>'
-      + ' · <span style="color:var(--txt2)">' + (bal>=0?'+':'') + fmt(bal) + '</span></div></div>'
+      + ' · <span style="color:' + (bal<0?'var(--red)':'var(--txt2)') + '">' + (bal>=0?'+':'−') + fmt(bal) + '</span></div></div>'
       + '</div>'
       + '<div style="display:flex;gap:6px"><button onclick="openAdjustBal(\'' + a.id + '\')" style="font-size:12px;font-weight:600;color:var(--accent);background:rgba(var(--accent-rgb),0.1);border:none;border-radius:8px;padding:5px 10px;cursor:pointer">Ajuster</button><button onclick="deleteAcc(\'' + a.id + '\')" style="font-size:16px;color:var(--txt3);background:none;border:none;cursor:pointer;padding:4px">✕</button></div>'
       + '</div>';
@@ -2885,13 +2888,26 @@ function openAdjustBal(id) {
   var acc = accounts.find(function(a){return a.id===id;});
   if(!acc) return;
   var bals = calcBals();
+  var bal = bals[id]||0;
   document.getElementById('adjust-title').textContent = 'Ajuster — ' + acc.name;
-  document.getElementById('adjust-bal-inp').value = (bals[id]||0).toFixed(2);
+  document.getElementById('adjust-bal-inp').value = Math.abs(bal).toFixed(2);
+  var signBtn = document.getElementById('adjust-sign-btn');
+  if(signBtn){ signBtn.textContent = bal < 0 ? '−' : '+'; signBtn.style.color = bal < 0 ? 'var(--red)' : 'var(--txt)'; }
   document.getElementById('adjust-overlay').classList.add('on');
+}
+function toggleAdjustSign(){
+  var btn = document.getElementById('adjust-sign-btn');
+  if(!btn) return;
+  var isNeg = btn.textContent === '−';
+  btn.textContent = isNeg ? '+' : '−';
+  btn.style.color = isNeg ? 'var(--txt)' : 'var(--red)';
 }
 function closeAdjust(){ document.getElementById('adjust-overlay').classList.remove('on'); }
 function saveAdjustBal(){
-  var newBal = parseFloat(document.getElementById('adjust-bal-inp').value)||0;
+  var raw = parseFloat(document.getElementById('adjust-bal-inp').value)||0;
+  var signBtn = document.getElementById('adjust-sign-btn');
+  var isNeg = signBtn && signBtn.textContent === '−';
+  var newBal = isNeg ? -Math.abs(raw) : Math.abs(raw);
   var bals = calcBals();
   var curr = bals[_adjustAccId]||0;
   var diff = newBal - curr;
