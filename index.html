@@ -191,8 +191,6 @@ button{cursor:pointer;border:none;background:none}
 .sk-line{height:14px;margin-bottom:8px}
 .sk-bal{height:44px;width:160px;border-radius:14px;margin-bottom:18px}
 .sk-pill{flex:1;height:56px;border-radius:13px}
-#skeleton{position:absolute;inset:0;background:var(--bg);z-index:50;padding:20px;display:none}
-#skeleton.on{display:block}
 .hero-pills{display:flex;gap:8px}
 .hero-pill{flex:1;background:rgba(255,255,255,0.22);border-radius:13px;padding:10px 12px;border:1px solid rgba(255,255,255,0.45);transition:background .4s,border-color .4s;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .hp-lbl{font-size:10px;color:rgba(255,255,255,0.85);font-weight:700;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px}
@@ -1186,21 +1184,6 @@ button{cursor:pointer;border:none;background:none}
 <!-- APP -->
 <div id="app">
   <!-- SKELETON LOADER -->
-  <div id="skeleton">
-    <div style="height:32px;width:120px" class="sk sk-line" style="margin-bottom:24px"></div>
-    <div class="sk sk-bal"></div>
-    <div style="display:flex;gap:8px;margin-bottom:24px"><div class="sk sk-pill"></div><div class="sk sk-pill"></div></div>
-    <div style="height:16px;width:80px" class="sk sk-line"></div>
-    <div style="display:flex;gap:10px;margin-bottom:24px">
-      <div style="width:140px;height:90px;border-radius:16px" class="sk"></div>
-      <div style="width:140px;height:90px;border-radius:16px" class="sk"></div>
-      <div style="width:140px;height:90px;border-radius:16px" class="sk"></div>
-    </div>
-    <div style="height:16px;width:100px" class="sk sk-line"></div>
-    <div style="height:72px;border-radius:14px" class="sk"></div>
-    <div style="height:72px;border-radius:14px;margin-top:8px" class="sk"></div>
-    <div style="height:72px;border-radius:14px;margin-top:8px" class="sk"></div>
-  </div>
   <!-- TOP -->
   <div class="top" id="top-bar">
     <div class="top-left">
@@ -3076,7 +3059,6 @@ function setupAuth(){
   if(user){
     document.getElementById('auth').style.display='none';
     document.getElementById('app').classList.add('on');
-    document.getElementById('skeleton').classList.add('on');
     cloudDoc=db.collection('users').doc(user.uid);
     if(unsub)unsub();
     unsub=cloudDoc.onSnapshot(function(snap){
@@ -3128,8 +3110,6 @@ function setupAuth(){
       viewDate.setDate(1);
       updateMonthLabel();
 
-      // Masquer le skeleton dès que les données sont disponibles
-      var sk=document.getElementById('skeleton');if(sk)sk.classList.remove('on');
       // Render immédiat + re-render de sécurité après 500ms
       requestAnimationFrame(function(){
         requestAnimationFrame(function(){
