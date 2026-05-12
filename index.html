@@ -2705,7 +2705,7 @@ function renderAccMini() {
     return '<div class="acc-mini" data-goto="profil" style="background:' + bg + '">'
       + '<div class="acc-mini-icon">' + (a.icon||'🏦') + '</div>'
       + '<div class="acc-mini-name">' + esc(a.name) + '</div>'
-      + '<div class="acc-mini-bal blur" style="' + (bal<0?'color:#ef4444':'') + '">' + fmtBal(bal) + '</div>'
+      + '<div class="acc-mini-bal blur" style="' + (bal<0?'color:#ef4444':'') + '">' + fmtBal(bal,2) + '</div>'
       + '<div class="acc-mini-type">' + label + '</div>'
       + '</div>';
   }).join('');
@@ -2891,7 +2891,7 @@ function renderAccsSettings() {
       + '<span style="font-size:20px">' + (a.icon||'🏦') + '</span>'
       + '<div><div class="set-name">' + esc(a.name) + '</div>'
       + '<div style="font-size:11px;margin-top:2px"><span style="color:' + typeColors[type] + ';font-weight:600">' + (typeLabels[type]||type) + '</span>'
-      + ' · <span style="color:' + (bal<0?'#ef4444':'var(--txt2)') + '">' + fmtBal(bal) + '</span></div></div>'
+      + ' · <span style="color:' + (bal<0?'#ef4444':'var(--txt2)') + '">' + fmtBal(bal,2) + '</span></div></div>'
       + '</div>'
       + '<div style="display:flex;gap:6px"><button onclick="openAdjustBal(\'' + a.id + '\')" style="font-size:12px;font-weight:600;color:var(--accent);background:rgba(var(--accent-rgb),0.1);border:none;border-radius:8px;padding:5px 10px;cursor:pointer">Ajuster</button><button onclick="deleteAcc(\'' + a.id + '\')" style="font-size:16px;color:var(--txt3);background:none;border:none;cursor:pointer;padding:4px">✕</button></div>'
       + '</div>';
@@ -3387,7 +3387,7 @@ function renderHero(){
   var bals=calcBals();
   var mainAcc=accounts.find(function(a){return a.id==='acc1';})||accounts[0];
   var bal=mainAcc?(bals[mainAcc.id]||0):0;
-  animV(document.getElementById('h-bal'),bal,700,fmtBal);
+  animV(document.getElementById('h-bal'),bal,700,function(v){return fmtBal(v,2);});
   var eEl=document.getElementById('h-exp');if(eEl)animV(eEl,mExp,600,function(v){return'-'+fmt(v);});
   var iEl=document.getElementById('h-inc');if(iEl)animV(iEl,mInc,700,function(v){return(mIncR>0?'':'~')+fmt(v);});
 
@@ -3417,7 +3417,7 @@ function renderHero(){
     var epTotal = epargneAccs.reduce(function(s,a){ return s + (epBals[a.id]||0); }, 0);
     heroEpEl.style.display = 'flex';
     var epValEl = document.getElementById('h-epargne');
-    if(epValEl) animV(epValEl, epTotal, 700);
+    if(epValEl) animV(epValEl, epTotal, 700, function(v){return fmt(v,2);});
   } else if(heroEpEl) { heroEpEl.style.display = 'none'; }
 
   // Swile row
