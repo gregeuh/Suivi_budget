@@ -3128,11 +3128,12 @@ function setupAuth(){
       viewDate.setDate(1);
       updateMonthLabel();
 
+      // Masquer le skeleton dès que les données sont disponibles
+      var sk=document.getElementById('skeleton');if(sk)sk.classList.remove('on');
       // Render immédiat + re-render de sécurité après 500ms
       requestAnimationFrame(function(){
         requestAnimationFrame(function(){
           renderAll();
-          var sk=document.getElementById('skeleton');if(sk)sk.classList.remove('on');
           // Re-render de sécurité au cas où le premier est trop tôt
           setTimeout(function(){ renderAll(); }, 500);
           // Détection du retour GoCardless (import automatique)
@@ -3374,25 +3375,27 @@ function renderSparkline(){
   var barW=Math.max(2,(W-pad*(totals.length-1))/totals.length);
   // Accent color
   var accent=getComputedStyle(document.documentElement).getPropertyValue('--accent')||'#ea580c';
+  // Polyfill roundRect pour les navigateurs qui ne le supportent pas
+  function fillRoundRect(cx,x,y,w,h,r){
+    r=Math.min(r,w/2,h/2);
+    cx.beginPath();cx.moveTo(x+r,y);cx.lineTo(x+w-r,y);cx.arcTo(x+w,y,x+w,y+r,r);
+    cx.lineTo(x+w,y+h-r);cx.arcTo(x+w,y+h,x+w-r,y+h,r);cx.lineTo(x+r,y+h);
+    cx.arcTo(x,y+h,x,y+h-r,r);cx.lineTo(x,y+r);cx.arcTo(x,y,x+r,y,r);cx.closePath();cx.fill();
+  }
   ctx.clearRect(0,0,W,H);
   totals.forEach(function(v,i){
     var x=i*(barW+pad);
     var bh=Math.max(2,(v/max)*(H-6));
     var y=H-bh;
-    var alpha=v===0?0.12:0.18+(v/max)*0.72;
     ctx.fillStyle=accent.trim();
-    ctx.globalAlpha=alpha;
-    ctx.beginPath();
-    ctx.roundRect(x,y,barW,bh,3);
-    ctx.fill();
+    ctx.globalAlpha=v===0?0.1:0.18+(v/max)*0.72;
+    fillRoundRect(ctx,x,y,barW,bh,3);
   });
   // Highlight today
   ctx.globalAlpha=1;
   ctx.fillStyle=accent.trim();
   var lv=totals[29]; var lbh=Math.max(2,(lv/max)*(H-6));
-  ctx.beginPath();
-  ctx.roundRect(29*(barW+pad),H-lbh,barW,lbh,3);
-  ctx.fill();
+  fillRoundRect(ctx,29*(barW+pad),H-lbh,barW,lbh,3);
 }
 
 function renderAll(){
