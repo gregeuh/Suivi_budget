@@ -1271,14 +1271,6 @@ button{cursor:pointer;border:none;background:none}
         </div>
       </div>
 
-      <!-- Sparkline 30 jours -->
-      <div class="card" style="margin:16px 0 4px;padding:14px 16px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <div style="font-size:12px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px">Dépenses · 30 derniers jours</div>
-          <div style="font-size:11px;color:var(--txt3)" id="sparkline-total">—</div>
-        </div>
-        <canvas id="sparkline-canvas" height="48" style="width:100%;display:block"></canvas>
-      </div>
       <!-- Soldes par compte -->
       <div class="sec" style="margin-top:20px">
         <div class="sec-title"><span class="ico">💳</span> Mes comptes<button id="sec-toggle-comptes" onclick="toggleSection('comptes')" class="section-toggle-btn" title="Masquer / Afficher"></button></div>
@@ -3342,58 +3334,6 @@ function animNum(el, to, prefix, suffix, decimals) {
 }
 
 // ── RENDER ALL ────────────────────────────
-function renderSparkline(){
-  var canvas=document.getElementById('sparkline-canvas');
-  var totalEl=document.getElementById('sparkline-total');
-  if(!canvas)return;
-  var ctx=canvas.getContext('2d');
-  var dpr=window.devicePixelRatio||1;
-  var W=canvas.offsetWidth||300;
-  var H=48;
-  canvas.width=W*dpr; canvas.height=H*dpr;
-  ctx.scale(dpr,dpr);
-  // Build daily totals for last 30 days
-  var today=new Date(); today.setHours(0,0,0,0);
-  var days=[];
-  for(var i=29;i>=0;i--){var d=new Date(today);d.setDate(d.getDate()-i);days.push(d);}
-  var restoIds=getRestoIds();
-  var epIds=getEpargneIds();
-  var totals=days.map(function(d){
-    var ds=d.toISOString().split('T')[0];
-    return expenses.filter(function(e){
-      return e.date===ds&&e.type==='expense'&&!e.isAdjustment&&!e.isVirement
-        &&restoIds.indexOf(e.accountId)===-1&&epIds.indexOf(e.accountId)===-1;
-    }).reduce(function(s,e){return s+e.amount;},0);
-  });
-  var total=totals.reduce(function(s,v){return s+v;},0);
-  if(totalEl)totalEl.textContent=fmt(total,0)+' sur 30j';
-  var max=Math.max.apply(null,totals)||1;
-  var pad=4;
-  var barW=Math.max(2,(W-pad*(totals.length-1))/totals.length);
-  // Accent color
-  var accent=getComputedStyle(document.documentElement).getPropertyValue('--accent')||'#ea580c';
-  // Polyfill roundRect pour les navigateurs qui ne le supportent pas
-  function fillRoundRect(cx,x,y,w,h,r){
-    r=Math.min(r,w/2,h/2);
-    cx.beginPath();cx.moveTo(x+r,y);cx.lineTo(x+w-r,y);cx.arcTo(x+w,y,x+w,y+r,r);
-    cx.lineTo(x+w,y+h-r);cx.arcTo(x+w,y+h,x+w-r,y+h,r);cx.lineTo(x+r,y+h);
-    cx.arcTo(x,y+h,x,y+h-r,r);cx.lineTo(x,y+r);cx.arcTo(x,y,x+r,y,r);cx.closePath();cx.fill();
-  }
-  ctx.clearRect(0,0,W,H);
-  totals.forEach(function(v,i){
-    var x=i*(barW+pad);
-    var bh=Math.max(2,(v/max)*(H-6));
-    var y=H-bh;
-    ctx.fillStyle=accent.trim();
-    ctx.globalAlpha=v===0?0.1:0.18+(v/max)*0.72;
-    fillRoundRect(ctx,x,y,barW,bh,3);
-  });
-  // Highlight today
-  ctx.globalAlpha=1;
-  ctx.fillStyle=accent.trim();
-  var lv=totals[29]; var lbh=Math.max(2,(lv/max)*(H-6));
-  fillRoundRect(ctx,29*(barW+pad),H-lbh,barW,lbh,3);
-}
 
 function renderAll(){
   updateMonthLabel();
@@ -3405,7 +3345,6 @@ function renderAll(){
   renderCharts();
   renderConseils();
   renderWishBandeau();
-  renderSparkline();
   applyAllSections();
   renderHist();
   renderBudgets();
