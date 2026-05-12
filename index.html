@@ -2875,7 +2875,7 @@ function renderAccsSettings() {
       + '<span style="font-size:20px">' + (a.icon||'🏦') + '</span>'
       + '<div><div class="set-name">' + esc(a.name) + '</div>'
       + '<div style="font-size:11px;margin-top:2px"><span style="color:' + typeColors[type] + ';font-weight:600">' + (typeLabels[type]||type) + '</span>'
-      + ' · <span style="color:' + (bal<0?'var(--red)':'var(--txt2)') + '">' + (bal>=0?'+':'−') + fmt(bal) + '</span></div></div>'
+      + ' · <span style="color:var(--txt2)">' + fmt(bal) + '</span></div></div>'
       + '</div>'
       + '<div style="display:flex;gap:6px"><button onclick="openAdjustBal(\'' + a.id + '\')" style="font-size:12px;font-weight:600;color:var(--accent);background:rgba(var(--accent-rgb),0.1);border:none;border-radius:8px;padding:5px 10px;cursor:pointer">Ajuster</button><button onclick="deleteAcc(\'' + a.id + '\')" style="font-size:16px;color:var(--txt3);background:none;border:none;cursor:pointer;padding:4px">✕</button></div>'
       + '</div>';
