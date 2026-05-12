@@ -1281,11 +1281,11 @@ button{cursor:pointer;border:none;background:none}
       </div>
       <!-- Soldes par compte -->
       <div class="sec" style="margin-top:20px">
-        <div class="sec-title"><span class="ico">💳</span> Mes comptes</div>
+        <div class="sec-title"><span class="ico">💳</span> Mes comptes<button id="sec-toggle-comptes" onclick="toggleSection('comptes')" class="section-toggle-btn" title="Masquer / Afficher"></button></div>
       </div>
-      <div class="acc-scroll-wrap" id="acc-scroll-wrap">
+      <div id="sec-body-comptes"><div class="acc-scroll-wrap" id="acc-scroll-wrap">
         <div class="acc-scroll" id="acc-mini-list"></div>
-      </div>
+      </div></div>
 
       <!-- Crédits en cours -->
       <div id="credits-dash-section" style="display:none;margin-top:20px">
@@ -1300,30 +1300,30 @@ button{cursor:pointer;border:none;background:none}
 
       <!-- Projets / Liste de souhaits -->
       <div class="sec" style="margin-top:20px">
-        <div class="sec-title"><span class="ico">✨</span> Projets</div>
+        <div class="sec-title"><span class="ico">✨</span> Projets<button id="sec-toggle-projets" onclick="toggleSection('projets')" class="section-toggle-btn" title="Masquer / Afficher"></button></div>
         <button class="sec-link" onclick="openWish()">+ Ajouter</button>
       </div>
-      <div class="acc-scroll-wrap" id="wish-scroll-wrap" style="display:flex">
+      <div id="sec-body-projets"><div class="acc-scroll-wrap" id="wish-scroll-wrap" style="display:flex">
         <div class="acc-scroll" id="wish-bandeau"></div>
-      </div>
+      </div></div>
 
       <!-- Graphique camembert -->
       <!-- Évolution -->
       <div class="evo-card">
-        <div class="sec" style="margin:0 0 0"><div class="sec-title">Évolution 6 mois</div></div>
-        <div class="evo-wrap"><canvas id="evo-chart"></canvas></div>
+        <div class="sec" style="margin:0 0 0"><div class="sec-title">Évolution 6 mois<button id="sec-toggle-evo" onclick="toggleSection('evo')" class="section-toggle-btn" title="Masquer / Afficher"></button></div></div>
+        <div id="sec-body-evo"><div class="evo-wrap"><canvas id="evo-chart"></canvas></div></div>
       </div>
 
       <!-- Conseils -->
-      <div class="sec"><div class="sec-title"><span class="ico">💡</span> Conseils<button id="conseils-toggle-btn" onclick="toggleConseils()" class="section-toggle-btn" title="Masquer / Afficher"></button></div></div>
-      <div id="conseils-list"></div>
+      <div class="sec"><div class="sec-title"><span class="ico">💡</span> Conseils<button id="sec-toggle-conseils" onclick="toggleSection('conseils')" class="section-toggle-btn" title="Masquer / Afficher"></button></div></div>
+      <div id="sec-body-conseils"><div id="conseils-list"></div></div>
 
       <!-- Récentes -->
       <div class="sec">
-        <div class="sec-title">Récentes</div>
+        <div class="sec-title">Récentes<button id="sec-toggle-recentes" onclick="toggleSection('recentes')" class="section-toggle-btn" title="Masquer / Afficher"></button></div>
         <button class="sec-link" onclick="goTo('hist')">Voir tout</button>
       </div>
-      <div id="dash-tx"></div>
+      <div id="sec-body-recentes"><div id="dash-tx"></div></div>
     </div>
 
     <!-- 📜 HISTORIQUE -->
@@ -3406,6 +3406,7 @@ function renderAll(){
   renderConseils();
   renderWishBandeau();
   renderSparkline();
+  applyAllSections();
   renderHist();
   renderBudgets();
   renderCatsSettings();
@@ -3613,27 +3614,25 @@ function renderEvo(){
   });
 }
 
-function toggleConseils(){
-  var hidden=localStorage.getItem('conseils_hidden')==='1';
+function toggleSection(key){
+  var hidden=localStorage.getItem('sec_hidden_'+key)==='1';
   hidden=!hidden;
-  localStorage.setItem('conseils_hidden',hidden?'1':'0');
-  applyConseilsVisibility();
+  localStorage.setItem('sec_hidden_'+key,hidden?'1':'0');
+  _applySec(key);
 }
-function applyConseilsVisibility(){
-  var hidden=localStorage.getItem('conseils_hidden')==='1';
-  var list=document.getElementById('conseils-list');
-  var btn=document.getElementById('conseils-toggle-btn');
-  if(list){
-    list.style.display=hidden?'none':'';
-    list.style.overflow='hidden';
-    if(!hidden){list.style.animation='pageIn .25s cubic-bezier(0.16,1,0.3,1) both';}
-  }
+function _applySec(key){
+  var hidden=localStorage.getItem('sec_hidden_'+key)==='1';
+  var body=document.getElementById('sec-body-'+key);
+  var btn=document.getElementById('sec-toggle-'+key);
+  if(body){ body.style.display=hidden?'none':''; }
   if(btn){ hidden?btn.classList.add('collapsed'):btn.classList.remove('collapsed'); }
+}
+function applyAllSections(){
+  ['comptes','projets','evo','conseils','recentes'].forEach(_applySec);
 }
 
 function renderConseils(){
   var el=document.getElementById('conseils-list');if(!el)return;
-  applyConseilsVisibility();
   var data=getMonthTx();
   var restoIds=getRestoIds();
   var today=new Date();
