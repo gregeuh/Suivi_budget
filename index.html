@@ -4063,8 +4063,7 @@ function openAdd(prefillType){
   document.getElementById('m-date').value=new Date().toISOString().split('T')[0];
   selCat='autre';selAcc='acc1';
   resetRecurring();
-  document.getElementById('m-exp').className='type-btn on e';
-  document.getElementById('m-inc').className='type-btn i';
+  mType(mCurrentType);
   buildNumpad();buildMCats();buildMAccs();
   document.getElementById('add-overlay').classList.add('on');
 }

@@ -1,4 +1,4 @@
-var CACHE = 'suivi-budget-v7';
+var CACHE = 'suivi-budget-v8';
 var SHELL = ['./index.html', './icon.svg', './manifest.json'];
 
 self.addEventListener('install', function(e) {
