@@ -2916,6 +2916,7 @@ function saveAdjustBal(){
   expenses.unshift({
     id:'adj_'+Date.now(), label:'Ajustement solde',
     amount:Math.abs(diff), type:diff>0?'income':'expense',
+    isAdjustment:true,
     cat:'autre', accountId:_adjustAccId, date:today, recurring:false
   });
   save(); renderAll(); renderAccsSettings(); closeAdjust();
@@ -3256,6 +3257,7 @@ function getMonthTx(){
   var result = [];
   expenses.forEach(function(e){
     if(!e.date) return;
+    if(e.isAdjustment) return;
     var occs = getOccurrences(e, y, m);
     occs.forEach(function(day, i){
       var dateStr = y+'-'+String(m+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
