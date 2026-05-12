@@ -25,8 +25,8 @@
   --green:      #4caf82;
   --red:        #e05c5c;
   --orange:     #f0944d;
-  --r:          18px;
-  --r-sm:       12px;
+  --r:          20px;
+  --r-sm:       14px;
   --bg:         #f8f5ee;
   --card:       #fffef9;
   --card2:      #f0ece0;
@@ -78,6 +78,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .card:hover,.stat-card:hover,.evo-card:hover{
   transform:translateY(-2px);
   box-shadow:0 8px 28px rgba(var(--accent-rgb),0.13)}
+.card:active,.stat-card:active,.evo-card:active,.budget-item:active{transform:scale(0.97);transition-duration:.1s}
 [data-theme="dark"] .card:hover,[data-theme="dark"] .stat-card:hover,
 [data-theme="dark"] .chart-card:hover,[data-theme="dark"] .evo-card:hover{
   box-shadow:0 8px 28px rgba(0,0,0,0.4)}
@@ -133,8 +134,9 @@ button{cursor:pointer;border:none;background:none}
 
 /* CONTENT */
 .content{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 16px 110px;background:var(--bg);}
-.page{display:none;animation:up .22s ease;background:var(--bg);}
-.page.on{display:block;background:var(--bg);}
+.page{display:none;background:var(--bg);}
+.page.on{display:block;background:var(--bg);animation:pageIn .28s cubic-bezier(0.16,1,0.3,1) both;}
+@keyframes pageIn{from{opacity:0;transform:translateY(14px) scale(0.99)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
 /* TAB BAR */
@@ -184,6 +186,13 @@ button{cursor:pointer;border:none;background:none}
   color:rgba(255,255,255,0.9);margin-bottom:6px}
 .hero-bal{font-family:'Sora',sans-serif;font-size:46px;font-weight:800;
   color:#fff;letter-spacing:-1.5px;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,0.15);margin-bottom:18px}
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+.sk{border-radius:10px;background:linear-gradient(90deg,var(--border) 25%,var(--card2) 50%,var(--border) 75%);background-size:800px 100%;animation:shimmer 1.4s infinite linear}
+.sk-line{height:14px;margin-bottom:8px}
+.sk-bal{height:44px;width:160px;border-radius:14px;margin-bottom:18px}
+.sk-pill{flex:1;height:56px;border-radius:13px}
+#skeleton{position:absolute;inset:0;background:var(--bg);z-index:50;padding:20px;display:none}
+#skeleton.on{display:block}
 .hero-pills{display:flex;gap:8px}
 .hero-pill{flex:1;background:rgba(255,255,255,0.22);border-radius:13px;padding:10px 12px;border:1px solid rgba(255,255,255,0.45);transition:background .4s,border-color .4s;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .hp-lbl{font-size:10px;color:rgba(255,255,255,0.85);font-weight:700;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px}
@@ -230,7 +239,8 @@ button{cursor:pointer;border:none;background:none}
 .tx-sub{font-size:12px;color:var(--txt3);margin-top:1px}
 .tx-amt{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;white-space:nowrap}
 .tx-amt.e{color:var(--red);font-weight:800}.tx-amt.i{color:var(--green);font-weight:800}
-.date-sep{text-align:center;padding:10px 0 4px;font-size:11px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.8px;background:var(--bg);}
+.date-sep{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 6px;font-size:11px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.6px;background:var(--bg);position:sticky;top:0;z-index:2;margin:0 -16px;padding-left:16px;padding-right:16px}
+.date-sep-total{font-size:11px;font-weight:600;color:var(--txt3);text-transform:none;letter-spacing:0}
 
 /* SEARCH & FILTERS */
 .search-row{display:flex;gap:8px;margin-bottom:12px}
@@ -256,8 +266,8 @@ button{cursor:pointer;border:none;background:none}
 .budget-amounts{text-align:right}
 .budget-spent{font-family:'Sora',sans-serif;font-size:14px;font-weight:700}
 .budget-limit{font-size:11px;color:var(--txt3)}
-.budget-track{height:6px;background:var(--input);border-radius:3px;overflow:hidden}
-.budget-fill{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.16,1,.3,1)}
+.budget-track{height:8px;background:var(--input);border-radius:4px;overflow:hidden}
+.budget-fill{height:100%;border-radius:4px;width:0%;transition:width .7s cubic-bezier(.16,1,.3,1)}
 .budget-msg{font-size:12px;margin-top:6px;font-weight:600}
 
 /* ── SIM MODE ── */
@@ -888,6 +898,7 @@ button{cursor:pointer;border:none;background:none}
   transition: transform .2s cubic-bezier(.34,1.56,.64,1);
 }
 .acc-mini:hover { transform: scale(1.04) translateY(-2px); }
+.acc-mini:active { transform: scale(0.93); transition-duration: .1s; }
 .acc-mini::before {
   content: ''; position: absolute;
   top: -20px; right: -20px;
@@ -1174,6 +1185,22 @@ button{cursor:pointer;border:none;background:none}
 
 <!-- APP -->
 <div id="app">
+  <!-- SKELETON LOADER -->
+  <div id="skeleton">
+    <div style="height:32px;width:120px" class="sk sk-line" style="margin-bottom:24px"></div>
+    <div class="sk sk-bal"></div>
+    <div style="display:flex;gap:8px;margin-bottom:24px"><div class="sk sk-pill"></div><div class="sk sk-pill"></div></div>
+    <div style="height:16px;width:80px" class="sk sk-line"></div>
+    <div style="display:flex;gap:10px;margin-bottom:24px">
+      <div style="width:140px;height:90px;border-radius:16px" class="sk"></div>
+      <div style="width:140px;height:90px;border-radius:16px" class="sk"></div>
+      <div style="width:140px;height:90px;border-radius:16px" class="sk"></div>
+    </div>
+    <div style="height:16px;width:100px" class="sk sk-line"></div>
+    <div style="height:72px;border-radius:14px" class="sk"></div>
+    <div style="height:72px;border-radius:14px;margin-top:8px" class="sk"></div>
+    <div style="height:72px;border-radius:14px;margin-top:8px" class="sk"></div>
+  </div>
   <!-- TOP -->
   <div class="top" id="top-bar">
     <div class="top-left">
@@ -1210,6 +1237,16 @@ button{cursor:pointer;border:none;background:none}
           </div>
 
         </div>
+        <!-- Barre progression mensuelle -->
+        <div style="margin-top:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+            <span style="font-size:10px;color:rgba(255,255,255,0.7);font-weight:600;letter-spacing:.4px;text-transform:uppercase">Avancement du mois</span>
+            <span style="font-size:10px;color:rgba(255,255,255,0.85);font-weight:700" id="month-progress-lbl">—</span>
+          </div>
+          <div style="height:5px;background:rgba(255,255,255,0.2);border-radius:3px;overflow:hidden">
+            <div id="month-progress-bar" style="height:100%;border-radius:3px;background:rgba(255,255,255,0.9);width:0%;transition:width .8s cubic-bezier(0.16,1,0.3,1)"></div>
+          </div>
+        </div>
         <!-- Projection fin de mois -->
         <div id="hero-projection" style="display:none;margin-top:10px;padding:11px 14px;background:rgba(0,0,0,0.12);border-radius:12px;display:flex;align-items:center;justify-content:space-between">
           <div style="display:flex;align-items:center;gap:6px">
@@ -1245,6 +1282,14 @@ button{cursor:pointer;border:none;background:none}
         </div>
       </div>
 
+      <!-- Sparkline 30 jours -->
+      <div class="card" style="margin:16px 0 4px;padding:14px 16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div style="font-size:12px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px">Dépenses · 30 derniers jours</div>
+          <div style="font-size:11px;color:var(--txt3)" id="sparkline-total">—</div>
+        </div>
+        <canvas id="sparkline-canvas" height="48" style="width:100%;display:block"></canvas>
+      </div>
       <!-- Soldes par compte -->
       <div class="sec" style="margin-top:20px">
         <div class="sec-title"><span class="ico">💳</span> Mes comptes</div>
@@ -2273,14 +2318,14 @@ var THEMES = {
       tabBg:'rgba(255,254,249,0.92)', tabBorder:'rgba(120,90,30,0.08)',
     },
     dark: {
-      bg:'#0e0b08', card:'#181510', card2:'#221e16',
-      border:'rgba(255,255,255,0.05)', input:'#221e16',
+      bg:'#0c0a07', card:'#1c1812', card2:'#272018',
+      border:'rgba(255,220,150,0.09)', input:'#272018',
       accent:'#d4a85a', accentD:'#c8913a', accentRgb:'212,168,90',
-      txt:'#f0ece4', txt2:'#b0a898', txt3:'#c8a06a',
-      sh:'0 1px 3px rgba(0,0,0,0.4), 0 4px 12px rgba(0,0,0,0.35)',
+      txt:'#f5f0e8', txt2:'#c8bfae', txt3:'#d4a85a',
+      sh:'0 1px 4px rgba(0,0,0,0.5), 0 6px 16px rgba(0,0,0,0.4)',
       hero:'linear-gradient(135deg,#3a2a10,#5a3f18,#7a5520)',
-      authBg:'linear-gradient(145deg,#0e0b08,#181510,#221e16)',
-      tabBg:'rgba(16,13,8,0.92)', tabBorder:'rgba(255,210,100,0.10)',
+      authBg:'linear-gradient(145deg,#0c0a07,#1c1812,#272018)',
+      tabBg:'rgba(14,11,8,0.95)', tabBorder:'rgba(255,210,100,0.12)',
     }
   }
 };
@@ -3031,6 +3076,7 @@ function setupAuth(){
   if(user){
     document.getElementById('auth').style.display='none';
     document.getElementById('app').classList.add('on');
+    document.getElementById('skeleton').classList.add('on');
     cloudDoc=db.collection('users').doc(user.uid);
     if(unsub)unsub();
     unsub=cloudDoc.onSnapshot(function(snap){
@@ -3086,6 +3132,7 @@ function setupAuth(){
       requestAnimationFrame(function(){
         requestAnimationFrame(function(){
           renderAll();
+          var sk=document.getElementById('skeleton');if(sk)sk.classList.remove('on');
           // Re-render de sécurité au cas où le premier est trop tôt
           setTimeout(function(){ renderAll(); }, 500);
           // Détection du retour GoCardless (import automatique)
@@ -3297,6 +3344,57 @@ function animNum(el, to, prefix, suffix, decimals) {
 }
 
 // ── RENDER ALL ────────────────────────────
+function renderSparkline(){
+  var canvas=document.getElementById('sparkline-canvas');
+  var totalEl=document.getElementById('sparkline-total');
+  if(!canvas)return;
+  var ctx=canvas.getContext('2d');
+  var dpr=window.devicePixelRatio||1;
+  var W=canvas.offsetWidth||300;
+  var H=48;
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  ctx.scale(dpr,dpr);
+  // Build daily totals for last 30 days
+  var today=new Date(); today.setHours(0,0,0,0);
+  var days=[];
+  for(var i=29;i>=0;i--){var d=new Date(today);d.setDate(d.getDate()-i);days.push(d);}
+  var restoIds=getRestoIds();
+  var epIds=getEpargneIds();
+  var totals=days.map(function(d){
+    var ds=d.toISOString().split('T')[0];
+    return expenses.filter(function(e){
+      return e.date===ds&&e.type==='expense'&&!e.isAdjustment&&!e.isVirement
+        &&restoIds.indexOf(e.accountId)===-1&&epIds.indexOf(e.accountId)===-1;
+    }).reduce(function(s,e){return s+e.amount;},0);
+  });
+  var total=totals.reduce(function(s,v){return s+v;},0);
+  if(totalEl)totalEl.textContent=fmt(total,0)+' sur 30j';
+  var max=Math.max.apply(null,totals)||1;
+  var pad=4;
+  var barW=Math.max(2,(W-pad*(totals.length-1))/totals.length);
+  // Accent color
+  var accent=getComputedStyle(document.documentElement).getPropertyValue('--accent')||'#ea580c';
+  ctx.clearRect(0,0,W,H);
+  totals.forEach(function(v,i){
+    var x=i*(barW+pad);
+    var bh=Math.max(2,(v/max)*(H-6));
+    var y=H-bh;
+    var alpha=v===0?0.12:0.18+(v/max)*0.72;
+    ctx.fillStyle=accent.trim();
+    ctx.globalAlpha=alpha;
+    ctx.beginPath();
+    ctx.roundRect(x,y,barW,bh,3);
+    ctx.fill();
+  });
+  // Highlight today
+  ctx.globalAlpha=1;
+  ctx.fillStyle=accent.trim();
+  var lv=totals[29]; var lbh=Math.max(2,(lv/max)*(H-6));
+  ctx.beginPath();
+  ctx.roundRect(29*(barW+pad),H-lbh,barW,lbh,3);
+  ctx.fill();
+}
+
 function renderAll(){
   updateMonthLabel();
   renderThemePicker();
@@ -3307,6 +3405,7 @@ function renderAll(){
   renderCharts();
   renderConseils();
   renderWishBandeau();
+  renderSparkline();
   renderHist();
   renderBudgets();
   renderCatsSettings();
@@ -3400,6 +3499,15 @@ function renderHero(){
       swileRow.style.display='none';
     }
   }
+  // Barre de progression mensuelle
+  var today2=new Date();
+  var daysInMonth=new Date(today2.getFullYear(),today2.getMonth()+1,0).getDate();
+  var dayOfMonth=today2.getDate();
+  var pct=Math.round(dayOfMonth/daysInMonth*100);
+  var bar=document.getElementById('month-progress-bar');
+  var lbl=document.getElementById('month-progress-lbl');
+  if(bar) setTimeout(function(){bar.style.width=pct+'%';},50);
+  if(lbl) lbl.textContent='J'+dayOfMonth+' / J'+daysInMonth+' · '+pct+'%';
 }
 
 // ── CHARTS ────────────────────────────────
@@ -3658,8 +3766,10 @@ function fmtDate(s){
   if(diff===0)return'Aujourd\'hui';if(diff===1)return'Hier';
   return d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
 }
+var CAT_TYPE_COLORS={fixe:'rgba(59,130,246,0.15)',vie:'rgba(16,185,129,0.15)',loisirs:'rgba(245,158,11,0.15)',income:'rgba(16,185,129,0.15)'};
+var CAT_TYPE_ICON_COLORS={fixe:'#3b82f6',vie:'#10b981',loisirs:'#f59e0b',income:'#10b981'};
 function txHTML(e,showEdit){
-  var cat=categories.find(function(c){return c.id===e.cat;})||{icon:'📦'};
+  var cat=categories.find(function(c){return c.id===e.cat;})||{icon:'📦',type:'loisirs'};
   var acc=accounts.find(function(a){return a.id===e.accountId;});
   var isInc=e.type==='income';
   var id=e.originalId||e.id||'';
@@ -3670,8 +3780,11 @@ function txHTML(e,showEdit){
   var virBadge=e.isVirement?'<span style="font-size:10px;background:rgba(var(--accent-rgb),0.1);color:var(--accent);border-radius:4px;padding:1px 5px;font-weight:700;margin-left:4px">↔️ Virement</span>':'';
   var recurBadge=isRecur?'<span style="font-size:10px;background:rgba(var(--accent-rgb),0.1);color:var(--accent);border-radius:4px;padding:1px 5px;font-weight:700;margin-left:4px">🔁 '+(FL[e.frequency]||'Récurrent')+'</span>':'';
   var txCls = e.isVirement ? 'tx-vir' : isInc ? 'tx-income' : 'tx-expense';
+  var catType=isInc?'income':(cat.type||'loisirs');
+  var icoBg=CAT_TYPE_COLORS[catType]||'var(--input)';
+  var icoColor=CAT_TYPE_ICON_COLORS[catType]||'var(--txt)';
   return '<div class="tx-item '+txCls+'" onclick="'+(showEdit?'openEdit(\''+id+'\')':'')+'">'
-    +'<div class="tx-ico">'+cat.icon+'</div>'
+    +'<div class="tx-ico" style="background:'+icoBg+';font-size:20px">'+cat.icon+'</div>'
     +'<div class="tx-info"><div class="tx-name">'+esc(e.label||'Sans libellé')+swileBadge+recurBadge+virBadge+'</div>'
     +'<div class="tx-sub">'+(acc?esc(acc.name):'')+' '+(e.note?'· '+esc(e.note):'')+'</div></div>'
     +'<div class="tx-amt '+(isInc?'i':'e')+' blur">'+(isInc?'+':'-')+e.amount.toFixed(2)+' €</div></div>';
@@ -3679,11 +3792,21 @@ function txHTML(e,showEdit){
 function renderTxList(el,items,showEdit){
   if(!el)return;
   if(!items.length){el.innerHTML='<div class="empty"><div class="empty-ico">🧾</div>Aucune transaction</div>';return;}
-  var html='',last='';
+  // Group by date
+  var groups={},order=[];
   items.forEach(function(e){
     var ds=e.date||'';
-    if(ds!==last){html+='<div class="date-sep">'+fmtDate(ds)+'</div>';last=ds;}
-    html+=txHTML(e,showEdit);
+    if(!groups[ds]){groups[ds]=[];order.push(ds);}
+    groups[ds].push(e);
+  });
+  var html='';
+  order.forEach(function(ds){
+    var dayItems=groups[ds];
+    var dayExp=dayItems.filter(function(e){return e.type==='expense';}).reduce(function(s,e){return s+e.amount;},0);
+    var dayInc=dayItems.filter(function(e){return e.type==='income';}).reduce(function(s,e){return s+e.amount;},0);
+    var totalStr=dayExp>0&&dayInc>0?('+'+fmt(dayInc)+' / −'+fmt(dayExp)):dayInc>0?'+'+fmt(dayInc):'−'+fmt(dayExp);
+    html+='<div class="date-sep"><span>'+fmtDate(ds)+'</span><span class="date-sep-total">'+totalStr+'</span></div>';
+    dayItems.forEach(function(e){html+=txHTML(e,showEdit);});
   });
   el.innerHTML=html;
 }
@@ -3812,7 +3935,7 @@ function renderBudgets(){
           +'<div class="budget-cat"><div class="budget-ico">'+c.icon+'</div><div><div class="budget-name">'+c.label+'</div><div style="font-size:11px;color:var(--txt3)">'+Math.round((typeAlloc[type]||0.2)/typeCounts[type]*100)+'% des revenus</div></div></div>'
           +'<div class="budget-amounts"><div class="budget-spent">'+fmt(spent)+'</div><div class="budget-limit">/ <span id="sim-amt-'+c.id+'" style="color:'+color+'">'+fmt(budget)+'</span></div></div>'
           +'</div>'
-          +'<div class="budget-track"><div class="budget-fill" id="sim-fill-'+c.id+'" style="width:'+pct+'%;background:'+color+'"></div></div>'
+          +'<div class="budget-track"><div class="budget-fill" id="sim-fill-'+c.id+'" data-pct="'+pct+'" style="background:'+color+'"></div></div>'
           +'<div class="budget-slider-wrap">'
           +'<input type="range" class="budget-slider" min="0" max="'+Math.round(sliderMax)+'" step="5" value="'+Math.round(budget)+'"'
           +' oninput="_simSliderChange(\''+c.id+'\',this.value)"'
@@ -3826,7 +3949,7 @@ function renderBudgets(){
           +'<div class="budget-cat"><div class="budget-ico">'+c.icon+'</div><div><div class="budget-name">'+c.label+'</div><div style="font-size:11px;color:var(--txt3)">'+Math.round((typeAlloc[type]||0.2)/typeCounts[type]*100)+'% des revenus</div></div></div>'
           +'<div class="budget-amounts"><div class="budget-spent" style="color:'+color+'">'+fmt(spent)+'</div><div class="budget-limit">/ '+fmt(budget)+'</div></div>'
           +'</div>'
-          +'<div class="budget-track"><div class="budget-fill" style="width:'+pct+'%;background:'+color+'"></div></div>'
+          +'<div class="budget-track"><div class="budget-fill" data-pct="'+pct+'" style="background:'+color+'"></div></div>'
           +'<div class="budget-msg" style="color:'+color+'">'
           +(over?'⚠️ +'+fmt(spent-budget)+' dépassé':pct>80?'⚡ Plus que '+fmt(budget-spent):'✓ '+fmt(budget-spent)+' disponible')
           +'</div></div>';
@@ -3834,6 +3957,11 @@ function renderBudgets(){
     });
   });
   el.innerHTML=html;
+  requestAnimationFrame(function(){
+    el.querySelectorAll('.budget-fill[data-pct]').forEach(function(f){
+      f.style.width=f.getAttribute('data-pct')+'%';
+    });
+  });
 }
 
 // ── SIMULATION MODE ───────────────────────
