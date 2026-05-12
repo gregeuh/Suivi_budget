@@ -1594,26 +1594,6 @@ button{cursor:pointer;border:none;background:none}
     <div class="field" id="m-dest-wrap" style="display:none"><label class="field-lbl">Compte destination</label><div class="acc-chips" id="m-dest-accs"></div></div>
     <div class="field"><label class="field-lbl">Date</label><input class="field-inp" id="m-date" type="date"></div>
     <div class="field"><label class="field-lbl">Note (optionnel)</label><input class="field-inp" id="m-note" type="text" placeholder="Remarque…"></div>
-    <div class="field">
-      <label class="field-lbl">Récurrence</label>
-      <select class="field-inp" id="m-freq" onchange="toggleCustomFreq(this.value)" style="cursor:pointer">
-        <option value="once">Une seule fois</option>
-        <option value="weekly">Chaque semaine</option>
-        <option value="2weeks">Toutes les 2 semaines</option>
-        <option value="monthly">Chaque mois</option>
-        <option value="4weeks">Toutes les 4 semaines</option>
-        <option value="yearly">Chaque année</option>
-        <option value="custom">Personnalisé (X jours)</option>
-      </select>
-    </div>
-    <div class="field" id="m-custom-freq-wrap" style="display:none">
-      <label class="field-lbl">Tous les combien de jours ?</label>
-      <input class="field-inp" id="m-freq-days" type="number" min="1" placeholder="ex: 10">
-    </div>
-    <div class="field" id="m-enddate-wrap" style="display:none">
-      <label class="field-lbl">Date de fin (optionnel)</label>
-      <input class="field-inp" id="m-enddate" type="date">
-    </div>
     <!-- Recurring -->
     <div style="background:var(--input);border-radius:12px;padding:14px 16px;margin-bottom:14px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0" id="recur-header" onclick="toggleRecurring()">
@@ -2045,10 +2025,7 @@ function makeVirtual(e, date) {
 
 
 // ── RECURRING HELPERS ─────────────────────
-function toggleCustomFreq(val) {
-  document.getElementById('m-custom-freq-wrap').style.display = val==='custom' ? 'block' : 'none';
-  document.getElementById('m-enddate-wrap').style.display = val!=='once' ? 'block' : 'none';
-}
+function toggleCustomFreq(val) {}
 function toggleCustomFreqEdit(val) {
   var cw=document.getElementById('e-custom-freq-wrap');
   var ew=document.getElementById('e-enddate-wrap');
@@ -4053,13 +4030,9 @@ function openAdd(prefillType){
   document.getElementById('m-amt-display').className='amt-big e';
   document.getElementById('m-lbl').value='';
   document.getElementById('m-note').value='';
-  document.getElementById('m-freq').value='once';
   selDestAcc='acc_lva';
   var dw=document.getElementById('m-dest-wrap');if(dw)dw.style.display='none';
   var al=document.getElementById('m-acc-lbl');if(al)al.textContent='Compte';
-  document.getElementById('m-custom-freq-wrap').style.display='none';
-  document.getElementById('m-enddate-wrap').style.display='none';
-  var ed=document.getElementById('m-enddate');if(ed)ed.value='';
   document.getElementById('m-date').value=new Date().toISOString().split('T')[0];
   selCat='autre';selAcc='acc1';
   resetRecurring();
@@ -4118,10 +4091,7 @@ function saveTransaction(){
   var lbl=document.getElementById('m-lbl').value.trim()||(mCurrentType==='inc'?'Revenu':'Dépense');
   var note=document.getElementById('m-note').value.trim();
   var date=document.getElementById('m-date').value;
-  var freq=document.getElementById('m-freq').value;
-  var freqDays=document.getElementById('m-freq-days').value;
-  var endDate=document.getElementById('m-enddate').value||null;
-  var customDays2 = _recurFreq==='custom' ? (parseInt(document.getElementById('m-custom-days').value)||30) : null;
+  var customDays2 = _recurOn && _recurFreq==='custom' ? (parseInt(document.getElementById('m-custom-days').value)||30) : null;
   var endDate2 = document.getElementById('m-end-date').value || null;
   if(mCurrentType==='vir'){
     var virId=_uid('vir');
