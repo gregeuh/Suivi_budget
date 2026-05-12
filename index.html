@@ -237,6 +237,9 @@ button{cursor:pointer;border:none;background:none}
 .tx-sub{font-size:12px;color:var(--txt3);margin-top:1px}
 .tx-amt{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;white-space:nowrap}
 .tx-amt.e{color:var(--red);font-weight:800}.tx-amt.i{color:var(--green);font-weight:800}
+.hist-section-hd{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 8px;font-size:13px;font-weight:700;color:var(--txt);border-bottom:1.5px solid var(--border);margin-bottom:4px}
+.hist-section-upcoming{color:var(--accent)}
+.hist-section-total{font-size:12px;font-weight:600;color:var(--txt2)}
 .date-sep{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 6px;font-size:11px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.6px;background:var(--bg);position:sticky;top:0;z-index:2;margin:0 -16px;padding-left:16px;padding-right:16px}
 .date-sep-total{font-size:11px;font-weight:600;color:var(--txt3);text-transform:none;letter-spacing:0}
 
@@ -1332,7 +1335,18 @@ button{cursor:pointer;border:none;background:none}
         <div class="chip" data-f="swile" onclick="setFilter(this,'swile')">🍽️ Swile</div>
       </div>
       <div class="filter-chips" id="cat-filter-chips"></div>
-      <div id="hist-tx"></div>
+      <div id="hist-upcoming" style="display:none">
+        <div class="hist-section-hd hist-section-upcoming">
+          <span>📅 À venir</span><span id="hist-upcoming-total" class="hist-section-total"></span>
+        </div>
+        <div id="hist-tx-upcoming"></div>
+      </div>
+      <div id="hist-past">
+        <div class="hist-section-hd" id="hist-past-hd" style="display:none">
+          <span>✓ Passées</span><span id="hist-past-total" class="hist-section-total"></span>
+        </div>
+        <div id="hist-tx-past"></div>
+      </div>
     </div>
 
     <!-- 🎯 BUDGETS -->
@@ -3799,17 +3813,50 @@ function renderDashTx(){
 }
 function renderHist(){
   var q=(document.getElementById('search-inp')||{}).value||'';
-  var restoIds2=getRestoIds(); var swileAccId=restoIds2[0]||null;
+  var restoIds2=getRestoIds();
   var data=getMonthTx().filter(function(e){
     if(histFilter==='swile')return restoIds2.indexOf(e.accountId)!==-1&&(e.type==='expense'||e.type==='income');
     if(histFilter!=='all'&&e.type!==histFilter)return false;
-    if(histFilter==='expense'&&restoIds2.indexOf(e.accountId)!==-1)return false; // exclude swile from regular expenses
+    if(histFilter==='expense'&&restoIds2.indexOf(e.accountId)!==-1)return false;
     if(histCatFilter!=='all'&&e.cat!==histCatFilter)return false;
     if(q&&(e.label||'').toLowerCase().indexOf(q.toLowerCase())===-1)return false;
     return e.type==='expense'||e.type==='income';
   }).sort(function(a,b){return(b.date||'').localeCompare(a.date||'');});
-  // Add swile indicator on tx items
-  renderTxList(document.getElementById('hist-tx'),data,true);
+
+  // Séparer passées / à venir selon si on est sur le mois courant
+  var todayStr=new Date().toISOString().split('T')[0];
+  var isCurrentMonth=viewDate.getFullYear()===new Date().getFullYear()&&viewDate.getMonth()===new Date().getMonth();
+  var upcoming=[], past=[];
+  data.forEach(function(e){
+    if(isCurrentMonth && (e.date||'')>todayStr) upcoming.push(e);
+    else past.push(e);
+  });
+
+  // Section à venir
+  var upcomingWrap=document.getElementById('hist-upcoming');
+  var upcomingTotal=document.getElementById('hist-upcoming-total');
+  if(upcomingWrap){
+    if(upcoming.length){
+      upcomingWrap.style.display='block';
+      var upExp=upcoming.filter(function(e){return e.type==='expense';}).reduce(function(s,e){return s+e.amount;},0);
+      var upInc=upcoming.filter(function(e){return e.type==='income';}).reduce(function(s,e){return s+e.amount;},0);
+      if(upcomingTotal) upcomingTotal.textContent=(upInc>0?'+'+fmt(upInc)+' ':'')+(upExp>0?'−'+fmt(upExp):'');
+      renderTxList(document.getElementById('hist-tx-upcoming'),upcoming,true);
+    } else {
+      upcomingWrap.style.display='none';
+    }
+  }
+
+  // Section passées
+  var pastHd=document.getElementById('hist-past-hd');
+  var pastTotal=document.getElementById('hist-past-total');
+  if(pastHd) pastHd.style.display=upcoming.length?'flex':'none';
+  if(past.length&&pastTotal){
+    var pExp=past.filter(function(e){return e.type==='expense';}).reduce(function(s,e){return s+e.amount;},0);
+    var pInc=past.filter(function(e){return e.type==='income';}).reduce(function(s,e){return s+e.amount;},0);
+    pastTotal.textContent=(pInc>0?'+'+fmt(pInc)+' ':'')+(pExp>0?'−'+fmt(pExp):'');
+  }
+  renderTxList(document.getElementById('hist-tx-past'),past,true);
   // Cat filter chips
   var chips=document.getElementById('cat-filter-chips');
   if(chips){
