@@ -404,6 +404,8 @@ button{cursor:pointer;border:none;background:none}
   color:var(--txt2);transition:.2s;border:none;background:none;cursor:pointer}
 .type-btn.on{background:var(--card);box-shadow:var(--sh)}
 .type-btn.on.e{color:var(--red)}.type-btn.on.i{color:var(--green)}
+.freq-btn{padding:8px 6px;border-radius:10px;font-size:13px;font-weight:600;color:var(--txt2);border:1.5px solid var(--border);background:var(--bg2);cursor:pointer;transition:.15s;text-align:center;pointer-events:auto}
+.freq-btn.on{background:rgba(var(--accent-rgb),.12);border-color:var(--accent);color:var(--accent)}
 
 /* MODAL */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);
@@ -1596,7 +1598,7 @@ button{cursor:pointer;border:none;background:none}
     <div class="field"><label class="field-lbl">Note (optionnel)</label><input class="field-inp" id="m-note" type="text" placeholder="Remarque…"></div>
     <!-- Recurring -->
     <div style="background:var(--input);border-radius:12px;padding:14px 16px;margin-bottom:14px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0" id="recur-header" onclick="toggleRecurring()">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0;cursor:pointer" id="recur-header" onclick="toggleRecurring()">
         <div style="display:flex;align-items:center;gap:8px">
           <span style="font-size:16px">🔄</span>
           <span style="font-size:14px;font-weight:600;color:var(--txt)">Transaction récurrente</span>
