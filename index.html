@@ -62,9 +62,11 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes popIn{from{opacity:0;transform:scale(0.92)}to{opacity:1;transform:scale(1)}}
 @keyframes spin{to{transform:rotate(360deg)}}
+@keyframes ripple-out{from{transform:scale(0);opacity:.35}to{transform:scale(5);opacity:0}}
+.ripple-dot{position:absolute;border-radius:50%;width:50px;height:50px;margin:-25px 0 0 -25px;pointer-events:none;animation:ripple-out .55s ease-out forwards}
 
-.tx-item{animation:fadeSlideUp .28s cubic-bezier(0.16,1,0.3,1) both}
-.card,.stat-card,.evo-card,.budget-item{animation:fadeSlideUp .32s cubic-bezier(0.16,1,0.3,1) both}
+.tx-item{animation:fadeSlideUp .28s cubic-bezier(0.16,1,0.3,1) both;position:relative;overflow:hidden}
+.card,.stat-card,.evo-card,.budget-item{animation:fadeSlideUp .32s cubic-bezier(0.16,1,0.3,1) both;position:relative;overflow:hidden}
 .wish-card{animation:popIn .3s cubic-bezier(0.34,1.56,0.64,1) both}
 
 /* Décalage en cascade pour les listes */
@@ -165,9 +167,9 @@ button{cursor:pointer;border:none;background:none}
   box-shadow:0 4px 16px rgba(var(--accent-rgb),0.45);transition:.15s}
 .add-circle:active{transform:scale(.93)}
 .t-icon{font-size:20px;line-height:1;filter:grayscale(1) opacity(.4);transition:.2s}
-.tab-btn.on .t-icon{filter:none;transform:scale(1.08)}
+.tab-btn.on .t-icon{filter:none;transform:scale(1.12);filter:drop-shadow(0 2px 4px rgba(var(--accent-rgb),0.3))}
 .t-lbl{font-size:10px;font-weight:600;color:var(--txt3);letter-spacing:.3px;transition:.2s}
-.tab-btn.on .t-lbl{color:var(--accent)}
+.tab-btn.on .t-lbl{color:var(--accent);font-weight:700}
 
 /* ═══ COMPONENTS ═══ */
 .card{background:var(--card);border-radius:var(--r);padding:18px;border:1px solid var(--border);box-shadow:var(--sh);margin-bottom:12px;will-change:transform}
@@ -182,9 +184,12 @@ button{cursor:pointer;border:none;background:none}
 /* HERO CARD */
 .hero{background:var(--hero-bg);
   border-radius:22px;padding:22px;margin-bottom:14px;
-  box-shadow:0 8px 32px rgba(var(--accent-rgb),0.2);position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;top:-50px;right:-50px;
-  width:200px;height:200px;background:rgba(255,255,255,0.04);border-radius:50%}
+  box-shadow:0 8px 40px rgba(var(--accent-rgb),0.28),0 2px 8px rgba(0,0,0,0.12);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;
+  width:220px;height:220px;background:rgba(255,255,255,0.07);border-radius:50%;pointer-events:none}
+.hero::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:180px 180px;opacity:.04;mix-blend-mode:soft-light}
 .hero-lbl{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;
   color:rgba(255,255,255,0.9);margin-bottom:6px}
 .hero-bal{font-family:'Sora',sans-serif;font-size:46px;font-weight:800;
@@ -233,13 +238,16 @@ button{cursor:pointer;border:none;background:none}
 .tx-item.tx-income { border-left-color: var(--green); }
 .tx-item.tx-expense{ border-left-color: var(--red); }
 .tx-item.tx-vir    { border-left-color: var(--accent); }
-.tx-ico{width:40px;height:40px;border-radius:12px;background:var(--input);
-  display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.tx-ico{width:42px;height:42px;border-radius:13px;background:var(--input);
+  display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;transition:box-shadow .2s}
 .tx-info{flex:1;min-width:0}
 .tx-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tx-sub{font-size:12px;color:var(--txt3);margin-top:1px}
-.tx-amt{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;white-space:nowrap}
-.tx-amt.e{color:var(--red);font-weight:800}.tx-amt.i{color:var(--green);font-weight:800}
+.tx-amt{font-family:'Sora',sans-serif;font-size:15px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tx-amt.e{color:var(--red)}.tx-amt.i{color:var(--green)}
+.hero-bal{font-variant-numeric:tabular-nums}
+.acc-mini-bal{font-variant-numeric:tabular-nums}
+.hp-val{font-variant-numeric:tabular-nums}
 .hist-section-hd{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 8px;font-size:13px;font-weight:700;color:var(--txt);border-bottom:1.5px solid var(--border);margin-bottom:4px}
 .hist-section-upcoming{color:var(--accent)}
 .hist-section-total{font-size:12px;font-weight:600;color:var(--txt2)}
@@ -2305,7 +2313,7 @@ var THEMES = {
       accent:'#c8913a', accentD:'#a06820', accentRgb:'200,145,58',
       txt:'#1e1a12', txt2:'#6e6458', txt3:'#c8a06a',
       sh:'0 1px 3px rgba(100,70,10,0.04), 0 4px 12px rgba(100,70,10,0.06)',
-      hero:'linear-gradient(135deg,#d4a85a,#c8913a,#a06820)',
+      hero:'linear-gradient(145deg,#e8c070 0%,#d4a85a 30%,#c8913a 65%,#9a5f18 100%)',
       authBg:'linear-gradient(145deg,#f8f5ee,#f0ece0,#e8e0d0)',
       tabBg:'rgba(255,254,249,0.92)', tabBorder:'rgba(120,90,30,0.08)',
     },
@@ -2315,7 +2323,7 @@ var THEMES = {
       accent:'#d4a85a', accentD:'#c8913a', accentRgb:'212,168,90',
       txt:'#f5f0e8', txt2:'#c8bfae', txt3:'#d4a85a',
       sh:'0 1px 4px rgba(0,0,0,0.5), 0 6px 16px rgba(0,0,0,0.4)',
-      hero:'linear-gradient(135deg,#3a2a10,#5a3f18,#7a5520)',
+      hero:'linear-gradient(145deg,#1a1206 0%,#3a2a10 35%,#5a3f18 70%,#7a5520 100%)',
       authBg:'linear-gradient(145deg,#0c0a07,#1c1812,#272018)',
       tabBg:'rgba(14,11,8,0.95)', tabBorder:'rgba(255,210,100,0.12)',
     }
@@ -2480,6 +2488,24 @@ function closeFab() {
 
 // Close FAB on escape key
 document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeFab(); });
+
+// ── RIPPLE EFFECT ─────────────────────────
+function addRipple(el, e){
+  var dot=document.createElement('span');
+  dot.className='ripple-dot';
+  var rect=el.getBoundingClientRect();
+  var touch=e.changedTouches?e.changedTouches[0]:e;
+  dot.style.left=(touch.clientX-rect.left)+'px';
+  dot.style.top=(touch.clientY-rect.top)+'px';
+  var isLight=el.classList.contains('tx-income')||el.classList.contains('acc-mini');
+  dot.style.background=isLight?'rgba(255,255,255,0.4)':'rgba(var(--accent-rgb),0.15)';
+  el.appendChild(dot);
+  setTimeout(function(){dot.remove();},600);
+}
+document.addEventListener('click',function(e){
+  var el=e.target.closest('.tx-item,.card,.stat-card,.acc-mini,.chip,.tab-btn');
+  if(el) addRipple(el,e);
+},true);
 
 
 
@@ -3729,6 +3755,7 @@ function fmtDate(s){
 }
 var CAT_TYPE_COLORS={fixe:'rgba(59,130,246,0.15)',vie:'rgba(16,185,129,0.15)',loisirs:'rgba(245,158,11,0.15)',income:'rgba(16,185,129,0.15)'};
 var CAT_TYPE_ICON_COLORS={fixe:'#3b82f6',vie:'#10b981',loisirs:'#f59e0b',income:'#10b981'};
+var CAT_TYPE_SHADOWS={fixe:'0 2px 10px rgba(59,130,246,0.22)',vie:'0 2px 10px rgba(16,185,129,0.22)',loisirs:'0 2px 10px rgba(245,158,11,0.22)',income:'0 2px 10px rgba(16,185,129,0.22)'};
 function txHTML(e,showEdit){
   var cat=categories.find(function(c){return c.id===e.cat;})||{icon:'📦',type:'loisirs'};
   var acc=accounts.find(function(a){return a.id===e.accountId;});
@@ -3744,8 +3771,9 @@ function txHTML(e,showEdit){
   var catType=isInc?'income':(cat.type||'loisirs');
   var icoBg=CAT_TYPE_COLORS[catType]||'var(--input)';
   var icoColor=CAT_TYPE_ICON_COLORS[catType]||'var(--txt)';
+  var icoSh=CAT_TYPE_SHADOWS[catType]||'none';
   return '<div class="tx-item '+txCls+'" onclick="'+(showEdit?'openEdit(\''+id+'\')':'')+'">'
-    +'<div class="tx-ico" style="background:'+icoBg+';font-size:20px">'+cat.icon+'</div>'
+    +'<div class="tx-ico" style="background:'+icoBg+';box-shadow:'+icoSh+'">'+cat.icon+'</div>'
     +'<div class="tx-info"><div class="tx-name">'+esc(e.label||'Sans libellé')+swileBadge+recurBadge+virBadge+'</div>'
     +'<div class="tx-sub">'+(acc?esc(acc.name):'')+' '+(e.note?'· '+esc(e.note):'')+'</div></div>'
     +'<div class="tx-amt '+(isInc?'i':'e')+' blur">'+(isInc?'+':'-')+e.amount.toFixed(2)+' €</div></div>';
