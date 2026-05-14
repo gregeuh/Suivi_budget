@@ -1113,32 +1113,29 @@ button{cursor:pointer;border:none;background:none}
    ═══════════════════════════════════════ */
 @media (min-width: 768px) {
 
-  /* ── APP GRID ── */
-  #app.on {
-    display: grid !important;
-    grid-template-columns: 230px 1fr;
-    grid-template-rows: auto 1fr;
-    height: 100dvh;
-    overflow: hidden;
-  }
-
-  /* ── SIDEBAR ── */
+  /* ── SIDEBAR (position fixed — évite le conflit avec CSS Grid) ── */
   .tab-wrap {
-    grid-column: 1;
-    grid-row: 1 / -1;
-    position: relative !important;
-    bottom: auto !important; left: auto !important;
+    position: fixed !important;
+    left: 0 !important; top: 0 !important; bottom: 0 !important;
+    right: auto !important;
+    width: 230px !important; max-width: 230px !important;
+    height: 100dvh !important;
     transform: none !important;
-    width: auto !important; max-width: none !important;
-    height: 100dvh;
     display: flex !important;
     flex-direction: column;
     padding: 0 !important;
     pointer-events: auto !important;
-    z-index: 10;
+    z-index: 50 !important;
     background: var(--card) !important;
     border-right: 1px solid var(--border);
+    border-radius: 0 !important;
+    box-shadow: none !important;
   }
+
+  /* Décaler le contenu pour laisser place à la sidebar */
+  #app.on { display: flex !important; flex-direction: column; }
+  .top { margin-left: 230px !important; }
+  .content { margin-left: 230px !important; }
   .sidebar-brand {
     display: flex;
     align-items: center;
@@ -1201,8 +1198,6 @@ button{cursor:pointer;border:none;background:none}
 
   /* ── TOP BAR ── */
   .top {
-    grid-column: 2;
-    grid-row: 1;
     padding: 16px 32px !important;
     border-bottom: 1px solid var(--border);
   }
@@ -1211,8 +1206,6 @@ button{cursor:pointer;border:none;background:none}
 
   /* ── CONTENT ── */
   .content {
-    grid-column: 2;
-    grid-row: 2;
     padding: 28px 32px 40px !important;
     overflow-y: auto;
   }
