@@ -1111,7 +1111,7 @@ button{cursor:pointer;border:none;background:none}
   /* ── APP GRID ── */
   #app.on {
     display: grid !important;
-    grid-template-columns: 230px 1fr;
+    grid-template-columns: 210px 1fr;
     grid-template-rows: auto 1fr;
     height: 100dvh;
     overflow: hidden;
@@ -1133,21 +1133,34 @@ button{cursor:pointer;border:none;background:none}
     z-index: 10;
     background: var(--card) !important;
     border-right: 1px solid var(--border);
+    box-shadow: 2px 0 12px rgba(0,0,0,0.04) !important;
   }
+
+  /* Brand */
   .sidebar-brand {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 22px 20px 16px;
+    padding: 20px 16px 18px;
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
   }
-  .sidebar-logo { font-size: 24px; }
+  .sidebar-logo {
+    font-size: 22px;
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg,var(--accent),var(--accent-d));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
   .sidebar-title {
     font-family: 'Sora', sans-serif;
-    font-size: 16px; font-weight: 800;
+    font-size: 15px; font-weight: 800;
     color: var(--txt);
+    letter-spacing: -.3px;
   }
+
+  /* Nav */
   .tab-bar {
     flex-direction: column !important;
     flex: 1;
@@ -1156,7 +1169,7 @@ button{cursor:pointer;border:none;background:none}
     box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    padding: 12px 10px !important;
+    padding: 10px 10px 16px !important;
     align-items: stretch;
     gap: 2px;
     display: flex;
@@ -1167,28 +1180,48 @@ button{cursor:pointer;border:none;background:none}
     flex-direction: row !important;
     justify-content: flex-start !important;
     align-items: center !important;
-    gap: 12px !important;
-    padding: 11px 14px !important;
-    border-radius: 12px !important;
+    gap: 10px !important;
+    padding: 10px 12px !important;
+    border-radius: 10px !important;
     min-height: auto !important;
     flex: none !important;
     width: 100%;
+    transition: background .15s !important;
   }
-  .tab-btn.on { background: rgba(var(--accent-rgb),.12) !important; }
-  .t-icon { font-size: 18px !important; filter: none !important; }
-  .tab-btn.on .t-icon { transform: none !important; }
-  .t-lbl { font-size: 14px !important; font-weight: 600 !important; color: var(--txt2) !important; display: block !important; }
+  .tab-btn:hover { background: rgba(var(--accent-rgb),.07) !important; }
+  .tab-btn.on {
+    background: rgba(var(--accent-rgb),.13) !important;
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+  .t-icon {
+    font-size: 17px !important;
+    filter: none !important;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 8px;
+    background: rgba(var(--accent-rgb),.08);
+    flex-shrink: 0;
+  }
+  .tab-btn.on .t-icon {
+    transform: none !important;
+    background: rgba(var(--accent-rgb),.18);
+  }
+  .t-lbl {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: var(--txt2) !important;
+    display: block !important;
+    letter-spacing: -.1px;
+  }
   .tab-btn.on .t-lbl { color: var(--accent) !important; font-weight: 700 !important; }
 
-  /* Bouton ajouter dans la sidebar */
-  .add-btn {
-    margin: 0 !important;
-  }
+  /* Bouton ajouter */
+  .add-btn { margin: 4px 0 0 !important; }
   .add-circle {
-    width: 32px !important; height: 32px !important;
-    border-radius: 10px !important;
+    width: 28px !important; height: 28px !important;
+    border-radius: 8px !important;
     margin: 0 !important;
-    font-size: 18px !important;
+    font-size: 16px !important;
     flex-shrink: 0;
   }
   .add-lbl { display: block !important; }
@@ -1197,30 +1230,32 @@ button{cursor:pointer;border:none;background:none}
   .top {
     grid-column: 2;
     grid-row: 1;
-    padding: 16px 32px !important;
+    padding: 14px 28px !important;
     border-bottom: 1px solid var(--border);
+    background: var(--bg) !important;
   }
-  .top-left .greeting { font-size: 12px; }
-  .top-left .name { font-size: 18px; }
+  .top-left .greeting { font-size: 11px; color: var(--txt3); }
+  .top-left .name { font-size: 17px; }
 
   /* ── CONTENT ── */
   .content {
     grid-column: 2;
     grid-row: 2;
-    padding: 28px 32px 40px !important;
+    padding: 24px 28px 40px !important;
     overflow-y: auto;
+    background: var(--bg) !important;
   }
 
   /* ── DASHBOARD 2 COLONNES ── */
   .dash-cols {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
+    grid-template-columns: 3fr 2fr;
+    gap: 20px;
     align-items: start;
   }
   .dash-left, .dash-right { min-width: 0; }
-  .hero { margin-bottom: 20px; }
-  .sec { margin-top: 16px; }
+  .hero { margin-bottom: 16px; }
+  .sec { margin-top: 14px; }
 
   /* ── DIVERS ── */
   .page.on { animation: none !important; }
