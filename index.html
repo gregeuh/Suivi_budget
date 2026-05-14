@@ -1071,10 +1071,17 @@ button{cursor:pointer;border:none;background:none}
   pointer-events:none;
 }
 .wish-bar-bg {
-  height: 5px; border-radius: 3px;
-  background: rgba(255,255,255,0.2); overflow: hidden;
+  height: 6px; border-radius: 4px;
+  background: rgba(255,255,255,0.2); overflow: hidden; margin-top:2px;
 }
-.wish-bar-fill { height: 100%; border-radius: 3px; transition: width .6s ease; }
+.wish-bar-fill { height: 100%; border-radius: 4px; width:0; transition: width .7s cubic-bezier(0.16,1,0.3,1); }
+.wish-progress-row{display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+.wish-saved-lbl{font-size:11px;font-weight:700;color:rgba(255,255,255,0.8)}
+.wish-pct-lbl{font-size:11px;font-weight:700;color:rgba(255,255,255,0.55)}
+.ctx-btn{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;border:none;background:none;border-radius:14px;font-size:15px;font-weight:600;color:var(--txt);cursor:pointer;text-align:left;transition:background .12s}
+.ctx-btn:active{background:var(--card2)}
+.ctx-btn-del{color:var(--red)}
+.ctx-ico{font-size:18px;width:24px;text-align:center}
 .wish-name { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.85); }
 .wish-done { font-size: 12px; color: rgba(255,255,255,0.9); font-weight: 700; }
 .wish-status { font-size: 12px; color: rgba(255,255,255,0.75); margin-top: 8px; }
@@ -1867,7 +1874,20 @@ button{cursor:pointer;border:none;background:none}
   </div>
 </div>
 
-<div id="toast"><div id="toast-icon" class="success">✓</div><div id="toast-text"></div></div>
+<div id="toast"><div id="toast-icon" class="success">✓</div><div id="toast-text"></div><button id="toast-undo" onclick="triggerToastUndo()" style="display:none;background:rgba(255,255,255,0.18);border:none;border-radius:8px;color:inherit;font-size:12px;font-weight:700;padding:5px 11px;cursor:pointer;white-space:nowrap;margin-left:4px">Annuler</button></div>
+
+<!-- LONG PRESS CONTEXT MENU -->
+<div id="tx-ctx-overlay" onclick="closeTxCtx()" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,0.28);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)">
+  <div id="tx-ctx-sheet" onclick="event.stopPropagation()" style="position:absolute;bottom:110px;left:12px;right:12px;background:var(--card);border-radius:22px;padding:8px;box-shadow:0 24px 64px rgba(0,0,0,0.3);transform:translateY(20px);opacity:0;transition:transform .28s cubic-bezier(0.34,1.56,0.64,1),opacity .2s">
+    <button class="ctx-btn" onclick="txCtxEdit()"><span class="ctx-ico">✏️</span>Modifier</button>
+    <button class="ctx-btn" onclick="txCtxDuplicate()"><span class="ctx-ico">📋</span>Dupliquer</button>
+    <div style="height:1px;background:var(--border);margin:4px 8px"></div>
+    <button class="ctx-btn ctx-btn-del" onclick="txCtxDelete()"><span class="ctx-ico">🗑️</span>Supprimer</button>
+  </div>
+</div>
+
+<!-- PULL TO REFRESH INDICATOR -->
+<div id="ptr-indicator" style="position:fixed;top:-60px;left:50%;transform:translateX(-50%);z-index:300;transition:top .2s ease;background:var(--card);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,0.12);font-size:20px">↓</div>
 <script>
 // ── FIREBASE (chargé dynamiquement) ──────
 var auth=null, db=null, cloudDoc=null;
@@ -2800,9 +2820,10 @@ function renderWishBandeau() {
       + '</div>'
       + '<div class="wish-name" style="font-size:14px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(w.name) + '</div>'
       + '<div style="font-family:Sora,sans-serif;font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.5px;margin-bottom:10px">' + fmt(w.price) + '</div>'
-      + '<div class="wish-bar-bg"><div class="wish-bar-fill" style="width:' + prog + '%;background:' + (done?'#10b981':'rgba(255,255,255,0.75)') + '"></div></div>'
-      + '<div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:6px">'
-      + (done ? '✅ Financement atteint' : (months > 0 ? '~' + months + ' mois' : fmt(miss) + ' manquants'))
+      + '<div class="wish-bar-bg"><div class="wish-bar-fill" data-pct="'+prog+'" style="background:' + (done?'#10b981':'rgba(255,255,255,0.8)') + '"></div></div>'
+      + '<div class="wish-progress-row">'
+      + '<span class="wish-saved-lbl">' + (done ? '✅ Atteint !' : fmt(accBal,2)) + '</span>'
+      + '<span class="wish-pct-lbl">' + (done ? '' : (months > 0 ? '~'+months+' mois' : Math.round(prog)+'%')) + '</span>'
       + '</div>'
       + '</div>';
   });
@@ -2811,6 +2832,11 @@ function renderWishBandeau() {
   cards.push('<div onclick="openWish()" style="min-width:80px;max-width:80px;flex-shrink:0;border-radius:16px;background:var(--card);border:1.5px dashed var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:24px;color:var(--txt3)">+</div>');
 
   el.innerHTML = cards.join('');
+  requestAnimationFrame(function(){
+    el.querySelectorAll('.wish-bar-fill[data-pct]').forEach(function(f){
+      f.style.width=f.getAttribute('data-pct')+'%';
+    });
+  });
 }
 
 // ── BUDGET DETAIL ─────────────────────────
@@ -4337,11 +4363,91 @@ function deleteTx(){
   save();renderAll();closeEdit();toast('Supprimé');
 }
 
-function deleteTxById(id){
-  if(!confirm('Supprimer cette transaction ?')) return;
-  expenses=expenses.filter(function(e){return e.id!==id;});
-  save();renderAll();toast('Supprimé');
+// ── TOAST WITH UNDO ───────────────────────
+var _toastUndoFn=null;
+function triggerToastUndo(){
+  if(_toastUndoFn){ _toastUndoFn(); _toastUndoFn=null; }
+  var btn=document.getElementById('toast-undo');
+  if(btn) btn.style.display='none';
+  var el=document.getElementById('toast');
+  if(el){ clearTimeout(el._t); el.classList.remove('on'); }
 }
+function toastWithUndo(msg,undoFn){
+  var el=document.getElementById('toast');
+  var icon=document.getElementById('toast-icon');
+  var txt=document.getElementById('toast-text');
+  var btn=document.getElementById('toast-undo');
+  if(icon){icon.textContent='✓';icon.className='success';}
+  if(txt) txt.textContent=msg;
+  if(btn){btn.style.display=undoFn?'block':'none';}
+  _toastUndoFn=undoFn||null;
+  el.classList.add('on');
+  clearTimeout(el._t);
+  el._t=setTimeout(function(){ el.classList.remove('on'); if(btn)btn.style.display='none'; _toastUndoFn=null; },4000);
+}
+
+var _lastDelTx=null;
+function deleteTxById(id){
+  var tx=expenses.find(function(e){return e.id===id;});
+  if(!tx) return;
+  expenses=expenses.filter(function(e){return e.id!==id;});
+  _lastDelTx=tx;
+  save();renderAll();
+  toastWithUndo('Transaction supprimée',function(){
+    if(_lastDelTx){ expenses.unshift(_lastDelTx); _lastDelTx=null; save(); renderAll(); toast('Annulé ✓'); }
+  });
+}
+
+// ── LONG PRESS CONTEXT MENU ───────────────
+var _ctxTxId=null, _lpTimer=null;
+function closeTxCtx(){
+  var ov=document.getElementById('tx-ctx-overlay');
+  var sh=document.getElementById('tx-ctx-sheet');
+  if(sh){sh.style.transform='translateY(20px)';sh.style.opacity='0';}
+  setTimeout(function(){if(ov)ov.style.display='none';},200);
+  _ctxTxId=null;
+}
+function openTxCtx(id,e){
+  _ctxTxId=id;
+  var ov=document.getElementById('tx-ctx-overlay');
+  var sh=document.getElementById('tx-ctx-sheet');
+  if(!ov||!sh) return;
+  ov.style.display='block';
+  requestAnimationFrame(function(){sh.style.transform='translateY(0)';sh.style.opacity='1';});
+  if(navigator.vibrate) navigator.vibrate(18);
+}
+function txCtxEdit(){ closeTxCtx(); setTimeout(function(){ openEdit(_ctxTxId); },220); }
+function txCtxDelete(){ var id=_ctxTxId; closeTxCtx(); setTimeout(function(){ deleteTxById(id); },220); }
+function txCtxDuplicate(){
+  var id=_ctxTxId; closeTxCtx();
+  setTimeout(function(){
+    var tx=expenses.find(function(e){return e.id===id;});
+    if(!tx) return;
+    var copy=Object.assign({},tx,{id:'tx_'+Date.now(),recurring:false,frequency:null,endDate:null,customDays:null});
+    expenses.unshift(copy); save(); renderAll(); toast('Transaction dupliquée ✓');
+  },220);
+}
+
+(function(){
+  // Long press detection on tx-items
+  document.addEventListener('touchstart',function(e){
+    var wrap=e.target.closest('.tx-swipe-wrap');
+    if(!wrap) return;
+    var item=wrap.querySelector('.tx-item[data-tx-id]');
+    if(!item) return;
+    var id=item.getAttribute('data-tx-id');
+    _lpTimer=setTimeout(function(){
+      _lpTimer=null;
+      openTxCtx(id,e);
+    },500);
+  },{passive:true});
+  document.addEventListener('touchmove',function(){
+    if(_lpTimer){clearTimeout(_lpTimer);_lpTimer=null;}
+  },{passive:true});
+  document.addEventListener('touchend',function(){
+    if(_lpTimer){clearTimeout(_lpTimer);_lpTimer=null;}
+  },{passive:true});
+})();
 
 // ── SWIPE GESTURES ────────────────────────
 (function(){
@@ -4410,6 +4516,43 @@ function deleteTxById(id){
       if(dy>dx+8) _pgLock=true;
     },{passive:true});
   }
+})();
+
+// ── PULL TO REFRESH ───────────────────────
+(function(){
+  var ptr=document.getElementById('ptr-indicator');
+  var content=document.querySelector('.content');
+  if(!ptr||!content) return;
+  var _y0=0, _pulling=false, _triggered=false, THRESH=72;
+  content.addEventListener('touchstart',function(e){
+    if(content.scrollTop>4) return;
+    if(e.target.closest('.acc-scroll-wrap,.filter-chips,.tx-swipe-wrap')) return;
+    _y0=e.touches[0].clientY; _pulling=true; _triggered=false;
+  },{passive:true});
+  content.addEventListener('touchmove',function(e){
+    if(!_pulling) return;
+    var dy=e.touches[0].clientY-_y0;
+    if(dy<10||content.scrollTop>4){_pulling=false;return;}
+    var pull=Math.min(dy,THRESH+20);
+    var top=Math.min(pull-60,18);
+    ptr.style.top=top+'px';
+    var rot=Math.round(pull/THRESH*180);
+    ptr.style.transform='translateX(-50%) rotate('+rot+'deg)';
+    ptr.style.opacity=Math.min(pull/THRESH,1).toFixed(2);
+    _triggered=pull>=THRESH;
+    ptr.style.background=_triggered?'var(--accent)':'var(--card)';
+    ptr.style.color=_triggered?'#fff':'var(--txt2)';
+  },{passive:true});
+  content.addEventListener('touchend',function(){
+    if(!_pulling){return;}
+    _pulling=false;
+    ptr.style.top='-60px';
+    ptr.style.opacity='0';
+    ptr.style.transform='translateX(-50%)';
+    ptr.style.background='var(--card)';
+    ptr.style.color='var(--txt2)';
+    if(_triggered){ _triggered=false; renderAll(); toast('Actualisé ✓','info'); }
+  },{passive:true});
 })();
 
 // ── QUICK ADD ─────────────────────────────
