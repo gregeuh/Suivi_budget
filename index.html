@@ -1100,6 +1100,31 @@ button{cursor:pointer;border:none;background:none}
 
 
 
+/* ── DESKTOP : barre de nav élargie ── */
+@media (min-width: 768px) {
+  .tab-wrap {
+    width: 680px !important;
+    max-width: 90vw !important;
+  }
+  .tab-bar {
+    padding: 8px 16px !important;
+    gap: 0 !important;
+  }
+  .tab-btn {
+    padding: 10px 18px !important;
+    gap: 5px !important;
+  }
+  .t-icon { font-size: 26px !important; }
+  .t-lbl  { font-size: 12px !important; }
+  .add-circle {
+    width: 54px !important;
+    height: 54px !important;
+    font-size: 26px !important;
+  }
+  .page.on { animation: none !important; }
+  #ptr-indicator { display: none !important; }
+}
+
 </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
