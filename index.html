@@ -1099,9 +1099,10 @@ button{cursor:pointer;border:none;background:none}
 .wish-price { font-family: 'Sora',sans-serif; font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -.5px; margin: 4px 0 10px; }
 
 
-/* Sidebar brand + add label — masqués sur mobile */
+/* Sidebar brand + add label + footer — masqués sur mobile */
 .sidebar-brand{display:none}
 .add-lbl{display:none}
+.sidebar-footer{display:none}
 
 /* ═══════════════════════════════════════
    RESPONSIVE DESKTOP  ≥ 768px
@@ -1256,6 +1257,79 @@ button{cursor:pointer;border:none;background:none}
   .dash-left, .dash-right { min-width: 0; }
   .hero { margin-bottom: 16px; }
   .sec { margin-top: 14px; }
+
+  /* ── SIDEBAR FOOTER ── */
+  .sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-top: 1px solid var(--border);
+    padding: 14px 12px 16px;
+    flex-shrink: 0;
+    background: var(--card);
+  }
+  .sidebar-month-stats {
+    background: rgba(var(--accent-rgb),.07);
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .sb-stat-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: var(--txt3);
+    margin-bottom: 2px;
+  }
+  .sb-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .sb-stat-lbl { font-size: 11px; color: var(--txt3); font-weight: 500; }
+  .sb-stat-val { font-size: 12px; font-weight: 700; font-family: 'Sora',sans-serif; color: var(--txt); }
+  .sb-exp { color: #ef4444 !important; }
+  .sb-inc { color: #10b981 !important; }
+  .sb-user-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sb-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,var(--accent),var(--accent-d));
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+  .sb-user-name {
+    flex: 1;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--txt2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .sb-theme-btn {
+    font-size: 15px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    opacity: .7;
+    transition: opacity .15s;
+  }
+  .sb-theme-btn:hover { opacity: 1; }
 
   /* ── DIVERS ── */
   .page.on { animation: none !important; }
@@ -1813,6 +1887,20 @@ button{cursor:pointer;border:none;background:none}
       <button class="tab-btn" id="tb-profil" onclick="goTo('profil',this,4)">
         <div class="t-icon">👤</div><div class="t-lbl">Profil</div>
       </button>
+    </div>
+    <!-- Pied de sidebar — desktop uniquement -->
+    <div class="sidebar-footer">
+      <div class="sidebar-month-stats">
+        <div class="sb-stat-title" id="sb-month-lbl">Ce mois</div>
+        <div class="sb-stat-row"><span class="sb-stat-lbl">Solde</span><span class="sb-stat-val sb-bal" id="sb-bal">—</span></div>
+        <div class="sb-stat-row"><span class="sb-stat-lbl">Dépenses</span><span class="sb-stat-val sb-exp" id="sb-exp">—</span></div>
+        <div class="sb-stat-row"><span class="sb-stat-lbl">Revenus</span><span class="sb-stat-val sb-inc" id="sb-inc">—</span></div>
+      </div>
+      <div class="sb-user-row">
+        <div class="sb-avatar" id="sb-avatar">?</div>
+        <div class="sb-user-name" id="sb-name">—</div>
+        <button class="sb-theme-btn" onclick="cycleTheme()" title="Changer le thème">☀️</button>
+      </div>
     </div>
   </div>
 </div>
@@ -3614,6 +3702,26 @@ function renderAll(){
   renderBudgets();
   renderCatsSettings();
   applyPrivacy();
+  renderSidebarFooter();
+}
+
+function renderSidebarFooter(){
+  if(window.innerWidth < 768) return;
+  var data = getMonthTx();
+  var bals = calcBals();
+  var totalBal = accounts.filter(function(a){ return !a.isEpargne; }).reduce(function(s,a){ return s+(bals[a.id]||0); },0);
+  var mExp = data.filter(function(e){ return e.type==='expense'&&!e.isVirement&&!e.isAdjustment; }).reduce(function(s,e){ return s+e.amount; },0);
+  var mInc = data.filter(function(e){ return e.type==='income'&&!e.isVirement&&!e.isAdjustment; }).reduce(function(s,e){ return s+e.amount; },0);
+  var balEl=document.getElementById('sb-bal');
+  var expEl=document.getElementById('sb-exp');
+  var incEl=document.getElementById('sb-inc');
+  var nameEl=document.getElementById('sb-name');
+  var avatarEl=document.getElementById('sb-avatar');
+  if(balEl) balEl.textContent = fmtBal(totalBal,2)+' €';
+  if(expEl) expEl.textContent = '-'+fmt(mExp,2)+' €';
+  if(incEl) incEl.textContent = '+'+fmt(mInc,2)+' €';
+  if(nameEl) nameEl.textContent = displayName||'—';
+  if(avatarEl) avatarEl.textContent = (displayName||'?')[0].toUpperCase();
 }
 
 // ── HERO ──────────────────────────────────
