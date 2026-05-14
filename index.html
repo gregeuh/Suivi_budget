@@ -80,21 +80,32 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .tx-item:nth-child(3){animation-delay:.09s}.tx-item:nth-child(4){animation-delay:.12s}
 .tx-item:nth-child(5){animation-delay:.15s}.tx-item:nth-child(n+6){animation-delay:.18s}
 
-/* ═══ HOVER CARTES ═══ */
-.card,.stat-card,.evo-card{
-  transition:transform .35s cubic-bezier(0.34,1.56,0.64,1),box-shadow .22s ease}
+/* ═══ SPRING BOUNCE — pattern universel ═══
+   Base : spring sur le relâchement (overshoot)
+   :active : press rapide vers le bas                */
+.card,.stat-card,.evo-card,.budget-item,
+.btn,.icon-btn,.m-nav,.add-circle,.fab-item-btn,
+.acc-mini,.acc-chip,.cat-chip,.chip,.wish-card,
+.tx-item:not(.swiped),.set-row[onclick]{
+  transition:transform .42s cubic-bezier(.34,1.7,.64,1),box-shadow .22s ease}
+
+.card:active,.stat-card:active,.evo-card:active,.budget-item:active,
+.btn:active,.icon-btn:active,.m-nav:active,.fab-item-btn:active,
+.acc-mini:active,.acc-chip:active,.cat-chip:active,.chip:active,
+.wish-card:active,.tx-item:not(.swiped):active,.set-row[onclick]:active{
+  transform:scale(0.94);transition:transform .08s ease}
+
+.add-circle:active{transform:scale(0.90);transition:transform .08s ease}
+
+/* Hover cartes desktop */
 .card:hover,.stat-card:hover,.evo-card:hover{
   transform:translateY(-2px);
   box-shadow:0 8px 28px rgba(var(--accent-rgb),0.13)}
-.card:active,.stat-card:active,.evo-card:active,.budget-item:active{
-  transform:scale(0.96);
-  transition:transform .12s ease}
 [data-theme="dark"] .card:hover,[data-theme="dark"] .stat-card:hover,
 [data-theme="dark"] .chart-card:hover,[data-theme="dark"] .evo-card:hover{
   box-shadow:0 8px 28px rgba(0,0,0,0.4)}
 
 /* Transactions — highlight au survol */
-.tx-item{transition:transform .18s ease,background .18s ease,box-shadow .18s ease}
 .tx-item:hover{transform:translateX(3px);background:var(--card2) !important;}
 button,input,select,textarea{font-family:inherit}
 button{cursor:pointer;border:none;background:none}
@@ -131,9 +142,7 @@ button{cursor:pointer;border:none;background:none}
 .top-month{display:flex;align-items:center;gap:6px;flex:1;justify-content:center}
 .top-actions{display:flex;gap:8px;flex-shrink:0}
 .icon-btn{width:36px;height:36px;border-radius:11px;background:var(--card);border:1px solid var(--border);
-  display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:var(--sh);
-  transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
-.icon-btn:active{transform:scale(.88)}
+  display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:var(--sh)}
 
 /* MONTH BAR */
 .top-month .m-label{font-family:'Sora',sans-serif;font-size:14px;font-weight:800;color:var(--txt);text-transform:capitalize;letter-spacing:-.2px}
@@ -141,7 +150,6 @@ button{cursor:pointer;border:none;background:none}
   display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--accent);
   box-shadow:var(--sh);transition:transform .18s cubic-bezier(0.34,1.56,0.64,1),box-shadow .18s}
 .m-nav:hover{transform:scale(1.08);box-shadow:0 4px 14px rgba(var(--accent-rgb),0.2)}
-.m-nav:active{transform:scale(.93)}
 .m-label{font-family:'Sora',sans-serif;font-size:16px;font-weight:800;color:var(--txt);text-transform:capitalize;letter-spacing:-.2px}
 
 /* CONTENT */
@@ -184,7 +192,6 @@ button{cursor:pointer;border:none;background:none}
   font-size:20px;color:#fff;margin:-4px auto 0;
   box-shadow:0 4px 16px rgba(var(--accent-rgb),0.45);
   transition:width .25s ease,height .25s ease,border-radius .25s ease,font-size .25s ease,.15s}
-.add-circle:active{transform:scale(.93)}
 .t-icon{font-size:20px;line-height:1;filter:grayscale(1) opacity(.4);transition:transform .25s cubic-bezier(0.34,1.56,0.64,1), filter .2s}
 .tab-btn.on .t-icon{filter:none;transform:scale(1.18);filter:drop-shadow(0 2px 6px rgba(var(--accent-rgb),0.4))}
 .t-lbl{font-size:10px;font-weight:600;color:var(--txt3);letter-spacing:.3px;
@@ -256,8 +263,8 @@ button{cursor:pointer;border:none;background:none}
 .tx-item{display:flex;align-items:center;gap:12px;padding:13px 16px;
   border-radius:var(--r-sm);background:var(--card);border:1px solid var(--border);
   border-left:3.5px solid transparent;
-  cursor:pointer;transition:background .15s,border-color .15s,transform .22s cubic-bezier(0.25,0.46,0.45,0.94);margin-bottom:4px}
-.tx-item:active{background:var(--card2)}
+  cursor:pointer;margin-bottom:4px}
+.tx-item:active{background:var(--card2) !important}
 .tx-swipe-wrap{position:relative;overflow:hidden;border-radius:var(--r-sm);margin-bottom:4px}
 .tx-swipe-wrap .tx-item{margin-bottom:0;border-radius:var(--r-sm);will-change:transform}
 .tx-swipe-wrap .tx-item.swiped{transform:translateX(-76px)}
@@ -475,8 +482,6 @@ button{cursor:pointer;border:none;background:none}
 /* BUTTONS */
 .btn{width:100%;padding:16px;border-radius:var(--r-sm);font-size:16px;font-weight:700;
   border:none;cursor:pointer;transition:.15s;margin-top:4px}
-.btn{transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
-.btn:active{transform:scale(.93)}
 .btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 16px rgba(var(--accent-rgb),0.35)}
 .btn-danger{background:var(--red);color:#fff;box-shadow:0 4px 16px rgba(239,68,68,0.25)}
 .btn-ghost{background:var(--input);color:var(--txt2)}
@@ -582,7 +587,6 @@ button{cursor:pointer;border:none;background:none}
   box-shadow: 0 4px 20px rgba(0,0,0,0.35);
   transition: transform .18s cubic-bezier(.34,1.56,.64,1);
 }
-.fab-item-btn:active { transform: scale(0.88); }
 .fab-item-lbl {
   padding: 8px 15px; border-radius: 12px;
   font-size: 14px; font-weight: 700; white-space: nowrap;
@@ -877,7 +881,6 @@ button{cursor:pointer;border:none;background:none}
   backdrop-filter: none !important;
   transition: transform .3s cubic-bezier(.34,1.56,.64,1) !important;
 }
-.cat-chip:active { transform: scale(.92) !important; }
 .cat-chip.on {
   background: rgba(var(--accent-rgb),0.1) !important;
   border-color: var(--accent) !important;
@@ -888,7 +891,6 @@ button{cursor:pointer;border:none;background:none}
   backdrop-filter: none !important;
   transition: transform .3s cubic-bezier(.34,1.56,.64,1) !important;
 }
-.chip:active { transform: scale(.92) !important; }
 .chip.on { background: var(--accent) !important; border-color: transparent !important; color: #fff !important; }
 
 /* ════ TOGGLES ════ */
@@ -1008,7 +1010,6 @@ button{cursor:pointer;border:none;background:none}
   transition: transform .2s cubic-bezier(.34,1.56,.64,1);
 }
 .acc-mini:hover { transform: scale(1.04) translateY(-2px); }
-.acc-mini:active { transform: scale(0.93); transition-duration: .1s; }
 .acc-mini::before {
   content: ''; position: absolute;
   top: -20px; right: -20px;
