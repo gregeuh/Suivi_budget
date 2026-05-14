@@ -1462,6 +1462,10 @@ button{cursor:pointer;border:none;background:none}
 
     <!-- 🎯 BUDGETS -->
     <div class="page" id="p-budget">
+      <div class="card" id="budget-period-card" style="margin-bottom:14px;padding:16px 18px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--txt3);margin-bottom:14px">Période du budget</div>
+        <div id="bp-content"></div>
+      </div>
       <div class="sim-toggle-bar">
         <div style="font-size:13px;color:var(--txt2)">Budgets du mois</div>
         <button class="sim-toggle-btn" id="sim-toggle-btn" onclick="toggleSimMode()">✨ Simuler</button>
@@ -1491,6 +1495,7 @@ button{cursor:pointer;border:none;background:none}
       <div class="set-group">
         <div class="set-row"><div><div class="set-name">Prénom affiché</div></div><input class="set-inp" id="s-name" type="text" placeholder="Prénom" onblur="saveName()"></div>
         <div class="set-row"><div><div class="set-name">💼 Salaire prévisionnel</div><div class="set-sub">Si aucun revenu saisi</div></div><div style="display:flex;align-items:center;gap:4px"><input class="set-inp" id="s-forecast" type="number" placeholder="0" onblur="saveSettings()"> €</div></div>
+        <div class="set-row"><div><div class="set-name">📅 Jour de salaire</div><div class="set-sub">Jour du mois (1–31)</div></div><input class="set-inp" id="s-payday" type="number" min="1" max="31" placeholder="1" onblur="saveSettings()" style="width:60px;text-align:center"></div>
         <div class="set-row"><div><div class="set-name">🎯 Épargne cible</div></div><div style="display:flex;align-items:center;gap:4px"><input class="set-inp" id="s-savings" type="number" placeholder="500" onblur="saveSettings()"> €</div></div>
       </div>
       <div class="set-group">
@@ -2005,7 +2010,7 @@ function initFirebase(cb) {
 
 // ── STATE ─────────────────────────────────
 var expenses=[], accounts=[], categories=[], catBudgets={};
-var displayName='', forecastSalary=0, savingsGoal=500, savedTheme='auto';
+var displayName='', forecastSalary=0, savingsGoal=500, savedTheme='auto', budgetPayDay=1;
 var viewDate=new Date(), privacyOn=false, currentUser=null;
 var editingId=null, mAmt='', mCurrentType='exp', qaCurrentType='exp';
 var selCat='autre', selAcc='acc1', selDestAcc='acc_lva', histFilter='all', histCatFilter='all';
@@ -3255,6 +3260,7 @@ function setupAuth(){
       displayName=d.displayName||user.displayName||user.email.split('@')[0];
       forecastSalary=d.forecastSalary||0;
       savingsGoal=d.savingsGoal||500;
+      budgetPayDay=d.budgetPayDay||1;
       savedTheme=d.theme||'auto';
       catBudgets=d.catBudgets||{};
   swileMealPrice=d.swileMealPrice||10;
@@ -3285,6 +3291,7 @@ function setupAuth(){
       // Apply settings
       var sfc=document.getElementById('s-forecast');if(sfc)sfc.value=forecastSalary||'';
       var ssv=document.getElementById('s-savings');if(ssv)ssv.value=savingsGoal||'';
+      var spd=document.getElementById('s-payday');if(spd)spd.value=budgetPayDay||1;
       var sTheme=document.getElementById('s-theme');if(sTheme)sTheme.value=savedTheme;
       // Thème
       if(d.theme && THEMES[d.theme]) applyTheme(d.theme, d.isDark||false);
@@ -3338,6 +3345,7 @@ function save(){
   cloudDoc.set({
     expenses:expenses,accounts:accounts,categories:customCats,
     displayName:displayName,forecastSalary:forecastSalary,savingsGoal:savingsGoal,
+    budgetPayDay:budgetPayDay,
     catBudgets:catBudgets,swileMealPrice:swileMealPrice,wishlist:wishlist,credits:credits,theme:savedTheme
   },{merge:true}).catch(function(e){console.error(e);toast('Erreur de sauvegarde — vérifiez votre connexion','error');});
 }
@@ -3371,7 +3379,9 @@ function saveMealPrice(){
 function saveSettings(){
   forecastSalary=parseFloat(document.getElementById('s-forecast').value)||0;
   savingsGoal=parseFloat(document.getElementById('s-savings').value)||500;
-  save();toast('Sauvegardé ✓');
+  var pd=parseInt(document.getElementById('s-payday').value)||1;
+  budgetPayDay=Math.min(31,Math.max(1,pd));
+  save();renderBudgetPeriod();toast('Sauvegardé ✓');
 }
 
 // ── MONTH ─────────────────────────────────
@@ -4027,7 +4037,46 @@ function setCatFilter(el,f){
 }
 
 // ── BUDGETS ───────────────────────────────
+function renderBudgetPeriod(){
+  var el=document.getElementById('bp-content');if(!el)return;
+  var today=new Date();
+  var pd=Math.min(31,Math.max(1,budgetPayDay||1));
+  // Début : dernier jour de paie ≤ aujourd'hui
+  var start=new Date(today.getFullYear(),today.getMonth(),pd);
+  if(start>today) start=new Date(today.getFullYear(),today.getMonth()-1,pd);
+  // Fin : jour de paie suivant - 1 jour
+  var end=new Date(start.getFullYear(),start.getMonth()+1,pd-1);
+  var days=Math.round((end-start)/86400000)+1;
+  var fmtShort=function(d){return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});};
+  var fmtLong=function(d){return d.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});};
+  // Barre de progression dans la période
+  var elapsed=Math.round((today-start)/86400000);
+  var pct=Math.min(100,Math.round(elapsed/days*100));
+  var daysLeft=Math.max(0,days-elapsed-1);
+  el.innerHTML=
+    '<div style="display:flex;gap:10px;margin-bottom:14px">'
+      +'<div style="flex:1">'
+        +'<div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:3px">Début</div>'
+        +'<div style="font-size:11px;color:var(--txt2);margin-bottom:8px">📅 Jour où tu reçois ton salaire</div>'
+        +'<div style="background:var(--input);border-radius:12px;padding:13px 14px;font-size:15px;font-weight:600;color:var(--txt)">'+fmtShort(start)+'</div>'
+      +'</div>'
+      +'<div style="flex:1">'
+        +'<div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:3px">Fin</div>'
+        +'<div style="font-size:11px;color:var(--txt2);margin-bottom:8px">⏰ La veille du prochain salaire</div>'
+        +'<div style="background:var(--input);border-radius:12px;padding:13px 14px;font-size:15px;font-weight:600;color:var(--txt)">'+fmtShort(end)+'</div>'
+      +'</div>'
+    +'</div>'
+    +'<div style="height:4px;background:var(--border);border-radius:2px;margin-bottom:10px;overflow:hidden">'
+      +'<div style="height:100%;width:'+pct+'%;background:var(--accent);border-radius:2px;transition:width .6s ease"></div>'
+    +'</div>'
+    +'<div style="display:flex;justify-content:space-between;align-items:center">'
+      +'<span style="font-size:12px;color:var(--txt3)">'+fmtLong(start)+' → '+fmtLong(end)+' · '+days+' jours</span>'
+      +'<span style="font-size:12px;font-weight:700;color:'+(daysLeft<=5?'var(--red)':'var(--txt2)')+'">J-'+daysLeft+'</span>'
+    +'</div>';
+}
+
 function renderBudgets(){
+  renderBudgetPeriod();
   var data=getMonthTx();
   var restoIds=getRestoIds(); var swileId=restoIds[0]||null;
   var byCat={};
