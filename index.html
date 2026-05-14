@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="Budget">
 <meta name="apple-touch-fullscreen" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#c8913a">
+<meta name="theme-color" content="#3b82f6">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.svg">
 <title>Suivi Budget</title>
@@ -22,9 +22,9 @@
 
 
 :root {
-  --accent:     #c8913a;
-  --accent-d:   #a06820;
-  --accent-rgb: 200,145,58;
+  --accent:     #3b82f6;
+  --accent-d:   #2563eb;
+  --accent-rgb: 59,130,246;
   --green:      #4caf82;
   --red:        #e05c5c;
   --orange:     #f0944d;
@@ -34,16 +34,16 @@
   --card:       #ffffff;
   --card2:      #f2f2f7;
   --txt:        #1c1c1e;
-  --txt2:       #6e6458;
+  --txt2:       #6e6e73;
   --txt3:       #aeaeb2;
   --border:     rgba(0,0,0,0.08);
   --input:      #e5e5ea;
   --sh:         0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.08);
-  --sh-lg:      0 4px 24px rgba(200,145,58,0.18);
-  --hero-bg:    linear-gradient(135deg,#d4a85a,#c8913a,#a06820);
+  --sh-lg:      0 4px 24px rgba(59,130,246,0.18);
+  --hero-bg:    linear-gradient(135deg,#60a5fa,#3b82f6,#2563eb);
   --auth-bg:    linear-gradient(145deg,#f2f2f7,#e5e5ea,#d1d1d6);
   --tab-bg:     rgba(255,255,255,0.85);
-  --tab-bdr:    rgba(120,90,30,0.08);
+  --tab-bdr:    rgba(59,130,246,0.08);
 }
 
 
@@ -1146,7 +1146,7 @@ button{cursor:pointer;border:none;background:none}
   color: #fff;
 }
 .wish-card:hover { transform: scale(1.03) translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.25); }
-.wish-c0 { background: linear-gradient(135deg,#c8913a,#a06820); }
+.wish-c0 { background: linear-gradient(135deg,#60a5fa,#2563eb); }
 .wish-c1 { background: linear-gradient(135deg,#4caf82,#2d8a5e); }
 .wish-c2 { background: linear-gradient(135deg,#c07050,#8a3a28); }
 .wish-c3 { background: linear-gradient(135deg,#6888c8,#3a5090); }
@@ -2427,26 +2427,26 @@ var isDark = false;
 
 var THEMES = {
   premium: {
-    name: 'Ambre',
+    name: 'Bleu',
     light: {
-      bg:'#f8f5ee', card:'#fffef9', card2:'#f0ece0',
-      border:'rgba(120,90,30,0.07)', input:'#ede9df',
-      accent:'#c8913a', accentD:'#a06820', accentRgb:'200,145,58',
-      txt:'#1e1a12', txt2:'#6e6458', txt3:'#c8a06a',
-      sh:'0 1px 3px rgba(100,70,10,0.04), 0 4px 12px rgba(100,70,10,0.06)',
-      hero:'linear-gradient(145deg,#e8c070 0%,#d4a85a 30%,#c8913a 65%,#9a5f18 100%)',
-      authBg:'linear-gradient(145deg,#f8f5ee,#f0ece0,#e8e0d0)',
-      tabBg:'rgba(255,254,249,0.92)', tabBorder:'rgba(120,90,30,0.08)',
+      bg:'#f2f2f7', card:'#ffffff', card2:'#f2f2f7',
+      border:'rgba(0,0,0,0.08)', input:'#e5e5ea',
+      accent:'#3b82f6', accentD:'#2563eb', accentRgb:'59,130,246',
+      txt:'#1c1c1e', txt2:'#6e6e73', txt3:'#aeaeb2',
+      sh:'0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.08)',
+      hero:'linear-gradient(145deg,#93c5fd 0%,#60a5fa 30%,#3b82f6 65%,#1d4ed8 100%)',
+      authBg:'linear-gradient(145deg,#f2f2f7,#e5e5ea,#d1d1d6)',
+      tabBg:'rgba(255,255,255,0.85)', tabBorder:'rgba(59,130,246,0.08)',
     },
     dark: {
-      bg:'#0c0a07', card:'#1c1812', card2:'#272018',
-      border:'rgba(255,220,150,0.09)', input:'#272018',
-      accent:'#d4a85a', accentD:'#c8913a', accentRgb:'212,168,90',
-      txt:'#f5f0e8', txt2:'#c8bfae', txt3:'#d4a85a',
+      bg:'#0a0d14', card:'#131929', card2:'#1a2236',
+      border:'rgba(99,155,255,0.10)', input:'#1a2236',
+      accent:'#60a5fa', accentD:'#3b82f6', accentRgb:'96,165,250',
+      txt:'#f2f2f7', txt2:'#9da8bb', txt3:'#60a5fa',
       sh:'0 1px 4px rgba(0,0,0,0.5), 0 6px 16px rgba(0,0,0,0.4)',
-      hero:'linear-gradient(145deg,#1a1206 0%,#3a2a10 35%,#5a3f18 70%,#7a5520 100%)',
-      authBg:'linear-gradient(145deg,#0c0a07,#1c1812,#272018)',
-      tabBg:'rgba(14,11,8,0.95)', tabBorder:'rgba(255,210,100,0.12)',
+      hero:'linear-gradient(145deg,#0f1a2e 0%,#1e3a6e 35%,#2563eb 70%,#3b82f6 100%)',
+      authBg:'linear-gradient(145deg,#0a0d14,#131929,#1a2236)',
+      tabBg:'rgba(10,13,20,0.95)', tabBorder:'rgba(96,165,250,0.14)',
     }
   }
 };
@@ -2679,7 +2679,7 @@ function exportPDF() {
       // Couleurs du thème
       var theme = THEMES['premium'];
       var t = theme.light; // PDF toujours en mode clair (lisibilité)
-      var accentHex = t.accent || '#c8913a';
+      var accentHex = t.accent || '#3b82f6';
       // Convert hex to RGB
       function hexRGB(hex) {
         var r = parseInt(hex.slice(1,3),16);
@@ -2732,7 +2732,7 @@ function exportPDF() {
         { label:'Revenus',  val: pdfFmt(mInc),  color:[76,175,130] },
         { label:'Dépenses', val: pdfFmt(mExp),  color:[224,92,92] },
         { label:'Solde',    val: (solde>=0?'+':'')+pdfFmt(solde), color: solde>=0?[76,175,130]:[224,92,92] },
-        { label:'Épargne',  val: pdfFmt(epTotal), color:[200,145,58] },
+        { label:'Épargne',  val: pdfFmt(epTotal), color:[59,130,246] },
       ];
       var colW = contentW / cols.length;
       cols.forEach(function(col, i) {
