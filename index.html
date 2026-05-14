@@ -882,19 +882,90 @@ button{cursor:pointer;border:none;background:none}
 /* ════ SET ROWS ════ */
 .set-row:hover { background: var(--input) !important; }
 
-/* ════ TAB BAR — liquid glass uniquement ici ════ */
-.tab-bar {
-  background: var(--tab-bg) !important;
-  backdrop-filter: blur(24px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
-  border: 1px solid var(--tab-bdr) !important;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.10), 0 1px 0 rgba(255,255,255,0.6) inset !important;
+/* ════ LIQUID GLASS ════ */
+
+/* Filtre SVG de distorsion légère */
+.lg-filter { position: fixed; width: 0; height: 0; pointer-events: none; }
+
+/* Mixin glass de base */
+.tab-bar,
+.card, .stat-card, .evo-card,
+.modal {
+  --lg-blur: blur(48px) saturate(200%) brightness(1.06);
 }
 
+/* ── Tab bar ── */
+.tab-bar {
+  background: rgba(255,253,248,0.55) !important;
+  backdrop-filter: var(--lg-blur) !important;
+  -webkit-backdrop-filter: var(--lg-blur) !important;
+  border: 1px solid rgba(255,255,255,0.75) !important;
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.95),
+    inset 0 -1px 0 rgba(0,0,0,0.03),
+    0 8px 40px rgba(0,0,0,0.10),
+    0 2px 8px rgba(0,0,0,0.05) !important;
+}
+
+/* ── Pill active ── */
 .tab-pill {
-  background: var(--card) !important;
-  border: 1px solid var(--border) !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.10) !important;
+  background: rgba(255,255,255,0.82) !important;
+  border: 1px solid rgba(255,255,255,0.95) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,1),
+    0 3px 14px rgba(0,0,0,0.10) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
+/* ── Cards ── */
+.card, .stat-card, .evo-card {
+  background: rgba(255,254,250,0.72) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border: 1px solid rgba(255,255,255,0.80) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.90),
+    0 2px 16px rgba(0,0,0,0.07),
+    0 1px 3px rgba(0,0,0,0.04) !important;
+}
+
+/* ── Modal (bottom sheet) ── */
+.modal {
+  background: rgba(255,254,250,0.78) !important;
+  backdrop-filter: blur(56px) saturate(210%) brightness(1.04) !important;
+  -webkit-backdrop-filter: blur(56px) saturate(210%) brightness(1.04) !important;
+  border-top: 1px solid rgba(255,255,255,0.85) !important;
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.95),
+    0 -8px 48px rgba(0,0,0,0.12) !important;
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] .tab-bar {
+  background: rgba(28,24,20,0.65) !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    0 8px 40px rgba(0,0,0,0.50) !important;
+}
+[data-theme="dark"] .tab-pill {
+  background: rgba(50,44,36,0.90) !important;
+  border-color: rgba(255,255,255,0.14) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 2px 8px rgba(0,0,0,0.4) !important;
+}
+[data-theme="dark"] .card,
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] .evo-card {
+  background: rgba(30,26,20,0.70) !important;
+  border-color: rgba(255,255,255,0.09) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 2px 16px rgba(0,0,0,0.35) !important;
+}
+[data-theme="dark"] .modal {
+  background: rgba(24,20,16,0.80) !important;
+  border-top-color: rgba(255,255,255,0.12) !important;
 }
 
 
@@ -1036,11 +1107,9 @@ button{cursor:pointer;border:none;background:none}
 [data-theme="dark"] .auth-inp          { background: var(--input) !important; color: var(--txt) !important; }
 [data-theme="dark"] .ob-inp            { background: var(--input) !important; color: var(--txt) !important; border-color: var(--border) !important; }
 [data-theme="dark"] .ob-acc-card       { background: var(--card) !important; border-color: var(--border) !important; }
-[data-theme="dark"] .tab-pill          { background: var(--card2) !important; box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important; }
-[data-theme="dark"] .tab-bar           { box-shadow: 0 4px 24px rgba(0,0,0,0.5) !important; }
+[data-theme="dark"] .tab-bar           { box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 8px 40px rgba(0,0,0,0.5) !important; }
 [data-theme="dark"] .fab-item-lbl      { background: var(--card) !important; color: var(--txt) !important; border: 1px solid var(--border) !important; }
 [data-theme="dark"] .sec-title         { background: linear-gradient(135deg,var(--txt) 0%,var(--accent) 100%) !important; -webkit-background-clip: text !important; background-clip: text !important; }
-[data-theme="dark"] .modal             { background: var(--card) !important; }
 [data-theme="dark"] .bi-preview        { background: var(--input) !important; color: var(--txt) !important; }
 [data-theme="dark"] .bi-prev-cell      { color: var(--txt) !important; }
 [data-theme="dark"] select.bi-sel,
