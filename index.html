@@ -86,13 +86,13 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .card,.stat-card,.evo-card,.budget-item,
 .btn,.icon-btn,.m-nav,.add-circle,.fab-item-btn,
 .acc-mini,.acc-chip,.cat-chip,.chip,.wish-card,
-.tx-item:not(.swiped),.set-row[onclick]{
+.tx-item,.set-row[onclick]{
   transition:transform .42s cubic-bezier(.34,1.7,.64,1),box-shadow .22s ease}
 
 .card:active,.stat-card:active,.evo-card:active,.budget-item:active,
 .btn:active,.icon-btn:active,.m-nav:active,.fab-item-btn:active,
 .acc-mini:active,.acc-chip:active,.cat-chip:active,.chip:active,
-.wish-card:active,.tx-item:not(.swiped):active,.set-row[onclick]:active{
+.wish-card:active,.tx-item:active,.set-row[onclick]:active{
   transform:scale(0.94);transition:transform .08s ease}
 
 .add-circle:active{transform:scale(0.90);transition:transform .08s ease}
@@ -265,14 +265,8 @@ button{cursor:pointer;border:none;background:none}
   border-left:3.5px solid transparent;
   cursor:pointer;margin-bottom:4px}
 .tx-item:active{background:var(--card2) !important}
-.tx-swipe-wrap{position:relative;overflow:hidden;border-radius:var(--r-sm);margin-bottom:4px}
-.tx-swipe-wrap .tx-item{margin-bottom:0;border-radius:var(--r-sm);will-change:transform}
-.tx-swipe-wrap .tx-item.swiped{transform:translateX(-76px)}
-.tx-del-reveal{position:absolute;right:0;top:0;bottom:0;width:76px;
   background:var(--red);display:flex;align-items:center;justify-content:center;
   border-radius:var(--r-sm);cursor:pointer;flex-direction:column;gap:2px}
-.tx-del-reveal span{font-size:18px;line-height:1}
-.tx-del-reveal em{font-size:10px;font-weight:700;color:#fff;font-style:normal;letter-spacing:.3px}
 .tx-item.tx-income { border-left-color: var(--green); }
 .tx-item.tx-expense{ border-left-color: var(--red); }
 .tx-item.tx-vir    { border-left-color: var(--accent); }
@@ -2631,11 +2625,10 @@ document.addEventListener('keydown', function(e){
 
 // ── RIGHT-CLICK CONTEXT MENU ──────────────
 document.addEventListener('contextmenu', function(e){
-  var wrap=e.target.closest('.tx-swipe-wrap');
-  if(!wrap) return;
+  var item=e.target.closest('.tx-item[data-tx-id]');
+  if(!item) return;
   e.preventDefault();
-  var item=wrap.querySelector('.tx-item[data-tx-id]');
-  if(item) openTxCtx(item.getAttribute('data-tx-id'),e);
+  openTxCtx(item.getAttribute('data-tx-id'),e);
 });
 
 
@@ -3939,8 +3932,7 @@ function txHTML(e,showEdit){
     +'<div class="tx-sub">'+(acc?esc(acc.name):'')+' '+(e.note?'· '+esc(e.note):'')+'</div></div>'
     +'<div class="tx-amt '+(isInc?'i':'e')+' blur">'+(isInc?'+':'-')+e.amount.toFixed(2)+' €</div></div>';
   return showEdit
-    ? '<div class="tx-swipe-wrap"><div class="tx-del-reveal" onclick="deleteTxById(\''+id+'\')"><span>🗑️</span><em>Suppr.</em></div>'+inner+'</div>'
-    : inner;
+    ? inner : inner;
 }
 function renderTxList(el,items,showEdit){
   if(!el)return;
@@ -4599,9 +4591,7 @@ function txCtxDuplicate(){
 (function(){
   // Long press detection on tx-items
   document.addEventListener('touchstart',function(e){
-    var wrap=e.target.closest('.tx-swipe-wrap');
-    if(!wrap) return;
-    var item=wrap.querySelector('.tx-item[data-tx-id]');
+    var item=e.target.closest('.tx-item[data-tx-id]');
     if(!item) return;
     var id=item.getAttribute('data-tx-id');
     _lpTimer=setTimeout(function(){
@@ -4619,49 +4609,7 @@ function txCtxDuplicate(){
 
 // ── SWIPE GESTURES ────────────────────────
 (function(){
-  // 1. Swipe gauche sur tx-item → révéler suppression
-  var _swTx=null, _swX0=0, _swY0=0, _swActive=null;
-  document.addEventListener('touchstart',function(e){
-    var wrap=e.target.closest('.tx-swipe-wrap');
-    if(!wrap)return;
-    _swTx=wrap; _swX0=e.touches[0].clientX; _swY0=e.touches[0].clientY;
-  },{passive:true});
-  document.addEventListener('touchmove',function(e){
-    if(!_swTx)return;
-    var dx=e.touches[0].clientX-_swX0, dy=e.touches[0].clientY-_swY0;
-    if(Math.abs(dy)>Math.abs(dx)+6){_swTx=null;return;} // scroll vertical → annuler
-    var item=_swTx.querySelector('.tx-item');
-    if(!item)return;
-    var clamped=Math.max(-76,Math.min(0,dx));
-    item.style.transition='none';
-    item.style.transform='translateX('+clamped+'px)';
-  },{passive:true});
-  document.addEventListener('touchend',function(e){
-    if(!_swTx)return;
-    var dx=e.changedTouches[0].clientX-_swX0;
-    var item=_swTx.querySelector('.tx-item');
-    if(item){
-      item.style.transition='';
-      if(dx<-38){
-        item.classList.add('swiped');
-        if(_swActive&&_swActive!==item){_swActive.classList.remove('swiped');_swActive.style.transform='';}
-        _swActive=item;
-      } else {
-        item.classList.remove('swiped');
-        item.style.transform='';
-        if(_swActive===item) _swActive=null;
-      }
-    }
-    _swTx=null;
-  },{passive:true});
-  // Fermer swipe ouvert si on tape ailleurs
-  document.addEventListener('touchstart',function(e){
-    if(_swActive&&!e.target.closest('.tx-swipe-wrap')){
-      _swActive.classList.remove('swiped');_swActive.style.transform='';_swActive=null;
-    }
-  },{passive:true});
-
-  // 2. Swipe horizontal sur le contenu → changer de mois
+  // Swipe horizontal sur le contenu → changer de mois
   var _pgX0=0, _pgY0=0, _pgLock=false;
   var content=document.querySelector('.content');
   if(content){
@@ -4672,7 +4620,7 @@ function txCtxDuplicate(){
     },{passive:true});
     content.addEventListener('touchend',function(e){
       if(_pgLock) return;
-      if(e.target.closest('.acc-scroll,.acc-scroll-wrap,.filter-chips,.tx-swipe-wrap')) return;
+      if(e.target.closest('.acc-scroll,.acc-scroll-wrap,.filter-chips')) return;
       var dx=e.changedTouches[0].clientX-_pgX0;
       var dy=e.changedTouches[0].clientY-_pgY0;
       if(Math.abs(dx)<55||Math.abs(dy)>Math.abs(dx)*0.7) return;
@@ -4694,7 +4642,7 @@ function txCtxDuplicate(){
   var _y0=0, _pulling=false, _triggered=false, THRESH=72;
   content.addEventListener('touchstart',function(e){
     if(content.scrollTop>4) return;
-    if(e.target.closest('.acc-scroll-wrap,.filter-chips,.tx-swipe-wrap')) return;
+    if(e.target.closest('.acc-scroll-wrap,.filter-chips')) return;
     _y0=e.touches[0].clientY; _pulling=true; _triggered=false;
   },{passive:true});
   content.addEventListener('touchmove',function(e){
