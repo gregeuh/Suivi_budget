@@ -5813,7 +5813,11 @@ setTimeout(renderThemePicker, 200);
 
 // ── PWA SERVICE WORKER ─────────────────────────────────────────────────────
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js').catch(function(){});
+  // Désinscrire tous les anciens SW puis réinscrire
+  navigator.serviceWorker.getRegistrations().then(function(regs){
+    regs.forEach(function(r){ r.unregister(); });
+    navigator.serviceWorker.register('./sw.js?v=40');
+  });
 }
 </script>
 </body>
