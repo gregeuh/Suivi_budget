@@ -153,11 +153,11 @@ button{cursor:pointer;border:none;background:none}
 
 /* TAB BAR */
 .tab-wrap{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
-  width:calc(100% - 32px);max-width:380px;z-index:200;pointer-events:none;
+  width:calc(100% - 32px);max-width:430px;z-index:200;pointer-events:none;
   transition:bottom .3s cubic-bezier(0.16,1,0.3,1)}
-.tab-bar{display:flex;align-items:center;justify-content:center;gap:0;
+.tab-bar{display:flex;align-items:center;justify-content:space-between;
   background:transparent;
-  border-radius:28px;padding:8px 12px;
+  border-radius:28px;padding:8px 10px;
   pointer-events:auto;position:relative;
   transition:padding .3s ease,border-radius .3s ease}
 
@@ -172,8 +172,8 @@ button{cursor:pointer;border:none;background:none}
   pointer-events:none}
 
 .tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;
-  padding:10px 6px;border-radius:23px;z-index:1;position:relative;border:none;background:none;
-  transition:padding .25s ease;min-width:0}
+  padding:10px 4px;border-radius:23px;z-index:1;position:relative;border:none;background:none;
+  transition:padding .25s ease}
 .tab-btn:active .t-icon{transform:scale(1.22) !important}
 .tab-btn:active .add-circle{transform:scale(1.15)}
 /* Centre button — add */
@@ -189,7 +189,7 @@ button{cursor:pointer;border:none;background:none}
 .tab-btn.on .t-icon{filter:none;transform:scale(1.18);filter:drop-shadow(0 2px 6px rgba(var(--accent-rgb),0.4))}
 .t-lbl{font-size:10px;font-weight:600;color:var(--txt3);letter-spacing:.3px;
   transition:opacity .2s ease,max-height .25s ease,margin .25s ease;
-  max-height:20px;overflow:hidden}
+  max-height:20px;overflow:hidden;white-space:nowrap}
 .tab-btn.on .t-lbl{color:var(--accent);font-weight:700}
 
 /* ── TAB BAR COMPACT (scroll down) ── */
