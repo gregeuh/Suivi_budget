@@ -149,11 +149,11 @@ button{cursor:pointer;border:none;background:none}
 
 /* TAB BAR */
 .tab-wrap{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
-  width:calc(100% - 32px);max-width:460px;z-index:200;pointer-events:none;
+  width:calc(100% - 32px);max-width:380px;z-index:200;pointer-events:none;
   transition:bottom .3s cubic-bezier(0.16,1,0.3,1)}
-.tab-bar{display:flex;align-items:center;justify-content:space-between;
+.tab-bar{display:flex;align-items:center;justify-content:center;gap:0;
   background:transparent;
-  border-radius:28px;padding:8px 16px;
+  border-radius:28px;padding:8px 12px;
   pointer-events:auto;position:relative;
   transition:padding .3s ease,border-radius .3s ease}
 
@@ -166,8 +166,8 @@ button{cursor:pointer;border:none;background:none}
   box-shadow:0 3px 12px rgba(0,0,0,0.1),inset 0 1px 0 rgba(255,255,255,0.9)}
 
 .tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;
-  padding:10px 8px;border-radius:23px;z-index:1;position:relative;border:none;background:none;
-  transition:padding .25s ease}
+  padding:10px 6px;border-radius:23px;z-index:1;position:relative;border:none;background:none;
+  transition:padding .25s ease;min-width:0}
 .tab-btn:active .t-icon{transform:scale(1.22) !important}
 .tab-btn:active .add-circle{transform:scale(1.15)}
 /* Centre button — add */
