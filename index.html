@@ -5756,6 +5756,191 @@ if('serviceWorker' in navigator){
   setTimeout(maybeNotifyEvening, 5000);
   setInterval(maybeNotifyEvening, 60000);
 })();
+
+// ── CSV IMPORT BANCAIRE ───────────────────
+var _csvParsed = [];
+
+function openCsvImport(){
+  _csvParsed = [];
+  document.getElementById('csv-step-1').style.display='block';
+  document.getElementById('csv-step-2').style.display='none';
+  document.getElementById('csv-error').style.display='none';
+  var sel=document.getElementById('csv-acc-sel');
+  sel.innerHTML=accounts.map(function(a){return '<option value="'+a.id+'">'+a.name+'</option>';}).join('');
+  document.getElementById('csv-import-overlay').classList.add('on');
+}
+function closeCsvImport(){ document.getElementById('csv-import-overlay').classList.remove('on'); }
+function csvBack(){
+  document.getElementById('csv-step-2').style.display='none';
+  document.getElementById('csv-step-1').style.display='block';
+  document.getElementById('csv-file-input').value='';
+}
+
+function handleCsvFile(input){
+  var file=input.files[0]; if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){ parseCsv(e.target.result); };
+  reader.readAsText(file, 'ISO-8859-1');
+}
+
+function parseCsv(raw){
+  // Detect separator
+  var sep=raw.indexOf(';')>raw.indexOf(',')&&raw.indexOf(';')!==-1?';':',';
+  var lines=raw.replace(/\r/g,'').split('\n').filter(function(l){return l.trim();});
+  if(lines.length<2){ showCsvError('Fichier trop court ou vide.'); return; }
+
+  // Find header line (first line with multiple separators)
+  var headerIdx=0;
+  for(var i=0;i<Math.min(10,lines.length);i++){
+    if((lines[i].match(new RegExp('\\'+sep,'g'))||[]).length>=2){headerIdx=i;break;}
+  }
+  var headers=splitCsvLine(lines[headerIdx],sep).map(function(h){return h.toLowerCase().replace(/[^a-zàâéèêëîïôùûüç0-9]/g,' ').trim();});
+
+  // Detect columns
+  var dateCol=-1, labelCol=-1, amtCol=-1, debitCol=-1, creditCol=-1;
+  headers.forEach(function(h,i){
+    if(dateCol<0 && /date|dat/.test(h)) dateCol=i;
+    if(labelCol<0 && /libell|label|intitul|description|op[eé]ration|motif/.test(h)) labelCol=i;
+    if(amtCol<0  && /montant|amount|solde/.test(h) && !/valeur|devise|currency|bal/.test(h)) amtCol=i;
+    if(debitCol<0 && /d[eé]bit/.test(h)) debitCol=i;
+    if(creditCol<0 && /cr[eé]dit/.test(h)) creditCol=i;
+  });
+  // Fallback: try to detect by content
+  if(dateCol<0||labelCol<0){
+    for(var c=0;c<headers.length;c++){
+      var sample=splitCsvLine(lines[headerIdx+1]||'',sep)[c]||'';
+      if(dateCol<0 && /\d{2}[\/\-\.]\d{2}[\/\-\.]\d{2,4}|\d{4}-\d{2}-\d{2}/.test(sample)) dateCol=c;
+    }
+  }
+  if(dateCol<0||labelCol<0){ showCsvError('Format non reconnu. Vérifie que le fichier contient des colonnes Date et Libellé.'); return; }
+
+  var txs=[];
+  for(var row=headerIdx+1;row<lines.length;row++){
+    var cols=splitCsvLine(lines[row],sep);
+    if(cols.length<2) continue;
+    var rawDate=cols[dateCol]||'';
+    var isoDate=parseDateCsv(rawDate);
+    if(!isoDate) continue;
+    var lbl=(cols[labelCol]||'').replace(/^["']|["']$/g,'').trim();
+    if(!lbl) continue;
+    var amt=0;
+    if(amtCol>=0){
+      amt=parseFrAmount(cols[amtCol]||'');
+    } else if(debitCol>=0||creditCol>=0){
+      var dbt=debitCol>=0?parseFrAmount(cols[debitCol]||''):0;
+      var crd=creditCol>=0?parseFrAmount(cols[creditCol]||''):0;
+      amt = (crd||0)-(dbt||0);
+    }
+    if(amt===0&&isNaN(amt)) continue;
+    txs.push({ date:isoDate, label:lbl, amount:Math.abs(amt), type:amt>=0?'income':'expense' });
+  }
+  if(!txs.length){ showCsvError('Aucune transaction détectée. Vérifiez le format du fichier.'); return; }
+
+  // Sort desc
+  txs.sort(function(a,b){return b.date.localeCompare(a.date);});
+  _csvParsed=txs;
+
+  // Show preview
+  document.getElementById('csv-step-1').style.display='none';
+  document.getElementById('csv-step-2').style.display='block';
+  var ph=document.getElementById('csv-preview-header');
+  ph.innerHTML='<div style="font-size:13px;font-weight:700;color:var(--txt);margin-bottom:4px">'+txs.length+' transaction'+(txs.length>1?'s':'')+' détectée'+(txs.length>1?'s':'')+' dans le fichier</div>'
+    +'<div style="font-size:12px;color:var(--txt);opacity:.5">'+txs[txs.length-1].date+' → '+txs[0].date+'</div>';
+  var list=document.getElementById('csv-tx-list');
+  list.innerHTML=txs.slice(0,50).map(function(t){
+    var c=t.type==='income'?'var(--green)':'var(--red)';
+    var s=t.type==='income'?'+':'-';
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border)">'
+      +'<div><div style="font-size:13px;font-weight:600;color:var(--txt)">'+esc(t.label)+'</div>'
+      +'<div style="font-size:11px;color:var(--txt);opacity:.5;margin-top:2px">'+t.date+'</div></div>'
+      +'<div style="font-size:13px;font-weight:700;color:'+c+'">'+s+t.amount.toFixed(2)+' €</div>'
+      +'</div>';
+  }).join('');
+  var btn=document.getElementById('csv-import-btn');
+  if(btn) btn.textContent='Importer '+txs.length+' transaction'+(txs.length>1?'s':'');
+}
+
+function confirmCsvImport(){
+  if(!_csvParsed.length) return;
+  var accId=document.getElementById('csv-acc-sel').value;
+  var existing=new Set(expenses.map(function(e){return e.date+'|'+e.label+'|'+e.amount;}));
+  var ok=0, skip=0;
+  _csvParsed.forEach(function(t){
+    var key=t.date+'|'+t.label+'|'+t.amount;
+    if(existing.has(key)){skip++;return;}
+    var guessedCat=guessCatCsv(t.label,t.type);
+    expenses.push({
+      id:_uid('tx'), label:t.label, amount:t.amount,
+      type:t.type, cat:guessedCat, accountId:accId,
+      date:t.date, note:null, recurring:false,
+      frequency:null, customDays:null, endDate:null
+    });
+    ok++;
+  });
+  expenses.sort(function(a,b){return (b.date||'').localeCompare(a.date||'');});
+  if(navigator.vibrate) navigator.vibrate([10,5,10,5,10]);
+  save(); renderAll(); closeCsvImport();
+  var msg=ok+' transaction'+(ok>1?'s':'')+' importée'+(ok>1?'s':'');
+  if(skip) msg+=' · '+skip+' doublon'+(skip>1?'s':'')+' ignoré'+(skip>1?'s':'');
+  toast(msg,'success');
+}
+
+function showCsvError(msg){
+  var e=document.getElementById('csv-error');
+  if(e){e.textContent=msg;e.style.display='block';}
+}
+
+function splitCsvLine(line,sep){
+  var res=[],cur='',inQ=false;
+  for(var i=0;i<line.length;i++){
+    var c=line[i];
+    if(c==='"'){inQ=!inQ;}
+    else if(c===sep&&!inQ){res.push(cur.replace(/^"|"$/g,'').trim());cur='';}
+    else cur+=c;
+  }
+  res.push(cur.replace(/^"|"$/g,'').trim());
+  return res;
+}
+
+function parseDateCsv(s){
+  s=(s||'').replace(/^["']|["']$/g,'').trim();
+  var m;
+  // YYYY-MM-DD
+  if((m=s.match(/^(\d{4})-(\d{2})-(\d{2})/))) return m[1]+'-'+m[2]+'-'+m[3];
+  // DD/MM/YYYY or DD-MM-YYYY or DD.MM.YYYY
+  if((m=s.match(/^(\d{2})[\/\-\.](\d{2})[\/\-\.](\d{4})/))) return m[3]+'-'+m[2]+'-'+m[1];
+  // DD/MM/YY
+  if((m=s.match(/^(\d{2})[\/\-\.](\d{2})[\/\-\.](\d{2})$/))) return '20'+m[3]+'-'+m[2]+'-'+m[1];
+  return null;
+}
+
+function parseFrAmount(s){
+  if(!s) return 0;
+  s=s.replace(/^["']|["']$/g,'').trim();
+  // Remove currency symbol and spaces
+  s=s.replace(/[€$£\s ]/g,'');
+  // French format: 1.234,56 → 1234.56 or 1 234,56
+  s=s.replace(/\.(\d{3})/g,'$1').replace(',','.');
+  return parseFloat(s)||0;
+}
+
+function guessCatCsv(label, type){
+  if(type==='income') return 'salaire';
+  var l=(label||'').toLowerCase();
+  var cats=categories;
+  // Try to match label to known category keywords
+  for(var i=0;i<cats.length;i++){
+    if(cats[i].keywords&&cats[i].keywords.some(function(k){return l.indexOf(k)!==-1;})) return cats[i].id;
+  }
+  // Fallback heuristics
+  if(/restau|mc.*donald|burger|pizza|sushi|kebab|boulang|food|d[eé]jeuner|cantine/.test(l)) return 'alimentation';
+  if(/sncf|ratp|navigo|train|metro|bus|uber|taxi|blabla|carburant|essence|toll|autoroute/.test(l)) return 'transport';
+  if(/netflix|spotify|amazon|prime|disney|canal|youtube|apple/.test(l)) return 'loisirs';
+  if(/pharmacie|medecin|docteur|sante|health|mutuelle|hopital/.test(l)) return 'santé';
+  if(/loyer|electricite|edf|gaz|eau|internet|sfr|orange|bouygues|free/.test(l)) return 'logement';
+  if(/salaire|virement|remuneration|paie/.test(l)) return 'salaire';
+  return 'autre';
+}
 </script>
 </body>
 </html>
