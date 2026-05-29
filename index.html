@@ -156,6 +156,11 @@ button{cursor:pointer;border:none;background:none}
 .content{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 16px 110px;background:var(--bg);}
 .page{display:none;background:var(--bg);}
 .page.on{display:block;background:var(--bg);}
+/* ── Skeleton loader ── */
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+.skeleton{border-radius:8px;background:linear-gradient(90deg,var(--input) 25%,var(--border) 50%,var(--input) 75%);background-size:400px 100%;animation:shimmer 1.4s ease infinite}
+.skeleton-text{height:14px;margin:4px 0}
+.skeleton-num{height:32px;width:100px;border-radius:10px}
 .page.slide-from-right{animation:pageFromRight .32s cubic-bezier(0.16,1,0.3,1) both;}
 .page.slide-from-left {animation:pageFromLeft  .32s cubic-bezier(0.16,1,0.3,1) both;}
 @keyframes pageFromRight{from{opacity:0;transform:translateX(40px) scale(0.99)}to{opacity:1;transform:none}}
@@ -195,8 +200,9 @@ button{cursor:pointer;border:none;background:none}
   font-size:20px;color:#fff;margin:-4px auto 0;
   box-shadow:0 4px 16px rgba(var(--accent-rgb),0.45);
   transition:width .25s ease,height .25s ease,border-radius .25s ease,font-size .25s ease,.15s}
-.t-icon{font-size:20px;line-height:1;filter:grayscale(1) opacity(.4);transition:transform .25s cubic-bezier(0.34,1.56,0.64,1), filter .2s}
-.tab-btn.on .t-icon{filter:none;transform:scale(1.18);filter:drop-shadow(0 2px 6px rgba(var(--accent-rgb),0.4))}
+.t-icon{font-size:20px;line-height:1;color:var(--txt3);transition:transform .25s cubic-bezier(0.34,1.56,0.64,1),color .2s}
+.t-icon svg{display:block}
+.tab-btn.on .t-icon{color:var(--accent);transform:scale(1.18);filter:drop-shadow(0 2px 6px rgba(var(--accent-rgb),0.35))}
 .t-lbl{font-size:10px;font-weight:600;color:var(--txt3);letter-spacing:.3px;
   transition:opacity .2s ease,max-height .25s ease,margin .25s ease;
   max-height:20px;overflow:hidden;white-space:nowrap}
@@ -290,7 +296,7 @@ button{cursor:pointer;border:none;background:none}
 .date-sep-total{font-size:11px;font-weight:600;color:var(--txt3);text-transform:none;letter-spacing:0}
 
 /* SEARCH & FILTERS */
-.search-row{display:flex;gap:8px;margin-bottom:12px}
+.search-row{display:flex;gap:8px;margin-bottom:12px;position:sticky;top:0;z-index:10;background:var(--bg);padding:8px 0 4px;margin-top:-4px}
 .search-inp{flex:1;padding:11px 14px;background:var(--card);border:1px solid var(--border);
   border-radius:var(--r-sm);font-size:14px;color:var(--txt);outline:none}
 .search-inp::placeholder{color:var(--txt3)}
@@ -471,9 +477,11 @@ button{cursor:pointer;border:none;background:none}
 @keyframes fi{from{opacity:0}to{opacity:1}}
 .modal{background:var(--card);border-radius:24px 24px 0 0;
   width:100%;max-width:480px;padding:22px 18px;max-height:90dvh;overflow-y:auto;
-  animation:su .28s cubic-bezier(.16,1,.3,1)}
+  animation:su .28s cubic-bezier(.16,1,.3,1);will-change:transform;touch-action:pan-y}
 @keyframes su{from{transform:translateY(50px);opacity:0}to{transform:translateY(0);opacity:1}}
-.m-handle{width:34px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px}
+.m-handle{width:40px;height:5px;background:var(--border);border-radius:3px;margin:0 auto 18px;cursor:grab}
+.modal.dragging{transition:none !important;animation:none !important}
+.modal.drag-dismiss{transform:translateY(100%) !important;opacity:0 !important;transition:transform .28s cubic-bezier(0.4,0,1,1),opacity .2s !important}
 .m-title{font-family:'Sora',sans-serif;font-size:19px;font-weight:800;margin-bottom:18px}
 
 /* BUTTONS */
@@ -1329,7 +1337,7 @@ button{cursor:pointer;border:none;background:none}
       <!-- Hero -->
       <div class="hero">
         <div class="hero-lbl">Solde disponible</div>
-        <div class="hero-bal blur" id="h-bal">—</div>
+        <div class="hero-bal blur" id="h-bal"><span class="skeleton skeleton-num" style="display:inline-block;width:130px;height:38px;opacity:.35">&nbsp;</span></div>
         <div class="hero-pills">
           <div class="hero-pill" id="pill-exp">
             <div class="hp-lbl">Dépenses</div>
@@ -1721,19 +1729,23 @@ button{cursor:pointer;border:none;background:none}
     <div class="tab-bar">
       <div class="tab-pill" id="tab-pill"></div>
       <button class="tab-btn on" id="tb-dash" onclick="goTo('dash',this,0)">
-        <div class="t-icon">🏠</div><div class="t-lbl">Accueil</div>
+        <div class="t-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <div class="t-lbl">Accueil</div>
       </button>
       <button class="tab-btn" id="tb-hist" onclick="goTo('hist',this,1)">
-        <div class="t-icon">📜</div><div class="t-lbl">Historique</div>
+        <div class="t-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div class="t-lbl">Historique</div>
       </button>
       <button class="tab-btn add-btn" onclick="toggleFab()">
         <div class="add-circle" id="add-circle">＋</div>
       </button>
       <button class="tab-btn" id="tb-budget" onclick="goTo('budget',this,3)">
-        <div class="t-icon">🎯</div><div class="t-lbl">Budgets</div>
+        <div class="t-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+        <div class="t-lbl">Budgets</div>
       </button>
       <button class="tab-btn" id="tb-profil" onclick="goTo('profil',this,4)">
-        <div class="t-icon">👤</div><div class="t-lbl">Profil</div>
+        <div class="t-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <div class="t-lbl">Profil</div>
       </button>
     </div>
   </div>
@@ -1987,7 +1999,10 @@ button{cursor:pointer;border:none;background:none}
 </div>
 
 <!-- PULL TO REFRESH INDICATOR -->
-<div id="ptr-indicator" style="position:fixed;top:-60px;left:50%;transform:translateX(-50%);z-index:300;transition:top .2s ease;background:var(--card);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,0.12);font-size:20px">↓</div>
+<div id="ptr-indicator" style="position:fixed;top:-60px;left:50%;transform:translateX(-50%);z-index:300;transition:top .25s cubic-bezier(0.34,1.56,0.64,1),opacity .2s;background:var(--card);border-radius:50%;width:46px;height:46px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,0.14)">
+  <svg id="ptr-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .3s,stroke .3s;stroke:var(--txt2)"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+  <svg id="ptr-spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="position:absolute;display:none;animation:spin .7s linear infinite;stroke:var(--accent)"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+</div>
 <script>
 // ── FIREBASE (chargé dynamiquement) ──────
 var auth=null, db=null, cloudDoc=null;
@@ -4481,6 +4496,7 @@ function saveTransaction(){
   if(window._pendingCreditId){ newTx.creditId = window._pendingCreditId; window._pendingCreditId = null; }
   expenses.unshift(newTx);
   learnCat(lbl, selCat);
+  if(navigator.vibrate)navigator.vibrate(mCurrentType==='inc'?[8,4,8,4,8]:[10]);
   save();renderAll();closeModal();
   var cat=categories.find(function(c){return c.id===selCat;})||{icon:'📦'};
   toast(cat.icon+' '+lbl+' ajouté — '+(mCurrentType==='inc'?'+':'-')+amt.toFixed(2)+' €', mCurrentType==='inc'?'success':'info');
@@ -4558,6 +4574,7 @@ function deleteTxById(id){
   if(!tx) return;
   expenses=expenses.filter(function(e){return e.id!==id;});
   _lastDelTx=tx;
+  if(navigator.vibrate)navigator.vibrate([12,5,12]);
   save();renderAll();
   toastWithUndo('Transaction supprimée',function(){
     if(_lastDelTx){ expenses.unshift(_lastDelTx); _lastDelTx=null; save(); renderAll(); toast('Annulé ✓'); }
@@ -4661,21 +4678,32 @@ function txCtxDuplicate(){
     var top=Math.min(pull-60,18);
     ptr.style.top=top+'px';
     var rot=Math.round(pull/THRESH*180);
-    ptr.style.transform='translateX(-50%) rotate('+rot+'deg)';
-    ptr.style.opacity=Math.min(pull/THRESH,1).toFixed(2);
+    var pct=Math.min(pull/THRESH,1);
+    ptr.style.opacity=pct.toFixed(2);
     _triggered=pull>=THRESH;
-    ptr.style.background=_triggered?'var(--accent)':'var(--card)';
-    ptr.style.color=_triggered?'#fff':'var(--txt2)';
+    var arrow=document.getElementById('ptr-arrow');
+    if(arrow){arrow.style.transform='rotate('+Math.round(pct*180)+'deg)';arrow.style.stroke=_triggered?'var(--accent)':'var(--txt2)';}
+    ptr.style.background=_triggered?'rgba(var(--accent-rgb),0.08)':'var(--card)';
   },{passive:true});
   content.addEventListener('touchend',function(){
     if(!_pulling){return;}
     _pulling=false;
-    ptr.style.top='-60px';
-    ptr.style.opacity='0';
-    ptr.style.transform='translateX(-50%)';
-    ptr.style.background='var(--card)';
-    ptr.style.color='var(--txt2)';
-    if(_triggered){ _triggered=false; renderAll(); toast('Actualisé ✓','info'); }
+    if(_triggered){
+      _triggered=false;
+      var arrow=document.getElementById('ptr-arrow'),spin=document.getElementById('ptr-spinner');
+      if(arrow)arrow.style.display='none';if(spin)spin.style.display='block';
+      if(navigator.vibrate)navigator.vibrate(12);
+      setTimeout(function(){
+        renderAll();toast('Actualisé ✓','info');
+        ptr.style.top='-60px';ptr.style.opacity='0';
+        if(arrow){arrow.style.display='block';arrow.style.transform='';arrow.style.stroke='var(--txt2)';}
+        if(spin)spin.style.display='none';
+        ptr.style.background='var(--card)';
+      },600);
+    } else {
+      ptr.style.top='-60px';ptr.style.opacity='0';ptr.style.background='var(--card)';
+      var arrow=document.getElementById('ptr-arrow');if(arrow){arrow.style.transform='';arrow.style.stroke='var(--txt2)';}
+    }
   },{passive:true});
 })();
 
@@ -4999,12 +5027,16 @@ function renderTodayWidget(){
     +'<span style="font-size:13px;font-weight:700;color:var(--txt)">☀️ Aujourd\'hui</span>'
     +'<span style="font-size:12px;color:var(--txt2)">'+dateStr+'</span>'
     +'</div>'
-    +'<div style="font-size:18px;font-weight:700;color:'+color+'">'+fmt(todayExp)+'</div>'
-    +'<div style="font-size:12px;color:var(--txt2);margin-top:2px">'+subText+'</div>'
+    +'<div id="tw-amount" style="font-size:22px;font-weight:800;color:'+color+';font-family:Sora,sans-serif">'+fmt(todayExp)+'</div>'
+    +'<div style="font-size:12px;color:var(--txt);opacity:.55;margin-top:2px">'+subText+'</div>'
     +msg
-    +'<div style="margin-top:8px;height:5px;border-radius:3px;background:var(--border);overflow:hidden">'
-    +'<div style="height:100%;border-radius:3px;background:'+color+';width:'+barPct+'%;transition:width .4s"></div>'
+    +'<div style="margin-top:10px;height:5px;border-radius:3px;background:var(--border);overflow:hidden">'
+    +'<div id="tw-bar" style="height:100%;border-radius:3px;background:'+color+';width:0%;transition:width .7s cubic-bezier(0.16,1,0.3,1)"></div>'
     +'</div>';
+  // Animate amount + bar
+  var amtEl=document.getElementById('tw-amount');
+  if(amtEl&&todayExp>0) animV(amtEl,todayExp,600);
+  requestAnimationFrame(function(){setTimeout(function(){var b=document.getElementById('tw-bar');if(b)b.style.width=barPct+'%';},50);});
 }
 
 function renderCreditHero(){
@@ -5850,6 +5882,78 @@ if('serviceWorker' in navigator){
     regs.forEach(function(r){ r.unregister(); });
   });
 }
+
+// ── DRAG TO CLOSE MODALS ──────────────────
+(function(){
+  var _dragOv=null, _dragModal=null, _dragY0=0, _dragDY=0, _dragScrolled=false;
+  document.addEventListener('touchstart',function(e){
+    var handle=e.target.closest('.m-handle');
+    var modal=handle?handle.closest('.modal'):null;
+    if(!modal)return;
+    var ov=modal.closest('.overlay');
+    if(!ov)return;
+    _dragOv=ov; _dragModal=modal;
+    _dragY0=e.touches[0].clientY; _dragDY=0; _dragScrolled=false;
+    modal.classList.add('dragging');
+  },{passive:true});
+  document.addEventListener('touchmove',function(e){
+    if(!_dragModal)return;
+    var dy=e.touches[0].clientY-_dragY0;
+    if(dy<0){_dragDY=0;return;}
+    _dragDY=dy;
+    _dragModal.style.transform='translateY('+dy+'px)';
+    _dragOv.style.background='rgba(0,0,0,'+Math.max(0,0.5-dy/300)+')';
+  },{passive:true});
+  document.addEventListener('touchend',function(){
+    if(!_dragModal)return;
+    var modal=_dragModal, ov=_dragOv;
+    modal.classList.remove('dragging');
+    if(_dragDY>90){
+      modal.classList.add('drag-dismiss');
+      if(navigator.vibrate)navigator.vibrate(8);
+      setTimeout(function(){
+        ov.classList.remove('on');
+        modal.classList.remove('drag-dismiss');
+        modal.style.transform=''; ov.style.background='';
+      },280);
+    } else {
+      modal.style.transition='transform .35s cubic-bezier(.34,1.56,.64,1)';
+      modal.style.transform='translateY(0)';
+      ov.style.background='';
+      setTimeout(function(){modal.style.transition='';},350);
+    }
+    _dragModal=null; _dragOv=null; _dragDY=0;
+  },{passive:true});
+})();
+
+// ── NOTIFICATIONS PWA ─────────────────────
+(function(){
+  function requestNotifPermission(){
+    if(!('Notification' in window))return;
+    if(Notification.permission==='default') Notification.requestPermission();
+  }
+  function maybeNotifyEvening(){
+    if(!('Notification' in window)||Notification.permission!=='granted')return;
+    var now=new Date();
+    var h=now.getHours();
+    if(h<20||h>=22)return;
+    var key='notif_'+now.toISOString().slice(0,10);
+    if(localStorage.getItem(key))return;
+    localStorage.setItem(key,'1');
+    var today=now.toISOString().slice(0,10);
+    var restoIds=getRestoIds?getRestoIds():[];
+    var todayExp=expenses.filter(function(e){
+      return e.date===today&&e.type==='expense'&&restoIds.indexOf(e.accountId)===-1;
+    }).reduce(function(s,e){return s+e.amount;},0);
+    var msg=todayExp>0
+      ?'Tu as dépensé '+fmt(todayExp)+' aujourd\'hui.'
+      :'Aucune dépense aujourd\'hui — belle journée ! 🎉';
+    new Notification('💰 Mon Budget – Résumé du jour',{body:msg,icon:'/icon-192.png',badge:'/icon-192.png'});
+  }
+  setTimeout(requestNotifPermission, 3000);
+  setTimeout(maybeNotifyEvening, 5000);
+  setInterval(maybeNotifyEvening, 60000);
+})();
 </script>
 </body>
 </html>
