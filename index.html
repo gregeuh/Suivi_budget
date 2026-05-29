@@ -298,8 +298,8 @@ body.compact .tx-ico{width:34px;height:34px;font-size:17px}
 .hist-section-hd{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 8px;font-size:13px;font-weight:700;color:var(--txt);border-bottom:1.5px solid var(--border);margin-bottom:4px}
 .hist-section-upcoming{color:var(--accent)}
 .hist-section-total{font-size:12px;font-weight:600;color:var(--txt2)}
-.date-sep{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 6px;font-size:11px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.6px;background:var(--bg);position:sticky;top:0;z-index:2;margin:0 -16px;padding-left:16px;padding-right:16px}
-.date-sep-total{font-size:11px;font-weight:600;color:var(--txt3);text-transform:none;letter-spacing:0}
+.date-sep{display:flex;justify-content:space-between;align-items:center;padding:18px 4px 8px;font-size:12px;font-weight:800;color:var(--txt);letter-spacing:0;background:var(--bg);position:sticky;top:0;z-index:2}
+.date-sep-total{font-size:12px;font-weight:600;color:var(--txt2);letter-spacing:0}
 
 /* SEARCH & FILTERS */
 .search-row{display:flex;gap:8px;margin-bottom:12px;position:sticky;top:0;z-index:10;background:var(--bg);padding:8px 0 4px;margin-top:-4px}
@@ -505,7 +505,8 @@ body.compact .tx-ico{width:34px;height:34px;font-size:17px}
 /* MISC */
 .empty{text-align:center;padding:40px 20px;color:var(--txt2)}
 .empty-ico{font-size:44px;margin-bottom:12px}
-.blur{filter:blur(0);transition:.3s}.blurred{filter:blur(8px)}
+.blur { transition: filter .3s ease; }
+body.privacy .blur { filter: blur(8px); user-select: none; }
 .acc-card{border-radius:var(--r);padding:18px;margin-bottom:10px;position:relative;overflow:hidden;cursor:pointer}
 .acc-card-inner::after{content:'';position:absolute;top:-30px;right:-30px;
   width:120px;height:120px;background:rgba(255,255,255,0.08);border-radius:50%}
@@ -1306,10 +1307,12 @@ body.compact .tx-ico{width:34px;height:34px;font-size:17px}
       <button class="m-nav" onclick="changeMonth(1)">›</button>
     </div>
     <div class="top-actions">
+      <button class="icon-btn" onclick="togglePrivacy()" id="privacy-btn" title="Masquer les montants">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
       <button class="icon-btn" onclick="toggleDark();saveDarkPref()" id="dark-toggle-btn" title="Mode sombre">
         <svg id="dark-toggle-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
-      <button class="icon-btn" onclick="togglePrivacy()" id="priv-btn">👁️</button>
     </div>
   </div>
 
@@ -2061,7 +2064,7 @@ function initFirebase(cb) {
 // ── STATE ─────────────────────────────────
 var expenses=[], accounts=[], categories=[], catBudgets={};
 var displayName='', forecastSalary=0, savingsGoal=500, savedTheme='auto', budgetPayDay=1;
-var viewDate=new Date(), privacyOn=false, currentUser=null;
+var viewDate=new Date(), currentUser=null;
 var _currentTabIdx=0;
 var editingId=null, mAmt='', mCurrentType='exp', qaCurrentType='exp';
 var selCat='autre', selAcc='acc1', selDestAcc='acc_lva', histFilter='all', histCatFilter='all';
@@ -3379,6 +3382,7 @@ function setupAuth(){
       if(d.theme && THEMES[d.theme]) applyTheme(d.theme, d.isDark||false);
       else applyTheme('premium', false);
       updateDarkToggleIcon();
+      updatePrivacyIcon();
       applyCompact();
 
       updateGreeting();
@@ -3652,7 +3656,6 @@ function renderAll(){
   renderHist();
   renderBudgets();
   renderCatsSettings();
-  applyPrivacy();
 }
 
 // ── HERO ──────────────────────────────────
@@ -4023,8 +4026,14 @@ function fmtDate(s){
   var d=new Date(s+'T12:00:00');
   var now=new Date();
   var diff=Math.floor((new Date(now.toDateString())-new Date(d.toDateString()))/86400000);
-  if(diff===0)return'Aujourd\'hui';if(diff===1)return'Hier';
-  return d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+  if(diff===0)return'Aujourd\'hui';
+  if(diff===1)return'Hier';
+  if(diff>0&&diff<7){
+    var wd=d.toLocaleDateString('fr-FR',{weekday:'long'});
+    return wd.charAt(0).toUpperCase()+wd.slice(1);
+  }
+  var str=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+  return str.charAt(0).toUpperCase()+str.slice(1);
 }
 var CAT_TYPE_COLORS={fixe:'rgba(59,130,246,0.15)',vie:'rgba(16,185,129,0.15)',loisirs:'rgba(245,158,11,0.15)',income:'rgba(16,185,129,0.15)'};
 var CAT_TYPE_ICON_COLORS={fixe:'#3b82f6',vie:'#10b981',loisirs:'#f59e0b',income:'#10b981'};
@@ -4794,13 +4803,22 @@ function goTo(page,btn,idx){
 }
 
 // ── PRIVACY ───────────────────────────────
+var _privacyMode = localStorage.getItem('privacyMode')==='1';
+(function(){ document.body.classList.toggle('privacy', _privacyMode); })();
 function togglePrivacy(){
-  privacyOn=!privacyOn;
-  document.getElementById('priv-btn').textContent=privacyOn?'🙈':'👁️';
-  applyPrivacy();
+  _privacyMode = !_privacyMode;
+  localStorage.setItem('privacyMode', _privacyMode?'1':'0');
+  document.body.classList.toggle('privacy', _privacyMode);
+  if(navigator.vibrate) navigator.vibrate(8);
+  updatePrivacyIcon();
 }
-function applyPrivacy(){
-  document.querySelectorAll('.blur').forEach(function(el){el.classList.toggle('blurred',privacyOn);});
+function updatePrivacyIcon(){
+  var btn = document.getElementById('privacy-btn');
+  if(!btn) return;
+  btn.title = _privacyMode ? 'Révéler les montants' : 'Masquer les montants';
+  btn.innerHTML = _privacyMode
+    ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+    : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
 }
 
 // ── EXPORT / IMPORT ───────────────────────
