@@ -405,6 +405,20 @@ body.compact .tx-ico{width:34px;height:34px;font-size:17px}
 .profile-name{font-family:'Sora',sans-serif;font-size:18px;font-weight:800}
 .profile-email{font-size:13px;color:var(--txt2);margin-top:2px}
 
+/* REVOLUT-STYLE PROFILE */
+.rev-section{margin-bottom:20px}
+.rev-section-title{font-size:11px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.6px;padding:0 4px 8px}
+.rev-group{background:var(--card);border-radius:var(--r);border:1px solid var(--border);overflow:hidden}
+.rev-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;transition:background .15s;gap:12px}
+.rev-row:not(:last-child){border-bottom:1px solid var(--border)}
+.rev-row:active{background:var(--card2)}
+.rev-row-left{display:flex;align-items:center;gap:14px;flex:1;min-width:0}
+.rev-row-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rev-row-title{font-size:14px;font-weight:600;color:var(--txt)}
+.rev-row-sub{font-size:11px;color:var(--txt2);margin-top:1px}
+.rev-row-right{font-size:13px;color:var(--txt2);display:flex;align-items:center;gap:6px;flex-shrink:0}
+.rev-chevron{opacity:.4}
+
 /* CAT CHIPS for add */
 .cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:14px}
 .cat-chip{display:flex;flex-direction:column;align-items:center;gap:4px;
@@ -1298,8 +1312,13 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
   <!-- TOP -->
   <div class="top" id="top-bar">
     <div class="top-left">
-      <div class="greeting" id="top-greeting">Bonjour,</div>
-      <div class="name" id="top-name">—</div>
+      <button onclick="goTo('profil',document.getElementById('tb-profil'),4)" id="avatar-btn"
+        style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-d));
+        border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+        font-family:'Sora',sans-serif;font-size:15px;font-weight:800;color:#fff;
+        box-shadow:0 2px 10px rgba(var(--accent-rgb),.35);flex-shrink:0">
+        <span id="avatar-initials">?</span>
+      </button>
     </div>
     <div class="top-month" id="month-bar">
       <button class="m-nav" onclick="changeMonth(-1)">‹</button>
@@ -1434,8 +1453,9 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
     <!-- 📜 HISTORIQUE -->
     <div class="page" id="p-hist">
       <div class="search-row">
-        <input class="search-inp" id="search-inp" type="text" placeholder="🔍 Rechercher…" oninput="renderHist()">
+        <input class="search-inp" id="search-inp" type="text" placeholder="🔍 Rechercher dans toutes les transactions…" oninput="renderHist()">
       </div>
+      <div id="search-global-badge" style="display:none;font-size:11px;font-weight:600;color:var(--accent);padding:4px 4px 0">🌐 Recherche sur tous les mois</div>
       <div class="filter-chips" id="filter-chips">
         <div class="chip on" data-f="all" onclick="setFilter(this,'all')">Tout</div>
         <div class="chip" data-f="expense" onclick="setFilter(this,'expense')">Dépenses</div>
@@ -1472,139 +1492,319 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
 
     <!-- 👤 PROFIL -->
     <div class="page" id="p-profil">
-      <div class="profile-card" id="profile-card"></div>
+      <!-- Hidden legacy profile-card kept for JS compat -->
+      <div class="profile-card" id="profile-card" style="display:none"></div>
 
-      <!-- PERSONNALISATION -->
-      <div class="set-group" style="margin-bottom:16px">
-        <div style="padding:16px 18px 12px">
-          <div style="font-size:16px;font-weight:800;color:var(--txt);font-family:'Sora',sans-serif;margin-bottom:4px">🎨 Personnalisation</div>
-          <div style="font-size:13px;color:var(--txt2);margin-bottom:16px">Choisissez l'ambiance de votre app</div>
-          <div id="theme-picker" style="display:flex;justify-content:space-between;padding:4px 0 8px"></div>
+      <!-- HERO AVATAR -->
+      <div style="display:flex;flex-direction:column;align-items:center;padding:24px 0 28px">
+        <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-d));
+          display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;
+          font-size:28px;font-weight:800;color:#fff;box-shadow:0 4px 20px rgba(var(--accent-rgb),.3);margin-bottom:12px">
+          <span id="profile-avatar-letter">?</span>
         </div>
+        <div style="font-family:'Sora',sans-serif;font-size:20px;font-weight:800;color:var(--txt)" id="profile-name-display">—</div>
+        <div style="font-size:13px;color:var(--txt2);margin-top:4px" id="profile-email-display"></div>
       </div>
-      <!-- Density picker -->
-      <div class="set-group" style="overflow:visible">
-        <div style="padding:14px 16px 10px">
-          <div style="font-size:13px;font-weight:700;color:var(--txt);margin-bottom:10px">📐 Affichage des transactions</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-            <!-- Confortable -->
-            <div id="density-comfortable" onclick="setDensity(false)"
-              style="border-radius:14px;border:2px solid var(--border);padding:12px 10px;cursor:pointer;transition:border-color .2s,box-shadow .2s;background:var(--bg)">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-                <div style="width:32px;height:32px;border-radius:10px;background:var(--input);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🛒</div>
-                <div style="flex:1;min-width:0">
-                  <div style="font-size:12px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Courses Lidl</div>
-                  <div style="font-size:10px;color:var(--txt2)">Courant</div>
-                </div>
-                <div style="font-size:12px;font-weight:700;color:var(--red)">−42 €</div>
+
+      <!-- SECTION PRÉFÉRENCES -->
+      <div class="rev-section">
+        <div class="rev-section-title">Préférences</div>
+        <div class="rev-group">
+          <!-- Apparence / thème -->
+          <div class="rev-row" onclick="document.getElementById('rev-theme-panel').style.display=document.getElementById('rev-theme-panel').style.display==='none'?'block':'none'">
+            <div class="rev-row-left">
+              <div class="rev-row-icon" style="background:rgba(var(--accent-rgb),.12);color:var(--accent)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="1.5"/><circle cx="17.5" cy="10.5" r="1.5"/><circle cx="8.5" cy="7.5" r="1.5"/><circle cx="6.5" cy="12.5" r="1.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
               </div>
-              <div style="display:flex;align-items:center;gap:6px;padding-top:6px;border-top:1px solid var(--border)">
-                <div style="width:28px;height:28px;border-radius:8px;background:var(--input);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">🍕</div>
-                <div style="flex:1;min-width:0">
-                  <div style="font-size:12px;font-weight:600;color:var(--txt)">Restaurant</div>
-                  <div style="font-size:10px;color:var(--txt2)">Loisirs</div>
-                </div>
-                <div style="font-size:12px;font-weight:700;color:var(--red)">−28 €</div>
+              <div>
+                <div class="rev-row-title">Apparence</div>
+                <div class="rev-row-sub">Couleur et thème de l'app</div>
               </div>
-              <div style="margin-top:10px;font-size:11px;font-weight:700;color:var(--txt2);text-align:center">Confortable</div>
             </div>
-            <!-- Compact -->
-            <div id="density-compact" onclick="setDensity(true)"
-              style="border-radius:14px;border:2px solid var(--border);padding:12px 10px;cursor:pointer;transition:border-color .2s,box-shadow .2s;background:var(--bg)">
-              <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
-                <div style="width:26px;height:26px;border-radius:8px;background:var(--input);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">🛒</div>
-                <div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:600;color:var(--txt)">Courses Lidl</div></div>
-                <div style="font-size:11px;font-weight:700;color:var(--red)">−42 €</div>
-              </div>
-              <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
-                <div style="width:26px;height:26px;border-radius:8px;background:var(--input);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">🍕</div>
-                <div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:600;color:var(--txt)">Restaurant</div></div>
-                <div style="font-size:11px;font-weight:700;color:var(--red)">−28 €</div>
-              </div>
-              <div style="display:flex;align-items:center;gap:7px">
-                <div style="width:26px;height:26px;border-radius:8px;background:var(--input);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">⛽</div>
-                <div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:600;color:var(--txt)">Carburant</div></div>
-                <div style="font-size:11px;font-weight:700;color:var(--red)">−60 €</div>
-              </div>
-              <div style="margin-top:10px;font-size:11px;font-weight:700;color:var(--txt2);text-align:center">Compact</div>
+            <div class="rev-row-right">
+              <svg class="rev-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="set-group">
-        <div class="set-row"><div><div class="set-name">Prénom affiché</div></div><input class="set-inp" id="s-name" type="text" placeholder="Prénom" onblur="saveName()"></div>
-        <div class="set-row"><div><div class="set-name">💼 Salaire prévisionnel</div><div class="set-sub">Si aucun revenu saisi</div></div><div style="display:flex;align-items:center;gap:4px"><input class="set-inp" id="s-forecast" type="number" placeholder="0" onblur="saveSettings()"> €</div></div>
-        <div class="set-row"><div><div class="set-name">📅 Jour de salaire</div><div class="set-sub">Jour du mois (1–31)</div></div><input class="set-inp" id="s-payday" type="number" min="1" max="31" placeholder="1" onblur="saveSettings()" style="width:60px;text-align:center"></div>
-        <div class="set-row"><div><div class="set-name">🎯 Épargne cible</div></div><div style="display:flex;align-items:center;gap:4px"><input class="set-inp" id="s-savings" type="number" placeholder="500" onblur="saveSettings()"> €</div></div>
-      </div>
-      <div class="set-group">
-        <div class="set-sec">🍽️ Tickets restau</div>
-        <div class="set-row">
-          <div><div class="set-name">Prix moyen par repas</div><div class="set-sub">Pour calculer les repas restants</div></div>
-          <div style="display:flex;align-items:center;gap:4px"><input class="set-inp" id="s-meal-price" type="number" step="0.01" placeholder="10" onblur="saveMealPrice()"> €</div>
+          <div id="rev-theme-panel" style="display:none;padding:4px 16px 16px;border-top:1px solid var(--border)">
+            <div id="theme-picker" style="display:flex;justify-content:space-between;padding:8px 0 4px"></div>
+          </div>
+          <!-- Mode sombre -->
+          <div class="rev-row" onclick="toggleDark();saveDarkPref()">
+            <div class="rev-row-left">
+              <div class="rev-row-icon" style="background:rgba(var(--accent-rgb),.12);color:var(--accent)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+              </div>
+              <div>
+                <div class="rev-row-title">Mode sombre</div>
+              </div>
+            </div>
+            <div class="rev-row-right">
+              <svg class="rev-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+          <!-- Taille transactions -->
+          <div class="rev-row" onclick="document.getElementById('rev-density-panel').style.display=document.getElementById('rev-density-panel').style.display==='none'?'block':'none'">
+            <div class="rev-row-left">
+              <div class="rev-row-icon" style="background:rgba(var(--accent-rgb),.12);color:var(--accent)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              </div>
+              <div>
+                <div class="rev-row-title">Taille des transactions</div>
+                <div class="rev-row-sub">Compact ou confortable</div>
+              </div>
+            </div>
+            <div class="rev-row-right">
+              <svg class="rev-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+          <div id="rev-density-panel" style="display:none;padding:4px 16px 16px;border-top:1px solid var(--border);overflow:visible">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-top:10px">
+              <div id="density-comfortable" onclick="setDensity(false)"
+                style="border-radius:14px;border:2px solid var(--border);padding:12px 10px;cursor:pointer;transition:border-color .2s,box-shadow .2s;background:var(--bg)">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                  <div style="width:32px;height:32px;border-radius:10px;background:var(--input);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🛒</div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:12px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Courses Lidl</div>
+                    <div style="font-size:10px;color:var(--txt2)">Courant</div>
+                  </div>
+                  <div style="font-size:12px;font-weight:700;color:var(--red)">−42 €</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;padding-top:6px;border-top:1px solid var(--border)">
+                  <div style="width:28px;height:28px;border-radius:8px;background:var(--input);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">🍕</div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:12px;font-weight:600;color:var(--txt)">Restaurant</div>
+                    <div style="font-size:10px;color:var(--txt2)">Loisirs</div>
+                  </div>
+                  <div style="font-size:12px;font-weight:700;color:var(--red)">−28 €</div>
+                </div>
+                <div style="margin-top:10px;font-size:11px;font-weight:700;color:var(--txt2);text-align:center">Confortable</div>
+              </div>
+              <div id="density-compact" onclick="setDensity(true)"
+                style="border-radius:14px;border:2px solid var(--border);padding:12px 10px;cursor:pointer;transition:border-color .2s,box-shadow .2s;background:var(--bg)">
+                <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
+                  <div style="width:26px;height:26px;border-radius:8px;background:var(--input);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">🛒</div>
+                  <div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:600;color:var(--txt)">Courses Lidl</div></div>
+                  <div style="font-size:11px;font-weight:700;color:var(--red)">−42 €</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
+                  <div style="width:26px;height:26px;border-radius:8px;background:var(--input);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">🍕</div>
+                  <div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:600;color:var(--txt)">Restaurant</div></div>
+                  <div style="font-size:11px;font-weight:700;color:var(--red)">−28 €</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:7px">
+                  <div style="width:26px;height:26px;border-radius:8px;background:var(--input);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">⛽</div>
+                  <div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:600;color:var(--txt)">Carburant</div></div>
+                  <div style="font-size:11px;font-weight:700;color:var(--red)">−60 €</div>
+                </div>
+                <div style="margin-top:10px;font-size:11px;font-weight:700;color:var(--txt2);text-align:center">Compact</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- RÉCURRENTES -->
-      <div class="section-hd" style="margin-top:4px"><div class="sec-title"><span class="ico">🔄</span> Récurrentes</div></div>
-      <div id="abo-teaser" onclick="openAbonnements()" style="cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--accent-d));border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;transition:opacity .15s" onmouseenter="this.style.opacity='.88'" onmouseleave="this.style.opacity='1'">
-        <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-size:22px">📋</span>
-          <div>
-            <div style="font-family:'Sora',sans-serif;font-size:14px;font-weight:800;color:#fff">Vue globale des abonnements</div>
-            <div id="abo-teaser-sub" style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:2px">Coûts mensuels et annuels</div>
+      <!-- SECTION BUDGET -->
+      <div class="rev-section">
+        <div class="rev-section-title">Budget</div>
+        <div class="rev-group">
+          <!-- Prénom -->
+          <div class="rev-row">
+            <div class="rev-row-left">
+              <div class="rev-row-icon" style="background:rgba(16,185,129,.12);color:#10b981">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div class="rev-row-title">Prénom</div>
+            </div>
+            <div class="rev-row-right">
+              <input class="set-inp" id="s-name" type="text" placeholder="Prénom" onblur="saveName()" style="text-align:right">
+            </div>
+          </div>
+          <!-- Salaire prévisionnel -->
+          <div class="rev-row">
+            <div class="rev-row-left">
+              <div class="rev-row-icon" style="background:rgba(16,185,129,.12);color:#10b981">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+              </div>
+              <div>
+                <div class="rev-row-title">Salaire prévisionnel</div>
+                <div class="rev-row-sub">Si aucun revenu saisi</div>
+              </div>
+            </div>
+            <div class="rev-row-right">
+              <input class="set-inp" id="s-forecast" type="number" placeholder="0" onblur="saveSettings()" style="text-align:right;width:72px">
+              <span style="font-size:13px;color:var(--txt2)">€</span>
+            </div>
+          </div>
+          <!-- Jour de salaire -->
+          <div class="rev-row">
+            <div class="rev-row-left">
+              <div class="rev-row-icon" style="background:rgba(16,185,129,.12);color:#10b981">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div>
+                <div class="rev-row-title">Jour de salaire</div>
+                <div class="rev-row-sub">Jour du mois (1–31)</div>
+              </div>
+            </div>
+            <div class="rev-row-right">
+              <input class="set-inp" id="s-payday" type="number" min="1" max="31" placeholder="1" onblur="saveSettings()" style="width:52px;text-align:center">
+            </div>
+          </div>
+          <!-- Épargne cible -->
+          <div class="rev-row">
+            <div class="rev-row-left">
+              <div class="rev-row-icon" style="background:rgba(16,185,129,.12);color:#10b981">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+              </div>
+              <div class="rev-row-title">Épargne cible</div>
+            </div>
+            <div class="rev-row-right">
+              <input class="set-inp" id="s-savings" type="number" placeholder="500" onblur="saveSettings()" style="text-align:right;width:72px">
+              <span style="font-size:13px;color:var(--txt2)">€</span>
+            </div>
+          </div>
+          <!-- Prix repas Swile -->
+          <div class="rev-row">
+            <div class="rev-row-left">
+              <div class="rev-row-icon" style="background:rgba(16,185,129,.12);color:#10b981">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+              </div>
+              <div>
+                <div class="rev-row-title">Prix repas Swile</div>
+                <div class="rev-row-sub">Pour calculer les repas restants</div>
+              </div>
+            </div>
+            <div class="rev-row-right">
+              <input class="set-inp" id="s-meal-price" type="number" step="0.01" placeholder="10" onblur="saveMealPrice()" style="text-align:right;width:60px">
+              <span style="font-size:13px;color:var(--txt2)">€</span>
+            </div>
           </div>
         </div>
-        <span style="font-size:20px;color:rgba(255,255,255,0.8)">›</span>
       </div>
-      <div id="recur-settings" style="margin-bottom:4px"></div>
 
-      <!-- CRÉDITS -->
-      <div class="section-hd" style="margin-top:16px"><div class="sec-title"><span class="ico">🏦</span> Crédits</div></div>
-      <div id="credits-teaser" onclick="openCredits()" style="cursor:pointer;background:linear-gradient(135deg,#e05c5c,#b83a3a);border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;transition:opacity .15s" onmouseenter="this.style.opacity='.88'" onmouseleave="this.style.opacity='1'">
-        <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-size:22px">🏦</span>
-          <div>
-            <div style="font-family:'Sora',sans-serif;font-size:14px;font-weight:800;color:#fff">Mes crédits en cours</div>
-            <div id="credits-teaser-sub" style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:2px">Capital restant et mensualités</div>
+      <!-- SECTION MES FINANCES -->
+      <div class="rev-section">
+        <div class="rev-section-title">Mes finances</div>
+        <!-- Abonnements teaser -->
+        <div id="abo-teaser" onclick="openAbonnements()" style="cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--accent-d));border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;transition:opacity .15s" onmouseenter="this.style.opacity='.88'" onmouseleave="this.style.opacity='1'">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">📋</span>
+            <div>
+              <div style="font-family:'Sora',sans-serif;font-size:14px;font-weight:800;color:#fff">Vue globale des abonnements</div>
+              <div id="abo-teaser-sub" style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:2px">Coûts mensuels et annuels</div>
+            </div>
+          </div>
+          <span style="font-size:20px;color:rgba(255,255,255,0.8)">›</span>
+        </div>
+        <div class="rev-group" style="margin-bottom:10px">
+          <div style="padding:4px 0"><div id="recur-settings"></div></div>
+        </div>
+        <!-- Crédits teaser -->
+        <div id="credits-teaser" onclick="openCredits()" style="cursor:pointer;background:linear-gradient(135deg,#e05c5c,#b83a3a);border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;transition:opacity .15s" onmouseenter="this.style.opacity='.88'" onmouseleave="this.style.opacity='1'">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">🏦</span>
+            <div>
+              <div style="font-family:'Sora',sans-serif;font-size:14px;font-weight:800;color:#fff">Mes crédits en cours</div>
+              <div id="credits-teaser-sub" style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:2px">Capital restant et mensualités</div>
+            </div>
+          </div>
+          <span style="font-size:20px;color:rgba(255,255,255,0.8)">›</span>
+        </div>
+        <!-- Comptes -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 8px">
+          <div class="rev-section-title" style="margin:0;padding:0">Comptes</div>
+          <button class="sec-link" onclick="openAddAccModal()">+ Ajouter</button>
+        </div>
+        <div class="rev-group" style="margin-bottom:10px">
+          <div id="accs-settings"></div>
+        </div>
+        <!-- Catégories -->
+        <div class="rev-group">
+          <div style="padding:12px 16px 6px;font-size:11px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px">Catégories</div>
+          <div id="cats-settings"></div>
+          <div class="rev-row" onclick="openAddCat()">
+            <div class="rev-row-left">
+              <div class="rev-row-title" style="color:var(--accent)">+ Ajouter une catégorie</div>
+            </div>
           </div>
         </div>
-        <span style="font-size:20px;color:rgba(255,255,255,0.8)">›</span>
       </div>
 
-      <!-- COMPTES -->
-      <div class="section-hd" style="margin-top:4px"><div class="sec-title"><span class="ico">💳</span> Comptes</div><button class="sec-link" onclick="openAddAccModal()">+ Ajouter</button></div>
-      <div id="accs-settings" style="margin-bottom:4px"></div>
+      <!-- SECTION DONNÉES -->
+      <div class="rev-section">
+        <div class="rev-section-title">Données</div>
+        <div class="rev-group">
+          <div class="rev-row" onclick="openCsvImport()">
+            <div class="rev-row-left">
+              <div class="rev-row-icon" style="background:rgba(245,158,11,.12);color:#f59e0b">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              </div>
+              <div>
+                <div class="rev-row-title">Importer depuis ma banque</div>
+                <div class="rev-row-sub">Import CSV — BNP, LCL, CA, SG, Boursorama…</div>
+              </div>
+            </div>
+            <div class="rev-row-right">
+              <svg class="rev-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+          <div class="rev-row" onclick="exportPDF()">
+            <div class="rev-row-left">
+              <div class="rev-row-icon" style="background:rgba(245,158,11,.12);color:#f59e0b">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </div>
+              <div>
+                <div class="rev-row-title">Exporter PDF</div>
+                <div class="rev-row-sub">Relevé complet du mois affiché</div>
+              </div>
+            </div>
+            <div class="rev-row-right">
+              <svg class="rev-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+          <div class="rev-row" onclick="exportCSV()">
+            <div class="rev-row-left">
+              <div class="rev-row-icon" style="background:rgba(245,158,11,.12);color:#f59e0b">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              </div>
+              <div class="rev-row-title">Exporter CSV</div>
+            </div>
+            <div class="rev-row-right">
+              <svg class="rev-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <div class="set-group">
-        <div class="set-sec">Catégories</div>
-        <div id="cats-settings"></div>
-        <div class="set-row" style="cursor:pointer" onclick="openAddCat()">
-          <div class="set-name" style="color:var(--accent)">+ Ajouter une catégorie</div>
+      <!-- SECTION COMPTE -->
+      <div class="rev-section">
+        <div class="rev-section-title">Compte</div>
+        <div class="rev-group">
+          <div class="rev-row" onclick="doSignOut()">
+            <div class="rev-row-left">
+              <div class="rev-row-icon" style="background:rgba(239,68,68,.12);color:#ef4444">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              </div>
+              <div class="rev-row-title" style="color:#ef4444">Se déconnecter</div>
+            </div>
+            <div class="rev-row-right">
+              <svg class="rev-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+          <div class="rev-row" onclick="resetData()">
+            <div class="rev-row-left">
+              <div class="rev-row-icon" style="background:rgba(239,68,68,.12);color:#ef4444">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+              </div>
+              <div class="rev-row-title" style="color:#ef4444">Réinitialiser les données</div>
+            </div>
+            <div class="rev-row-right">
+              <svg class="rev-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="set-group">
-        <div class="set-sec">Données</div>
-        <div class="set-row" style="cursor:pointer" onclick="openCsvImport()">
-          <div>
-            <div class="set-name">📂 Importer depuis ma banque</div>
-            <div class="set-sub">Import CSV — BNP, LCL, CA, SG, Boursorama…</div>
-          </div>
-          <div style="font-size:18px">📥</div>
-        </div>
-        <div class="set-row" style="cursor:pointer" onclick="exportPDF()">
-          <div>
-            <div class="set-name">Exporter PDF</div>
-            <div class="set-sub">Relevé complet du mois affiché</div>
-          </div>
-          <div style="font-size:18px">📄</div>
-        </div>
-        <div class="set-row" style="cursor:pointer" onclick="exportCSV()">
-          <div class="set-name">Exporter CSV</div><div style="font-size:18px">📤</div>
-        </div>
-      </div>
-      <button class="btn btn-danger" onclick="doSignOut()" style="margin-bottom:8px">Se déconnecter</button>
-      <button onclick="resetData()" style="width:100%;padding:14px;border-radius:var(--r-sm);background:transparent;border:1.5px solid var(--red);color:var(--red);font-size:14px;font-weight:700;cursor:pointer">🗑️ Réinitialiser les données</button>
+
     </div>
 
   </div><!-- /content -->
@@ -3439,15 +3639,24 @@ function save(){
 function setTheme(v){ applyTheme('premium', isDark); }
 
 // ── GREETING ──────────────────────────────
+function updateAvatar(){
+  var el=document.getElementById('avatar-initials');
+  if(!el)return;
+  var name=(displayName||'?').trim();
+  el.textContent=name.charAt(0).toUpperCase();
+}
 function updateGreeting(){
-  var h=new Date().getHours();
-  var g=h<12?'Bonjour':h<18?'Bon après-midi':'Bonsoir';
-  document.getElementById('top-greeting').textContent=g+',';
-  document.getElementById('top-name').textContent=(displayName||'—')+' 👋';
-  // Profile
+  // Profile page large avatar
+  var letter=(displayName||'?').charAt(0).toUpperCase();
+  var pal=document.getElementById('profile-avatar-letter');if(pal)pal.textContent=letter;
+  var pnd=document.getElementById('profile-name-display');if(pnd)pnd.textContent=displayName||'—';
+  var ped=document.getElementById('profile-email-display');if(ped)ped.textContent=currentUser?currentUser.email:'';
+  // Hidden profile-card (kept for legacy compat)
   var init=(displayName||'?').substring(0,2).toUpperCase();
-  document.getElementById('profile-card').innerHTML='<div class="profile-av">'+esc(init)+'</div><div><div class="profile-name">'+esc(displayName||'—')+'</div><div class="profile-email">'+esc(currentUser?currentUser.email:'')+'</div></div>';
+  var pc=document.getElementById('profile-card');if(pc)pc.innerHTML='<div class="profile-av">'+esc(init)+'</div><div><div class="profile-name">'+esc(displayName||'—')+'</div><div class="profile-email">'+esc(currentUser?currentUser.email:'')+'</div></div>';
   var sn=document.getElementById('s-name');if(sn)sn.value=displayName||'';
+  // Top bar avatar
+  updateAvatar();
 }
 function saveName(){
   var v=document.getElementById('s-name').value.trim();
@@ -4090,7 +4299,9 @@ function renderDashTx(){
 function renderHist(){
   var q=(document.getElementById('search-inp')||{}).value||'';
   var restoIds2=getRestoIds();
-  var data=getMonthTx().filter(function(e){
+  // Global search : cherche dans toutes les transactions si query non vide
+  var pool = q ? expenses.filter(function(e){ return !e.isAdjustment&&(e.id||'').indexOf('adj_')===-1; }) : null;
+  var data=(pool||getMonthTx()).filter(function(e){
     if(histFilter==='swile')return restoIds2.indexOf(e.accountId)!==-1&&(e.type==='expense'||e.type==='income');
     if(histFilter!=='all'&&e.type!==histFilter)return false;
     if(histFilter==='expense'&&restoIds2.indexOf(e.accountId)!==-1)return false;
@@ -4099,9 +4310,13 @@ function renderHist(){
     return e.type==='expense'||e.type==='income';
   }).sort(function(a,b){return(b.date||'').localeCompare(a.date||'');});
 
-  // Séparer passées / à venir selon si on est sur le mois courant
+  // Show global search indicator
+  var searchBadge=document.getElementById('search-global-badge');
+  if(searchBadge) searchBadge.style.display=q?'block':'none';
+
+  // Séparer passées / à venir selon si on est sur le mois courant (sauf recherche globale)
   var todayStr=new Date().toISOString().split('T')[0];
-  var isCurrentMonth=viewDate.getFullYear()===new Date().getFullYear()&&viewDate.getMonth()===new Date().getMonth();
+  var isCurrentMonth=!q&&viewDate.getFullYear()===new Date().getFullYear()&&viewDate.getMonth()===new Date().getMonth();
   var upcoming=[], past=[];
   data.forEach(function(e){
     if(isCurrentMonth && (e.date||'')>todayStr) upcoming.push(e);
