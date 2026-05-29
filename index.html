@@ -372,35 +372,6 @@ button{cursor:pointer;border:none;background:none}
 .credit-summary{background:linear-gradient(135deg,#e05c5c,#b83a3a);border-radius:16px;
   padding:18px 20px;margin-bottom:16px;color:#fff;display:flex;justify-content:space-between;align-items:center}
 
-/* ═══ BANK CONNECT (GoCardless) ═══ */
-.bank-search-wrap{position:sticky;top:0;background:var(--card);z-index:1;padding:0 0 12px}
-.bank-search-inp{width:100%;padding:11px 14px 11px 36px;border-radius:12px;
-  border:1.5px solid var(--border);background:var(--input);color:var(--txt);
-  font-size:14px;outline:none;box-sizing:border-box}
-.bank-search-inp:focus{border-color:var(--accent)}
-.bank-search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);
-  font-size:15px;pointer-events:none;color:var(--txt2)}
-.bank-list{overflow-y:auto;max-height:52dvh;margin:0 -18px;padding:0 18px 4px}
-.bank-item{display:flex;align-items:center;gap:12px;padding:12px 0;
-  border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
-.bank-item:last-child{border-bottom:none}
-.bank-item:hover{background:var(--card2);margin:0 -18px;padding-left:18px;padding-right:18px}
-.bank-logo{width:36px;height:36px;border-radius:10px;object-fit:contain;
-  background:var(--input);flex-shrink:0;border:1px solid var(--border)}
-.bank-logo-placeholder{width:36px;height:36px;border-radius:10px;background:var(--input);
-  display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.bank-name{font-size:14px;font-weight:600;color:var(--txt);line-height:1.3}
-.bank-loading{text-align:center;padding:40px 20px;color:var(--txt2);font-size:14px}
-/* Import preview */
-.ni-tx-list{max-height:36dvh;overflow-y:auto;margin:0 -18px;padding:0 18px}
-.ni-tx-row{display:flex;justify-content:space-between;align-items:center;
-  padding:10px 0;border-bottom:1px solid var(--border);gap:8px}
-.ni-tx-row:last-child{border-bottom:none}
-.ni-tx-label{font-size:13px;font-weight:500;color:var(--txt);flex:1;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ni-tx-date{font-size:11px;color:var(--txt2);flex-shrink:0}
-.ni-tx-amt{font-size:13px;font-weight:700;flex-shrink:0}
-
 /* SETTINGS */
 .set-group{background:var(--card);border-radius:var(--r);border:1px solid var(--border);margin-bottom:12px;overflow:hidden}
 .set-row{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--border)}
@@ -1556,12 +1527,12 @@ button{cursor:pointer;border:none;background:none}
       </div>
       <div class="set-group">
         <div class="set-sec">Données</div>
-        <div class="set-row" style="cursor:pointer" onclick="openBankConnect()">
+        <div class="set-row" style="cursor:pointer" onclick="openCsvImport()">
           <div>
-            <div class="set-name">Connecter ma banque</div>
-            <div class="set-sub">Import automatique via GoCardless (gratuit)</div>
+            <div class="set-name">📂 Importer depuis ma banque</div>
+            <div class="set-sub">Import CSV — BNP, LCL, CA, SG, Boursorama…</div>
           </div>
-          <div style="font-size:18px">🏦</div>
+          <div style="font-size:18px">📥</div>
         </div>
         <div class="set-row" style="cursor:pointer" onclick="exportPDF()">
           <div>
@@ -1673,27 +1644,6 @@ button{cursor:pointer;border:none;background:none}
     <div class="modal" style="max-height:88dvh;overflow-y:auto">
       <div class="m-handle"></div>
       <div id="abonnements-body"></div>
-    </div>
-  </div>
-
-  <!-- BANK CONNECT OVERLAY -->
-  <div class="overlay" id="bank-connect-overlay" onclick="if(event.target===this)closeBankConnect()">
-    <div class="modal">
-      <div class="m-handle"></div>
-      <div class="sec-title" style="margin-bottom:16px">🏦 Connecter ma banque</div>
-      <div style="position:relative" class="bank-search-wrap">
-        <span class="bank-search-icon">🔍</span>
-        <input id="bank-search-inp" class="bank-search-inp" placeholder="Rechercher votre banque..." oninput="bankSearch(this.value)">
-      </div>
-      <div id="bank-list" class="bank-list"></div>
-    </div>
-  </div>
-
-  <!-- NORDIGEN IMPORT PREVIEW OVERLAY -->
-  <div class="overlay" id="nordigen-import-overlay" onclick="if(event.target===this)closeNordigenImport()">
-    <div class="modal">
-      <div class="m-handle"></div>
-      <div id="nordigen-import-body"></div>
     </div>
   </div>
 
@@ -1995,6 +1945,34 @@ button{cursor:pointer;border:none;background:none}
     <button class="ctx-btn" onclick="txCtxDuplicate()"><span class="ctx-ico">📋</span>Dupliquer</button>
     <div style="height:1px;background:var(--border);margin:4px 8px"></div>
     <button class="ctx-btn ctx-btn-del" onclick="txCtxDelete()"><span class="ctx-ico">🗑️</span>Supprimer</button>
+  </div>
+</div>
+
+<!-- CSV IMPORT OVERLAY -->
+<div class="overlay" id="csv-import-overlay" onclick="if(event.target===this)closeCsvImport()">
+  <div class="modal" style="max-height:85dvh">
+    <div class="m-handle"></div>
+    <div class="m-title">📂 Import CSV bancaire</div>
+    <div id="csv-step-1">
+      <p style="font-size:13px;color:var(--txt);opacity:.6;margin-bottom:16px;line-height:1.5">Exporte le relevé CSV depuis ton espace bancaire en ligne, puis sélectionne le fichier ci-dessous.<br><br>Compatible : <strong>BNP, LCL, Crédit Agricole, Société Générale, Boursorama, Hello Bank, N26, Revolut, CIC, Caisse d'Épargne</strong></p>
+      <label style="display:flex;align-items:center;justify-content:center;gap:10px;padding:18px;border:2px dashed var(--border);border-radius:16px;cursor:pointer;font-size:14px;font-weight:600;color:var(--accent);transition:background .2s" id="csv-drop-zone">
+        <span style="font-size:24px">📄</span> Choisir un fichier CSV
+        <input type="file" accept=".csv,.txt" id="csv-file-input" style="display:none" onchange="handleCsvFile(this)">
+      </label>
+      <p id="csv-error" style="display:none;color:var(--red);font-size:13px;margin-top:12px;text-align:center"></p>
+    </div>
+    <div id="csv-step-2" style="display:none">
+      <div id="csv-preview-header" style="margin-bottom:12px"></div>
+      <div style="margin-bottom:14px">
+        <label style="font-size:12px;font-weight:700;color:var(--txt);opacity:.55;text-transform:uppercase;letter-spacing:.5px">Compte destinataire</label>
+        <select id="csv-acc-sel" class="field-inp" style="margin-top:6px;width:100%"></select>
+      </div>
+      <div id="csv-tx-list" style="max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:14px;margin-bottom:14px"></div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" style="flex:1" onclick="csvBack()">← Retour</button>
+        <button class="btn btn-primary" style="flex:1" id="csv-import-btn" onclick="confirmCsvImport()">Importer</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -3327,10 +3305,6 @@ function setupAuth(){
           renderAll();
           // Re-render de sécurité au cas où le premier est trop tôt
           setTimeout(function(){ renderAll(); }, 500);
-          // Détection du retour GoCardless (import automatique)
-          if (localStorage.getItem('nordigen_req_id')) {
-            setTimeout(_checkNordigenCallback, 800);
-          }
         });
       });
     }, function(err){
@@ -5055,178 +5029,6 @@ function renderCreditHero(){
   if(teaser) teaser.textContent=credits.length+' crédit'+(credits.length>1?'s':'')+' · '+fmt(totalMonthly)+'/mois · '+fmt(totalRemaining)+' restants';
   if(section) section.style.display='block';
   if(list) list.innerHTML=credits.map(function(c){ return _creditCardHtml(c, false); }).join('');
-}
-
-// ══════════════════════════════════════════════════════════════
-// NORDIGEN / GOCARDLESS — import bancaire automatique
-// ══════════════════════════════════════════════════════════════
-
-var _nordigenBanks = null;
-var _nordigenFn    = null;
-
-function _fn() {
-  if (!_nordigenFn) {
-    _nordigenFn = firebase.functions();
-    // Pour tester en local : _nordigenFn.useEmulator('localhost', 5001);
-  }
-  return _nordigenFn;
-}
-
-function openBankConnect() {
-  if (!currentUser) { toast('Connectez-vous pour utiliser cette fonctionnalité', 'error'); return; }
-  document.getElementById('bank-connect-overlay').classList.add('on');
-  document.getElementById('bank-search-inp').value = '';
-  if (_nordigenBanks) { _renderBankList(''); return; }
-  document.getElementById('bank-list').innerHTML = '<div class="bank-loading">⏳ Chargement des banques…</div>';
-  _fn().httpsCallable('nordigenListBanks')({ country: 'fr' })
-    .then(function(r) {
-      _nordigenBanks = r.data;
-      _renderBankList('');
-    })
-    .catch(function(e) {
-      document.getElementById('bank-list').innerHTML =
-        '<div class="bank-loading" style="color:var(--red)">⚠️ ' + esc(e.message) + '</div>';
-    });
-}
-
-function closeBankConnect() {
-  document.getElementById('bank-connect-overlay').classList.remove('on');
-}
-
-function bankSearch(q) {
-  if (_nordigenBanks) _renderBankList(q);
-}
-
-function _renderBankList(q) {
-  var list = document.getElementById('bank-list');
-  var banks = q
-    ? _nordigenBanks.filter(function(b){ return b.name.toLowerCase().indexOf(q.toLowerCase()) !== -1; })
-    : _nordigenBanks;
-  if (!banks.length) {
-    list.innerHTML = '<div class="bank-loading">Aucune banque trouvée</div>';
-    return;
-  }
-  list.innerHTML = banks.map(function(b, i) {
-    return '<div class="bank-item" onclick="selectBank(' + i + ',' + JSON.stringify(q) + ')">'
-      + (b.logo
-        ? '<img class="bank-logo" src="' + esc(b.logo) + '" loading="lazy" onerror="this.style.display=\'none\'">'
-        : '<div class="bank-logo-placeholder">🏦</div>')
-      + '<span class="bank-name">' + esc(b.name) + '</span>'
-      + '</div>';
-  }).join('');
-}
-
-function selectBank(idx, q) {
-  var banks = q
-    ? _nordigenBanks.filter(function(b){ return b.name.toLowerCase().indexOf(q.toLowerCase()) !== -1; })
-    : _nordigenBanks;
-  var bank = banks[idx];
-  if (!bank) return;
-  document.getElementById('bank-list').innerHTML =
-    '<div class="bank-loading">🔗 Connexion à ' + esc(bank.name) + '…</div>';
-  var redirectUrl = window.location.origin + window.location.pathname;
-  _fn().httpsCallable('nordigenCreateRequisition')({ institutionId: bank.id, redirectUrl: redirectUrl })
-    .then(function(r) {
-      localStorage.setItem('nordigen_req_id',   r.data.id);
-      localStorage.setItem('nordigen_req_bank',  bank.name);
-      window.location.href = r.data.link;
-    })
-    .catch(function(e) {
-      document.getElementById('bank-list').innerHTML =
-        '<div class="bank-loading" style="color:var(--red)">⚠️ ' + esc(e.message) + '</div>';
-    });
-}
-
-function _checkNordigenCallback() {
-  var reqId = localStorage.getItem('nordigen_req_id');
-  if (!reqId) return;
-  // Nettoyer l'URL sans recharger la page
-  if (window.history && window.history.replaceState) {
-    window.history.replaceState({}, document.title,
-      window.location.origin + window.location.pathname);
-  }
-  var bankName = localStorage.getItem('nordigen_req_bank') || 'votre banque';
-  toast('🏦 Récupération des transactions de ' + bankName + '…', 'info');
-  _fn().httpsCallable('nordigenFetchTransactions')({ requisitionId: reqId })
-    .then(function(r) {
-      localStorage.removeItem('nordigen_req_id');
-      localStorage.removeItem('nordigen_req_bank');
-      _showNordigenImportPreview(r.data, bankName);
-    })
-    .catch(function(e) {
-      localStorage.removeItem('nordigen_req_id');
-      localStorage.removeItem('nordigen_req_bank');
-      toast('Erreur import : ' + e.message, 'error');
-    });
-}
-
-function _showNordigenImportPreview(txs, bankName) {
-  if (!txs || !txs.length) {
-    toast('Aucune transaction trouvée pour cette période', 'info');
-    return;
-  }
-  var accOpts = accounts.map(function(a) {
-    return '<option value="' + esc(a.id) + '">' + esc(a.name) + '</option>';
-  }).join('');
-  var preview = txs.slice(0, 8).map(function(tx) {
-    var isInc = tx.amount > 0;
-    var color  = isInc ? 'var(--green)' : 'var(--red)';
-    var sign   = isInc ? '+' : '';
-    return '<div class="ni-tx-row">'
-      + '<span class="ni-tx-label">' + esc(tx.label) + '</span>'
-      + '<span class="ni-tx-date">' + esc(tx.date) + '</span>'
-      + '<span class="ni-tx-amt" style="color:' + color + '">' + sign + fmt(Math.abs(tx.amount)) + '</span>'
-      + '</div>';
-  }).join('');
-  var more = txs.length > 8 ? '<div style="text-align:center;font-size:12px;color:var(--txt2);padding:8px 0">+ ' + (txs.length - 8) + ' autres transactions</div>' : '';
-  document.getElementById('nordigen-import-body').innerHTML =
-    '<div class="sec-title" style="margin-bottom:4px">📥 Import ' + esc(bankName) + '</div>'
-    + '<div style="font-size:13px;color:var(--txt2);margin-bottom:16px">' + txs.length + ' transaction' + (txs.length > 1 ? 's' : '') + ' trouvée' + (txs.length > 1 ? 's' : '') + '</div>'
-    + '<div style="margin-bottom:12px">'
-    + '<label style="font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--txt2);display:block;margin-bottom:6px">Compte à créditer</label>'
-    + '<select id="ni-account" class="field-inp" style="width:100%">' + accOpts + '</select>'
-    + '</div>'
-    + '<div class="ni-tx-list">' + preview + more + '</div>'
-    + '<button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="runNordigenImport(' + JSON.stringify(JSON.stringify(txs)) + ')">Importer ' + txs.length + ' transaction' + (txs.length > 1 ? 's' : '') + '</button>'
-    + '<button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="closeNordigenImport()">Annuler</button>';
-  document.getElementById('nordigen-import-overlay').classList.add('on');
-}
-
-function closeNordigenImport() {
-  document.getElementById('nordigen-import-overlay').classList.remove('on');
-}
-
-function runNordigenImport(txsJson) {
-  var txs   = JSON.parse(txsJson);
-  var accId = document.getElementById('ni-account').value;
-  var ok = 0, skip = 0;
-  txs.forEach(function(tx) {
-    if (!tx.date || !tx.amount || tx.amount === 0) { skip++; return; }
-    var amt  = Math.abs(tx.amount);
-    var type = tx.amount > 0 ? 'income' : 'expense';
-    // Doublon : même date + même montant + même libellé (ou même nordigenId)
-    var dup = expenses.some(function(ex) {
-      if (tx.nordigenId && ex.nordigenId === tx.nordigenId) return true;
-      return ex.date === tx.date && Math.abs(ex.amount - amt) < 0.01 && ex.label === tx.label;
-    });
-    if (dup) { skip++; return; }
-    var detected = _detectCatAndVir(tx.label, type);
-    expenses.push({
-      id:         _uid('ni'),
-      nordigenId: tx.nordigenId || null,
-      label:      tx.label, amount: amt, type: type,
-      cat:        detected.cat,
-      isVirement: detected.isVir,
-      accountId:  accId, date: tx.date,
-      note: null, recurring: false, frequency: null, customDays: null, endDate: null
-    });
-    ok++;
-  });
-  expenses.sort(function(a, b){ return (b.date || '').localeCompare(a.date || ''); });
-  save(); renderAll(); closeNordigenImport();
-  var msg = ok + ' transaction' + (ok > 1 ? 's' : '') + ' importée' + (ok > 1 ? 's' : '');
-  if (skip) msg += ' · ' + skip + ' doublon' + (skip > 1 ? 's' : '') + ' ignoré' + (skip > 1 ? 's' : '');
-  toast(msg, 'success');
 }
 
 // ══════════════════════════════════════════════════════════════
