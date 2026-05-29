@@ -1544,10 +1544,7 @@ button{cursor:pointer;border:none;background:none}
         <div class="set-row" style="cursor:pointer" onclick="exportCSV()">
           <div class="set-name">Exporter CSV</div><div style="font-size:18px">📤</div>
         </div>
-        <div class="set-row">
-          <div class="set-name">Importer CSV</div>
-          <label style="font-size:18px;cursor:pointer">📥<input type="file" accept=".csv" onchange="importCSV(this)" style="display:none"></label>
-        </div>
+
       </div>
       <button class="btn btn-danger" onclick="doSignOut()" style="margin-bottom:8px">Se déconnecter</button>
       <button onclick="resetData()" style="width:100%;padding:14px;border-radius:var(--r-sm);background:transparent;border:1.5px solid var(--red);color:var(--red);font-size:14px;font-weight:700;cursor:pointer">🗑️ Réinitialiser les données</button>
@@ -5470,28 +5467,6 @@ function closeBankImport() {
   document.getElementById('bank-import-overlay').classList.remove('on');
   document.getElementById('bi-body').innerHTML='';
   _biRows=[]; _biHeaders=[]; _biOpeningBalance=null;
-}
-
-function importCSV(input){
-  var file=input.files[0];if(!file)return;
-  var r=new FileReader();
-  r.onload=function(e){
-    var lines=e.target.result.replace(/\r/g,'').split('\n').filter(function(l){return l.trim();});
-    var ok=0,skip=0;
-    lines.slice(1).forEach(function(line){
-      var c=line.split(';').map(function(v){return v.trim().replace(/^"|"$/g,'').replace(/""/g,'"');});
-      if(c.length<3){skip++;return;}
-      var amt=parseFloat((c[2]||'0').replace(',','.'));
-      if(isNaN(amt)){skip++;return;}
-      var dup=expenses.some(function(ex){return ex.date===c[0]&&ex.label===c[1]&&Math.abs(ex.amount-Math.abs(amt))<0.01;});
-      if(dup){skip++;return;}
-      expenses.push({id:_uid('imp'),label:c[1]||'Importé',amount:Math.abs(amt),type:(c[3]||'').indexOf('Revenu')!==-1||amt>0?'income':'expense',cat:'autre',accountId:'acc1',date:c[0]||new Date().toISOString().split('T')[0],recurring:false});
-      ok++;
-    });
-    save();renderAll();toast(ok+' importée(s)'+(skip?' · '+skip+' ignorée(s)':''));
-    input.value='';
-  };
-  r.readAsText(file,'UTF-8');
 }
 
 // ── RESET ─────────────────────────────────
