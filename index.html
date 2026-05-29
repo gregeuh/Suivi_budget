@@ -155,8 +155,11 @@ button{cursor:pointer;border:none;background:none}
 /* CONTENT */
 .content{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 16px 110px;background:var(--bg);}
 .page{display:none;background:var(--bg);}
-.page.on{display:block;background:var(--bg);animation:pageIn .28s cubic-bezier(0.16,1,0.3,1) both;}
-@keyframes pageIn{from{opacity:0;transform:translateY(14px) scale(0.99)}to{opacity:1;transform:translateY(0) scale(1)}}
+.page.on{display:block;background:var(--bg);}
+.page.slide-from-right{animation:pageFromRight .32s cubic-bezier(0.16,1,0.3,1) both;}
+.page.slide-from-left {animation:pageFromLeft  .32s cubic-bezier(0.16,1,0.3,1) both;}
+@keyframes pageFromRight{from{opacity:0;transform:translateX(40px) scale(0.99)}to{opacity:1;transform:none}}
+@keyframes pageFromLeft {from{opacity:0;transform:translateX(-40px) scale(0.99)}to{opacity:1;transform:none}}
 @keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
 /* TAB BAR */
@@ -1383,6 +1386,9 @@ button{cursor:pointer;border:none;background:none}
         </div>
       </div>
 
+      <!-- Widget Aujourd'hui -->
+      <div id="today-widget" class="card" style="margin-bottom:16px;margin-top:16px"></div>
+
       <!-- Soldes par compte -->
       <div class="sec" style="margin-top:20px">
         <div class="sec-title"><span class="ico">💳</span> Mes comptes<button id="sec-toggle-comptes" onclick="toggleSection('comptes')" class="section-toggle-btn" title="Masquer / Afficher"></button></div>
@@ -2008,6 +2014,7 @@ function initFirebase(cb) {
 var expenses=[], accounts=[], categories=[], catBudgets={};
 var displayName='', forecastSalary=0, savingsGoal=500, savedTheme='auto', budgetPayDay=1;
 var viewDate=new Date(), privacyOn=false, currentUser=null;
+var _currentTabIdx=0;
 var editingId=null, mAmt='', mCurrentType='exp', qaCurrentType='exp';
 var selCat='autre', selAcc='acc1', selDestAcc='acc_lva', histFilter='all', histCatFilter='all';
 var wishlist=[];
@@ -3524,6 +3531,7 @@ function renderAll(){
   renderThemePicker();
   renderHero();
   renderCreditHero();
+  renderTodayWidget();
   renderAccMini();
   renderDashTx();
   renderCharts();
@@ -4690,8 +4698,13 @@ function goTo(page,btn,idx){
   if(btn)btn.classList.add('on');
   // Month bar visibility
   var mb=document.getElementById('month-bar');if(mb)mb.style.visibility=page==='profil'?'hidden':'visible';
-  // QA bar
-
+  // Directional slide animation
+  if(el&&pillIdx!==_currentTabIdx){
+    var slideClass=pillIdx>_currentTabIdx?'slide-from-right':'slide-from-left';
+    el.classList.add(slideClass);
+    setTimeout(function(){ if(el)el.classList.remove(slideClass); },350);
+  }
+  _currentTabIdx=pillIdx;
   currentPage=page;
   if(page==='hist')renderHist();
   if(page==='budget')renderBudgets();
@@ -4953,6 +4966,45 @@ function renderCreditsOverlay(){
   }
   html+='<button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="openCreditForm(null)">+ Ajouter un crédit</button>';
   body.innerHTML=html;
+}
+
+function renderTodayWidget(){
+  var w=document.getElementById('today-widget');
+  if(!w)return;
+  var today=new Date();
+  var y=today.getFullYear(),mo=today.getMonth(),d=today.getDate();
+  var todayStr=y+'-'+(mo+1<10?'0':'')+(mo+1)+'-'+(d<10?'0':'')+d;
+  var daysInMonth=new Date(y,mo+1,0).getDate();
+  var data=getMonthTx();
+  var restoIds=getRestoIds();
+  var epIds=getEpargneIds();
+  var mIncR=data.filter(function(e){return e.type==='income'&&restoIds.indexOf(e.accountId)===-1;}).reduce(function(s,e){return s+e.amount;},0);
+  var mInc=mIncR>0?mIncR:forecastSalary;
+  var dailyBudget=(mInc>0)?mInc/daysInMonth:0;
+  var todayExp=expenses.filter(function(e){
+    return e.date===todayStr&&e.type==='expense'&&restoIds.indexOf(e.accountId)===-1&&epIds.indexOf(e.accountId)===-1;
+  }).reduce(function(s,e){return s+e.amount;},0);
+  var pct=dailyBudget>0?todayExp/dailyBudget:0;
+  var color=pct<0.8?'#22c55e':pct<=1?'#f97316':'#ef4444';
+  var barPct=Math.min(pct,1)*100;
+  var dateStr=today.toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'});
+  var remaining=dailyBudget-todayExp;
+  var subText=remaining>=0
+    ?'Budget restant : '+fmt(remaining)
+    :'Dépassé de '+fmt(-remaining);
+  var msg='';
+  if(todayExp===0&&dailyBudget>0) msg='<div style="font-size:12px;color:#22c55e;margin-top:4px">Aucune dépense aujourd\'hui 🎉</div>';
+  w.innerHTML=
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'
+    +'<span style="font-size:13px;font-weight:700;color:var(--txt)">☀️ Aujourd\'hui</span>'
+    +'<span style="font-size:12px;color:var(--txt2)">'+dateStr+'</span>'
+    +'</div>'
+    +'<div style="font-size:18px;font-weight:700;color:'+color+'">'+fmt(todayExp)+'</div>'
+    +'<div style="font-size:12px;color:var(--txt2);margin-top:2px">'+subText+'</div>'
+    +msg
+    +'<div style="margin-top:8px;height:5px;border-radius:3px;background:var(--border);overflow:hidden">'
+    +'<div style="height:100%;border-radius:3px;background:'+color+';width:'+barPct+'%;transition:width .4s"></div>'
+    +'</div>';
 }
 
 function renderCreditHero(){
