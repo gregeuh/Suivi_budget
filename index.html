@@ -3540,21 +3540,54 @@ function getOccurrences(e, y, m) {
 }
 function getMonthTx(){
   var y=viewDate.getFullYear(), m=viewDate.getMonth();
-  var result = [];
+  var pd=Math.min(28,Math.max(1,budgetPayDay||1));
+
+  // Build period boundaries as sortable date strings
+  var periodStart, periodEnd;
+  if(pd<=1){
+    // PayDay = 1 → same as calendar month
+    periodStart=y+'-'+String(m+1).padStart(2,'0')+'-01';
+    var ld=new Date(y,m+1,0).getDate();
+    periodEnd=y+'-'+String(m+1).padStart(2,'0')+'-'+String(ld).padStart(2,'0');
+  } else {
+    // Period: pd of previous month → pd-1 of this month
+    var pm=m-1, py=y;
+    if(pm<0){pm=11;py--;}
+    var dpm=new Date(py,pm+1,0).getDate();
+    periodStart=py+'-'+String(pm+1).padStart(2,'0')+'-'+String(Math.min(pd,dpm)).padStart(2,'0');
+    periodEnd=y+'-'+String(m+1).padStart(2,'0')+'-'+String(pd-1).padStart(2,'0');
+  }
+
+  // Calendar months to scan for recurring occurrences
+  var monthsToScan=[[y,m]];
+  if(pd>1){
+    var pm2=m-1,py2=y;
+    if(pm2<0){pm2=11;py2--;}
+    monthsToScan.unshift([py2,pm2]);
+  }
+
+  var result=[],seen={};
   expenses.forEach(function(e){
-    if(!e.date) return;
-    if(e.isAdjustment || (e.id && e.id.indexOf('adj_')===0)) return;
-    var occs = getOccurrences(e, y, m);
-    occs.forEach(function(day, i){
-      var dateStr = y+'-'+String(m+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
-      result.push(Object.assign({}, e, {
-        date: dateStr,
-        originalId: e.id,
-        id: e.id + (occs.length>1 ? '_occ'+i : '')
-      }));
+    if(!e.date)return;
+    if(e.isAdjustment||(e.id&&e.id.indexOf('adj_')===0))return;
+    monthsToScan.forEach(function(ym){
+      var ty=ym[0],tm=ym[1];
+      var occs=getOccurrences(e,ty,tm);
+      occs.forEach(function(day,i){
+        var dateStr=ty+'-'+String(tm+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+        var uid=e.id+'_'+dateStr;
+        if(dateStr>=periodStart&&dateStr<=periodEnd&&!seen[uid]){
+          seen[uid]=true;
+          result.push(Object.assign({},e,{
+            date:dateStr,
+            originalId:e.id,
+            id:e.id+(occs.length>1?'_occ'+i:'')
+          }));
+        }
+      });
     });
   });
-  return result.sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+  return result.sort(function(a,b){return (b.date||'').localeCompare(a.date||'');});
 }
 
 // ── FORMAT ────────────────────────────────
@@ -4122,19 +4155,25 @@ function setCatFilter(el,f){
 function renderBudgetPeriod(){
   var el=document.getElementById('bp-content');if(!el)return;
   var today=new Date();
-  var pd=Math.min(31,Math.max(1,budgetPayDay||1));
-  // Début : dernier jour de paie ≤ aujourd'hui
-  var start=new Date(today.getFullYear(),today.getMonth(),pd);
-  if(start>today) start=new Date(today.getFullYear(),today.getMonth()-1,pd);
-  // Fin : jour de paie suivant - 1 jour
-  var end=new Date(start.getFullYear(),start.getMonth()+1,pd-1);
+  var pd=Math.min(28,Math.max(1,budgetPayDay||1));
+  var y=viewDate.getFullYear(),m=viewDate.getMonth();
+  var start,end;
+  if(pd<=1){
+    start=new Date(y,m,1);
+    end=new Date(y,m+1,0);
+  } else {
+    var pm=m-1,py=y;
+    if(pm<0){pm=11;py--;}
+    var dpm=new Date(py,pm+1,0).getDate();
+    start=new Date(py,pm,Math.min(pd,dpm));
+    end=new Date(y,m,pd-1);
+  }
   var days=Math.round((end-start)/86400000)+1;
   var fmtShort=function(d){return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});};
   var fmtLong=function(d){return d.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});};
-  // Barre de progression dans la période
-  var elapsed=Math.round((today-start)/86400000);
-  var pct=Math.min(100,Math.round(elapsed/days*100));
-  var daysLeft=Math.max(0,days-elapsed-1);
+  var elapsed=Math.max(0,Math.round((today-start)/86400000));
+  var pct=today<start?0:Math.min(100,Math.round(elapsed/days*100));
+  var daysLeft=today>end?0:Math.max(0,days-elapsed-1);
   el.innerHTML=
     '<div style="display:flex;gap:10px;margin-bottom:14px">'
       +'<div style="flex:1">'
