@@ -1482,13 +1482,56 @@ body.compact .tx-ico{width:34px;height:34px;font-size:17px}
           <div id="theme-picker" style="display:flex;justify-content:space-between;padding:4px 0 8px"></div>
         </div>
       </div>
-      <div class="set-group">
-        <div class="set-row">
-          <div><div class="set-name">📐 Taille des transactions</div><div class="set-sub">Mode compact ou confortable</div></div>
-          <div onclick="toggleCompact()" id="compact-toggle-wrap" style="width:48px;height:26px;border-radius:13px;background:var(--border);position:relative;cursor:pointer;transition:background .25s;flex-shrink:0">
-            <div id="compact-toggle-knob" style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.18);transition:transform .25s"></div>
+      <!-- Density picker -->
+      <div class="set-group" style="overflow:visible">
+        <div style="padding:14px 16px 10px">
+          <div style="font-size:13px;font-weight:700;color:var(--txt);margin-bottom:10px">📐 Affichage des transactions</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <!-- Confortable -->
+            <div id="density-comfortable" onclick="setDensity(false)"
+              style="border-radius:14px;border:2px solid var(--border);padding:12px 10px;cursor:pointer;transition:border-color .2s,box-shadow .2s;background:var(--bg)">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                <div style="width:32px;height:32px;border-radius:10px;background:var(--input);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🛒</div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:12px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Courses Lidl</div>
+                  <div style="font-size:10px;color:var(--txt2)">Courant</div>
+                </div>
+                <div style="font-size:12px;font-weight:700;color:var(--red)">−42 €</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;padding-top:6px;border-top:1px solid var(--border)">
+                <div style="width:28px;height:28px;border-radius:8px;background:var(--input);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">🍕</div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:12px;font-weight:600;color:var(--txt)">Restaurant</div>
+                  <div style="font-size:10px;color:var(--txt2)">Loisirs</div>
+                </div>
+                <div style="font-size:12px;font-weight:700;color:var(--red)">−28 €</div>
+              </div>
+              <div style="margin-top:10px;font-size:11px;font-weight:700;color:var(--txt2);text-align:center">Confortable</div>
+            </div>
+            <!-- Compact -->
+            <div id="density-compact" onclick="setDensity(true)"
+              style="border-radius:14px;border:2px solid var(--border);padding:12px 10px;cursor:pointer;transition:border-color .2s,box-shadow .2s;background:var(--bg)">
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
+                <div style="width:26px;height:26px;border-radius:8px;background:var(--input);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">🛒</div>
+                <div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:600;color:var(--txt)">Courses Lidl</div></div>
+                <div style="font-size:11px;font-weight:700;color:var(--red)">−42 €</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
+                <div style="width:26px;height:26px;border-radius:8px;background:var(--input);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">🍕</div>
+                <div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:600;color:var(--txt)">Restaurant</div></div>
+                <div style="font-size:11px;font-weight:700;color:var(--red)">−28 €</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:7px">
+                <div style="width:26px;height:26px;border-radius:8px;background:var(--input);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">⛽</div>
+                <div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:600;color:var(--txt)">Carburant</div></div>
+                <div style="font-size:11px;font-weight:700;color:var(--red)">−60 €</div>
+              </div>
+              <div style="margin-top:10px;font-size:11px;font-weight:700;color:var(--txt2);text-align:center">Compact</div>
+            </div>
           </div>
         </div>
+      </div>
+      <div class="set-group">
         <div class="set-row"><div><div class="set-name">Prénom affiché</div></div><input class="set-inp" id="s-name" type="text" placeholder="Prénom" onblur="saveName()"></div>
         <div class="set-row"><div><div class="set-name">💼 Salaire prévisionnel</div><div class="set-sub">Si aucun revenu saisi</div></div><div style="display:flex;align-items:center;gap:4px"><input class="set-inp" id="s-forecast" type="number" placeholder="0" onblur="saveSettings()"> €</div></div>
         <div class="set-row"><div><div class="set-name">📅 Jour de salaire</div><div class="set-sub">Jour du mois (1–31)</div></div><input class="set-inp" id="s-payday" type="number" min="1" max="31" placeholder="1" onblur="saveSettings()" style="width:60px;text-align:center"></div>
@@ -2593,15 +2636,17 @@ function saveDarkPref(){ if(currentUser) save(); }
 
 // ── COMPACT MODE ──────────────────────────
 var _isCompact = localStorage.getItem('compactMode')==='1';
+(function(){ document.body.classList.toggle('compact', _isCompact); })();
 function applyCompact(){
   document.body.classList.toggle('compact', _isCompact);
-  var wrap=document.getElementById('compact-toggle-wrap');
-  var knob=document.getElementById('compact-toggle-knob');
-  if(wrap){ wrap.style.background = _isCompact ? 'var(--accent)' : 'var(--border)'; }
-  if(knob){ knob.style.transform = _isCompact ? 'translateX(22px)' : 'none'; }
+  var accent='var(--accent)', border='var(--border)';
+  var c=document.getElementById('density-compact');
+  var n=document.getElementById('density-comfortable');
+  if(c){ c.style.borderColor=_isCompact?accent:border; c.style.boxShadow=_isCompact?'0 0 0 3px rgba(var(--accent-rgb),.15)':'none'; }
+  if(n){ n.style.borderColor=_isCompact?border:accent; n.style.boxShadow=_isCompact?'none':'0 0 0 3px rgba(var(--accent-rgb),.15)'; }
 }
-function toggleCompact(){
-  _isCompact=!_isCompact;
+function setDensity(compact){
+  _isCompact=compact;
   localStorage.setItem('compactMode',_isCompact?'1':'0');
   applyCompact();
   if(navigator.vibrate) navigator.vibrate(8);
