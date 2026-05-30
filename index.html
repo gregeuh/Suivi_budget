@@ -6686,7 +6686,7 @@ function renderSpendingCard(){
   var vsEl=document.getElementById('spending-vs-lbl');
   if(vsEl&&prevTotalExp>0){
     var diff=totalExp-prevTotalExp;
-    var sign=diff>=0?'+':'';
+    var sign=diff>=0?'+':'−';
     vsEl.textContent=sign+fmt(Math.abs(diff))+' vs mois précédent';
     vsEl.style.color=diff<=0?'var(--green)':'var(--red)';
   } else if(vsEl){vsEl.textContent='';}
