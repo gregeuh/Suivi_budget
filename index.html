@@ -1277,6 +1277,47 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
 /* ═══ TRANSACTION TIME ═══ */
 .tx-time{font-size:10px;color:var(--txt3);margin-left:4px}
 
+/* ═══ ACCOUNT DETAIL OVERLAY ═══ */
+.acc-detail-overlay{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .3s}
+.acc-detail-overlay.on{opacity:1;pointer-events:auto}
+.acc-detail-sheet{width:100%;max-width:430px;background:var(--card);
+  border-radius:24px 24px 0 0;max-height:88dvh;overflow-y:auto;
+  transform:translateY(100%);transition:transform .38s cubic-bezier(.32,0,.15,1)}
+.acc-detail-overlay.on .acc-detail-sheet{transform:translateY(0)}
+.acc-detail-header{padding:20px 20px 12px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--border)}
+.acc-detail-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.acc-detail-name{font-family:'Sora',sans-serif;font-size:17px;font-weight:800;color:var(--txt)}
+.acc-detail-type{font-size:12px;color:var(--txt2);margin-top:2px}
+.acc-detail-bal{font-family:'Sora',sans-serif;font-size:28px;font-weight:800;margin-left:auto;letter-spacing:-.5px}
+.acc-detail-body{padding:16px 20px 32px}
+
+/* ═══ BUDGET BADGE ═══ */
+.budget-badge{position:absolute;top:-3px;right:-3px;min-width:16px;height:16px;
+  border-radius:8px;background:#ff453a;color:#fff;font-size:10px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;padding:0 3px;
+  pointer-events:none;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+#tb-budget{position:relative}
+
+/* ═══ SPARKLINE ═══ */
+.acc-mini-sparkline{width:100%;height:28px;margin-top:6px;opacity:.7}
+
+/* ═══ WIDGET PRÉVUS CETTE SEMAINE ═══ */
+.upcoming-widget{background:var(--card);border-radius:var(--r);padding:16px;border:1px solid var(--border);box-shadow:var(--sh);margin-bottom:12px}
+.upcoming-widget-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.upcoming-widget-title{font-size:13px;font-weight:700;color:var(--txt)}
+.upcoming-widget-link{font-size:12px;font-weight:600;color:var(--accent);background:none;border:none;cursor:pointer;padding:0}
+.upcoming-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)}
+.upcoming-row:last-child{border-bottom:none}
+.upcoming-ico{font-size:20px;width:32px;text-align:center;flex-shrink:0}
+.upcoming-info{flex:1;min-width:0}
+.upcoming-name{font-size:13px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.upcoming-date{font-size:11px;color:var(--txt3);margin-top:1px}
+.upcoming-amt{font-size:13px;font-weight:700;white-space:nowrap}
+
+
 </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -1513,6 +1554,15 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
 
       <!-- Widget Aujourd'hui -->
       <div id="today-widget" class="card" style="margin-bottom:16px;margin-top:16px"></div>
+
+      <!-- Prévus cette semaine -->
+      <div class="upcoming-widget" id="upcoming-widget" style="display:none">
+        <div class="upcoming-widget-hd">
+          <div class="upcoming-widget-title">📅 Prévus cette semaine</div>
+          <button class="upcoming-widget-link" onclick="goTo('hist',document.getElementById('tb-hist'),1)">Voir tout</button>
+        </div>
+        <div id="upcoming-widget-list"></div>
+      </div>
 
       <!-- Répartition donut -->
       <div class="card" id="donut-card" style="margin-bottom:16px;padding:18px">
@@ -2469,6 +2519,25 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
   </div>
 </div>
 
+<!-- ACCOUNT DETAIL BOTTOM SHEET -->
+<div class="acc-detail-overlay" id="acc-detail-overlay" onclick="if(event.target===this)closeAccDetail()">
+  <div class="acc-detail-sheet" id="acc-detail-sheet">
+    <div class="m-handle" style="padding-top:12px;margin:0 auto 0"></div>
+    <div id="acc-detail-header-wrap" class="acc-detail-header">
+      <div class="acc-detail-icon" id="acc-detail-icon"></div>
+      <div>
+        <div class="acc-detail-name" id="acc-detail-name"></div>
+        <div class="acc-detail-type" id="acc-detail-type"></div>
+      </div>
+      <div class="acc-detail-bal blur" id="acc-detail-bal"></div>
+    </div>
+    <div class="acc-detail-body">
+      <div style="font-size:12px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px" id="acc-detail-period"></div>
+      <div id="acc-detail-tx"></div>
+    </div>
+  </div>
+</div>
+
 <!-- TX DETAIL BOTTOM SHEET -->
 <div class="overlay" id="tx-detail-overlay" onclick="if(event.target===this)closeTxDetail()" style="align-items:flex-end">
   <div class="modal" id="tx-detail-modal" style="border-radius:24px 24px 0 0;max-height:70dvh;overflow-y:auto;padding:0">
@@ -2994,6 +3063,10 @@ function applyTheme(themeKey, dark) {
   document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
   document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
 
+  // Meta theme-color (barre de statut PWA)
+  var tcMeta = document.querySelector('meta[name="theme-color"]');
+  if(tcMeta) tcMeta.setAttribute('content', t.bg);
+
   // Update ALL CSS variables on :root
   var root = document.documentElement;
   root.style.setProperty('--bg',       t.bg);
@@ -3100,6 +3173,7 @@ function renderThemePicker() {
 
 function toggleDark() {
   isDark = !isDark;
+  window._userSetDark = isDark; // marquer comme choix manuel → désactive le mode auto
   applyTheme(currentTheme, isDark);
   updateDarkToggleIcon();
 }
@@ -3427,18 +3501,28 @@ function renderAccMini() {
 
   var typeLabels = { courant:'Compte courant', epargne:'Épargne', resto:'Tickets restau' };
 
-  el.onclick = function(e){ var t=e.target.closest('[data-goto]'); if(t) goTo(t.getAttribute('data-goto'),document.getElementById('tb-'+t.getAttribute('data-goto')),4); };
+  el.onclick = function(e){
+    var t=e.target.closest('[data-acc-id]');
+    if(t) openAccDetail(t.getAttribute('data-acc-id'));
+  };
   el.innerHTML = accounts.map(function(a) {
     var bal = bals[a.id] || 0;
     var bg = ACC_COLORS[a.color] || ACC_COLORS.blue;
     var label = typeLabels[a.accType] || 'Compte';
-    return '<div class="acc-mini" data-goto="profil" style="background:' + bg + '">'
+    return '<div class="acc-mini" data-acc-id="' + a.id + '" style="background:' + bg + '">'
       + '<div class="acc-mini-icon">' + (a.icon||'🏦') + '</div>'
       + '<div class="acc-mini-name">' + esc(a.name) + '</div>'
       + '<div class="acc-mini-bal blur" style="' + (bal<0?'color:#ef4444':'') + '">' + fmtBal(bal,2) + '</div>'
       + '<div class="acc-mini-type">' + label + '</div>'
+      + '<canvas class="acc-mini-sparkline" data-spark-id="' + a.id + '"></canvas>'
       + '</div>';
   }).join('');
+  // Draw sparklines after DOM paint
+  requestAnimationFrame(function(){
+    el.querySelectorAll('[data-spark-id]').forEach(function(canvas){
+      drawSparkline(canvas, canvas.getAttribute('data-spark-id'));
+    });
+  });
 
   // Scroll fade indicator
   var wrap = document.getElementById('acc-scroll-wrap');
@@ -3851,7 +3935,11 @@ function setupAuth(){
       var spd=document.getElementById('s-payday');if(spd)spd.value=budgetPayDay||1;
       var sTheme=document.getElementById('s-theme');if(sTheme)sTheme.value=savedTheme;
       // Thème
-      if(d.theme && THEMES[d.theme]) applyTheme(d.theme, d.isDark !== undefined ? d.isDark : true);
+      if(d.theme && THEMES[d.theme]){
+        var _dark = d.isDark !== undefined ? d.isDark : true;
+        window._userSetDark = _dark; // préférence sauvegardée → désactive mode auto système
+        applyTheme(d.theme, _dark);
+      }
       else applyTheme('premium', true);
       updateDarkToggleIcon();
       updatePrivacyIcon();
@@ -4129,6 +4217,7 @@ function renderAll(){
   renderCreditHero();
   renderTodayWidget();
   renderAccMini();
+  renderUpcomingWidget();
   renderDashTx();
   renderDonut();
   renderSpendingCard();
@@ -4138,6 +4227,7 @@ function renderAll(){
   applyAllSections();
   renderHist();
   renderBudgets();
+  updateBudgetBadge();
   renderCatsSettings();
   if(currentPage==='analytics') renderAnalytics();
 }
@@ -6631,6 +6721,216 @@ function guessCatCsv(label, type){
   if(/salaire|virement|remuneration|paie/.test(l)) return 'salaire';
   return 'autre';
 }
+
+// ── ACCOUNT DETAIL ─────────────────────────
+function openAccDetail(accId){
+  var acc = accounts.find(function(a){return a.id===accId;});
+  if(!acc) return;
+  var bals = calcBals();
+  var bal = bals[accId] || 0;
+  var bg = ACC_COLORS[acc.color] || ACC_COLORS.blue;
+
+  var iconEl = document.getElementById('acc-detail-icon');
+  var nameEl = document.getElementById('acc-detail-name');
+  var typeEl = document.getElementById('acc-detail-type');
+  var balEl  = document.getElementById('acc-detail-bal');
+  var periodEl = document.getElementById('acc-detail-period');
+  var txEl = document.getElementById('acc-detail-tx');
+
+  if(iconEl){ iconEl.style.background=bg; iconEl.textContent=acc.icon||'🏦'; }
+  if(nameEl) nameEl.textContent = acc.name;
+  var typeLabels = {courant:'Compte courant',epargne:'Épargne',resto:'Tickets restau'};
+  if(typeEl) typeEl.textContent = typeLabels[acc.accType] || 'Compte';
+  if(balEl){ balEl.textContent = fmtBal(bal,2); balEl.style.color = bal<0?'var(--red)':'var(--txt)'; }
+
+  // All transactions for this account, sorted by date desc
+  var txs = expenses.filter(function(e){ return e.accountId===accId && !e.isAdjustment; })
+    .sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+
+  if(periodEl) periodEl.textContent = txs.length + ' transaction' + (txs.length!==1?'s':'');
+  if(txEl) renderTxList(txEl, txs, true);
+
+  var overlay = document.getElementById('acc-detail-overlay');
+  if(overlay) overlay.classList.add('on');
+  if(navigator.vibrate) navigator.vibrate(8);
+}
+function closeAccDetail(){
+  var overlay = document.getElementById('acc-detail-overlay');
+  if(overlay) overlay.classList.remove('on');
+}
+
+// ── BUDGET BADGE ────────────────────────────
+function updateBudgetBadge(){
+  var tab = document.getElementById('tb-budget');
+  if(!tab) return;
+  var existing = tab.querySelector('.budget-badge');
+
+  var data = getMonthTx();
+  var restoIds = getRestoIds();
+  var byCat = {};
+  data.filter(function(e){return e.type==='expense'&&restoIds.indexOf(e.accountId)===-1;})
+    .forEach(function(e){byCat[e.cat]=(byCat[e.cat]||0)+e.amount;});
+  var mIncR = data.filter(function(e){return e.type==='income'&&restoIds.indexOf(e.accountId)===-1;})
+    .reduce(function(s,e){return s+e.amount;},0);
+  var mInc = mIncR>0?mIncR:forecastSalary;
+  var typeAlloc={fixe:0.5,vie:0.3,loisirs:0.2};
+  var typeCounts={fixe:0,vie:0,loisirs:0};
+  categories.forEach(function(c){if(typeCounts[c.type]!==undefined)typeCounts[c.type]++;});
+  var overCount = 0;
+  categories.forEach(function(c){
+    var alloc=typeAlloc[c.type]||0.2;
+    var count=typeCounts[c.type]||1;
+    var auto=mInc>0?Math.round(mInc*alloc/count):0;
+    var budget=catBudgets[c.id]!==undefined?catBudgets[c.id]:auto;
+    var spent=byCat[c.id]||0;
+    if(budget>0&&spent>budget) overCount++;
+  });
+
+  if(overCount>0){
+    if(!existing){
+      var badge=document.createElement('div');
+      badge.className='budget-badge';
+      tab.appendChild(badge);
+      existing=badge;
+    }
+    existing.textContent = overCount>9?'9+':String(overCount);
+    existing.style.transform='scale(1)';
+  } else if(existing){
+    existing.remove();
+  }
+}
+
+// ── SPARKLINE ACC-MINI ──────────────────────
+function drawSparkline(canvas, accId){
+  if(!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.offsetWidth || 100;
+  var H = canvas.offsetHeight || 28;
+  canvas.width = W * devicePixelRatio;
+  canvas.height = H * devicePixelRatio;
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+  ctx.clearRect(0,0,W,H);
+
+  // Last 30 days cumulative balance delta
+  var today = new Date();
+  var points = [];
+  var runBal = 0;
+  for(var d=29; d>=0; d--){
+    var dt = new Date(today); dt.setDate(today.getDate()-d);
+    var ds = dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+    expenses.filter(function(e){ return e.accountId===accId && e.date===ds && !e.isAdjustment; })
+      .forEach(function(e){ runBal += e.type==='income' ? e.amount : -e.amount; });
+    points.push(runBal);
+  }
+
+  if(points.every(function(v){return v===0;})) return;
+  var minV = Math.min.apply(null,points);
+  var maxV = Math.max.apply(null,points);
+  var range = maxV - minV || 1;
+
+  // Determine trend color
+  var isUp = points[points.length-1] >= points[0];
+  var lineColor = isUp ? '#34d399' : '#f87171';
+
+  ctx.beginPath();
+  ctx.strokeStyle = lineColor;
+  ctx.lineWidth = 1.5;
+  ctx.lineJoin = 'round';
+  for(var i=0; i<points.length; i++){
+    var x = (i/(points.length-1))*(W-2)+1;
+    var y = H-2-((points[i]-minV)/range)*(H-4);
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+
+  // Fill
+  var lastX = W-1;
+  var lastY = H-2-((points[points.length-1]-minV)/range)*(H-4);
+  ctx.lineTo(lastX, H-2); ctx.lineTo(1, H-2); ctx.closePath();
+  var grd = ctx.createLinearGradient(0,0,0,H);
+  grd.addColorStop(0, isUp?'rgba(52,211,153,0.25)':'rgba(248,113,113,0.25)');
+  grd.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = grd; ctx.fill();
+}
+
+// ── UPCOMING WIDGET (dashboard) ─────────────
+function renderUpcomingWidget(){
+  var widget = document.getElementById('upcoming-widget');
+  var list = document.getElementById('upcoming-widget-list');
+  if(!widget || !list) return;
+
+  var today = new Date();
+  var in7 = new Date(today); in7.setDate(today.getDate()+7);
+  var todayStr = today.toISOString().split('T')[0];
+  var in7Str = in7.toISOString().split('T')[0];
+
+  // Collect recurring transactions due in next 7 days
+  var upcoming = [];
+  expenses.filter(function(e){ return e.recurring && e.frequency && !e.isVirement; })
+    .forEach(function(e){
+      // Check next 7 days
+      for(var d=1; d<=7; d++){
+        var dt = new Date(today); dt.setDate(today.getDate()+d);
+        var y=dt.getFullYear(), m=dt.getMonth();
+        var occs = getOccurrences(e, y, m);
+        if(occs.indexOf(dt.getDate())!==-1){
+          var ds = y+'-'+String(m+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+          upcoming.push({tx:e, date:ds, dayOffset:d});
+        }
+      }
+    });
+
+  // Also include non-recurring future transactions this month
+  var periodData = getMonthTx();
+  periodData.filter(function(e){ return !e.recurring && e.date>todayStr && e.date<=in7Str; })
+    .forEach(function(e){ upcoming.push({tx:e, date:e.date, dayOffset:0}); });
+
+  upcoming.sort(function(a,b){ return a.date.localeCompare(b.date); });
+  upcoming = upcoming.slice(0,5);
+
+  if(!upcoming.length){ widget.style.display='none'; return; }
+  widget.style.display='block';
+
+  var dayNames=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  list.innerHTML = upcoming.map(function(item){
+    var e = item.tx;
+    var cat = categories.find(function(c){return c.id===e.cat;})||{icon:'📦'};
+    var isInc = e.type==='income';
+    var dt = new Date(item.date+'T12:00:00');
+    var dayLbl = item.dayOffset===1?'Demain':dayNames[dt.getDay()]+' '+dt.getDate();
+    return '<div class="upcoming-row">'
+      +'<div class="upcoming-ico">'+cat.icon+'</div>'
+      +'<div class="upcoming-info">'
+        +'<div class="upcoming-name">'+esc(e.label||'Sans libellé')+'</div>'
+        +'<div class="upcoming-date">'+dayLbl+'</div>'
+      +'</div>'
+      +'<div class="upcoming-amt" style="color:'+(isInc?'var(--green)':'var(--red)')+'">'
+        +(isInc?'+':'-')+fmt(e.amount)
+      +'</div>'
+    +'</div>';
+  }).join('');
+}
+
+// ── DARK MODE AUTO (système) ────────────────
+(function(){
+  // N'activer le mode auto que si l'utilisateur n'a pas de préférence sauvegardée
+  // La préférence est sauvegardée dans settings.isDark via Firebase
+  // Sur le premier chargement (pas encore auth), on suit le système
+  var mq = window.matchMedia('(prefers-color-scheme: dark)');
+  function applySystemTheme(e){
+    // Ne pas écraser si l'utilisateur a une préférence explicite sauvegardée
+    if(window._userSetDark !== undefined) return;
+    isDark = e.matches;
+    applyTheme('premium', isDark);
+  }
+  if(mq.addEventListener) mq.addEventListener('change', applySystemTheme);
+  else if(mq.addListener) mq.addListener(applySystemTheme);
+  // Appliquer immédiatement sur le premier chargement
+  if(window._userSetDark === undefined){
+    isDark = mq.matches;
+    // applyTheme sera appelé après init
+  }
+})();
 
 // ── SIDE DRAWER ────────────────────────────
 function openDrawer(){
