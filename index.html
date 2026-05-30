@@ -153,7 +153,7 @@ button{cursor:pointer;border:none;background:none}
 .m-label{font-family:'Sora',sans-serif;font-size:16px;font-weight:800;color:var(--txt);text-transform:capitalize;letter-spacing:-.2px}
 
 /* CONTENT */
-.content{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 16px 110px;background:var(--bg);}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 16px 80px;background:var(--bg);}
 .page{display:none;background:var(--bg);}
 .page.on{display:block;background:var(--bg);}
 /* ── Skeleton loader ── */
@@ -168,45 +168,41 @@ button{cursor:pointer;border:none;background:none}
 @keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
 /* TAB BAR */
-.tab-wrap{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
-  width:calc(100% - 32px);max-width:430px;z-index:200;pointer-events:none;
-  transition:bottom .3s cubic-bezier(0.16,1,0.3,1)}
-.tab-bar{display:flex;align-items:center;justify-content:space-between;
-  background:transparent;
-  border-radius:28px;padding:8px 10px;
-  pointer-events:auto;position:relative;
-  transition:padding .3s ease,border-radius .3s ease}
+.tab-wrap{position:fixed;bottom:0;left:0;right:0;
+  width:100%;max-width:100%;z-index:200;pointer-events:none;}
+.tab-bar{display:flex;align-items:center;justify-content:space-around;
+  background:#0a0a0a;
+  border-top:1px solid rgba(255,255,255,0.08);
+  padding:8px 0 max(8px,env(safe-area-inset-bottom));
+  pointer-events:auto;position:relative;}
 
-.tab-pill{position:absolute;top:5px;bottom:5px;left:5px;
-  width:calc((100% - 10px) / 5);
-  background:rgba(255,255,255,0.82);
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  border-radius:23px;
-  border:1px solid rgba(255,255,255,0.95);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,1),0 3px 14px rgba(0,0,0,0.10);
-  transition:transform .38s cubic-bezier(.34,1.56,.64,1);
-  pointer-events:none}
+/* pill hidden — no colored pill in Revolut-style */
+.tab-pill{display:none}
 
-.tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;
-  padding:10px 4px;border-radius:23px;z-index:1;position:relative;border:none;background:none;
-  transition:padding .25s ease}
-.tab-btn:active .t-icon{transform:scale(1.22) !important}
-.tab-btn:active .add-circle{transform:scale(1.15)}
+.tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:8px 4px;z-index:1;position:relative;border:none;background:none;
+  transition:opacity .15s}
+.tab-btn:active{opacity:.6}
+.tab-btn:active .add-circle{transform:scale(1.12)}
 /* Centre button — add */
 .tab-btn.add-btn{position:relative}
-.add-circle{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-d));
-  background:linear-gradient(135deg,var(--accent),var(--accent-d));
+.add-circle{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-d));
   display:flex;align-items:center;justify-content:center;
-  font-size:20px;color:#fff;margin:-4px auto 0;
-  box-shadow:0 4px 16px rgba(var(--accent-rgb),0.45);
-  transition:width .25s ease,height .25s ease,border-radius .25s ease,font-size .25s ease,.15s}
-.t-icon{font-size:20px;line-height:1;color:var(--txt3);transition:transform .25s cubic-bezier(0.34,1.56,0.64,1),color .2s}
+  font-size:22px;color:#fff;margin:-6px auto 0;
+  box-shadow:0 4px 20px rgba(var(--accent-rgb),0.5);
+  transition:.2s cubic-bezier(.34,1.56,.64,1)}
+.t-icon{font-size:20px;line-height:1;color:#636366;transition:color .2s}
 .t-icon svg{display:block}
-.tab-btn.on .t-icon{color:var(--accent);transform:scale(1.18);filter:drop-shadow(0 2px 6px rgba(var(--accent-rgb),0.35))}
-.t-lbl{font-size:10px;font-weight:600;color:var(--txt3);letter-spacing:.3px;
-  transition:opacity .2s ease,max-height .25s ease,margin .25s ease;
-  max-height:20px;overflow:hidden;white-space:nowrap}
-.tab-btn.on .t-lbl{color:var(--accent);font-weight:700}
+.tab-btn.on .t-icon{color:#ffffff}
+.t-lbl{font-size:10px;font-weight:600;color:#636366;letter-spacing:.2px;transition:color .2s}
+.tab-btn.on .t-lbl{color:#ffffff;font-weight:700}
+
+/* Light mode override */
+[data-theme="light"] .tab-bar{background:rgba(255,255,255,0.95);border-top:1px solid rgba(0,0,0,0.08);}
+[data-theme="light"] .t-icon{color:#8e8e93}
+[data-theme="light"] .tab-btn.on .t-icon{color:var(--accent)}
+[data-theme="light"] .t-lbl{color:#8e8e93}
+[data-theme="light"] .tab-btn.on .t-lbl{color:var(--accent)}
 
 /* ── TAB BAR COMPACT (scroll down) ── */
 
@@ -413,7 +409,7 @@ body.compact .tx-ico{width:34px;height:34px;font-size:17px}
 .rev-row:not(:last-child){border-bottom:1px solid var(--border)}
 .rev-row:active{background:var(--card2)}
 .rev-row-left{display:flex;align-items:center;gap:14px;flex:1;min-width:0}
-.rev-row-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rev-row-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:transparent !important;color:var(--txt2) !important}
 .rev-row-title{font-size:14px;font-weight:600;color:var(--txt)}
 .rev-row-sub{font-size:11px;color:var(--txt2);margin-top:1px}
 .rev-row-right{font-size:13px;color:var(--txt2);display:flex;align-items:center;gap:6px;flex-shrink:0}
@@ -918,16 +914,12 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
 
 /* ── Tab bar ── */
 .tab-bar {
-  background: rgba(255,253,248,0.55) !important;
-  backdrop-filter: var(--lg-blur) !important;
-  -webkit-backdrop-filter: var(--lg-blur) !important;
-  border: 1px solid rgba(255,255,255,0.75) !important;
-  box-shadow:
-    inset 0 1.5px 0 rgba(255,255,255,0.95),
-    inset 0 -1px 0 rgba(0,0,0,0.03),
-    0 8px 32px rgba(var(--accent-rgb),0.18),
-    0 20px 60px rgba(0,0,0,0.14),
-    0 2px 8px rgba(0,0,0,0.08) !important;
+  background: rgba(255,253,248,0.88) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-top: 1px solid rgba(0,0,0,0.08) !important;
+  border-radius: 0 !important;
+  box-shadow: 0 -1px 0 rgba(0,0,0,0.06) !important;
 }
 
 
@@ -956,29 +948,24 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
 
 /* ── Dark mode ── */
 [data-theme="dark"] .tab-bar {
-  background: rgba(28,24,20,0.65) !important;
-  border-color: rgba(255,255,255,0.12) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.12),
-    0 8px 40px rgba(0,0,0,0.50) !important;
+  background: rgba(10,10,10,0.97) !important;
+  border-top: 1px solid rgba(255,255,255,0.07) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
-[data-theme="dark"] .tab-pill {
-  background: rgba(50,44,36,0.90) !important;
-  border-color: rgba(255,255,255,0.14) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 2px 8px rgba(0,0,0,0.4) !important;
-}
+[data-theme="dark"] .tab-pill { display: none !important; }
 [data-theme="dark"] .card,
 [data-theme="dark"] .stat-card,
 [data-theme="dark"] .evo-card {
-  background: rgba(30,26,20,0.70) !important;
-  border-color: rgba(255,255,255,0.09) !important;
+  background: rgba(28,28,30,0.95) !important;
+  border-color: rgba(255,255,255,0.06) !important;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.08),
-    0 2px 16px rgba(0,0,0,0.35) !important;
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    0 2px 16px rgba(0,0,0,0.50) !important;
 }
 [data-theme="dark"] .modal {
-  background: rgba(24,20,16,0.80) !important;
-  border-top-color: rgba(255,255,255,0.12) !important;
+  background: rgba(28,28,30,0.97) !important;
+  border-top-color: rgba(255,255,255,0.08) !important;
 }
 
 
@@ -1062,12 +1049,12 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
 
 /* Content — espace sous la tab bar */
 .content {
-  padding-bottom: calc(110px + var(--safe-bottom)) !important;
+  padding-bottom: calc(80px + var(--safe-bottom)) !important;
 }
 
 /* FAB menu — remonte avec la tab bar */
 #fab-menu {
-  bottom: calc(110px + var(--safe-bottom)) !important;
+  bottom: calc(80px + var(--safe-bottom)) !important;
 }
 
 /* Modals — respectent le bas */
@@ -1191,6 +1178,70 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
   .page.on { animation: none !important; }
   #ptr-indicator { display: none !important; }
 }
+
+/* ═══ SIDE DRAWER ═══ */
+.drawer-overlay{position:fixed;inset:0;z-index:500;pointer-events:none;transition:background .3s}
+.drawer-overlay.open{pointer-events:auto;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.drawer-panel{position:absolute;top:0;left:0;bottom:0;width:88%;max-width:340px;
+  background:#111111;overflow-y:auto;overflow-x:hidden;
+  transform:translateX(-100%);transition:transform .35s cubic-bezier(.32,0,.15,1);
+  display:flex;flex-direction:column}
+.drawer-overlay.open .drawer-panel{transform:translateX(0)}
+.drawer-header{padding:56px 20px 20px;display:flex;flex-direction:column;align-items:flex-start;gap:0}
+.drawer-avatar{width:64px;height:64px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent-d));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Sora',sans-serif;font-size:24px;font-weight:800;color:#fff;
+  box-shadow:0 4px 20px rgba(var(--accent-rgb),.35);margin-bottom:14px}
+.drawer-name{font-family:'Sora',sans-serif;font-size:20px;font-weight:800;color:#fff;line-height:1.1}
+.drawer-email{font-size:13px;color:#636366;margin-top:4px}
+.drawer-body{flex:1;padding:0 12px 24px}
+.drawer-sec{margin-bottom:6px}
+.drawer-sec-title{font-size:11px;font-weight:700;color:#48484a;text-transform:uppercase;letter-spacing:.7px;padding:14px 8px 6px}
+.drawer-group{background:#1c1c1e;border-radius:16px;overflow:hidden}
+.drow{display:flex;align-items:center;padding:14px 16px;gap:12px;cursor:pointer;transition:background .15s}
+.drow:not(:last-child){border-bottom:1px solid rgba(255,255,255,0.04)}
+.drow:active{background:rgba(255,255,255,0.05)}
+.drow-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:#8e8e93;flex-shrink:0}
+.drow-label{flex:1;font-size:15px;font-weight:500;color:#ffffff}
+.drow-value{font-size:14px;color:#636366}
+.drow-chevron{color:#48484a;flex-shrink:0}
+.drow-chevron svg{display:block}
+.drawer-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,0.08);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;color:#8e8e93}
+.drawer-logout{margin:8px 12px 24px;background:#1c1c1e;border-radius:14px;
+  border:none;cursor:pointer;padding:16px;width:calc(100% - 24px);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  font-size:15px;font-weight:600;color:#ff453a;transition:background .15s}
+.drawer-logout:active{background:rgba(255,69,58,0.1)}
+
+/* ═══ HERO QUICK ACTIONS ═══ */
+.hero-quick-actions{display:flex;justify-content:space-around;margin-top:20px;gap:4px}
+.hqa-btn{display:flex;flex-direction:column;align-items:center;gap:6px;
+  background:none;border:none;cursor:pointer;flex:1;padding:0}
+.hqa-circle{width:52px;height:52px;border-radius:50%;
+  background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(8px);transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .15s}
+.hqa-btn:active .hqa-circle{transform:scale(0.9);background:rgba(255,255,255,0.22)}
+.hqa-lbl{font-size:11px;font-weight:600;color:rgba(255,255,255,0.85);text-align:center}
+
+/* ═══ SPENDING CARD ═══ */
+.spending-card{background:var(--card);border-radius:var(--r);padding:18px;border:1px solid var(--border);box-shadow:var(--sh);margin-bottom:12px}
+.spending-chart-wrap{position:relative;height:80px;margin-top:12px}
+.spending-chart-canvas{width:100%;height:100%}
+
+/* ═══ ANALYTICS PAGE ═══ */
+#p-analytics .analytics-chart-wrap{height:160px;position:relative;margin:0 -2px}
+.analytics-mini-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.analytics-mini{background:var(--card);border-radius:16px;padding:14px 16px;border:1px solid var(--border)}
+.analytics-mini-lbl{font-size:11px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.analytics-mini-val{font-family:'Sora',sans-serif;font-size:20px;font-weight:800;color:var(--txt)}
+.analytics-mini-sub{font-size:11px;color:var(--txt3);margin-top:2px}
+
+/* ═══ TRANSACTION TIME ═══ */
+.tx-time{font-size:10px;color:var(--txt3);margin-left:4px}
 
 </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1319,7 +1370,7 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
   <!-- TOP -->
   <div class="top" id="top-bar">
     <div class="top-left">
-      <button onclick="goTo('profil',document.getElementById('tb-profil'),4)" id="avatar-btn"
+      <button onclick="openDrawer()" id="avatar-btn"
         style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-d));
         border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
         font-family:'Sora',sans-serif;font-size:15px;font-weight:800;color:#fff;
@@ -1391,6 +1442,25 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
           </div>
           <div style="font-family:Sora,sans-serif;font-size:15px;font-weight:700;color:var(--green)" id="h-epargne">—</div>
         </div>
+        <!-- Quick actions -->
+        <div class="hero-quick-actions">
+          <button class="hqa-btn" onclick="openAdd('exp')">
+            <div class="hqa-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+            <div class="hqa-lbl">Ajouter</div>
+          </button>
+          <button class="hqa-btn" onclick="openAdd('vir')">
+            <div class="hqa-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div>
+            <div class="hqa-lbl">Virement</div>
+          </button>
+          <button class="hqa-btn" onclick="goTo('hist',document.getElementById('tb-hist'),1)">
+            <div class="hqa-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div class="hqa-lbl">Historique</div>
+          </button>
+          <button class="hqa-btn" onclick="goTo('budget',document.getElementById('tb-budget'),3)">
+            <div class="hqa-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+            <div class="hqa-lbl">Budgets</div>
+          </button>
+        </div>
         <!-- Swile row — only shown if Swile expenses exist -->
         <div id="swile-row" style="display:none;margin-top:10px;padding:12px 14px;background:var(--card2);border:1.5px solid var(--border);border-radius:14px">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
@@ -1416,6 +1486,19 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
         <div style="display:flex;align-items:center;gap:20px">
           <canvas id="donut-canvas" width="110" height="110" style="flex-shrink:0"></canvas>
           <div id="donut-legend" style="flex:1;min-width:0"></div>
+        </div>
+      </div>
+
+      <!-- Dépenses du mois card -->
+      <div class="spending-card" id="spending-month-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <div style="font-size:13px;font-weight:700;color:var(--txt)">Dépenses du mois</div>
+          <div style="font-size:11px;font-weight:600;color:var(--txt3)" id="spending-status-lbl"></div>
+        </div>
+        <div style="font-family:'Sora',sans-serif;font-size:28px;font-weight:800;color:var(--txt);letter-spacing:-.5px;margin-bottom:2px" id="spending-total-lbl" class="blur">—</div>
+        <div style="font-size:12px;color:var(--txt3);margin-bottom:12px" id="spending-vs-lbl"></div>
+        <div class="spending-chart-wrap">
+          <canvas id="spending-curve-canvas" class="spending-chart-canvas"></canvas>
         </div>
       </div>
 
@@ -1823,9 +1906,51 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
 
     </div>
 
+    <!-- 📊 ANALYTICS -->
+    <div class="page" id="p-analytics">
+      <div style="padding:4px 0 16px">
+        <div style="font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:var(--txt);margin-bottom:4px">Analyse</div>
+        <div style="font-size:13px;color:var(--txt2)" id="analytics-period-lbl">Ce mois</div>
+      </div>
+
+      <!-- Mini cards -->
+      <div class="analytics-mini-cards">
+        <div class="analytics-mini">
+          <div class="analytics-mini-lbl">Revenus</div>
+          <div class="analytics-mini-val blur" id="analytics-income">—</div>
+          <div class="analytics-mini-sub" id="analytics-income-sub"></div>
+        </div>
+        <div class="analytics-mini">
+          <div class="analytics-mini-lbl">Solde net</div>
+          <div class="analytics-mini-val blur" id="analytics-net">—</div>
+          <div class="analytics-mini-sub" id="analytics-net-sub"></div>
+        </div>
+      </div>
+
+      <!-- Spending curve this month vs prev month -->
+      <div class="card" style="padding:16px 14px 10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div style="font-size:13px;font-weight:700;color:var(--txt)">Dépenses du mois</div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:11px;font-weight:600">
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:3px;border-radius:2px;background:#60a5fa;display:inline-block"></span><span style="color:var(--txt2)">Ce mois</span></span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:3px;border-radius:2px;background:rgba(150,150,150,0.5);display:inline-block"></span><span style="color:var(--txt3)">Mois préc.</span></span>
+          </div>
+        </div>
+        <div class="analytics-chart-wrap">
+          <canvas id="analytics-curve-canvas" style="width:100%;height:100%"></canvas>
+        </div>
+      </div>
+
+      <!-- Top categories -->
+      <div class="card" style="padding:16px">
+        <div style="font-size:13px;font-weight:700;color:var(--txt);margin-bottom:14px">Top catégories</div>
+        <div id="analytics-top-cats"></div>
+      </div>
+    </div>
+
   </div><!-- /content -->
 
-  
+
 
   <!-- CREDITS OVERLAY -->
   <div class="overlay" id="credits-overlay" onclick="if(event.target===this)closeCredits()">
@@ -1963,9 +2088,9 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
         <div class="t-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
         <div class="t-lbl">Budgets</div>
       </button>
-      <button class="tab-btn" id="tb-profil" onclick="goTo('profil',this,4)">
-        <div class="t-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-        <div class="t-lbl">Profil</div>
+      <button class="tab-btn" id="tb-analytics" onclick="goTo('analytics',this,4)">
+        <div class="t-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <div class="t-lbl">Analyse</div>
       </button>
     </div>
   </div>
@@ -2219,6 +2344,94 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
     <button class="ctx-btn" onclick="txCtxDuplicate()"><span class="ctx-ico">📋</span>Dupliquer</button>
     <div style="height:1px;background:var(--border);margin:4px 8px"></div>
     <button class="ctx-btn ctx-btn-del" onclick="txCtxDelete()"><span class="ctx-ico">🗑️</span>Supprimer</button>
+  </div>
+</div>
+
+<!-- SIDE DRAWER -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="if(event.target===this)closeDrawer()">
+  <div class="drawer-panel" id="drawer-panel">
+    <button class="drawer-close" onclick="closeDrawer()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="drawer-header">
+      <div class="drawer-avatar"><span id="drawer-avatar-letter">?</span></div>
+      <div class="drawer-name" id="drawer-name-display">—</div>
+      <div class="drawer-email" id="drawer-email-display"></div>
+    </div>
+    <div class="drawer-body">
+
+      <!-- Préférences -->
+      <div class="drawer-sec">
+        <div class="drawer-sec-title">Préférences</div>
+        <div class="drawer-group">
+          <div class="drow" onclick="drawerToggleDark()">
+            <div class="drow-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></div>
+            <div class="drow-label">Mode sombre</div>
+            <div id="drawer-dark-value" class="drow-value">On</div>
+          </div>
+          <div class="drow" onclick="drawerTogglePrivacy()">
+            <div class="drow-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+            <div class="drow-label">Mode masqué</div>
+            <div id="drawer-privacy-value" class="drow-value">Off</div>
+          </div>
+          <div class="drow" onclick="drawerToggleDensity()">
+            <div class="drow-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+            <div class="drow-label">Affichage compact</div>
+            <div id="drawer-density-value" class="drow-value">Off</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Budget -->
+      <div class="drawer-sec">
+        <div class="drawer-sec-title">Budget</div>
+        <div class="drawer-group">
+          <div class="drow">
+            <div class="drow-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+            <div class="drow-label">Prénom</div>
+            <input class="set-inp" id="drawer-s-name" type="text" placeholder="Prénom" onblur="saveName()" style="text-align:right;background:transparent;border:none;color:#8e8e93;font-size:14px;width:100px;outline:none">
+          </div>
+          <div class="drow">
+            <div class="drow-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
+            <div class="drow-label">Salaire prévisionnel</div>
+            <input class="set-inp" id="drawer-s-forecast" type="number" placeholder="0" onblur="saveSettings()" style="text-align:right;background:transparent;border:none;color:#8e8e93;font-size:14px;width:60px;outline:none">
+            <span style="font-size:13px;color:#636366;margin-left:2px">€</span>
+          </div>
+          <div class="drow">
+            <div class="drow-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+            <div class="drow-label">Jour de salaire</div>
+            <input class="set-inp" id="drawer-s-payday" type="number" min="1" max="31" placeholder="1" onblur="saveSettings()" style="text-align:center;background:transparent;border:none;color:#8e8e93;font-size:14px;width:40px;outline:none">
+          </div>
+          <div class="drow" onclick="closeDrawer();goTo('budget',document.getElementById('tb-budget'),3)" style="cursor:pointer">
+            <div class="drow-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+            <div class="drow-label">Gérer les budgets</div>
+            <div class="drow-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Données -->
+      <div class="drawer-sec">
+        <div class="drawer-sec-title">Données</div>
+        <div class="drawer-group">
+          <div class="drow" onclick="closeDrawer();goTo('profil',null,4)" style="cursor:pointer">
+            <div class="drow-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div>
+            <div class="drow-label">Paramètres avancés</div>
+            <div class="drow-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+          </div>
+          <div class="drow" onclick="openCsvImport()" style="cursor:pointer">
+            <div class="drow-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+            <div class="drow-label">Importer CSV</div>
+            <div class="drow-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <button class="drawer-logout" onclick="doSignOut()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Déconnexion
+    </button>
   </div>
 </div>
 
@@ -2706,7 +2919,7 @@ function obFinish() {
 
 
 // ── THÈMES PASTELS ────────────────────────
-var isDark = false;
+var isDark = true;
 
 var THEMES = {
   premium: {
@@ -2722,14 +2935,14 @@ var THEMES = {
       tabBg:'rgba(255,255,255,0.85)', tabBorder:'rgba(59,130,246,0.08)',
     },
     dark: {
-      bg:'#0a0d14', card:'#131929', card2:'#1a2236',
-      border:'rgba(99,155,255,0.10)', input:'#1a2236',
+      bg:'#0a0a0a', card:'#1c1c1e', card2:'#2c2c2e',
+      border:'rgba(255,255,255,0.06)', input:'#2c2c2e',
       accent:'#60a5fa', accentD:'#3b82f6', accentRgb:'96,165,250',
-      txt:'#f2f2f7', txt2:'#9da8bb', txt3:'#60a5fa',
-      sh:'0 1px 4px rgba(0,0,0,0.5), 0 6px 16px rgba(0,0,0,0.4)',
-      hero:'linear-gradient(145deg,#0f1a2e 0%,#1e3a6e 35%,#2563eb 70%,#3b82f6 100%)',
-      authBg:'linear-gradient(145deg,#0a0d14,#131929,#1a2236)',
-      tabBg:'rgba(10,13,20,0.95)', tabBorder:'rgba(96,165,250,0.14)',
+      txt:'#ffffff', txt2:'#8e8e93', txt3:'#636366',
+      sh:'0 1px 4px rgba(0,0,0,0.8), 0 6px 20px rgba(0,0,0,0.6)',
+      hero:'linear-gradient(145deg,#1c1c1e 0%,#2c2c2e 40%,#1a2642 70%,#1e3a6e 100%)',
+      authBg:'linear-gradient(145deg,#0a0a0a,#1c1c1e,#2c2c2e)',
+      tabBg:'rgba(10,10,10,0.98)', tabBorder:'rgba(255,255,255,0.06)',
     }
   }
 };
@@ -2933,7 +3146,7 @@ document.addEventListener('keydown', function(e){
   if(e.key==='1') goTo('dash',  document.getElementById('tb-dash'),  0);
   if(e.key==='2') goTo('hist',  document.getElementById('tb-hist'),  1);
   if(e.key==='3') goTo('budget',document.getElementById('tb-budget'),3);
-  if(e.key==='4') goTo('profil',document.getElementById('tb-profil'),4);
+  if(e.key==='4') goTo('analytics',document.getElementById('tb-analytics'),4);
 });
 
 // ── RIGHT-CLICK CONTEXT MENU ──────────────
@@ -3604,8 +3817,8 @@ function setupAuth(){
       var spd=document.getElementById('s-payday');if(spd)spd.value=budgetPayDay||1;
       var sTheme=document.getElementById('s-theme');if(sTheme)sTheme.value=savedTheme;
       // Thème
-      if(d.theme && THEMES[d.theme]) applyTheme(d.theme, d.isDark||false);
-      else applyTheme('premium', false);
+      if(d.theme && THEMES[d.theme]) applyTheme(d.theme, d.isDark !== undefined ? d.isDark : true);
+      else applyTheme('premium', true);
       updateDarkToggleIcon();
       updatePrivacyIcon();
       applyCompact();
@@ -3884,6 +4097,7 @@ function renderAll(){
   renderAccMini();
   renderDashTx();
   renderDonut();
+  renderSpendingCard();
   renderCharts();
   renderConseils();
   renderWishBandeau();
@@ -3891,6 +4105,7 @@ function renderAll(){
   renderHist();
   renderBudgets();
   renderCatsSettings();
+  if(currentPage==='analytics') renderAnalytics();
 }
 
 // ── HERO ──────────────────────────────────
@@ -4292,7 +4507,7 @@ function txHTML(e,showEdit){
   var inner='<div class="tx-item '+txCls+'" data-tx-id="'+id+'" onclick="'+(showEdit?'openTxDetail(\''+id+'\')':'')+'">'
     +'<div class="tx-ico" style="background:'+icoBg+';box-shadow:'+icoSh+'">'+cat.icon+'</div>'
     +'<div class="tx-info"><div class="tx-name">'+esc(e.label||'Sans libellé')+swileBadge+recurBadge+virBadge+'</div>'
-    +'<div class="tx-sub">'+(acc?esc(acc.name):'')+' '+(e.note?'· '+esc(e.note):'')+'</div></div>'
+    +'<div class="tx-sub">'+(acc?esc(acc.name):'')+' '+(e.note?'· '+esc(e.note):'')+''+(e.time?'<span class="tx-time">'+esc(e.time)+'</span>':'')+'</div></div>'
     +'<div class="tx-amt '+(isInc?'i':'e')+' blur">'+(isInc?'+':'-')+e.amount.toFixed(2)+' €</div></div>';
   return showEdit
     ? inner : inner;
@@ -4826,10 +5041,12 @@ function saveTransaction(){
     toast('↔️ Virement de '+amt.toFixed(2)+' € effectué','success');
     return;
   }
+  var _now=new Date();
   var newTx = {
     id:_uid('tx'), label:lbl, amount:amt,
     type:mCurrentType==='inc'?'income':'expense',
     cat:selCat, accountId:selAcc, date:date,
+    time:String(_now.getHours()).padStart(2,'0')+':'+String(_now.getMinutes()).padStart(2,'0'),
     note:note||null,
     recurring:_recurOn,
     frequency:_recurOn?_recurFreq:null,
@@ -5119,13 +5336,13 @@ function goTo(page,btn,idx){
   // Tab pill
   var pill=document.getElementById('tab-pill');
   // idx for pill: 0=dash,1=hist,skip center,3=budget,4=profil
-  // pill positions: dash=0, hist=1, budget=3, profil=4
-  var pillIdx=idx!==undefined?idx:{dash:0,hist:1,budget:3,profil:4}[page]||0;
+  // pill positions: dash=0, hist=1, budget=3, analytics=4
+  var pillIdx=idx!==undefined?idx:{dash:0,hist:1,budget:3,analytics:4,profil:4}[page]||0;
   if(pill)pill.style.transform='translateX('+(pillIdx*100)+'%)';
   document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('on');});
   if(btn)btn.classList.add('on');
   // Month bar visibility
-  var mb=document.getElementById('month-bar');if(mb)mb.style.visibility=page==='profil'?'hidden':'visible';
+  var mb=document.getElementById('month-bar');if(mb)mb.style.visibility=(page==='profil')?'hidden':'visible';
   // Directional slide animation
   if(el&&pillIdx!==_currentTabIdx){
     var slideClass=pillIdx>_currentTabIdx?'slide-from-right':'slide-from-left';
@@ -5141,6 +5358,7 @@ function goTo(page,btn,idx){
     var mp=document.getElementById('s-meal-price');if(mp)mp.value=swileMealPrice||10;
     applyCompact();
   }
+  if(page==='analytics') setTimeout(renderAnalytics, 50);
   if(page==='dash') setTimeout(renderCharts, 50);
 }
 
@@ -6027,7 +6245,7 @@ function loadDemo() {
 
 // ── INIT ──────────────────────────────────
 updateMonthLabel();
-applyTheme('premium');
+applyTheme('premium', true);
 buildNumpad();
 setTimeout(renderThemePicker, 200);
 
@@ -6354,6 +6572,264 @@ function guessCatCsv(label, type){
   if(/loyer|electricite|edf|gaz|eau|internet|sfr|orange|bouygues|free/.test(l)) return 'logement';
   if(/salaire|virement|remuneration|paie/.test(l)) return 'salaire';
   return 'autre';
+}
+
+// ── SIDE DRAWER ────────────────────────────
+function openDrawer(){
+  var overlay=document.getElementById('drawer-overlay');
+  if(!overlay) return;
+  overlay.classList.add('open');
+  document.body.style.overflow='hidden';
+  // Sync drawer fields with current settings
+  var nameEl=document.getElementById('drawer-s-name');
+  if(nameEl) nameEl.value=displayName||'';
+  var foreEl=document.getElementById('drawer-s-forecast');
+  if(foreEl) foreEl.value=forecastSalary||'';
+  var payEl=document.getElementById('drawer-s-payday');
+  if(payEl) payEl.value=budgetPayDay||1;
+  updateDrawerToggles();
+  var avatarEl=document.getElementById('drawer-avatar-letter');
+  var nameD=document.getElementById('drawer-name-display');
+  var emailD=document.getElementById('drawer-email-display');
+  var n=(displayName||'?').trim();
+  if(avatarEl) avatarEl.textContent=n.charAt(0).toUpperCase();
+  if(nameD) nameD.textContent=n||'—';
+  if(emailD) emailD.textContent=currentUser?currentUser.email:'';
+}
+function closeDrawer(){
+  var overlay=document.getElementById('drawer-overlay');
+  if(!overlay) return;
+  overlay.classList.remove('open');
+  document.body.style.overflow='';
+}
+function updateDrawerToggles(){
+  var dv=document.getElementById('drawer-dark-value');
+  if(dv) dv.textContent=isDark?'On':'Off';
+  var pv=document.getElementById('drawer-privacy-value');
+  if(pv) pv.textContent=_privacyMode?'On':'Off';
+  var cv=document.getElementById('drawer-density-value');
+  if(cv) cv.textContent=_isCompact?'On':'Off';
+}
+function drawerToggleDark(){ toggleDark(); saveDarkPref(); updateDrawerToggles(); }
+function drawerTogglePrivacy(){ togglePrivacy(); updateDrawerToggles(); }
+function drawerToggleDensity(){ setDensity(!_isCompact); updateDrawerToggles(); }
+
+// Sync drawer inputs to the original settings inputs
+(function(){
+  var settingsFields=[
+    ['drawer-s-name','s-name'],['drawer-s-forecast','s-forecast'],['drawer-s-payday','s-payday']
+  ];
+  function syncDrawerInputs(){
+    settingsFields.forEach(function(pair){
+      var drawerEl=document.getElementById(pair[0]);
+      var settEl=document.getElementById(pair[1]);
+      if(drawerEl&&settEl){
+        drawerEl.addEventListener('input',function(){ settEl.value=drawerEl.value; });
+        drawerEl.addEventListener('change',function(){ settEl.value=drawerEl.value; });
+      }
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',syncDrawerInputs);
+  else syncDrawerInputs();
+})();
+
+// ── SPENDING CHART (dashboard) ─────────────
+function renderSpendingCard(){
+  var data=getMonthTx();
+  var restoIds=getRestoIds(); var epIds=getEpargneIds();
+  var today=new Date(); var todayDay=today.getDate();
+  var y=viewDate.getFullYear(), m=viewDate.getMonth();
+  var daysInMonth=new Date(y,m+1,0).getDate();
+
+  // Current month cumulative expenses by day
+  var cumCurrent=[];
+  var run=0;
+  for(var d=1;d<=daysInMonth;d++){
+    var ds=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    data.filter(function(e){return e.type==='expense'&&e.date===ds&&restoIds.indexOf(e.accountId)===-1&&epIds.indexOf(e.accountId)===-1;})
+      .forEach(function(e){run+=e.amount;});
+    cumCurrent.push(run);
+  }
+
+  var totalExp=run;
+  var totalEl=document.getElementById('spending-total-lbl');
+  if(totalEl) totalEl.textContent=fmt(totalExp);
+
+  // Previous month
+  var pm=m===0?11:m-1, py=m===0?y-1:y;
+  var daysInPrev=new Date(py,pm+1,0).getDate();
+  var prevViewDate=new Date(py,pm,1);
+  var origViewDate=viewDate;
+  viewDate=prevViewDate;
+  var prevData=getMonthTx();
+  viewDate=origViewDate;
+  var cumPrev=[];
+  run=0;
+  var prevTotalExp=0;
+  for(var d2=1;d2<=daysInPrev;d2++){
+    var ds2=py+'-'+String(pm+1).padStart(2,'0')+'-'+String(d2).padStart(2,'0');
+    prevData.filter(function(e){return e.type==='expense'&&e.date===ds2&&restoIds.indexOf(e.accountId)===-1&&epIds.indexOf(e.accountId)===-1;})
+      .forEach(function(e){run+=e.amount;});
+    cumPrev.push(run);
+  }
+  prevTotalExp=run;
+
+  // Status label
+  var statusEl=document.getElementById('spending-status-lbl');
+  if(statusEl){
+    var isCurrentMonth=(y===today.getFullYear()&&m===today.getMonth());
+    if(isCurrentMonth&&prevTotalExp>0){
+      var ratio=totalExp/prevTotalExp;
+      statusEl.textContent=ratio<0.9?'🟢 Sous contrôle':ratio>1.1?'🔴 Au-dessus':'🟡 Dans la moyenne';
+    } else { statusEl.textContent=''; }
+  }
+  var vsEl=document.getElementById('spending-vs-lbl');
+  if(vsEl&&prevTotalExp>0){
+    var diff=totalExp-prevTotalExp;
+    var sign=diff>=0?'+':'−';
+    vsEl.textContent=sign+fmt(Math.abs(diff))+' vs mois précédent';
+    vsEl.style.color=diff<=0?'var(--green)':'var(--red)';
+  } else if(vsEl){vsEl.textContent='';}
+
+  // Draw chart
+  var canvas=document.getElementById('spending-curve-canvas');
+  if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var W=canvas.offsetWidth||canvas.width; var H=canvas.offsetHeight||canvas.height;
+  canvas.width=W*devicePixelRatio; canvas.height=H*devicePixelRatio;
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  ctx.clearRect(0,0,W,H);
+
+  var allVals=cumCurrent.concat(cumPrev);
+  var maxV=Math.max.apply(null,allVals.filter(function(v){return isFinite(v);}))||1;
+
+  function hexToRgb(hex){
+    var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+    return r+','+g+','+b;
+  }
+  function drawLine(data,color,alpha){
+    if(!data.length) return;
+    var rgb=color.startsWith('#')?hexToRgb(color):'150,150,150';
+    ctx.beginPath();
+    ctx.strokeStyle=color; ctx.globalAlpha=alpha;
+    ctx.lineWidth=2; ctx.lineJoin='round'; ctx.lineCap='round';
+    var pts=data.length;
+    for(var i=0;i<pts;i++){
+      var x=(i/(pts-1||1))*(W-4)+2;
+      var y=H-2-(data[i]/maxV)*(H-8);
+      if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    var lastX=(pts-1)/(pts-1||1)*(W-4)+2;
+    ctx.lineTo(lastX,H-2); ctx.lineTo(2,H-2); ctx.closePath();
+    var grd=ctx.createLinearGradient(0,0,0,H);
+    grd.addColorStop(0,'rgba('+rgb+',0.25)');
+    grd.addColorStop(1,'rgba('+rgb+',0)');
+    ctx.fillStyle=grd; ctx.globalAlpha=alpha*0.6; ctx.fill();
+    ctx.globalAlpha=1;
+  }
+
+  drawLine(cumPrev,'#8e8e93',0.4,daysInPrev);
+  drawLine(cumCurrent,'#60a5fa',1,daysInMonth);
+}
+
+// ── ANALYTICS PAGE ─────────────────────────
+function renderAnalytics(){
+  var data=getMonthTx();
+  var restoIds=getRestoIds(); var epIds=getEpargneIds();
+  var expenses_only=data.filter(function(e){return e.type==='expense'&&restoIds.indexOf(e.accountId)===-1&&epIds.indexOf(e.accountId)===-1;});
+  var incomes_only=data.filter(function(e){return e.type==='income'&&restoIds.indexOf(e.accountId)===-1;});
+
+  var totalInc=incomes_only.reduce(function(s,e){return s+e.amount;},0);
+  var totalExp=expenses_only.reduce(function(s,e){return s+e.amount;},0);
+  var net=totalInc-totalExp;
+
+  var incEl=document.getElementById('analytics-income');
+  if(incEl) incEl.textContent=fmt(totalInc);
+  var netEl=document.getElementById('analytics-net');
+  if(netEl){ netEl.textContent=(net>=0?'+':'')+fmt(net); netEl.style.color=net>=0?'var(--green)':'var(--red)'; }
+
+  // Period label
+  var plbl=document.getElementById('analytics-period-lbl');
+  if(plbl) plbl.textContent=document.getElementById('m-label')?document.getElementById('m-label').textContent:'';
+
+  var today=new Date(); var y=viewDate.getFullYear(), m=viewDate.getMonth();
+  var daysInMonth=new Date(y,m+1,0).getDate();
+
+  // Current month cumulative
+  var cumCurrent=[];
+  var run=0;
+  for(var d=1;d<=daysInMonth;d++){
+    var ds=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    expenses_only.filter(function(e){return e.date===ds;}).forEach(function(e){run+=e.amount;});
+    cumCurrent.push(run);
+  }
+
+  // Previous month
+  var pm=m===0?11:m-1, py=m===0?y-1:y;
+  var daysInPrev=new Date(py,pm+1,0).getDate();
+  var origVD=viewDate; viewDate=new Date(py,pm,1);
+  var prevData=getMonthTx();
+  viewDate=origVD;
+  var prevRestoIds=getRestoIds(); var prevEpIds=getEpargneIds();
+  var prevExp=prevData.filter(function(e){return e.type==='expense'&&prevRestoIds.indexOf(e.accountId)===-1&&prevEpIds.indexOf(e.accountId)===-1;});
+  var cumPrev=[];
+  run=0;
+  for(var d2=1;d2<=daysInPrev;d2++){
+    var ds2=py+'-'+String(pm+1).padStart(2,'0')+'-'+String(d2).padStart(2,'0');
+    prevExp.filter(function(e){return e.date===ds2;}).forEach(function(e){run+=e.amount;});
+    cumPrev.push(run);
+  }
+
+  // Draw analytics curve
+  var canvas=document.getElementById('analytics-curve-canvas');
+  if(canvas){
+    var ctx=canvas.getContext('2d');
+    var W=canvas.offsetWidth||300; var H=canvas.offsetHeight||160;
+    canvas.width=W*devicePixelRatio; canvas.height=H*devicePixelRatio;
+    ctx.scale(devicePixelRatio,devicePixelRatio);
+    ctx.clearRect(0,0,W,H);
+    var allVals=cumCurrent.concat(cumPrev);
+    var maxV=Math.max.apply(null,allVals.filter(function(v){return isFinite(v)&&v>0;}))||1;
+
+    function drawCurve(data,color,alpha){
+      if(!data.length) return;
+      ctx.beginPath();
+      ctx.strokeStyle=color; ctx.globalAlpha=alpha;
+      ctx.lineWidth=2.5; ctx.lineJoin='round';
+      for(var i=0;i<data.length;i++){
+        var x=(i/(data.length-1||1))*(W-8)+4;
+        var y=H-8-(data[i]/maxV)*(H-20);
+        if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+      ctx.stroke(); ctx.globalAlpha=1;
+    }
+    drawCurve(cumPrev,'#8e8e93',0.45);
+    drawCurve(cumCurrent,'#60a5fa',1);
+  }
+
+  // Top categories
+  var catTotals={};
+  expenses_only.forEach(function(e){ catTotals[e.cat]=(catTotals[e.cat]||0)+e.amount; });
+  var sorted=Object.keys(catTotals).sort(function(a,b){return catTotals[b]-catTotals[a];}).slice(0,5);
+  var topEl=document.getElementById('analytics-top-cats');
+  if(topEl){
+    var maxCat=catTotals[sorted[0]]||1;
+    topEl.innerHTML=sorted.map(function(id){
+      var cat=categories.find(function(c){return c.id===id;});
+      var nm=cat?cat.name:id; var ico=cat?cat.icon:'•';
+      var pct=Math.round((catTotals[id]/maxCat)*100);
+      var accentRgb=(getComputedStyle(document.documentElement).getPropertyValue('--accent-rgb')||'96,165,250').trim();
+      return '<div style="margin-bottom:12px">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
+        +'<span style="font-size:13px;color:var(--txt);font-weight:500">'+ico+' '+esc(nm)+'</span>'
+        +'<span style="font-size:13px;font-weight:700;color:var(--txt)">'+fmt(catTotals[id])+'</span>'
+        +'</div>'
+        +'<div style="height:4px;background:var(--border);border-radius:3px;overflow:hidden">'
+        +'<div style="width:'+pct+'%;height:100%;border-radius:3px;background:rgba('+accentRgb+',.7);transition:width .6s cubic-bezier(0.16,1,0.3,1)"></div>'
+        +'</div></div>';
+    }).join('');
+  }
 }
 </script>
 </body>
