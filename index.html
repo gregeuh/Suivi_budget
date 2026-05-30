@@ -6834,7 +6834,7 @@ function renderAnalytics(){
     var maxCat=catTotals[sorted[0]]||1;
     topEl.innerHTML=sorted.map(function(id){
       var cat=categories.find(function(c){return c.id===id;});
-      var nm=cat?cat.name:id; var ico=cat?cat.icon:'•';
+      var nm=cat?(cat.label||cat.name||id):id; var ico=cat?cat.icon:'•';
       var pct=Math.round((catTotals[id]/maxCat)*100);
       var accentRgb=(getComputedStyle(document.documentElement).getPropertyValue('--accent-rgb')||'96,165,250').trim();
       return '<div style="margin-bottom:12px">'
