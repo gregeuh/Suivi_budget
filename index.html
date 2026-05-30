@@ -153,7 +153,7 @@ button{cursor:pointer;border:none;background:none}
 .m-label{font-family:'Sora',sans-serif;font-size:16px;font-weight:800;color:var(--txt);text-transform:capitalize;letter-spacing:-.2px}
 
 /* CONTENT */
-.content{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 16px 80px;background:var(--bg);}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 16px 110px;background:var(--bg);}
 .page{display:none;background:var(--bg);}
 .page.on{display:block;background:var(--bg);}
 /* ── Skeleton loader ── */
@@ -168,40 +168,57 @@ button{cursor:pointer;border:none;background:none}
 @keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
 /* TAB BAR */
-.tab-wrap{position:fixed;bottom:0;left:0;right:0;
-  width:100%;max-width:100%;z-index:200;pointer-events:none;}
+.tab-wrap{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  width:calc(100% - 32px);max-width:430px;z-index:200;pointer-events:none;}
 .tab-bar{display:flex;align-items:center;justify-content:space-around;
-  background:#0a0a0a;
-  border-top:1px solid rgba(255,255,255,0.08);
-  padding:8px 0 max(8px,env(safe-area-inset-bottom));
-  pointer-events:auto;position:relative;}
+  border-radius:32px;
+  padding:8px 6px;
+  pointer-events:auto;position:relative;
+  /* Liquid Glass dark */
+  background:rgba(18,18,20,0.72);
+  backdrop-filter:blur(40px) saturate(180%) brightness(1.1);
+  -webkit-backdrop-filter:blur(40px) saturate(180%) brightness(1.1);
+  border:1px solid rgba(255,255,255,0.10);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.10),
+    inset 0 -1px 0 rgba(0,0,0,0.20),
+    0 8px 40px rgba(0,0,0,0.55),
+    0 2px 12px rgba(0,0,0,0.30);
+}
 
-/* pill hidden — no colored pill in Revolut-style */
+/* pill hidden — Revolut : pas de pill colorée */
 .tab-pill{display:none}
 
 .tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;
   padding:8px 4px;z-index:1;position:relative;border:none;background:none;
   transition:opacity .15s}
-.tab-btn:active{opacity:.6}
-.tab-btn:active .add-circle{transform:scale(1.12)}
+.tab-btn:active{opacity:.55}
+.tab-btn:active .add-circle{transform:scale(1.10)}
 /* Centre button — add */
 .tab-btn.add-btn{position:relative}
 .add-circle{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-d));
   display:flex;align-items:center;justify-content:center;
   font-size:22px;color:#fff;margin:-6px auto 0;
-  box-shadow:0 4px 20px rgba(var(--accent-rgb),0.5);
+  box-shadow:0 4px 20px rgba(var(--accent-rgb),0.55);
   transition:.2s cubic-bezier(.34,1.56,.64,1)}
-.t-icon{font-size:20px;line-height:1;color:#636366;transition:color .2s}
+.t-icon{font-size:20px;line-height:1;color:rgba(255,255,255,0.35);transition:color .2s}
 .t-icon svg{display:block}
 .tab-btn.on .t-icon{color:#ffffff}
-.t-lbl{font-size:10px;font-weight:600;color:#636366;letter-spacing:.2px;transition:color .2s}
+.t-lbl{font-size:10px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:.2px;transition:color .2s}
 .tab-btn.on .t-lbl{color:#ffffff;font-weight:700}
 
 /* Light mode override */
-[data-theme="light"] .tab-bar{background:rgba(255,255,255,0.95);border-top:1px solid rgba(0,0,0,0.08);}
-[data-theme="light"] .t-icon{color:#8e8e93}
+[data-theme="light"] .tab-bar{
+  background:rgba(255,255,255,0.75);
+  border:1px solid rgba(0,0,0,0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.95),
+    0 8px 32px rgba(0,0,0,0.14),
+    0 2px 8px rgba(0,0,0,0.07);
+}
+[data-theme="light"] .t-icon{color:rgba(0,0,0,0.35)}
 [data-theme="light"] .tab-btn.on .t-icon{color:var(--accent)}
-[data-theme="light"] .t-lbl{color:#8e8e93}
+[data-theme="light"] .t-lbl{color:rgba(0,0,0,0.35)}
 [data-theme="light"] .tab-btn.on .t-lbl{color:var(--accent)}
 
 /* ── TAB BAR COMPACT (scroll down) ── */
@@ -912,15 +929,7 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
   --lg-blur: blur(48px) saturate(200%) brightness(1.06);
 }
 
-/* ── Tab bar ── */
-.tab-bar {
-  background: rgba(255,253,248,0.88) !important;
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  border-top: 1px solid rgba(0,0,0,0.08) !important;
-  border-radius: 0 !important;
-  box-shadow: 0 -1px 0 rgba(0,0,0,0.06) !important;
-}
+/* ── Tab bar — styles gérés par les règles .tab-bar / [data-theme] ci-dessus ── */
 
 
 /* ── Cards ── */
@@ -948,10 +957,14 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
 
 /* ── Dark mode ── */
 [data-theme="dark"] .tab-bar {
-  background: rgba(10,10,10,0.97) !important;
-  border-top: 1px solid rgba(255,255,255,0.07) !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
+  background: rgba(18,18,20,0.78) !important;
+  border: 1px solid rgba(255,255,255,0.09) !important;
+  border-radius: 32px !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    inset 0 -1px 0 rgba(0,0,0,0.25),
+    0 8px 48px rgba(0,0,0,0.65),
+    0 2px 14px rgba(0,0,0,0.40) !important;
 }
 [data-theme="dark"] .tab-pill { display: none !important; }
 [data-theme="dark"] .card,
@@ -1042,19 +1055,19 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
   padding-top: calc(16px + var(--safe-top)) !important;
 }
 
-/* Tab bar — remonte au-dessus de la home bar */
+/* Tab bar flottante — remonte au-dessus de la home bar iOS */
 .tab-wrap {
-  bottom: calc(20px + var(--safe-bottom)) !important;
+  bottom: calc(16px + var(--safe-bottom)) !important;
 }
 
-/* Content — espace sous la tab bar */
+/* Content — espace sous la tab bar flottante */
 .content {
-  padding-bottom: calc(80px + var(--safe-bottom)) !important;
+  padding-bottom: calc(100px + var(--safe-bottom)) !important;
 }
 
 /* FAB menu — remonte avec la tab bar */
 #fab-menu {
-  bottom: calc(80px + var(--safe-bottom)) !important;
+  bottom: calc(100px + var(--safe-bottom)) !important;
 }
 
 /* Modals — respectent le bas */
