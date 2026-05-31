@@ -1469,7 +1469,7 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
         </div>
         <!-- Quick actions -->
         <div class="hero-quick-actions">
-          <button class="hqa-btn" onclick="openAdd('exp')">
+          <button class="hqa-btn" onclick="toggleFab()">
             <div class="hqa-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
             <div class="hqa-lbl">Ajouter</div>
           </button>
@@ -5054,7 +5054,7 @@ function saveTransaction(){
       note:note||null, recurring:false, frequency:null,
       customDays:null, endDate:null, linkedVir:virId
     });
-    save();renderAll();closeModal();
+    save(); try{renderAll();}catch(_){} closeModal();
     toast('↔️ Virement de '+amt.toFixed(2)+' € effectué','success');
     return;
   }
@@ -5074,11 +5074,11 @@ function saveTransaction(){
   expenses.unshift(newTx);
   learnCat(lbl, selCat);
   if(navigator.vibrate)navigator.vibrate(mCurrentType==='inc'?[8,4,8,4,8]:[10]);
-  save();renderAll();closeModal();
+  save(); try{renderAll();}catch(_){} closeModal();
   var cat=categories.find(function(c){return c.id===selCat;})||{icon:'📦'};
   var addedId=newTx.id;
   toastWithUndo(cat.icon+' '+lbl+' ajouté — '+(mCurrentType==='inc'?'+':'-')+amt.toFixed(2)+' €',function(){
-    expenses=expenses.filter(function(e){return e.id!==addedId;}); save(); renderAll(); toast('Annulé ✓');
+    expenses=expenses.filter(function(e){return e.id!==addedId;}); save(); try{renderAll();}catch(_){} toast('Annulé ✓');
   });
 }
 
