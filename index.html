@@ -4856,7 +4856,7 @@ function renderTxList(el,items,showEdit){
   el.innerHTML=html;
 }
 function renderDashTx(){
-  var data=getMonthTx().filter(function(e){return e.type==='expense'||e.type==='income';}).sort(function(a,b){return(b.date||'').localeCompare(a.date||'');}).slice(0,6);
+  var data=getMonthTx().filter(function(e){return (e.type==='expense'||e.type==='income')&&!e.isVirement;}).sort(function(a,b){return(b.date||'').localeCompare(a.date||'');}).slice(0,6);
   renderTxList(document.getElementById('dash-tx'),data,true);
 }
 function renderDonut(){
@@ -6099,7 +6099,7 @@ function renderTodayWidget(){
   var mInc=mIncR>0?mIncR:forecastSalary;
   var dailyBudget=(mInc>0)?mInc/daysInMonth:0;
   var todayExp=expenses.filter(function(e){
-    return e.date===todayStr&&e.type==='expense'&&restoIds.indexOf(e.accountId)===-1&&epIds.indexOf(e.accountId)===-1;
+    return e.date===todayStr&&e.type==='expense'&&!e.isVirement&&restoIds.indexOf(e.accountId)===-1&&epIds.indexOf(e.accountId)===-1;
   }).reduce(function(s,e){return s+e.amount;},0);
   var pct=dailyBudget>0?todayExp/dailyBudget:0;
   var color=pct<0.8?'#22c55e':pct<=1?'#f97316':'#ef4444';
