@@ -3954,7 +3954,7 @@ function setupAuth(){
       savedTheme=d.theme||'auto';
       catBudgets=d.catBudgets||{};
   swileMealPrice=d.swileMealPrice||10;
-  if(d.theme && THEMES[d.theme]) { isDark = d.isDark||false; applyTheme(d.theme, isDark); }
+
   wishlist=Array.isArray(d.wishlist)?d.wishlist:[];
   credits=Array.isArray(d.credits)?d.credits:[];
   var mpEl=document.getElementById('s-meal-price');if(mpEl)mpEl.value=swileMealPrice;
@@ -3983,13 +3983,15 @@ function setupAuth(){
       var ssv=document.getElementById('s-savings');if(ssv)ssv.value=savingsGoal||'';
       var spd=document.getElementById('s-payday');if(spd)spd.value=budgetPayDay||1;
       var sTheme=document.getElementById('s-theme');if(sTheme)sTheme.value=savedTheme;
-      // Thème
-      if(d.theme && THEMES[d.theme]){
-        var _dark = d.isDark !== undefined ? d.isDark : true;
-        window._userSetDark = _dark; // préférence sauvegardée → désactive mode auto système
-        applyTheme(d.theme, _dark);
+      // Thème — ne ré-appliquer qu'au premier chargement
+      if(!window._themeLoaded){
+        window._themeLoaded = true;
+        if(d.theme && THEMES[d.theme]){
+          var _dark = d.isDark !== undefined ? d.isDark : true;
+          window._userSetDark = _dark;
+          applyTheme(d.theme, _dark);
+        } else applyTheme('premium', true);
       }
-      else applyTheme('premium', true);
       updateDarkToggleIcon();
       updatePrivacyIcon();
       applyCompact();
@@ -4038,7 +4040,7 @@ function save(){
   cloudDoc.set({
     expenses:expenses,accounts:accounts,categories:customCats,
     displayName:displayName,forecastSalary:forecastSalary,savingsGoal:savingsGoal,
-    budgetPayDay:budgetPayDay,
+    budgetPayDay:budgetPayDay,isDark:isDark,
     catBudgets:catBudgets,swileMealPrice:swileMealPrice,wishlist:wishlist,credits:credits,theme:savedTheme
   },{merge:true}).catch(function(e){console.error(e);toast('Erreur de sauvegarde — vérifiez votre connexion','error');});
 }
