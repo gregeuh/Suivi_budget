@@ -3277,7 +3277,8 @@ function selectTheme(key){
 
 function toggleDark() {
   isDark = !isDark;
-  window._userSetDark = isDark; // marquer comme choix manuel → désactive le mode auto
+  themeMode = isDark ? 'dark' : 'light';
+  window._userSetDark = isDark;
   applyTheme(currentTheme, isDark);
   updateDarkToggleIcon();
 }
@@ -3415,8 +3416,8 @@ function exportPDF() {
       var contentW = pageW - margin * 2;
 
       // Couleurs du thème
-      var theme = THEMES['premium'];
-      var t = theme.light; // PDF toujours en mode clair (lisibilité)
+      var theme = THEMES[currentTheme] || THEMES['ocean'];
+      var t = Object.assign({}, _BASE.light, theme.light); // PDF toujours en mode clair
       var accentHex = t.accent || '#3b82f6';
       // Convert hex to RGB
       function hexRGB(hex) {
@@ -4365,8 +4366,8 @@ function renderHero(){
   });
   var data=getMonthTx();
   var restoIds=getRestoIds(); var swileId=restoIds[0]||null;
-  var mExp=data.filter(function(e){return e.type==='expense'&&restoIds.indexOf(e.accountId)===-1&&getEpargneIds().indexOf(e.accountId)===-1;}).reduce(function(s,e){return s+e.amount;},0);
-  var mIncR=data.filter(function(e){return e.type==='income'&&restoIds.indexOf(e.accountId)===-1;}).reduce(function(s,e){return s+e.amount;},0);
+  var mExp=data.filter(function(e){return e.type==='expense'&&!e.isVirement&&restoIds.indexOf(e.accountId)===-1&&getEpargneIds().indexOf(e.accountId)===-1;}).reduce(function(s,e){return s+e.amount;},0);
+  var mIncR=data.filter(function(e){return e.type==='income'&&!e.isVirement&&restoIds.indexOf(e.accountId)===-1;}).reduce(function(s,e){return s+e.amount;},0);
   var mInc=mIncR>0?mIncR:forecastSalary;
   var save=mInc-mExp;
   var bals=calcBals();
@@ -4568,8 +4569,8 @@ function renderConseils(){
   var dayOfMonth=today.getDate();
   var monthProgress=dayOfMonth/daysInMonth; // 0→1
 
-  var mExp=data.filter(function(e){return e.type==='expense'&&restoIds.indexOf(e.accountId)===-1&&getEpargneIds().indexOf(e.accountId)===-1;}).reduce(function(s,e){return s+e.amount;},0);
-  var mIncR=data.filter(function(e){return e.type==='income'&&restoIds.indexOf(e.accountId)===-1;}).reduce(function(s,e){return s+e.amount;},0);
+  var mExp=data.filter(function(e){return e.type==='expense'&&!e.isVirement&&restoIds.indexOf(e.accountId)===-1&&getEpargneIds().indexOf(e.accountId)===-1;}).reduce(function(s,e){return s+e.amount;},0);
+  var mIncR=data.filter(function(e){return e.type==='income'&&!e.isVirement&&restoIds.indexOf(e.accountId)===-1;}).reduce(function(s,e){return s+e.amount;},0);
   var mInc=mIncR>0?mIncR:forecastSalary;
 
   // byCat
@@ -4894,10 +4895,10 @@ function renderDonut(){
   // Inner circle (donut hole)
   ctx.beginPath();
   ctx.arc(cx,cy,r,0,Math.PI*2);
-  ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--card').trim()||'#fff';
+  ctx.fillStyle=(getComputedStyle(document.documentElement).getPropertyValue('--card')||'').trim()||'#fff';
   ctx.fill();
   // Center text
-  ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--txt').trim()||'#000';
+  ctx.fillStyle=(getComputedStyle(document.documentElement).getPropertyValue('--txt')||'').trim()||'#000';
   ctx.font='bold 13px Sora,sans-serif';
   ctx.textAlign='center';
   ctx.textBaseline='middle';
@@ -5226,7 +5227,8 @@ function saveNewCat(){
 }
 function deleteCat(id){
   var count=expenses.filter(function(e){return e.cat===id;}).length;
-  if(count>0&&!confirm('Cette catégorie contient '+count+' transaction(s). Supprimer quand même ?'))return;
+  if(count>0&&!confirm('Cette catégorie contient '+count+' transaction(s). Elles seront déplacées vers "Autre". Continuer ?'))return;
+  expenses.forEach(function(e){if(e.cat===id)e.cat='autre';});
   categories=categories.filter(function(c){return c.id!==id;});
   save();renderCatsSettings();renderAll();toast('Catégorie supprimée');
 }
