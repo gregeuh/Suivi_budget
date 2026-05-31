@@ -3235,7 +3235,7 @@ function applyTheme(themeKey, dark) {
   });
 
   // Re-render pour mettre à jour les couleurs dynamiques
-  if(typeof renderAll === 'function') renderAll();
+  if(typeof renderAll === 'function') try { renderAll(); } catch(_) {}
 
   renderThemePicker();
   if(currentUser) save();
@@ -7320,7 +7320,8 @@ function drawerToggleDark(){
   if(themeMode==='auto'){ themeMode='dark'; isDark=true; window._userSetDark=true; }
   else if(themeMode==='dark'){ themeMode='light'; isDark=false; window._userSetDark=false; }
   else { themeMode='auto'; isDark=window.matchMedia('(prefers-color-scheme:dark)').matches; window._userSetDark=undefined; }
-  applyTheme(currentTheme,isDark); save(); updateDrawerToggles();
+  try { applyTheme(currentTheme,isDark); save(); } catch(_) {}
+  updateDrawerToggles();
 }
 function drawerTogglePrivacy(){ togglePrivacy(); updateDrawerToggles(); }
 function drawerToggleDensity(){ setDensity(!_isCompact); updateDrawerToggles(); }
