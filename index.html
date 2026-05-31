@@ -3082,40 +3082,74 @@ function obFinish() {
 var isDark = true;
 var themeMode = 'auto'; // 'auto' | 'dark' | 'light'
 
-var THEMES = {
-  premium: {
-    name: 'Bleu',
-    light: {
-      bg:'#f2f2f7', card:'#ffffff', card2:'#f2f2f7',
-      border:'rgba(0,0,0,0.08)', input:'#e5e5ea',
-      accent:'#3b82f6', accentD:'#2563eb', accentRgb:'59,130,246',
-      txt:'#1c1c1e', txt2:'#6e6e73', txt3:'#aeaeb2',
-      sh:'0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.08)',
-      hero:'linear-gradient(145deg,#93c5fd 0%,#60a5fa 30%,#3b82f6 65%,#1d4ed8 100%)',
-      authBg:'linear-gradient(145deg,#f2f2f7,#e5e5ea,#d1d1d6)',
-      tabBg:'rgba(255,255,255,0.85)', tabBorder:'rgba(59,130,246,0.08)',
-    },
-    dark: {
-      bg:'#0a0a0a', card:'#1c1c1e', card2:'#2c2c2e',
-      border:'rgba(255,255,255,0.06)', input:'#2c2c2e',
-      accent:'#60a5fa', accentD:'#3b82f6', accentRgb:'96,165,250',
-      txt:'#ffffff', txt2:'#8e8e93', txt3:'#636366',
-      sh:'0 1px 4px rgba(0,0,0,0.8), 0 6px 20px rgba(0,0,0,0.6)',
-      hero:'linear-gradient(145deg,#1c1c1e 0%,#2c2c2e 40%,#1a2642 70%,#1e3a6e 100%)',
-      authBg:'linear-gradient(145deg,#0a0a0a,#1c1c1e,#2c2c2e)',
-      tabBg:'rgba(10,10,10,0.98)', tabBorder:'rgba(255,255,255,0.06)',
-    }
+var _BASE = {
+  light: {
+    bg:'#f2f2f7', card:'#ffffff', card2:'#f2f2f7',
+    border:'rgba(0,0,0,0.08)', input:'#e5e5ea',
+    txt:'#1c1c1e', txt2:'#6e6e73', txt3:'#aeaeb2',
+    sh:'0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.08)',
+    authBg:'linear-gradient(145deg,#f2f2f7,#e5e5ea,#d1d1d6)',
+    tabBg:'rgba(255,255,255,0.85)',
+  },
+  dark: {
+    bg:'#0a0a0a', card:'#1c1c1e', card2:'#2c2c2e',
+    border:'rgba(255,255,255,0.06)', input:'#2c2c2e',
+    txt:'#ffffff', txt2:'#8e8e93', txt3:'#636366',
+    sh:'0 1px 4px rgba(0,0,0,0.8), 0 6px 20px rgba(0,0,0,0.6)',
+    authBg:'linear-gradient(145deg,#0a0a0a,#1c1c1e,#2c2c2e)',
+    tabBg:'rgba(10,10,10,0.98)',
   }
+};
+var THEMES = {
+  ocean: { name:'Océan', swatch:'#3b82f6',
+    light:{ accent:'#3b82f6',accentD:'#2563eb',accentRgb:'59,130,246',tabBorder:'rgba(59,130,246,0.1)',
+      hero:'linear-gradient(145deg,#93c5fd 0%,#60a5fa 30%,#3b82f6 65%,#1d4ed8 100%)' },
+    dark:{ accent:'#60a5fa',accentD:'#3b82f6',accentRgb:'96,165,250',tabBorder:'rgba(255,255,255,0.06)',
+      hero:'linear-gradient(145deg,#1c1c1e 0%,#2c2c2e 40%,#1a2642 70%,#1e3a6e 100%)' }
+  },
+  coral: { name:'Corail', swatch:'#f43f5e',
+    light:{ accent:'#f43f5e',accentD:'#e11d48',accentRgb:'244,63,94',tabBorder:'rgba(244,63,94,0.1)',
+      hero:'linear-gradient(145deg,#fda4af 0%,#fb7185 30%,#f43f5e 65%,#be123c 100%)' },
+    dark:{ accent:'#fb7185',accentD:'#f43f5e',accentRgb:'251,113,133',tabBorder:'rgba(255,255,255,0.06)',
+      hero:'linear-gradient(145deg,#1c1c1e 0%,#2c2c2e 40%,#3b0f1a 70%,#4c1130 100%)' }
+  },
+  forest: { name:'Forêt', swatch:'#10b981',
+    light:{ accent:'#10b981',accentD:'#059669',accentRgb:'16,185,129',tabBorder:'rgba(16,185,129,0.1)',
+      hero:'linear-gradient(145deg,#6ee7b7 0%,#34d399 30%,#10b981 65%,#047857 100%)' },
+    dark:{ accent:'#34d399',accentD:'#10b981',accentRgb:'52,211,153',tabBorder:'rgba(255,255,255,0.06)',
+      hero:'linear-gradient(145deg,#1c1c1e 0%,#2c2c2e 40%,#052e16 70%,#064e3b 100%)' }
+  },
+  violet: { name:'Violet', swatch:'#8b5cf6',
+    light:{ accent:'#8b5cf6',accentD:'#7c3aed',accentRgb:'139,92,246',tabBorder:'rgba(139,92,246,0.1)',
+      hero:'linear-gradient(145deg,#c4b5fd 0%,#a78bfa 30%,#8b5cf6 65%,#6d28d9 100%)' },
+    dark:{ accent:'#a78bfa',accentD:'#8b5cf6',accentRgb:'167,139,250',tabBorder:'rgba(255,255,255,0.06)',
+      hero:'linear-gradient(145deg,#1c1c1e 0%,#2c2c2e 40%,#2e1065 70%,#3b0764 100%)' }
+  },
+  gold: { name:'Or', swatch:'#f59e0b',
+    light:{ accent:'#f59e0b',accentD:'#d97706',accentRgb:'245,158,11',tabBorder:'rgba(245,158,11,0.1)',
+      hero:'linear-gradient(145deg,#fde68a 0%,#fbbf24 30%,#f59e0b 65%,#b45309 100%)' },
+    dark:{ accent:'#fbbf24',accentD:'#f59e0b',accentRgb:'251,191,36',tabBorder:'rgba(255,255,255,0.06)',
+      hero:'linear-gradient(145deg,#1c1c1e 0%,#2c2c2e 40%,#3b1a00 70%,#4a2000 100%)' }
+  },
+  graphite: { name:'Graphite', swatch:'#64748b',
+    light:{ accent:'#475569',accentD:'#334155',accentRgb:'71,85,105',tabBorder:'rgba(71,85,105,0.1)',
+      hero:'linear-gradient(145deg,#cbd5e1 0%,#94a3b8 30%,#64748b 65%,#334155 100%)' },
+    dark:{ accent:'#94a3b8',accentD:'#64748b',accentRgb:'148,163,184',tabBorder:'rgba(255,255,255,0.06)',
+      hero:'linear-gradient(145deg,#1c1c1e 0%,#2c2c2e 40%,#1e293b 70%,#0f172a 100%)' }
+  },
 };
 
 
-var currentTheme = 'orange';
+var currentTheme = 'ocean';
 
 function applyTheme(themeKey, dark) {
-  var theme = THEMES['premium'];
-  currentTheme = 'premium';
+  var th = THEMES[themeKey] || THEMES['ocean'];
+  currentTheme = themeKey || 'ocean';
+  savedTheme = currentTheme;
   if(dark !== undefined) isDark = dark;
-  var t = isDark ? theme.dark : theme.light;
+  var base = isDark ? _BASE.dark : _BASE.light;
+  var accent = isDark ? th.dark : th.light;
+  var t = Object.assign({}, base, accent);
 
   // Mettre à jour l'attribut data-theme sur body pour les sélecteurs CSS
   document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
@@ -3210,15 +3244,35 @@ function applyTheme(themeKey, dark) {
 function renderThemePicker() {
   var el = document.getElementById('theme-picker');
   if(!el) return;
-  el.innerHTML = '<div style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:' + (isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.04)') + ';border-radius:12px">'
+  var html = '<div style="width:100%">';
+  // Dark mode toggle row
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:' + (isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.04)') + ';border-radius:12px;margin-bottom:14px">'
     + '<div style="display:flex;align-items:center;gap:8px">'
     + '<span style="font-size:18px">' + (isDark?'🌙':'☀️') + '</span>'
     + '<span style="font-size:14px;font-weight:600;color:var(--txt)">' + (isDark?'Mode sombre':'Mode clair') + '</span>'
     + '</div>'
     + '<div onclick="toggleDark()" style="width:48px;height:26px;border-radius:13px;background:' + (isDark?'var(--accent)':'rgba(0,0,0,0.15)') + ';position:relative;cursor:pointer;transition:background .25s">'
     + '<div style="position:absolute;top:3px;' + (isDark?'right:3px':'left:3px') + ';width:20px;height:20px;border-radius:50%;background:#fff;transition:all .25s;box-shadow:0 1px 4px rgba(0,0,0,0.2)"></div>'
-    + '</div>'
-    + '</div>';
+    + '</div></div>';
+  // Color swatches
+  html += '<div style="display:flex;gap:12px;flex-wrap:wrap;padding:0 2px">';
+  Object.keys(THEMES).forEach(function(key){
+    var th = THEMES[key];
+    var active = currentTheme === key;
+    html += '<div onclick="selectTheme(\''+key+'\')" style="display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer">'
+      + '<div style="width:40px;height:40px;border-radius:50%;background:'+th.swatch+';'
+      + (active ? 'box-shadow:0 0 0 3px var(--card),0 0 0 5px '+th.swatch+';' : '')
+      + 'transition:box-shadow .2s"></div>'
+      + '<span style="font-size:10px;font-weight:'+(active?'700':'500')+';color:'+(active?'var(--txt)':'var(--txt2)')+'">'+th.name+'</span>'
+      + '</div>';
+  });
+  html += '</div></div>';
+  el.innerHTML = html;
+}
+
+function selectTheme(key){
+  applyTheme(key, isDark);
+  if(navigator.vibrate) navigator.vibrate(8);
 }
 
 function toggleDark() {
@@ -3988,10 +4042,12 @@ function setupAuth(){
       if(!window._themeLoaded){
         window._themeLoaded = true;
         themeMode = d.themeMode || 'auto';
+        currentTheme = d.theme || 'ocean';
+        savedTheme = currentTheme;
         var sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         var _dark = themeMode === 'auto' ? sysDark : (themeMode === 'dark');
         if(themeMode !== 'auto') window._userSetDark = _dark;
-        applyTheme('premium', _dark);
+        applyTheme(currentTheme, _dark);
       }
       updateDarkToggleIcon();
       updatePrivacyIcon();
@@ -4048,7 +4104,7 @@ function save(){
 
 // ── THEME ─────────────────────────────────
 // applyTheme merged into theme system
-function setTheme(v){ applyTheme('premium', isDark); }
+function setTheme(v){ applyTheme(currentTheme, isDark); }
 
 // ── GREETING ──────────────────────────────
 function updateAvatar(){
@@ -6676,7 +6732,7 @@ function loadDemo() {
 
   viewDate = new Date();
   viewDate.setDate(1);
-  applyTheme(currentTheme||'orange');
+  applyTheme(currentTheme||'ocean');
   setTimeout(renderThemePicker, 100);
   updateGreeting();
   updateMonthLabel();
@@ -6685,7 +6741,7 @@ function loadDemo() {
 
 // ── INIT ──────────────────────────────────
 updateMonthLabel();
-applyTheme('premium', true);
+applyTheme(currentTheme, true);
 buildNumpad();
 setTimeout(renderThemePicker, 200);
 
@@ -7212,7 +7268,7 @@ function renderUpcomingWidget(){
   function applySystemTheme(e){
     if(themeMode !== 'auto') return;
     isDark = e.matches;
-    applyTheme('premium', isDark);
+    applyTheme(currentTheme, isDark);
     updateDrawerToggles();
   }
   if(mq.addEventListener) mq.addEventListener('change', applySystemTheme);
@@ -7264,7 +7320,7 @@ function drawerToggleDark(){
   if(themeMode==='auto'){ themeMode='dark'; isDark=true; window._userSetDark=true; }
   else if(themeMode==='dark'){ themeMode='light'; isDark=false; window._userSetDark=false; }
   else { themeMode='auto'; isDark=window.matchMedia('(prefers-color-scheme:dark)').matches; window._userSetDark=undefined; }
-  applyTheme('premium',isDark); save(); updateDrawerToggles();
+  applyTheme(currentTheme,isDark); save(); updateDrawerToggles();
 }
 function drawerTogglePrivacy(){ togglePrivacy(); updateDrawerToggles(); }
 function drawerToggleDensity(){ setDensity(!_isCompact); updateDrawerToggles(); }
