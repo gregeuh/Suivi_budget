@@ -161,11 +161,15 @@ button{cursor:pointer;border:none;background:none}
 .skeleton{border-radius:8px;background:linear-gradient(90deg,var(--input) 25%,var(--border) 50%,var(--input) 75%);background-size:400px 100%;animation:shimmer 1.4s ease infinite}
 .skeleton-text{height:14px;margin:4px 0}
 .skeleton-num{height:32px;width:100px;border-radius:10px}
-.page.slide-from-right{animation:pageFromRight .32s cubic-bezier(0.16,1,0.3,1) both;}
-.page.slide-from-left {animation:pageFromLeft  .32s cubic-bezier(0.16,1,0.3,1) both;}
-@keyframes pageFromRight{from{opacity:0;transform:translateX(40px) scale(0.99)}to{opacity:1;transform:none}}
-@keyframes pageFromLeft {from{opacity:0;transform:translateX(-40px) scale(0.99)}to{opacity:1;transform:none}}
+.page { transition: opacity .22s cubic-bezier(.32,0,.15,1), transform .22s cubic-bezier(.32,0,.15,1); }
+.page.slide-from-right{animation:pageFromRight .25s cubic-bezier(.32,0,.15,1) both;}
+.page.slide-from-left {animation:pageFromLeft  .25s cubic-bezier(.32,0,.15,1) both;}
+@keyframes pageFromRight{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+@keyframes pageFromLeft {from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}
 @keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.page.page-leave{opacity:0;transform:translateX(-18px);pointer-events:none;}
+.page.page-enter{animation:pageEnter .25s cubic-bezier(.32,0,.15,1) forwards;}
+@keyframes pageEnter{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
 
 /* TAB BAR */
 .tab-wrap{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
@@ -258,8 +262,19 @@ button{cursor:pointer;border:none;background:none}
 .hero{background:var(--hero-bg);
   border-radius:22px;padding:22px;margin-bottom:14px;
   box-shadow:0 8px 40px rgba(var(--accent-rgb),0.28),0 2px 8px rgba(0,0,0,0.12);position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;top:-60px;right:-60px;
-  width:220px;height:220px;background:rgba(255,255,255,0.07);border-radius:50%;pointer-events:none}
+.hero::before{content:'';position:absolute;top:-40px;right:-40px;
+  width:160px;height:160px;background:rgba(255,255,255,0.07);border-radius:50%;pointer-events:none}
+.hero-deco-circle{content:'';position:absolute;bottom:-30px;left:-30px;
+  width:120px;height:120px;background:rgba(255,255,255,0.05);border-radius:50%;pointer-events:none}
+.hero-glass{
+  background:rgba(255,255,255,0.12);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:20px;
+  padding:18px 18px 14px;
+  margin-bottom:14px;
+}
 .hero::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
   background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size:180px 180px;opacity:.04;mix-blend-mode:soft-light}
@@ -1031,6 +1046,13 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
   -webkit-overflow-scrolling: touch;
   padding: 4px 16px 8px;
 }
+/* Account Carousel (Revolut-style) */
+.acc-carousel { display:flex; gap:10px; overflow-x:auto; scroll-snap-type:x mandatory; padding:2px 4px 8px; scrollbar-width:none; -ms-overflow-style:none; }
+.acc-carousel::-webkit-scrollbar { display:none; }
+.acc-card-snap { flex-shrink:0; width:140px; border-radius:16px; padding:14px; scroll-snap-align:start; cursor:pointer; transition:transform .15s; position:relative; overflow:hidden; }
+.acc-card-snap:active { transform:scale(0.96); }
+.acc-card-snap::before { content:''; position:absolute; top:-20px; right:-20px; width:80px; height:80px; background:rgba(255,255,255,0.15); border-radius:50%; pointer-events:none; }
+.acc-card-snap-wide { width:160px; }
 .acc-scroll::-webkit-scrollbar { display: none; }
 .acc-mini {
   flex-shrink: 0; min-width: 140px;
@@ -1506,8 +1528,11 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
     <div class="page on" id="p-dash">
       <!-- Hero -->
       <div class="hero">
+        <div class="hero-deco-circle"></div>
+        <div class="hero-glass">
         <div class="hero-lbl">Solde disponible</div>
         <div class="hero-bal blur" id="h-bal"><span class="skeleton skeleton-num" style="display:inline-block;width:130px;height:38px;opacity:.35">&nbsp;</span></div>
+        </div>
         <div class="hero-pills">
           <div class="hero-pill" id="pill-exp">
             <div class="hp-lbl">Dépenses</div>
@@ -3600,25 +3625,41 @@ var ACC_COLORS = {
 };
 
 function renderAccMini() {
+  var wrap = document.getElementById('acc-scroll-wrap');
   var el = document.getElementById('acc-mini-list');
   if(!el) return;
   var bals = calcBals();
 
   var typeLabels = { courant:'Compte courant', epargne:'Épargne', resto:'Tickets restau' };
 
+  // Use carousel class for snap scrolling (keep acc-scroll for swipe-guard checks)
+  el.className = 'acc-carousel acc-scroll';
+
   el.onclick = function(e){
     var t=e.target.closest('[data-acc-id]');
     if(t) openAccDetail(t.getAttribute('data-acc-id'));
   };
-  el.innerHTML = accounts.map(function(a) {
+
+  // Total balance card (excludes resto accounts)
+  var restoIds = getRestoIds();
+  var visibleAccounts = accounts.filter(function(a){ return restoIds.indexOf(a.id)===-1; });
+  var totalBal = visibleAccounts.reduce(function(s,a){ return s+(bals[a.id]||0); }, 0);
+  var totalCard = '<div class="acc-card-snap acc-card-snap-wide" style="background:linear-gradient(135deg,#1e3a5f 0%,#1a2e4a 50%,#0f1f35 100%)">'
+    + '<div style="font-size:22px;margin-bottom:6px">💼</div>'
+    + '<div style="font-size:11px;color:rgba(255,255,255,0.75);font-weight:600;margin-bottom:2px;text-transform:uppercase;letter-spacing:.4px">Solde total</div>'
+    + '<div class="blur" style="font-size:18px;font-weight:800;color:#fff;font-family:Sora,sans-serif;' + (totalBal<0?'color:#ef4444':'') + '">' + fmtBal(totalBal,2) + '</div>'
+    + '<div style="font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px">' + visibleAccounts.length + ' compte(s)</div>'
+    + '</div>';
+
+  el.innerHTML = totalCard + accounts.map(function(a) {
     var bal = bals[a.id] || 0;
     var bg = ACC_COLORS[a.color] || ACC_COLORS.blue;
     var label = typeLabels[a.accType] || 'Compte';
-    return '<div class="acc-mini" data-acc-id="' + a.id + '" style="background:' + bg + '">'
-      + '<div class="acc-mini-icon">' + (a.icon||'🏦') + '</div>'
-      + '<div class="acc-mini-name">' + esc(a.name) + '</div>'
-      + '<div class="acc-mini-bal blur" style="' + (bal<0?'color:#ef4444':'') + '">' + fmtBal(bal,2) + '</div>'
-      + '<div class="acc-mini-type">' + label + '</div>'
+    return '<div class="acc-card-snap" data-acc-id="' + a.id + '" style="background:' + bg + '">'
+      + '<div style="font-size:22px;margin-bottom:6px">' + (a.icon||'🏦') + '</div>'
+      + '<div style="font-size:11px;color:rgba(255,255,255,0.75);font-weight:600;margin-bottom:2px;text-transform:uppercase;letter-spacing:.4px">' + esc(a.name) + '</div>'
+      + '<div class="blur" style="font-size:16px;font-weight:800;color:#fff;font-family:Sora,sans-serif;' + (bal<0?'color:#ef4444':'') + '">' + fmtBal(bal,2) + '</div>'
+      + '<div style="font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px">' + label + '</div>'
       + '<canvas class="acc-mini-sparkline" data-spark-id="' + a.id + '"></canvas>'
       + '</div>';
   }).join('');
@@ -3630,7 +3671,6 @@ function renderAccMini() {
   });
 
   // Scroll fade indicator
-  var wrap = document.getElementById('acc-scroll-wrap');
   if(wrap) {
     var updateFade = function(){ wrap.classList.toggle('scrolled-end', el.scrollLeft + el.clientWidth >= el.scrollWidth - 4); };
     el.removeEventListener('scroll', el._scrollFade);
@@ -5587,12 +5627,12 @@ function txCtxDuplicate(){
   if(content){
     content.addEventListener('touchstart',function(e){
       // Ignorer si on est sur un élément scrollable horizontalement
-      if(e.target.closest('.acc-scroll,.acc-scroll-wrap,.filter-chips')) return;
+      if(e.target.closest('.acc-scroll,.acc-scroll-wrap,.acc-carousel,.filter-chips')) return;
       _pgX0=e.touches[0].clientX; _pgY0=e.touches[0].clientY; _pgLock=false;
     },{passive:true});
     content.addEventListener('touchend',function(e){
       if(_pgLock) return;
-      if(e.target.closest('.acc-scroll,.acc-scroll-wrap,.filter-chips')) return;
+      if(e.target.closest('.acc-scroll,.acc-scroll-wrap,.acc-carousel,.filter-chips')) return;
       if(e.target.closest('.tx-item[data-tx-id]')) return;
       var dx=e.changedTouches[0].clientX-_pgX0;
       var dy=e.changedTouches[0].clientY-_pgY0;
@@ -5794,35 +5834,51 @@ function launchConfetti(){
 
 
 function goTo(page,btn,idx){
-  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
-  var el=document.getElementById('p-'+page);if(el)el.classList.add('on');
+  var pillIdx=idx!==undefined?idx:{dash:0,hist:1,budget:3,analytics:4,profil:4}[page]||0;
+  var isForward = pillIdx > _currentTabIdx;
+  // Animate old page out
+  var oldPage = document.querySelector('.page.on');
+  if(oldPage && pillIdx !== _currentTabIdx){
+    oldPage.classList.add('page-leave');
+    setTimeout(function(){ if(oldPage){ oldPage.classList.remove('page-leave'); oldPage.classList.remove('on'); } }, 220);
+  } else {
+    document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
+  }
+  // Show new page with enter animation
+  var el=document.getElementById('p-'+page);
+  if(el){
+    if(pillIdx !== _currentTabIdx){
+      setTimeout(function(){
+        document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
+        el.classList.add('on');
+        el.classList.add(isForward ? 'slide-from-right' : 'slide-from-left');
+        el.classList.add('page-enter');
+        setTimeout(function(){ el.classList.remove('slide-from-right','slide-from-left','page-enter'); },300);
+      }, 120);
+    } else {
+      el.classList.add('on');
+    }
+  }
   // Tab pill
   var pill=document.getElementById('tab-pill');
-  // idx for pill: 0=dash,1=hist,skip center,3=budget,4=profil
-  // pill positions: dash=0, hist=1, budget=3, analytics=4
-  var pillIdx=idx!==undefined?idx:{dash:0,hist:1,budget:3,analytics:4,profil:4}[page]||0;
   if(pill)pill.style.transform='translateX('+(pillIdx*100)+'%)';
   document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('on');});
   if(btn)btn.classList.add('on');
   // Month bar visibility
   var mb=document.getElementById('month-bar');if(mb)mb.style.visibility=(page==='profil')?'hidden':'visible';
-  // Directional slide animation
-  if(el&&pillIdx!==_currentTabIdx){
-    var slideClass=pillIdx>_currentTabIdx?'slide-from-right':'slide-from-left';
-    el.classList.add(slideClass);
-    setTimeout(function(){ if(el)el.classList.remove(slideClass); },350);
-  }
   _currentTabIdx=pillIdx;
   currentPage=page;
-  if(page==='hist')renderHist();
-  if(page==='budget')renderBudgets();
+  if(page==='hist') setTimeout(function(){renderHist();},130);
+  if(page==='budget') setTimeout(function(){renderBudgets();},130);
   if(page==='profil'){
-    renderCatsSettings();updateGreeting();renderAccsSettings();renderRecurSettings();
-    var mp=document.getElementById('s-meal-price');if(mp)mp.value=swileMealPrice||10;
-    applyCompact();
+    setTimeout(function(){
+      renderCatsSettings();updateGreeting();renderAccsSettings();renderRecurSettings();
+      var mp=document.getElementById('s-meal-price');if(mp)mp.value=swileMealPrice||10;
+      applyCompact();
+    },130);
   }
-  if(page==='analytics') setTimeout(renderAnalytics, 50);
-  if(page==='dash') setTimeout(renderCharts, 50);
+  if(page==='analytics') setTimeout(renderAnalytics, 180);
+  if(page==='dash') setTimeout(renderCharts, 180);
 }
 
 // ── PRIVACY ───────────────────────────────
