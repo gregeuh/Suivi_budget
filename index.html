@@ -316,6 +316,12 @@ body.compact .tx-ico{width:34px;height:34px;font-size:17px}
 .tx-item:active{background:var(--card2) !important}
   background:var(--red);display:flex;align-items:center;justify-content:center;
   border-radius:var(--r-sm);cursor:pointer;flex-direction:column;gap:2px}
+/* Swipe tx actions */
+.tx-item{position:relative}
+.swipe-action-del,.swipe-action-edit{position:absolute;top:0;bottom:0;width:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11px;font-weight:700;cursor:pointer;opacity:0;transition:opacity .2s;pointer-events:none}
+.swipe-action-del{right:0;background:var(--red);color:#fff;border-radius:0 var(--r-sm) var(--r-sm) 0}
+.swipe-action-edit{left:0;background:var(--accent);color:#fff;border-radius:var(--r-sm) 0 0 var(--r-sm)}
+.tx-item.swipe-left .swipe-action-del,.tx-item.swipe-right .swipe-action-edit{opacity:1;pointer-events:auto}
 .tx-item.tx-income { border-left-color: var(--green); }
 .tx-item.tx-expense{ border-left-color: var(--red); }
 .tx-item.tx-vir    { border-left-color: var(--accent); }
@@ -1000,6 +1006,7 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
 [data-theme="dark"] .modal {
   background: rgba(28,28,30,0.97) !important;
   border-top-color: rgba(255,255,255,0.08) !important;
+  color: var(--txt) !important;
 }
 
 
@@ -1168,6 +1175,30 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
 [data-theme="dark"] .acc-type-btn      { background: var(--input) !important; color: var(--txt) !important; border-color: var(--border) !important; }
 [data-theme="dark"] .acc-type-btn.on   { background: rgba(var(--accent-rgb),0.15) !important; border-color: var(--accent) !important; }
 [data-theme="dark"] .bi-row            { color: var(--txt) !important; }
+[data-theme="dark"] .chip             { background: var(--input) !important; color: var(--txt2) !important; border-color: var(--border) !important; }
+[data-theme="dark"] .chip.on          { background: rgba(var(--accent-rgb),0.2) !important; color: var(--accent) !important; }
+[data-theme="dark"] .freq-btn         { background: var(--input) !important; color: var(--txt2) !important; }
+[data-theme="dark"] .freq-btn.on      { background: rgba(var(--accent-rgb),0.2) !important; color: var(--accent) !important; }
+[data-theme="dark"] .modal-overlay    { color: var(--txt) !important; }
+[data-theme="dark"] .modal-box        { background: var(--card) !important; color: var(--txt) !important; }
+[data-theme="dark"] .modal-box label  { color: var(--txt2) !important; }
+[data-theme="dark"] .modal-box .field-inp, [data-theme="dark"] .modal-box select { background: var(--input) !important; color: var(--txt) !important; }
+[data-theme="dark"] .tx-row-title     { color: var(--txt) !important; }
+[data-theme="dark"] .tx-row-sub       { color: var(--txt2) !important; }
+[data-theme="dark"] .tx-row-amt       { color: var(--txt) !important; }
+[data-theme="dark"] .hist-day-lbl     { color: var(--txt2) !important; }
+[data-theme="dark"] .budget-name      { color: var(--txt) !important; }
+[data-theme="dark"] .budget-pct       { color: var(--txt2) !important; }
+[data-theme="dark"] .acc-mini-name    { color: var(--txt) !important; }
+[data-theme="dark"] .acc-mini-bal     { color: var(--txt) !important; }
+[data-theme="dark"] .wish-title       { color: #fff !important; }
+[data-theme="dark"] .wish-target      { color: rgba(255,255,255,0.7) !important; }
+[data-theme="dark"] .analytics-mini-lbl { color: var(--txt2) !important; }
+[data-theme="dark"] .analytics-mini-val { color: var(--txt) !important; }
+[data-theme="dark"] .upcoming-row-lbl  { color: var(--txt) !important; }
+[data-theme="dark"] .upcoming-row-sub  { color: var(--txt2) !important; }
+[data-theme="dark"] .sec-lbl, [data-theme="dark"] .row-lbl { color: var(--txt) !important; }
+[data-theme="dark"] .row-sub          { color: var(--txt2) !important; }
 
 /* ═══ WISH CARDS ═══ */
 .wish-card {
@@ -1228,18 +1259,18 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
   font-family:'Sora',sans-serif;font-size:24px;font-weight:800;color:#fff;
   box-shadow:0 4px 20px rgba(var(--accent-rgb),.35);margin-bottom:14px}
 .drawer-name{font-family:'Sora',sans-serif;font-size:20px;font-weight:800;color:#fff;line-height:1.1}
-.drawer-email{font-size:13px;color:#636366;margin-top:4px}
+.drawer-email{font-size:13px;color:rgba(255,255,255,0.38);margin-top:4px}
 .drawer-body{flex:1;padding:0 12px 24px}
 .drawer-sec{margin-bottom:6px}
-.drawer-sec-title{font-size:11px;font-weight:700;color:#48484a;text-transform:uppercase;letter-spacing:.7px;padding:14px 8px 6px}
+.drawer-sec-title{font-size:11px;font-weight:700;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:.7px;padding:14px 8px 6px}
 .drawer-group{background:#1c1c1e;border-radius:16px;overflow:hidden}
 .drow{display:flex;align-items:center;padding:14px 16px;gap:12px;cursor:pointer;transition:background .15s}
 .drow:not(:last-child){border-bottom:1px solid rgba(255,255,255,0.04)}
 .drow:active{background:rgba(255,255,255,0.05)}
 .drow-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:#8e8e93;flex-shrink:0}
 .drow-label{flex:1;font-size:15px;font-weight:500;color:#ffffff}
-.drow-value{font-size:14px;color:#636366}
-.drow-chevron{color:#48484a;flex-shrink:0}
+.drow-value{font-size:14px;color:rgba(255,255,255,0.38)}
+.drow-chevron{color:rgba(255,255,255,0.25);flex-shrink:0}
 .drow-chevron svg{display:block}
 .drawer-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;
   background:rgba(255,255,255,0.08);border:none;cursor:pointer;
@@ -1519,7 +1550,7 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
         </div>
         <!-- Quick actions -->
         <div class="hero-quick-actions">
-          <button class="hqa-btn" onclick="openAdd('exp')">
+          <button class="hqa-btn" onclick="toggleFab()">
             <div class="hqa-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
             <div class="hqa-lbl">Ajouter</div>
           </button>
@@ -1603,6 +1634,15 @@ body.privacy .blur { filter: blur(8px); user-select: none; }
         <div class="acc-scroll-wrap" id="credits-scroll-wrap">
           <div class="acc-scroll" id="credits-mini-list"></div>
         </div>
+      </div>
+
+      <!-- Abonnements & récurrents — section dashboard -->
+      <div id="abo-dash-section" style="display:none;margin-top:20px">
+        <div class="sec" style="margin-bottom:8px">
+          <div class="sec-title"><span class="ico">🔄</span> Abonnements<button id="sec-toggle-abo" onclick="toggleSection('abo')" class="section-toggle-btn" title="Masquer / Afficher"></button></div>
+          <button class="sec-link" onclick="openAbonnements()">Tout voir</button>
+        </div>
+        <div id="sec-body-abo"><div id="abo-dash-list"></div></div>
       </div>
 
       <!-- Projets / Liste de souhaits -->
@@ -2870,6 +2910,23 @@ function renderWishlist() {
       + '</div>';
   }).join('');
 
+  // Confetti pour les souhaits nouvellement complétés
+  var bals2 = calcBals();
+  var celebrated = JSON.parse(localStorage.getItem('_celebratedWishes')||'[]');
+  var newlyCelebrated = false;
+  wishlist.forEach(function(w){
+    var accBal2 = w.accId ? (bals2[w.accId]||0) : getEpargneAccs().reduce(function(s,a){return s+(bals2[a.id]||0);},0);
+    var done2 = w.price > 0 && accBal2 >= w.price;
+    if(done2 && celebrated.indexOf(w.id)===-1){
+      celebrated.push(w.id);
+      newlyCelebrated = true;
+    }
+  });
+  if(newlyCelebrated){
+    localStorage.setItem('_celebratedWishes', JSON.stringify(celebrated));
+    setTimeout(launchConfetti, 400);
+  }
+
   // Animate bars after render
   setTimeout(function(){
     document.querySelectorAll('.wish-bar-fill').forEach(function(b){
@@ -3120,14 +3177,6 @@ function applyTheme(themeKey, dark) {
   document.querySelectorAll('.tab-bar').forEach(function(el){
     el.style.background = t.tabBg;
     el.style.borderColor = t.tabBorder;
-  });
-
-  // Tab labels inactifs
-  document.querySelectorAll('.t-lbl').forEach(function(el){
-    el.style.color = t.txt3;
-  });
-  document.querySelectorAll('.tab-btn.on .t-lbl').forEach(function(el){
-    el.style.color = t.accent;
   });
 
   // Add circle
@@ -4223,6 +4272,7 @@ function renderAll(){
   renderSpendingCard();
   renderCharts();
   renderConseils();
+  renderDashAbo();
   renderWishBandeau();
   applyAllSections();
   renderHist();
@@ -4574,14 +4624,100 @@ function renderConseils(){
     }
   }
 
+  // ⑦ Comparaison mois précédent par catégorie (delta > 15%)
+  categories.forEach(function(c){
+    var curSpent=byCat[c.id]||0; if(curSpent<5) return;
+    var prevSpent=getPrevMonthCat(c.id); if(prevSpent<5) return;
+    var delta=Math.round((curSpent-prevSpent)/prevSpent*100);
+    if(Math.abs(delta)>15){
+      if(delta<0){
+        conseils.push({priority:3,icon:c.icon,text:'Tu dépenses '+Math.abs(delta)+'% de moins en '+c.label+' ce mois',sub:'Ce mois : '+fmt(curSpent)+' vs '+fmt(Math.round(prevSpent))+' le mois dernier. Économie de '+fmt(Math.round(prevSpent-curSpent))+'.'});
+      } else {
+        conseils.push({priority:6,icon:c.icon,text:'Tu dépenses '+delta+'% de plus en '+c.label+' ce mois',sub:'Ce mois : '+fmt(curSpent)+' vs '+fmt(Math.round(prevSpent))+' le mois dernier. Surplus de '+fmt(Math.round(curSpent-prevSpent))+'.'});
+      }
+    }
+  });
+
+  // ⑧ Jour de la semaine le plus dépensier
+  (function(){
+    var weekdays=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+    var byDay={};
+    var countDay={};
+    var now=new Date();
+    // Analyse sur les 3 derniers mois
+    expenses.filter(function(e){
+      if(!e.date||e.type!=='expense'||e.isVirement) return false;
+      var d=new Date(e.date+'T12:00:00');
+      var diffM=(now.getFullYear()-d.getFullYear())*12+(now.getMonth()-d.getMonth());
+      return diffM>=0&&diffM<3;
+    }).forEach(function(e){
+      var wd=new Date(e.date+'T12:00:00').getDay();
+      byDay[wd]=(byDay[wd]||0)+e.amount;
+      countDay[wd]=(countDay[wd]||0)+1;
+    });
+    var bestDay=-1, bestAvg=0;
+    for(var d2=0;d2<7;d2++){
+      if(!byDay[d2]) continue;
+      var avg=byDay[d2]/(countDay[d2]||1);
+      if(avg>bestAvg){bestAvg=avg;bestDay=d2;}
+    }
+    if(bestDay>=0&&bestAvg>5){
+      conseils.push({priority:2,icon:'📅',text:'Tu dépenses le plus les '+weekdays[bestDay]+'s — ~'+fmt(Math.round(bestAvg))+'/'+weekdays[bestDay],sub:'Moyenne sur tes '+countDay[bestDay]+' '+weekdays[bestDay]+'s des 3 derniers mois.'});
+    }
+  })();
+
+  // ⑨ Alerte récurrent manquant ce mois
+  (function(){
+    var recurs=expenses.filter(function(e){ return e.recurring&&e.frequency&&e.frequency!=='once'&&e.type==='expense'; });
+    var y=viewDate.getFullYear(), m=viewDate.getMonth();
+    var monthTxLabels={};
+    expenses.filter(function(e){
+      if(!e.date||e.type!=='expense') return false;
+      var d=new Date(e.date+'T12:00:00');
+      return d.getFullYear()===y&&d.getMonth()===m;
+    }).forEach(function(e){ monthTxLabels[(e.label||'').toLowerCase()]=true; });
+    recurs.forEach(function(e){
+      var lbl=(e.label||'').toLowerCase();
+      if(!monthTxLabels[lbl]){
+        conseils.push({priority:6,icon:'⚠️',text:'Ton abonnement "'+esc(e.label||'Sans libellé')+'" n\'a pas été prélevé ce mois',sub:'Récurrence : '+_freqLabel(e)+' · '+fmt(_toMonthly(e))+'/mois attendu.'});
+      }
+    });
+  })();
+
+  // ⑩ Félicitations fin de mois sous budget
+  (function(){
+    var daysLeft=new Date(today.getFullYear(),today.getMonth()+1,0).getDate()-today.getDate();
+    if(daysLeft<=7&&mInc>0){
+      var typeAlloc2={fixe:0.5,vie:0.3,loisirs:0.2};
+      var typeCounts2={fixe:0,vie:0,loisirs:0};
+      categories.forEach(function(c){if(typeCounts2[c.type]!==undefined)typeCounts2[c.type]++;});
+      var totalBudget=categories.reduce(function(s,c){
+        return s+(mInc>0?Math.round(mInc*(typeAlloc2[c.type]||0.2)/(typeCounts2[c.type]||1)):0);
+      },0);
+      if(totalBudget>0&&mExp<totalBudget){
+        var under=Math.round(totalBudget-mExp);
+        conseils.push({priority:11,icon:'🎉',text:'Bravo — tu es '+fmt(under)+' sous ton budget ce mois !',sub:'Tu as dépensé '+fmt(mExp)+' sur '+fmt(totalBudget)+' budgété. Il te reste '+daysLeft+' jours.'});
+      }
+    }
+  })();
+
   if(!conseils.length){
     el.innerHTML='<div class="empty" style="padding:20px"><div class="empty-ico">💡</div>Ajoute des transactions pour voir tes conseils</div>';
     return;
   }
   conseils.sort(function(a,b){return b.priority-a.priority;});
-  el.innerHTML=conseils.slice(0,3).map(function(c){
-    return '<div class="conseil"><div class="conseil-icon">'+c.icon+'</div><div class="conseil-text">'+c.text+'</div><div class="conseil-sub">'+c.sub+'</div></div>';
+  var topConseils=conseils.slice(0,4);
+  el.innerHTML=topConseils.map(function(c){
+    return '<div class="conseil"><div class="conseil-icon">'+c.icon+'</div><div class="conseil-text">'+c.text+'</div><div class="conseil-sub">'+(c.sub||'')+'</div></div>';
   }).join('');
+  // Confetti si félicitations fin de mois
+  if(topConseils.some(function(c){return c.priority===11;})){
+    var key='_confetti_budget_'+today.getFullYear()+'_'+today.getMonth();
+    if(!localStorage.getItem(key)){
+      localStorage.setItem(key,'1');
+      setTimeout(launchConfetti, 600);
+    }
+  }
 }
 
 function getPrevMonthCat(catId){
@@ -4629,12 +4765,15 @@ function txHTML(e,showEdit){
   var icoColor=CAT_TYPE_ICON_COLORS[catType]||'var(--txt)';
   var icoSh=CAT_TYPE_SHADOWS[catType]||'none';
   var inner='<div class="tx-item '+txCls+'" data-tx-id="'+id+'" onclick="'+(showEdit?'openTxDetail(\''+id+'\')':'')+'">'
+    +'<div class="swipe-action-edit">✏️<span>Modifier</span></div>'
+    +'<div class="swipe-action-del">🗑<span>Supprimer</span></div>'
+    +'<div class="tx-swipe-inner" style="display:flex;flex:1;align-items:center;gap:12px;width:100%;min-width:0;transition:transform .2s cubic-bezier(0.16,1,0.3,1)">'
     +'<div class="tx-ico" style="background:'+icoBg+';box-shadow:'+icoSh+'">'+cat.icon+'</div>'
     +'<div class="tx-info"><div class="tx-name">'+esc(e.label||'Sans libellé')+swileBadge+recurBadge+virBadge+'</div>'
     +'<div class="tx-sub">'+(acc?esc(acc.name):'')+' '+(e.note?'· '+esc(e.note):'')+''+(e.time?'<span class="tx-time">'+esc(e.time)+'</span>':'')+'</div></div>'
-    +'<div class="tx-amt '+(isInc?'i':'e')+' blur">'+(isInc?'+':'-')+e.amount.toFixed(2)+' €</div></div>';
-  return showEdit
-    ? inner : inner;
+    +'<div class="tx-amt '+(isInc?'i':'e')+' blur">'+(isInc?'+':'-')+e.amount.toFixed(2)+' €</div>'
+    +'</div></div>';
+  return inner;
 }
 function renderTxList(el,items,showEdit){
   if(!el)return;
@@ -4728,7 +4867,13 @@ function renderHist(){
     if(histFilter!=='all'&&e.type!==histFilter)return false;
     if(histFilter==='expense'&&restoIds2.indexOf(e.accountId)!==-1)return false;
     if(histCatFilter!=='all'&&e.cat!==histCatFilter)return false;
-    if(q&&(e.label||'').toLowerCase().indexOf(q.toLowerCase())===-1)return false;
+    if(q){
+      var ql=q.toLowerCase();
+      var cat2=categories.find(function(c){return c.id===e.cat;})||{label:''};
+      var acc2=accounts.find(function(a){return a.id===e.accountId;})||{name:''};
+      var haystack=((e.label||'')+' '+(e.note||'')+' '+(cat2.label||'')+' '+(acc2.name||'')).toLowerCase();
+      if(haystack.indexOf(ql)===-1)return false;
+    }
     return e.type==='expense'||e.type==='income';
   }).sort(function(a,b){return(b.date||'').localeCompare(a.date||'');});
 
@@ -5161,7 +5306,7 @@ function saveTransaction(){
       note:note||null, recurring:false, frequency:null,
       customDays:null, endDate:null, linkedVir:virId
     });
-    save();renderAll();closeModal();
+    save(); try{renderAll();}catch(_){} closeModal();
     toast('↔️ Virement de '+amt.toFixed(2)+' € effectué','success');
     return;
   }
@@ -5181,11 +5326,11 @@ function saveTransaction(){
   expenses.unshift(newTx);
   learnCat(lbl, selCat);
   if(navigator.vibrate)navigator.vibrate(mCurrentType==='inc'?[8,4,8,4,8]:[10]);
-  save();renderAll();closeModal();
+  save(); try{renderAll();}catch(_){} closeModal();
   var cat=categories.find(function(c){return c.id===selCat;})||{icon:'📦'};
   var addedId=newTx.id;
   toastWithUndo(cat.icon+' '+lbl+' ajouté — '+(mCurrentType==='inc'?'+':'-')+amt.toFixed(2)+' €',function(){
-    expenses=expenses.filter(function(e){return e.id!==addedId;}); save(); renderAll(); toast('Annulé ✓');
+    expenses=expenses.filter(function(e){return e.id!==addedId;}); save(); try{renderAll();}catch(_){} toast('Annulé ✓');
   });
 }
 
@@ -5387,6 +5532,7 @@ function txCtxDuplicate(){
     content.addEventListener('touchend',function(e){
       if(_pgLock) return;
       if(e.target.closest('.acc-scroll,.acc-scroll-wrap,.filter-chips')) return;
+      if(e.target.closest('.tx-item[data-tx-id]')) return;
       var dx=e.changedTouches[0].clientX-_pgX0;
       var dy=e.changedTouches[0].clientY-_pgY0;
       if(Math.abs(dx)<55||Math.abs(dy)>Math.abs(dx)*0.7) return;
@@ -5468,6 +5614,114 @@ function txCtxDuplicate(){
     } else {
       ptr.style.top='-60px';ptr.style.opacity='0';ptr.style.background='var(--card)';
       var arrow=document.getElementById('ptr-arrow');if(arrow){arrow.style.transform='';arrow.style.stroke='var(--txt2)';}
+    }
+  },{passive:true});
+})();
+
+// ── CONFETTI ──────────────────────────────
+function launchConfetti(){
+  var container=document.createElement('div');
+  container.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden';
+  document.body.appendChild(container);
+  var colors=['#60a5fa','#34c759','#f59e0b','#ef4444','#a78bfa'];
+  for(var i=0;i<60;i++){
+    (function(i){
+      var p=document.createElement('div');
+      var color=colors[i%colors.length];
+      var size=(Math.random()*8+4)|0;
+      var left=Math.random()*100;
+      var delay=Math.random()*0.8;
+      var dur=1.8+Math.random()*0.7;
+      var rotStart=Math.random()*360;
+      var rotEnd=rotStart+(Math.random()-0.5)*720;
+      p.style.cssText='position:absolute;top:-10px;left:'+left+'%;width:'+size+'px;height:'+size+'px;'
+        +'background:'+color+';border-radius:'+(Math.random()>0.5?'50%':'2px')+';'
+        +'animation:confetti-fall '+dur+'s '+delay+'s ease-in forwards';
+      container.appendChild(p);
+    })(i);
+  }
+  var style=document.createElement('style');
+  style.textContent='@keyframes confetti-fall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}';
+  document.head.appendChild(style);
+  setTimeout(function(){ container.remove(); style.remove(); },3500);
+}
+
+// ── SWIPE TX ACTIONS (delete/edit) ────────
+(function(){
+  var _swX0=0, _swY0=0, _swItem=null, _swActive=false, _swLocked=false, THRESH=60;
+
+  function resetSwipe(item){
+    if(!item) return;
+    var inner=item.querySelector('.tx-swipe-inner');
+    if(inner) inner.style.transform='';
+    item.classList.remove('swipe-left','swipe-right');
+    _swItem=null; _swActive=false; _swLocked=false;
+  }
+
+  function resetAllSwipes(except){
+    document.querySelectorAll('.tx-item.swipe-left,.tx-item.swipe-right').forEach(function(el){
+      if(el!==except) resetSwipe(el);
+    });
+  }
+
+  document.addEventListener('touchstart',function(e){
+    var item=e.target.closest('.tx-item[data-tx-id]');
+    if(!item){ resetAllSwipes(null); return; }
+    resetAllSwipes(item);
+    _swItem=item; _swActive=true; _swLocked=false;
+    _swX0=e.touches[0].clientX; _swY0=e.touches[0].clientY;
+  },{passive:true});
+
+  document.addEventListener('touchmove',function(e){
+    if(!_swActive||!_swItem) return;
+    var dx=e.touches[0].clientX-_swX0;
+    var dy=e.touches[0].clientY-_swY0;
+    if(!_swLocked && Math.abs(dy)>Math.abs(dx)+8){ _swActive=false; return; }
+    _swLocked=true;
+    var clamped=Math.max(-THRESH,Math.min(THRESH,dx));
+    var inner=_swItem.querySelector('.tx-swipe-inner');
+    if(inner) inner.style.transform='translateX('+clamped+'px)';
+    _swItem.classList.toggle('swipe-left',dx<-THRESH*0.3);
+    _swItem.classList.toggle('swipe-right',dx>THRESH*0.3);
+  },{passive:true});
+
+  document.addEventListener('touchend',function(e){
+    if(!_swActive||!_swItem){ _swActive=false; return; }
+    var dx=e.changedTouches[0].clientX-_swX0;
+    if(Math.abs(dx)<THRESH*0.7){
+      resetSwipe(_swItem);
+    } else {
+      var inner=_swItem.querySelector('.tx-swipe-inner');
+      if(inner) inner.style.transform='translateX('+(dx<0?-THRESH:THRESH)+'px)';
+    }
+    _swActive=false;
+  },{passive:true});
+
+  document.addEventListener('click',function(e){
+    if(e.target.closest('.swipe-action-del')){
+      var item=e.target.closest('.tx-item[data-tx-id]');
+      if(!item) return;
+      var id=item.getAttribute('data-tx-id');
+      var tx=expenses.find(function(x){return x.id===id;});
+      if(!tx) return;
+      if(!confirm('Supprimer "'+((tx.label)||'cette transaction')+'" ?')) return;
+      var prev=expenses.slice();
+      expenses=expenses.filter(function(x){return x.id!==id;});
+      save(); renderAll();
+      toastWithUndo('Transaction supprimée ✓',function(){ expenses=prev; save(); renderAll(); toast('Annulé ✓'); });
+    } else if(e.target.closest('.swipe-action-edit')){
+      var item2=e.target.closest('.tx-item[data-tx-id]');
+      if(!item2) return;
+      var id2=item2.getAttribute('data-tx-id');
+      resetAllSwipes(null);
+      openEdit(id2);
+    }
+  });
+
+  // Tap anywhere that's not a swipe button resets open swipes
+  document.addEventListener('touchend',function(e){
+    if(!e.target.closest('.swipe-action-del,.swipe-action-edit,.tx-item')){
+      resetAllSwipes(null);
     }
   },{passive:true});
 })();
@@ -5954,6 +6208,41 @@ function renderAbonnements(){
   }
 
   body.innerHTML=html;
+}
+
+// ── DASHBOARD ABO SECTION ─────────────────
+function renderDashAbo(){
+  var section=document.getElementById('abo-dash-section');
+  var list=document.getElementById('abo-dash-list');
+  if(!section||!list) return;
+  var recurs=expenses.filter(function(e){ return e.recurring&&e.frequency&&e.frequency!=='once'; });
+  var deps=recurs.filter(function(e){ return e.type==='expense'&&getRestoIds().indexOf(e.accountId)===-1; });
+  if(!deps.length){ section.style.display='none'; return; }
+  section.style.display='block';
+  deps.sort(function(a,b){ return _toMonthly(b)-_toMonthly(a); });
+  var totalM=deps.reduce(function(s,e){ return s+_toMonthly(e); },0);
+  var html='<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;">';
+  deps.slice(0,5).forEach(function(e,i){
+    var cat=categories.find(function(c){ return c.id===e.cat; })||{icon:'📦'};
+    var monthly=_toMonthly(e);
+    html+='<div onclick="openEdit(\''+e.id+'\')" style="display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;'+(i>0?'border-top:1px solid var(--border);':'')+'transition:background .15s" onmouseenter="this.style.background=\'var(--card2)\'" onmouseleave="this.style.background=\'\'">'
+      +'<div style="width:36px;height:36px;border-radius:10px;background:var(--input);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+cat.icon+'</div>'
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="font-size:13px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(e.label||'Sans libellé')+'</div>'
+      +'<div style="font-size:11px;color:var(--txt2);margin-top:1px">🔄 '+_freqLabel(e)+'</div>'
+      +'</div>'
+      +'<div style="font-size:14px;font-weight:700;color:var(--red);flex-shrink:0">-'+fmt(monthly)+'/m</div>'
+      +'</div>';
+  });
+  if(deps.length>5){
+    html+='<div style="border-top:1px solid var(--border);padding:10px 14px;text-align:center;font-size:12px;color:var(--accent);cursor:pointer;font-weight:600" onclick="openAbonnements()">Voir les '+(deps.length-5)+' autres ›</div>';
+  }
+  html+='<div style="border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--input)">'
+    +'<div style="font-size:12px;font-weight:700;color:var(--txt2)">Total mensuel</div>'
+    +'<div style="font-size:15px;font-weight:800;color:var(--red)">-'+fmt(totalM)+'/mois</div>'
+    +'</div>'
+    +'</div>';
+  list.innerHTML=html;
 }
 
 function exportCSV(){
@@ -7175,7 +7464,7 @@ function renderAnalytics(){
     var maxCat=catTotals[sorted[0]]||1;
     topEl.innerHTML=sorted.map(function(id){
       var cat=categories.find(function(c){return c.id===id;});
-      var nm=cat?cat.name:id; var ico=cat?cat.icon:'•';
+      var nm=cat?(cat.label||cat.name||id):id; var ico=cat?cat.icon:'•';
       var pct=Math.round((catTotals[id]/maxCat)*100);
       var accentRgb=(getComputedStyle(document.documentElement).getPropertyValue('--accent-rgb')||'96,165,250').trim();
       return '<div style="margin-bottom:12px">'
