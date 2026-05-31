@@ -3238,7 +3238,7 @@ function applyTheme(themeKey, dark) {
   if(typeof renderAll === 'function') renderAll();
 
   renderThemePicker();
-  if(currentUser) { settings.theme = themeKey; settings.isDark = isDark; save(); }
+  if(currentUser) save();
 }
 
 function renderThemePicker() {
