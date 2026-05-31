@@ -3080,6 +3080,7 @@ function obFinish() {
 
 // ── THÈMES PASTELS ────────────────────────
 var isDark = true;
+var themeMode = 'auto'; // 'auto' | 'dark' | 'light'
 
 var THEMES = {
   premium: {
@@ -3986,11 +3987,11 @@ function setupAuth(){
       // Thème — ne ré-appliquer qu'au premier chargement
       if(!window._themeLoaded){
         window._themeLoaded = true;
-        if(d.theme && THEMES[d.theme]){
-          var _dark = d.isDark !== undefined ? d.isDark : true;
-          window._userSetDark = _dark;
-          applyTheme(d.theme, _dark);
-        } else applyTheme('premium', true);
+        themeMode = d.themeMode || 'auto';
+        var sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var _dark = themeMode === 'auto' ? sysDark : (themeMode === 'dark');
+        if(themeMode !== 'auto') window._userSetDark = _dark;
+        applyTheme('premium', _dark);
       }
       updateDarkToggleIcon();
       updatePrivacyIcon();
@@ -4040,7 +4041,7 @@ function save(){
   cloudDoc.set({
     expenses:expenses,accounts:accounts,categories:customCats,
     displayName:displayName,forecastSalary:forecastSalary,savingsGoal:savingsGoal,
-    budgetPayDay:budgetPayDay,isDark:isDark,
+    budgetPayDay:budgetPayDay,isDark:isDark,themeMode:themeMode,
     catBudgets:catBudgets,swileMealPrice:swileMealPrice,wishlist:wishlist,credits:credits,theme:savedTheme
   },{merge:true}).catch(function(e){console.error(e);toast('Erreur de sauvegarde — vérifiez votre connexion','error');});
 }
@@ -7209,10 +7210,10 @@ function renderUpcomingWidget(){
   // Sur le premier chargement (pas encore auth), on suit le système
   var mq = window.matchMedia('(prefers-color-scheme: dark)');
   function applySystemTheme(e){
-    // Ne pas écraser si l'utilisateur a une préférence explicite sauvegardée
-    if(window._userSetDark !== undefined) return;
+    if(themeMode !== 'auto') return;
     isDark = e.matches;
     applyTheme('premium', isDark);
+    updateDrawerToggles();
   }
   if(mq.addEventListener) mq.addEventListener('change', applySystemTheme);
   else if(mq.addListener) mq.addListener(applySystemTheme);
@@ -7253,13 +7254,18 @@ function closeDrawer(){
 }
 function updateDrawerToggles(){
   var dv=document.getElementById('drawer-dark-value');
-  if(dv) dv.textContent=isDark?'On':'Off';
+  if(dv) dv.textContent = themeMode==='auto' ? 'Auto' : (isDark ? 'Sombre' : 'Clair');
   var pv=document.getElementById('drawer-privacy-value');
   if(pv) pv.textContent=_privacyMode?'On':'Off';
   var cv=document.getElementById('drawer-density-value');
   if(cv) cv.textContent=_isCompact?'On':'Off';
 }
-function drawerToggleDark(){ toggleDark(); saveDarkPref(); updateDrawerToggles(); }
+function drawerToggleDark(){
+  if(themeMode==='auto'){ themeMode='dark'; isDark=true; window._userSetDark=true; }
+  else if(themeMode==='dark'){ themeMode='light'; isDark=false; window._userSetDark=false; }
+  else { themeMode='auto'; isDark=window.matchMedia('(prefers-color-scheme:dark)').matches; window._userSetDark=undefined; }
+  applyTheme('premium',isDark); saveDarkPref(); save(); updateDrawerToggles();
+}
 function drawerTogglePrivacy(){ togglePrivacy(); updateDrawerToggles(); }
 function drawerToggleDensity(){ setDensity(!_isCompact); updateDrawerToggles(); }
 
