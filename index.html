@@ -4358,28 +4358,32 @@ function animNum(el, to, prefix, suffix, decimals) {
 
 // ── RENDER ALL ────────────────────────────
 
+function _safe(fn){
+  try { fn(); } catch(e) { console.error('[renderAll] ' + fn.name + ' threw:', e); }
+}
+
 function renderAll(){
-  updateMonthLabel();
-  updateGreeting();
-  renderThemePicker();
-  renderHero();
-  renderCreditHero();
-  renderTodayWidget();
-  renderAccMini();
-  renderUpcomingWidget();
-  renderDashTx();
-  renderDonut();
-  renderSpendingCard();
-  renderCharts();
-  renderConseils();
-  renderDashAbo();
-  renderWishBandeau();
-  applyAllSections();
-  renderHist();
-  renderBudgets();
-  updateBudgetBadge();
-  renderCatsSettings();
-  if(currentPage==='analytics') renderAnalytics();
+  _safe(updateMonthLabel);
+  _safe(updateGreeting);
+  _safe(renderThemePicker);
+  _safe(renderHero);
+  _safe(renderCreditHero);
+  _safe(renderTodayWidget);
+  _safe(renderAccMini);
+  _safe(renderUpcomingWidget);
+  _safe(renderDashTx);
+  _safe(renderDonut);
+  _safe(renderSpendingCard);
+  _safe(renderCharts);
+  _safe(renderConseils);
+  _safe(renderDashAbo);
+  _safe(renderWishBandeau);
+  _safe(applyAllSections);
+  _safe(renderHist);
+  _safe(renderBudgets);
+  _safe(updateBudgetBadge);
+  _safe(renderCatsSettings);
+  if(currentPage==='analytics') _safe(renderAnalytics);
 }
 
 // ── HERO ──────────────────────────────────
@@ -4534,7 +4538,9 @@ function renderEvo(){
   var txt = (getComputedStyle(document.documentElement).getPropertyValue('--txt')||'').trim() || '#1c1c1e';
   var border = (getComputedStyle(document.documentElement).getPropertyValue('--border')||'').trim() || 'rgba(0,0,0,0.09)';
 
-  var ctx = document.getElementById('evo-chart').getContext('2d');
+  var evoCanvas = document.getElementById('evo-chart');
+  if(!evoCanvas) return;
+  var ctx = evoCanvas.getContext('2d');
   if(evoChart) evoChart.destroy();
   evoChart = new Chart(ctx, {
     type:'line',
